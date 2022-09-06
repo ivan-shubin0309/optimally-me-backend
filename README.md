@@ -58,8 +58,3 @@ nest build <entity-name> --watch
 sam build
 sam deploy
 ```
-
-**TO DO:**
-
-- move config to json
-- add logger

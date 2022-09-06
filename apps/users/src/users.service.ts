@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './models';
 import { User } from './models';
 import { Transaction } from 'sequelize/types';
+import { ICreateUser } from './models/create-user.interface';
 
 @Injectable()
 export class UsersService {
@@ -19,7 +19,7 @@ export class UsersService {
             });
     }
 
-    create(body: CreateUserDto): Promise<User> {
+    create(body: ICreateUser): Promise<User> {
         return this.userModel.create({ ...body });
     }
 

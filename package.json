@@ -19,7 +19,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/serverless-nest/test/jest-e2e.json",
-    "m:create": "sequelize-cli migration:create --name"
+    "m:create": "sequelize-cli migration:create --name",
+    "db:migrate:local": "NODE_ENV=local npx sequelize db:migrate",
+    "db:seed:local": "NODE_ENV=local npx sequelize db:seed"
   },
   "dependencies": {
     "@liaoliaots/nestjs-redis": "^9.0.1",

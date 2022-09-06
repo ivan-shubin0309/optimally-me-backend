@@ -14,12 +14,6 @@ import { PasswordHelper } from '../../../common/src/utils/helpers/password.helpe
 })
 export class User extends Model {
     @Column({
-        type: DataType.STRING,
-        allowNull: true,
-    })
-    username: string;
-
-    @Column({
         type: DataType.TINYINT,
         allowNull: false,
         defaultValue: UserRoles.user
@@ -43,6 +37,18 @@ export class User extends Model {
         allowNull: true,
     })
     salt: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true,
+    })
+    firstName: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true,
+    })
+    lastName: string;
 
     @BeforeCreate
     static hashPasswordBeforeCreate(model) {

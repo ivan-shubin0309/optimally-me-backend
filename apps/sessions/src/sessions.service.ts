@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { SessionDto, UserSessionDto } from './models';
+import { SessionDto, UserSessionDto } from '../../sessions/src/models';
 import { DateTime } from 'luxon';
 import { RedisService } from '@liaoliaots/nestjs-redis';
 import { ObjectKeyComposer } from 'apps/common/src/utils/helpers/object-key-composer.helper';

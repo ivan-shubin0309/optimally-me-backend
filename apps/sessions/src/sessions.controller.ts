@@ -13,8 +13,8 @@ import {
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '../../common/src/resources/common/public.decorator';
 import { LoginUserDto } from '../../users/src/models';
-import { SessionDto, RefreshSessionDto } from './models';
-import { SessionsService } from './sessions.service';
+import { SessionDto, RefreshSessionDto } from '../../sessions/src/models';
+import { SessionsService } from '../../sessions/src/sessions.service';
 import { UserRoles } from '../../common/src/resources/users';
 import { UsersService } from '../../users/src/users.service';
 import { PasswordHelper } from '../../common/src/utils/helpers/password.helper';

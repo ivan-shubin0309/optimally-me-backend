@@ -36,10 +36,6 @@ Globals:
     Environment:
       Variables:
         NODE_ENV: !Ref NodeEnv
-    VpcConfig:
-      SecurityGroupIds:
-        - !Ref SGid
-      SubnetIds: !Ref SubnetIds
 
 Resources:
   RuntimeDependenciesLayer:
@@ -76,6 +72,11 @@ Resources:
           Properties:
             Path: /swagger-json
             Method: GET
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref SGid
+        SubnetIds: !Ref SubnetIds
+
 
   SessionsFunction:
     Type: AWS::Serverless::Function
@@ -90,6 +91,11 @@ Resources:
           Properties:
             Path: /sessions
             Method: ANY
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref SGid
+        SubnetIds: !Ref SubnetIds
+
 
   UsersFunction:
     Type: AWS::Serverless::Function
@@ -109,3 +115,8 @@ Resources:
           Properties:
             Path: /users/signup
             Method: ANY
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref SGid
+        SubnetIds: !Ref SubnetIds
+
