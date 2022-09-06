@@ -1,0 +1,33 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 16
+    commands:
+      - echo Installing
+  pre_build:
+    commands:
+      - echo Installing SAM CLI
+      - wget https://github.com/aws/aws-sam-cli/releases/latest/download/aws-sam-cli-linux-x86_64.zip
+      - unzip aws-sam-cli-linux-x86_64.zip -d sam-installation
+      - sudo ./sam-installation/install
+      - sam --version
+      - chmod +x ./scripts/config_generator.sh
+      - echo Generating config
+      - sh ./scripts/config_generator.sh
+      - echo Generating $TOML_FILE
+      - chmod +x ./scripts/toml_generator.sh
+      - sh ./scripts/toml_generator.sh
+      - echo Install sequelize-cli for migrations
+      - npm i sequelize-cli
+  build:
+    commands:
+      - echo Build started on `date`
+      - sam build
+      - sam deploy
+      - echo Build finished
+  post_build:
+   commands:
+      - echo Running migration for DB
+      - npx sequelize db:migrate --url mysql://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME
+      - echo Migrations completed.

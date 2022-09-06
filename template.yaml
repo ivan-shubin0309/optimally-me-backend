@@ -1,0 +1,108 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  serverless-nest
+
+Transform: "AWS::Serverless-2016-10-31"
+
+Outputs:
+  WebEndpoint:
+    Description: "API Gateway endpoint URL:"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AwsRegion}.amazonaws.com/Stage/"
+
+Parameters:
+  NodeEnv:
+    Type: String
+    Default: "default"
+  AwsRegion:
+    Type: String
+    Default: "default"
+  SGid:
+    Type: String
+    Default: "default"
+  SubnetIds:
+    Type: List<String>
+    Default: "default"
+
+Globals:
+  Function:
+    Layers:
+      - !Ref RuntimeDependenciesLayer
+    Runtime: nodejs16.x
+    MemorySize: 512
+    Timeout: 30
+    Environment:
+      Variables:
+        NODE_ENV: !Ref NodeEnv
+    VpcConfig:
+      SecurityGroupIds:
+        - !Ref SGid
+      SubnetIds: !Ref SubnetIds
+
+Resources:
+  RuntimeDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Description: Runtime dependencies for Lambdas
+      ContentUri: ./
+      CompatibleRuntimes:
+        - nodejs16.x
+      RetentionPolicy: Retain
+
+  SwaggerFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Description: The Lambda function that serves the Swagger.
+      Handler: dist/apps/swagger/src/main.handler
+      Events:
+        SwaggerUiApi:
+          Type: Api
+          Properties:
+            Path: /swagger
+            Method: GET
+        SwaggerUiApiProxy:
+          Type: Api
+          Properties:
+            Path: /swagger/{any+}
+            Method: GET
+        SwaggerJsonApi:
+          Type: Api
+          Properties:
+            Path: /swagger-json
+            Method: GET
+
+  SessionsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/sessions/src/main.handler
+      Description:
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /sessions
+            Method: ANY
+
+  UsersFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/users/src/main.handler
+      Description:
+      Events:
+        UsersMeApi:
+          Type: Api
+          Properties:
+            Path: /users/me
+            Method: ANY
+        UsersSignUpApi:
+          Type: Api
+          Properties:
+            Path: /users/signup
+            Method: ANY
