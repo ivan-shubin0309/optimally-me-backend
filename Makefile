@@ -15,6 +15,7 @@ build-RuntimeDependenciesLayer:
 
 build-lambda-common:
 	rm -rf dist
+	npm install -g @nestjs/cli
 	nest build $(ENTITY)
 	cp -r dist "$(ARTIFACTS_DIR)/"
 

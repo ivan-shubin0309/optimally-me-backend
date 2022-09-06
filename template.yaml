@@ -7,13 +7,16 @@ Transform: "AWS::Serverless-2016-10-31"
 Outputs:
   WebEndpoint:
     Description: "API Gateway endpoint URL:"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AwsRegion}.amazonaws.com/Stage/"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AwsRegion}.amazonaws.com/${AppEnv}/"
 
 Parameters:
   NodeEnv:
     Type: String
     Default: "default"
   AwsRegion:
+    Type: String
+    Default: "default"
+  AppEnv:
     Type: String
     Default: "default"
   SGid:
@@ -29,7 +32,7 @@ Globals:
       - !Ref RuntimeDependenciesLayer
     Runtime: nodejs16.x
     MemorySize: 512
-    Timeout: 30
+    Timeout: 100
     Environment:
       Variables:
         NODE_ENV: !Ref NodeEnv
