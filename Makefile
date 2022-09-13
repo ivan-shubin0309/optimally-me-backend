@@ -2,6 +2,7 @@
 .PHONY: build-SwaggerFunction
 .PHONY: build-SessionsFunction
 .PHONY: build-UsersFunction
+.PHONY: build-AdminsSessionsFunction
 
 build-RuntimeDependenciesLayer:
 	mkdir -p "$(ARTIFACTS_DIR)/nodejs"
@@ -26,3 +27,6 @@ build-SessionsFunction:
 
 build-UsersFunction:
 	$(MAKE) HANDLER=apps/users/src/main.ts ENTITY=users build-lambda-common
+
+build-AdminsSessionsFunction:
+	$(MAKE) HANDLER=apps/admins-sessions/src/main.ts ENTITY=admins-sessions build-lambda-common

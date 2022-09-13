@@ -44,6 +44,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/swagger/tsconfig.app.json"
       }
+    },
+    "admins-sessions": {
+      "type": "application",
+      "root": "apps/admins-sessions",
+      "entryFile": "main",
+      "sourceRoot": "apps/admins-sessions/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/admins-sessions/tsconfig.app.json"
+      }
     }
   }
 }
