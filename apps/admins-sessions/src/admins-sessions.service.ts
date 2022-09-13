@@ -66,4 +66,14 @@ export class AdminsSessionsService {
     addTokenToSessionList(userId: number, accessToken: string): Promise<number> {
         return this.redisClient.lpush(this.getSessionAppendix(userId), accessToken);
     }
+
+    async findSession(accessToken: string): Promise<UserSessionDto> {
+        const cachedSession: UserSessionDto = JSON.parse(await this.redisClient.get(accessToken));
+
+        if (!cachedSession) {
+            return null;
+        }
+
+        return cachedSession;
+    }
 }
