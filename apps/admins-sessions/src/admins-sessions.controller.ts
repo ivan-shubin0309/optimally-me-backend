@@ -2,18 +2,13 @@ import {
   Post,
   Body,
   Controller,
-  Delete,
-  Request,
-  Put,
   UnprocessableEntityException,
   HttpStatus,
-  Headers,
-  HttpCode,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '../../common/src/resources/common/public.decorator';
 import { LoginUserDto } from '../../users/src/models';
-import { SessionDto, RefreshSessionDto } from '../../sessions/src/models';
+import { SessionDto } from '../../sessions/src/models';
 import { AdminsSessionsService } from './admins-sessions.service';
 import { UserRoles } from '../../common/src/resources/users';
 import { UsersService } from '../../users/src/users.service';
@@ -58,41 +53,5 @@ export class AdminsSessionsController {
       role: user.role,
       lifeTime: body.lifeTime
     });
-  }
-
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Destroy session' })
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete('')
-  async logout(@Request() request, @Headers() headers): Promise<void> {
-    const { user } = request;
-
-    const accessToken = headers['authorization'].split(' ')[1];
-
-    await this.adminsSessionsService.destroy(user.userId, accessToken);
-  }
-
-  @Public()
-  @ApiCreatedResponse({ type: () => SessionDto })
-  @ApiOperation({ summary: 'Refresh session' })
-  @Put('')
-  async refresh(@Body() body: RefreshSessionDto): Promise<SessionDto> {
-    const oldSessionParams = this.adminsSessionsService.verifyToken(body.refreshToken);
-
-    const scopes = [
-      { method: ['byRoles', [UserRoles.user]] }
-    ];
-
-    const user = await this.usersService.getUser(oldSessionParams.data.userId, scopes);
-
-    if (!user) {
-      throw new UnprocessableEntityException({
-        message: this.translator.translate('USER_NOT_FOUND'),
-        errorCode: 'USER_NOT_FOUND',
-        statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-      });
-    }
-
-    return this.adminsSessionsService.refresh(body.refreshToken);
   }
 }
