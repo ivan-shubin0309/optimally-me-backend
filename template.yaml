@@ -125,8 +125,4 @@ Resources:
           Properties:
             Path: /admins/sessions
             Method: ANY
-      VpcConfig:
-        SecurityGroupIds:
-          - !Ref SGid
-        SubnetIds: !Ref SubnetIds
 
