@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { JwtStrategyAdmins } from '../../common/src/strategies/jwt.strategy.admins';
+import { JwtStrategy } from '../../common/src/strategies/jwt.strategy';
 import { UsersService } from '../../users/src/users.service';
 import { AdminsSessionsController } from './admins-sessions.controller';
-import { AdminsSessionsService } from './admins-sessions.service';
+import { SessionsService } from '../../sessions/src/sessions.service';
 import { guardProviders } from '../../common/src/utils/guards/guard.provider';
 import { ConfigModule } from '../../common/src/utils/config/config.module';
 import { jwtModuleInstance } from '../../common/src/utils/jwt/jwt.module';
@@ -21,9 +21,9 @@ import { translatorInstance } from '../../common/src/utils/translator/translator
   ],
   controllers: [AdminsSessionsController],
   providers: [
-    AdminsSessionsService,
+    SessionsService,
     UsersService,
-    JwtStrategyAdmins,
+    JwtStrategy,
     ...guardProviders,
     sequelizeProvider([User]),
     ...modelProviders

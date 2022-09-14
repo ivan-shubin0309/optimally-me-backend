@@ -3,16 +3,18 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ForbiddenException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserSessionDto } from '../../../sessions/src/models';
 import { SessionsService } from 'apps/sessions/src/sessions.service';
+import { ConfigService } from '../../../common/src/utils/config/config.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(
         private readonly sessionsService: SessionsService,
+        private readonly configService: ConfigService,
     ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: 'secret'
+            secretOrKey: configService.get('JWT_SECRET')
         });
     }
 

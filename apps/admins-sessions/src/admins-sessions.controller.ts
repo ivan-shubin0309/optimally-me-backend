@@ -9,7 +9,7 @@ import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '../../common/src/resources/common/public.decorator';
 import { LoginUserDto } from '../../users/src/models';
 import { SessionDto } from '../../sessions/src/models';
-import { AdminsSessionsService } from './admins-sessions.service';
+import { SessionsService } from '../../sessions/src/sessions.service';
 import { UserRoles } from '../../common/src/resources/users';
 import { UsersService } from '../../users/src/users.service';
 import { PasswordHelper } from '../../common/src/utils/helpers/password.helper';
@@ -19,7 +19,7 @@ import { TranslatorService } from 'nestjs-translator';
 @Controller('admins')
 export class AdminsSessionsController {
   constructor(
-    private readonly adminsSessionsService: AdminsSessionsService,
+    private readonly sessionsService: SessionsService,
     private readonly usersService: UsersService,
     private readonly translator: TranslatorService,
   ) {}
@@ -49,7 +49,7 @@ export class AdminsSessionsController {
       });
     }
 
-    return this.adminsSessionsService.create(user.id, {
+    return this.sessionsService.create(user.id, {
       role: user.role,
       lifeTime: body.lifeTime
     });
