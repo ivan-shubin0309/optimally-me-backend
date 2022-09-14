@@ -111,3 +111,18 @@ Resources:
             Path: /users/signup
             Method: ANY
 
+
+  AdminsSessionsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/admins-sessions/src/main.handler
+      Description:
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /admins/sessions
+            Method: ANY
+

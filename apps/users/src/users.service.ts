@@ -5,7 +5,7 @@ import { ICreateUser } from './models/create-user.interface';
 
 @Injectable()
 export class UsersService {
-    constructor( 
+    constructor(
         @Inject('USER_MODEL') private userModel: typeof User
     ) {}
 
