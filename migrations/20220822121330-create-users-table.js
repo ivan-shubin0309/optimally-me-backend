@@ -10,7 +10,7 @@ module.exports = {
         password VARCHAR(255) NULL,
         username VARCHAR (255) NULL,
         salt VARCHAR(255) NULL,
-        role TINYINT NOT NULL COMMENT '1 - user, 2 - admin, 3 - superAdmin',
+        role TINYINT NOT NULL COMMENT '1 - user, 2 - admin',
 
         createdAt DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
         updatedAt DATETIME NULL DEFAULT CURRENT_TIMESTAMP,

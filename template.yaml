@@ -126,3 +126,18 @@ Resources:
             Path: /admins/sessions
             Method: ANY
 
+
+  AdminsVerificationsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/admins-verifications/src/main.handler
+      Description:
+      Events:
+        AdminsVerificationsPasswordApi:
+          Type: Api
+          Properties:
+            Path: /admins/verifications/password
+            Method: ANY
+

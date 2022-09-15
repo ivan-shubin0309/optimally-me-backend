@@ -1,17 +1,15 @@
-import { IsNotEmpty, IsOptional, IsEmail } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsInt, IsNotEmpty, IsOptional, IsPositive } from 'class-validator';
 
-export class LoginUserDto {
+export class RestorePasswordDto {
     @ApiProperty({ type: () => String, required: true })
     @IsNotEmpty()
     @IsEmail()
     readonly email: string;
 
-    @ApiProperty({ type: () => String, required: true })
-    @IsNotEmpty()
-    readonly password: string;
-
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
-    readonly lifeTime: number;
+    @IsInt()
+    @IsPositive()
+    readonly tokenLifeTime: number;
 }
