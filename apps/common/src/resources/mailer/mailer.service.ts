@@ -56,7 +56,7 @@ export class MailerService {
         return this.sendEmail(
             this.translatorService.translate('RESTORE_PASSWORD_EMAIL_TEXT', {
                 replace: {
-                    link: `${this.configService.get('ADMIN_FRONTEND_BASE_URL')}/restore-password?code=${token}`,
+                    link: `${this.configService.get('ADMIN_FRONTEND_BASE_URL')}/auth/restore-password?code=${token}`,
                     firstName: user.firstName,
                     lastName: user.lastName
                 }

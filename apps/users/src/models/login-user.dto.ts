@@ -1,8 +1,10 @@
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional, MaxLength } from 'class-validator';
+import { UsersValidationRules } from '../../../common/src/resources/users';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class LoginUserDto {
     @ApiProperty({ type: () => String, required: true })
+    @MaxLength(UsersValidationRules.emailMaxLength)
     @IsNotEmpty()
     readonly email: string;
 
