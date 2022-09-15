@@ -2,5 +2,9 @@
     "USER_NOT_FOUND": "User not found",
     "WRONG_CREDENTIALS": "Wrong credentials",
     "TOKEN_EXPIRED": "Token expired",
-    "USER_ALREADY_EXIST": "User already exist"
+    "USER_ALREADY_EXIST": "User already exist",
+    "LINK_INVALID": "Link is invalid",
+    "LINK_IS_USED": "Link already used",
+    "RESTORE_PASSWORD_EMAIL_TEXT": "Hello, ${firstName} ${lastName},<br><br>Follow this <a href=\"${link}\">LINK</a> to restore your password in the OptimallyMe app. The link can be used only once.",
+    "RESTORE_PASSWORD_EMAIL_SUBJECT": "Restore password"
 }

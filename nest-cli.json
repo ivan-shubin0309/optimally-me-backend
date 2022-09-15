@@ -53,6 +53,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/admins-sessions/tsconfig.app.json"
       }
+    },
+    "verifications": {
+      "type": "application",
+      "root": "apps/verifications",
+      "entryFile": "main",
+      "sourceRoot": "apps/verifications/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/verifications/tsconfig.app.json"
+      }
     }
   }
 }

@@ -3,6 +3,7 @@
 .PHONY: build-SessionsFunction
 .PHONY: build-UsersFunction
 .PHONY: build-AdminsSessionsFunction
+.PHONY: build-VerificationsFunction
 
 build-RuntimeDependenciesLayer:
 	mkdir -p "$(ARTIFACTS_DIR)/nodejs"
@@ -30,3 +31,6 @@ build-UsersFunction:
 
 build-AdminsSessionsFunction:
 	$(MAKE) HANDLER=apps/admins-sessions/src/main.ts ENTITY=admins-sessions build-lambda-common
+
+build-VerificationsFunction:
+	$(MAKE) HANDLER=apps/verifications/src/main.ts ENTITY=verifications build-lambda-common
