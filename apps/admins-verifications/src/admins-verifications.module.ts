@@ -10,9 +10,9 @@ import { translatorInstance } from '../../common/src/utils/translator/translator
 import { User } from '../../users/src/models';
 import { UsersService } from '../../users/src/users.service';
 import { modelProviders } from './models.provider';
-import { VerificationToken } from './models/verification-token.entity';
-import { VerificationsController } from './verifications.controller';
-import { VerificationsService } from './verifications.service';
+import { VerificationToken } from '../../verifications/src/models/verification-token.entity';
+import { AdminsVerificationsController } from './admins-verifications.controller';
+import { VerificationsService } from '../../verifications/src/verifications.service';
 import { MailerService } from '../../common/src/resources/mailer/mailer.service';
 
 @Module({
@@ -23,7 +23,7 @@ import { MailerService } from '../../common/src/resources/mailer/mailer.service'
     translatorInstance,
   ],
   controllers: [
-    VerificationsController
+    AdminsVerificationsController
   ],
   providers: [
     VerificationsService,
@@ -36,4 +36,4 @@ import { MailerService } from '../../common/src/resources/mailer/mailer.service'
     ...modelProviders,
   ],
 })
-export class VerificationsModule { }
+export class AdminsVerificationsModule { }

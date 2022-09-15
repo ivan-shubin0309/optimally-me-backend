@@ -6,12 +6,12 @@ import { TranslatorService } from 'nestjs-translator';
 import { Public } from '../../common/src/resources/common/public.decorator';
 import { TokenTypes } from '../../common/src/resources/verificationTokens/token-types';
 import { UsersService } from '../../users/src/users.service';
-import { VerificationsService } from './verifications.service';
+import { VerificationsService } from '../../verifications/src/verifications.service';
 import { RestorePasswordDto } from './models/restore-password.dto';
 
-@ApiTags('verifications')
-@Controller('verifications')
-export class VerificationsController {
+@ApiTags('admins/verifications')
+@Controller('admins/verifications')
+export class AdminsVerificationsController {
   constructor(
     private readonly verificationsService: VerificationsService,
     private readonly usersService: UsersService,

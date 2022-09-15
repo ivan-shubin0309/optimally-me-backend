@@ -1,5 +1,5 @@
 import { User } from 'apps/users/src/models';
-import { VerificationToken } from './models/verification-token.entity';
+import { VerificationToken } from '../../verifications/src/models/verification-token.entity';
 
 
 export const modelProviders = [

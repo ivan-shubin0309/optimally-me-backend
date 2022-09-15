@@ -15,20 +15,20 @@ export class MailerService {
         private readonly translatorService: TranslatorService
     ) {
         this.SESClient = new SESClient({ region: this.configService.get('SES_REGION') });
-    }
-
-    private getEmailTo(email: string) {
-        return this.configService.get('SES_ENV') === 'prod'
-            ? email
-            : this.configService.get('SES_SENDER_EMAIL');
+        this.SESClient = new SESClient({
+            region: this.configService.get('SES_REGION'),
+            credentials: {
+                accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+                secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY')
+            }
+        });
     }
 
     private async sendEmail(html: string, subject: string, sendToEmail: string): Promise<void> {
-        const emailTo = this.getEmailTo(sendToEmail);
 
         const params = {
             Destination: {
-                ToAddresses: [emailTo]
+                ToAddresses: [sendToEmail]
             },
             Message: {
                 Body: {

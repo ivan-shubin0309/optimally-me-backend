@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import * as JWT from 'jsonwebtoken';
-import { Sequelize } from 'sequelize-typescript';
+import { Sequelize, Repository } from 'sequelize-typescript';
 import { TokenTypes } from '../../common/src/resources/verificationTokens/token-types';
 import { VerificationToken } from './models/verification-token.entity';
 
@@ -10,7 +10,7 @@ export class VerificationsService {
   constructor(
     private readonly configService: ConfigService,
     @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
-    @Inject('VERIFICATION_TOKEN_MODEL') private readonly VerificationTokenModel: typeof VerificationToken,
+    @Inject('VERIFICATION_TOKEN_MODEL') private readonly VerificationTokenModel: Repository<VerificationToken>,
   ) { }
 
   generateToken(data: any, tokenLifeTime: number): string {

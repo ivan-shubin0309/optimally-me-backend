@@ -3,12 +3,12 @@ import { configure as serverlessExpress } from '@vendia/serverless-express';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import { Callback, Context, Handler } from 'aws-lambda';
 import { appBuilder } from '../../common/src/utils/appBuilder/app-builder.provider';
-import { VerificationsModule } from './verifications.module';
+import { AdminsVerificationsModule } from './admins-verifications.module';
 
 let server: Handler;
 
 async function bootstrap(): Promise<Handler> {
-    const app = await NestFactory.create(VerificationsModule);
+    const app = await NestFactory.create(AdminsVerificationsModule);
     const configService = app.get(ConfigService);
 
     await appBuilder(app, configService);
