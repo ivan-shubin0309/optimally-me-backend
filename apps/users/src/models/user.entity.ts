@@ -5,7 +5,8 @@ import { PasswordHelper } from '../../../common/src/utils/helpers/password.helpe
 @Scopes(() => ({
     byRoles: (role: number) => ({
         where: { role }
-    })
+    }),
+    byId: (id: number) => ({ where: { id } })
 }))
 @Table({
     tableName: 'users',
