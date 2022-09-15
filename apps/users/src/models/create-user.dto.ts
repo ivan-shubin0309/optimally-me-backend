@@ -7,8 +7,8 @@ export class CreateUserDto {
     readonly username: string;
 
     @ApiProperty({ type: () => String, required: true })
-    @IsEmail()
     @IsNotEmpty()
+    @IsEmail()
     readonly email: string;
 
     @ApiProperty({ type: () => String, required: true })
