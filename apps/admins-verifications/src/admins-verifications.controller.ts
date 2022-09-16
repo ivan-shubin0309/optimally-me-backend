@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Inject, HttpCode, HttpStatus, NotFoundException, Post, Patch, Get, Query } from '@nestjs/common';
+import { Body, Controller, Inject, HttpCode, HttpStatus, NotFoundException, Post, Patch, Get, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MailerService } from '../../common/src/resources/mailer/mailer.service';
 import { UserRoles } from '../../common/src/resources/users';
@@ -52,28 +52,10 @@ export class AdminsVerificationsController {
   @ApiOperation({ summary: 'Verify restore password token' })
   @Get('password')
   async verifyRestorePasswordToken(@Query() query: VerificationTokenDto): Promise<void> {
-    const verificationToken = await this.verificationsService.getOne([
-      { method: ['byType', TokenTypes.password] },
-      { method: ['byToken', query.token] }
-    ]);
 
-    if (!verificationToken) {
-      throw new BadRequestException({
-        message: this.translator.translate('LINK_INVALID'),
-        errorCode: 'LINK_INVALID',
-        statusCode: HttpStatus.BAD_REQUEST
-      });
-    }
+    await this.verificationsService.verifyToken(TokenTypes.password, query.token);
 
-    if (verificationToken.isUsed) {
-      throw new BadRequestException({
-        message: this.translator.translate('LINK_IS_USED'),
-        errorCode: 'LINK_IS_USED',
-        statusCode: HttpStatus.BAD_REQUEST
-      });
-    }
-
-    const decoded = await this.verificationsService.verifyToken(query.token, 'RESTORATION_LINK_EXPIRED');
+    const decoded = await this.verificationsService.decodeToken(query.token, 'RESTORATION_LINK_EXPIRED');
 
     const user = await this.usersService.getOne([
       { method: ['byId', decoded.data.userId] },
@@ -93,29 +75,11 @@ export class AdminsVerificationsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Restore password' })
   @Patch('password')
-  async restorePassword(@Body() body: SetPasswordDto) {
-    const verificationToken = await this.verificationsService.getOne([
-      { method: ['byType', TokenTypes.password] },
-      { method: ['byToken', body.token] }
-    ]);
+  async restorePassword(@Body() body: SetPasswordDto): Promise <void> {
 
-    if (!verificationToken) {
-      throw new BadRequestException({
-        message: this.translator.translate('LINK_INVALID'),
-        errorCode: 'LINK_INVALID',
-        statusCode: HttpStatus.BAD_REQUEST
-      });
-    }
+    const verificationToken = await this.verificationsService.verifyToken(TokenTypes.password, body.token);
 
-    if (verificationToken.isUsed) {
-      throw new BadRequestException({
-        message: this.translator.translate('LINK_IS_USED'),
-        errorCode: 'LINK_IS_USED',
-        statusCode: HttpStatus.BAD_REQUEST
-      });
-    }
-
-    const decoded = await this.verificationsService.verifyToken(body.token, 'RESTORATION_LINK_EXPIRED');
+    const decoded = await this.verificationsService.decodeToken(body.token, 'RESTORATION_LINK_EXPIRED');
 
     const user = await this.usersService.getUser(decoded.data.userId);
 
