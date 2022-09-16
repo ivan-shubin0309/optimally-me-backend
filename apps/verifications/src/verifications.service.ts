@@ -1,4 +1,4 @@
-import { HttpStatus, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import * as JWT from 'jsonwebtoken';
 import { Sequelize, Repository } from 'sequelize-typescript';
@@ -33,7 +33,7 @@ export class VerificationsService {
     });
   }
 
-  verifyToken(token: string, customMessage = 'LINK_EXPIRED'): any {
+  decodeToken(token: string, customMessage = 'LINK_EXPIRED'): any {
     try {
       return JWT.verify(token, this.configService.get('JWT_SECRET'));
     } catch (e) {
@@ -49,5 +49,29 @@ export class VerificationsService {
     return this.VerificationTokenModel
       .scope(scopes)
       .findOne({ transaction });
+  }
+
+  async verifyToken(TokenTypes: number, token: string): Promise<VerificationToken> {
+    const verificationToken = await this.getOne([
+      { method: ['byType', TokenTypes] },
+      { method: ['byToken', token] }
+    ]);
+
+    if (!verificationToken) {
+      throw new BadRequestException({
+        message: this.translatorService.translate('LINK_INVALID'),
+        errorCode: 'LINK_INVALID',
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+    }
+
+    if (verificationToken.isUsed) {
+      throw new BadRequestException({
+        message: this.translatorService.translate('LINK_IS_USED'),
+        errorCode: 'LINK_IS_USED',
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+    }
+    return verificationToken;
   }
 }
