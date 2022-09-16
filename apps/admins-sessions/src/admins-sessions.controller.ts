@@ -2,10 +2,14 @@ import {
   Post,
   Body,
   Controller,
+  Delete,
   UnprocessableEntityException,
+  Headers,
   HttpStatus,
+  HttpCode,
+  Request
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '../../common/src/resources/common/public.decorator';
 import { LoginUserDto } from '../../users/src/models';
 import { SessionDto } from '../../sessions/src/models';
@@ -53,5 +57,17 @@ export class AdminsSessionsController {
       role: user.role,
       lifeTime: body.lifeTime
     });
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Destroy session' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('sessions')
+  async logout(@Request() request, @Headers('Authorization') accessToken): Promise<void> {
+    const { user } = request;
+
+    accessToken = accessToken.split(' ')[1];
+
+    await this.sessionsService.destroy(user.userId, accessToken);
   }
 }

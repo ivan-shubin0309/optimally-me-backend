@@ -64,10 +64,10 @@ export class SessionsController {
   @ApiOperation({ summary: 'Destroy session' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('')
-  async logout(@Request() request, @Headers() headers): Promise<void> {
+  async logout(@Request() request, @Headers('Authorization') accessToken): Promise<void> {
     const { user } = request;
 
-    const accessToken = headers['authorization'].split(' ')[1];
+    accessToken = accessToken.split(' ')[1];
 
     await this.sessionsService.destroy(user.userId, accessToken);
   }
