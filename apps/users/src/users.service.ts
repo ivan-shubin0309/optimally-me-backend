@@ -28,4 +28,10 @@ export class UsersService {
             .scope(scopes || [])
             .findByPk(userId, { transaction });
     }
+
+    getOne(scopes = [], transaction?: Transaction): Promise<User> {
+        return this.userModel
+            .scope(scopes)
+            .findOne({ transaction });
+    }
 }
