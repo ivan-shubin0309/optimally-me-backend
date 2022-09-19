@@ -37,9 +37,9 @@ Globals:
       Variables:
         NODE_ENV: !Ref NodeEnv
     VpcConfig:
-      SecurityGroupIds:
-        - !Ref SGid
-      SubnetIds: !Ref SubnetIds
+        SecurityGroupIds:
+          - !Ref SGid
+        SubnetIds: !Ref SubnetIds
 
 Resources:
   RuntimeDependenciesLayer:
