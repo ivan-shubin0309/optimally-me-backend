@@ -4,11 +4,6 @@ Description: >
 
 Transform: "AWS::Serverless-2016-10-31"
 
-Outputs:
-  WebEndpoint:
-    Description: "API Gateway endpoint URL:"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AwsRegion}.amazonaws.com/${AppEnv}/"
-
 Parameters:
   NodeEnv:
     Type: String
