@@ -7,7 +7,7 @@ version=0.1
 [default]
 [default.deploy]
 [default.deploy.parameters]
-stack_name="$STACK_NAME"
+stack_name="${STACK_NAME}"
 s3_bucket="$S3_BUCKET"
 region="$AWS_REGION"
 confirm_changeset=false
