@@ -24,7 +24,7 @@ phases:
     commands:
       - echo Build started on `date`
       - sam build
-      - sam deploy
+      - sam deploy --debug
       - echo Build finished
   post_build:
    commands:
