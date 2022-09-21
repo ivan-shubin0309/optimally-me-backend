@@ -24,9 +24,9 @@ phases:
     commands:
       - echo $SGid
       - echo Build started on `date`
-      - aws sts get-caller-identity
       - sam build
       - sam deploy --debug
+      - aws sts get-caller-identity --debug
       - echo Build finished
   post_build:
    commands:
