@@ -1,5 +1,5 @@
 import { Body, Controller, Inject, HttpCode, HttpStatus, NotFoundException, Post, Patch, Get, Query } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MailerService } from '../../common/src/resources/mailer/mailer.service';
 import { UserRoles } from '../../common/src/resources/users';
 import { TranslatorService } from 'nestjs-translator';
@@ -11,6 +11,9 @@ import { RestorePasswordDto } from './models/restore-password.dto';
 import { VerificationTokenDto } from '../../common/src/models/verification-token.dto';
 import { Sequelize } from 'sequelize-typescript';
 import { SetPasswordDto } from './models/set-password.dto';
+import { SessionsService } from '../../sessions/src/sessions.service';
+import { ConfigService } from '../../common/src/utils/config/config.service';
+import { AdminsSessionDto } from '../../admins-sessions/src/models';
 
 @ApiTags('admins/verifications')
 @Controller('admins/verifications')
@@ -20,6 +23,8 @@ export class AdminsVerificationsController {
     private readonly usersService: UsersService,
     private readonly translator: TranslatorService,
     private readonly mailerService: MailerService,
+    private readonly sessionsService: SessionsService,
+    private readonly configService: ConfigService,
     @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
   ) { }
 
@@ -72,10 +77,10 @@ export class AdminsVerificationsController {
   }
 
   @Public()
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiCreatedResponse({ type: () => AdminsSessionDto })
   @ApiOperation({ summary: 'Restore password' })
   @Patch('password')
-  async restorePassword(@Body() body: SetPasswordDto): Promise <void> {
+  async restorePassword(@Body() body: SetPasswordDto): Promise <AdminsSessionDto> {
 
     const verificationToken = await this.verificationsService.verifyToken(TokenTypes.password, body.token);
 
@@ -96,5 +101,11 @@ export class AdminsVerificationsController {
 
       await verificationToken.update({ isUsed: true }, { transaction });
     });
+
+    const sessionResult = await this.sessionsService.create(user.id, {
+      role: user.role,
+      lifeTime: this.configService.get('JWT_EXPIRES_IN')
+    });
+    return new AdminsSessionDto(sessionResult.accessToken, sessionResult.refreshToken, sessionResult.expiresAt, user.firstName, user.lastName);
   }
 }
