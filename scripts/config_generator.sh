@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 echo $CONFIG_FILE
 echo $PWD
 cat <<EOT >> $CONFIG_FILE
