@@ -12,12 +12,12 @@ import {
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '../../common/src/resources/common/public.decorator';
 import { LoginUserDto } from '../../users/src/models';
-import { SessionDto } from '../../sessions/src/models';
 import { SessionsService } from '../../sessions/src/sessions.service';
 import { UserRoles } from '../../common/src/resources/users';
 import { UsersService } from '../../users/src/users.service';
 import { PasswordHelper } from '../../common/src/utils/helpers/password.helper';
 import { TranslatorService } from 'nestjs-translator';
+import { AdminsSessionDto } from './models';
 
 @ApiTags('admins')
 @Controller('admins')
@@ -29,10 +29,10 @@ export class AdminsSessionsController {
   ) {}
 
   @Public()
-  @ApiCreatedResponse({ type: () => SessionDto })
+  @ApiCreatedResponse({ type: () => AdminsSessionDto })
   @ApiOperation({ summary: 'Start session' })
   @Post('sessions')
-  async createAdmins(@Body() body: LoginUserDto): Promise<SessionDto> {
+  async createAdmins(@Body() body: LoginUserDto): Promise<AdminsSessionDto> {
     const scopes = [
       { method: ['byRoles', [UserRoles.superAdmin]] }
     ];
@@ -53,10 +53,10 @@ export class AdminsSessionsController {
       });
     }
 
-    return this.sessionsService.create(user.id, {
-      role: user.role,
-      lifeTime: body.lifeTime
-    });
+    const sessionOptions = { role: user.role, lifeTime: body.lifeTime };
+    const sessionResult =  await this.sessionsService.create( user.id, sessionOptions);
+
+    return new AdminsSessionDto(sessionResult.accessToken, sessionResult.refreshToken, sessionResult.expiresAt, user.firstName, user.lastName);
   }
 
   @ApiBearerAuth()
