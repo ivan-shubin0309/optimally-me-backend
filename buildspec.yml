@@ -22,6 +22,7 @@ phases:
       - npm i sequelize-cli
   build:
     commands:
+      - echo $SGid
       - echo Build started on `date`
       - aws sts get-caller-identity
       - sam build
