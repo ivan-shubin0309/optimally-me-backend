@@ -7,7 +7,6 @@ phases:
       - echo Installing
   pre_build:
     commands:
-      - aws sts get-caller-identity
       - echo Installing SAM CLI
       - wget https://github.com/aws/aws-sam-cli/releases/download/v1.57.0/aws-sam-cli-linux-x86_64.zip
       - unzip aws-sam-cli-linux-x86_64.zip -d sam-installation
@@ -25,7 +24,7 @@ phases:
     commands:
       - echo Build started on `date`
       - aws sts get-caller-identity
-      - sam build --use-container
+      - sam build
       - sam deploy --debug
       - echo Build finished
   post_build:
