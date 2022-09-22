@@ -150,4 +150,9 @@ Resources:
           Properties:
             Path: /biomarkers/categories
             Method: ANY
+        UnitsApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/units
+            Method: ANY
 

@@ -1,11 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Repository } from 'sequelize-typescript';
-import { Category } from './models';
+import { Category, Unit } from './models';
 
 @Injectable()
 export class BiomarkersService {
   constructor(
     @Inject('CATEGORY_MODEL') private readonly categoryModel: Repository<Category>,
+    @Inject('UNIT_MODEL') private readonly unitModel: Repository<Unit>,
   ) {}
 
 
@@ -17,6 +18,18 @@ export class BiomarkersService {
 
   getCategoriesCount(scopes = []):  Promise<number> {
     return this.categoryModel
+      .scope(scopes)
+      .count();
+  }
+
+  getListUnits(scopes = []):  Promise<Unit[]> {
+    return this.unitModel
+      .scope(scopes)
+      .findAll();
+  }
+
+  getUnitsCount(scopes = []):  Promise<number> {
+    return this.unitModel
       .scope(scopes)
       .count();
   }
