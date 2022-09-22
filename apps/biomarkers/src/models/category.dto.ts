@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Category } from './category.entity';
 
 export class CategoryDto {
     @ApiProperty({ type: () => Number, required: true })
@@ -7,8 +8,8 @@ export class CategoryDto {
     @ApiProperty({ type: () => String, required: true })
     readonly name: string;
 
-    constructor(id: number, name: string) {
-        this.id = id;
-        this.name = name;
+    constructor(entity: Category) {
+        this.id = entity.id;
+        this.name = entity.name;
     }
 }

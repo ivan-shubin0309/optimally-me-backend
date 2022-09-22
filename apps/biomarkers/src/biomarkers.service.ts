@@ -1,14 +1,22 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Categories } from './models';
+import { Category } from './models';
 
 @Injectable()
 export class BiomarkersService {
   constructor(
-    @Inject('CATEGORIES_MODEL') private readonly categoriesModel: typeof Categories,
+    @Inject('CATEGORY_MODEL') private readonly categoriesModel: typeof Category,
   ) {}
 
 
-  getListCategories():  Promise<Categories[]> {
-    return this.categoriesModel.findAll();
+  getListCategories(scopes = []):  Promise<Category[]> {
+    return this.categoriesModel
+      .scope(scopes)
+      .findAll();
+  }
+
+  getCategoriesCount(scopes = []):  Promise<number> {
+    return this.categoriesModel
+      .scope(scopes)
+      .count();
   }
 }

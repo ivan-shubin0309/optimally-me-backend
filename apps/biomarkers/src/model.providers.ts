@@ -1,5 +1,5 @@
 import { User } from '../../users/src/models';
-import { Biomarker, Categories } from './models';
+import { Biomarker, Category } from './models';
 
 export const modelProviders = [
     {
@@ -11,7 +11,7 @@ export const modelProviders = [
         useValue: Biomarker,
     },
     {
-        provide: 'CATEGORIES_MODEL',
-        useValue: Categories,
+        provide: 'CATEGORY_MODEL',
+        useValue: Category,
     }
 ];
