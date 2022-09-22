@@ -71,6 +71,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/admins-verifications/tsconfig.app.json"
       }
+    },
+    "biomarkers": {
+      "type": "application",
+      "root": "apps/biomarkers",
+      "entryFile": "main",
+      "sourceRoot": "apps/biomarkers/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/biomarkers/tsconfig.app.json"
+      }
     }
   }
 }
