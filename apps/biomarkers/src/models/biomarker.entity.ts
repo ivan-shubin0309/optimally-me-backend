@@ -16,12 +16,6 @@ export class Biomarker extends Model {
     name: string;
 
     @Column({
-        type: DataType.ARRAY,
-        allowNull: false
-    })
-    alternativeName: string[];
-
-    @Column({
         type: DataType.STRING,
         allowNull: true
     })

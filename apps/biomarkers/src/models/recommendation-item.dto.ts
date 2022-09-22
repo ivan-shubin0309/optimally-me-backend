@@ -9,5 +9,5 @@ export class RecommendationItemDto {
 
     @ApiProperty({ type: () => Number, required: true })
     @IsNotEmpty()
-    readonly order: number;
+    readonly recommendationOrder: number;
 }
