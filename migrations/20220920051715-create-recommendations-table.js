@@ -6,7 +6,7 @@ module.exports = {
       CREATE TABLE IF NOT EXISTS recommendations (
         id INTEGER AUTO_INCREMENT,
 
-        categories TINYINT NOT NULL DEFAULT 1 COMMENT '1 - diet, 2 - lifestyle, 3 - supplements, 4 - doctor, 5 - tests',
+        category TINYINT NOT NULL DEFAULT 1 COMMENT '1 - diet, 2 - lifestyle, 3 - supplements, 4 - doctor, 5 - tests',
         content VARCHAR (250) NULL,
 
         createdAt DATETIME NULL DEFAULT CURRENT_TIMESTAMP,

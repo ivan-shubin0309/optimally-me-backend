@@ -10,4 +10,4 @@ export * from './recommendations.dto';
 export * from './categories.entity';
 export * from './category.dto';
 export * from './units.entity';
-export * from './categories.sto';
+export * from './categories.dto';

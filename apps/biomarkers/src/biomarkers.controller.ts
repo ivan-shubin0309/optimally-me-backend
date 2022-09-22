@@ -18,9 +18,7 @@ export class BiomarkersController {
   @Roles(UserRoles.superAdmin)
   @Get('categories')
   async getListCategories(): Promise<CategoriesDto> {
-    const categoriesList = { categories: [] };
-    categoriesList.categories = await this.biomarkersService.getListCategories();
-
-    return categoriesList;
+    const categoriesList = await this.biomarkersService.getListCategories();
+    return new CategoriesDto(categoriesList);
   }
 }
