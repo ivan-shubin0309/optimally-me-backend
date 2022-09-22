@@ -3,7 +3,9 @@ import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestj
 import { Roles } from '../../common/src/resources/common/role.decorator';
 import { UserRoles } from '../../common/src/resources/users';
 import { BiomarkersService } from './biomarkers.service';
-import { CategoriesDto } from './models';
+import { CategoriesService } from '../../common/src/resources/categories/categories.service';
+import { UnitsService } from '../../common/src/resources/units/units.service';
+import { CategoriesDto, UnitsDto } from './models';
 import { GetListDto } from '../../common/src/models/get-list.dto';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
 
@@ -13,6 +15,9 @@ import { PaginationHelper } from '../../common/src/utils/helpers/pagination.help
 export class BiomarkersController {
   constructor(
     private readonly biomarkersService: BiomarkersService,
+    private readonly categoriesService: CategoriesService,
+    private readonly unitsService: UnitsService,
+    
   ) {}
 
   @ApiCreatedResponse({ type: () => CategoriesDto })
@@ -26,13 +31,34 @@ export class BiomarkersController {
     let categoriesList = [];
     const scopes: any[] = [];
 
-    const count = await this.biomarkersService.getCategoriesCount();
+    const count = await this.categoriesService.getCategoriesCount();
 
     if (count) {
       scopes.push({ method: ['pagination', { limit, offset }] });
-      categoriesList = await this.biomarkersService.getListCategories(scopes);
+      categoriesList = await this.categoriesService.getListCategories(scopes);
     }
 
     return new CategoriesDto(categoriesList, PaginationHelper.buildPagination({ limit, offset }, count));
+  }
+
+  @ApiCreatedResponse({ type: () => UnitsDto })
+  @ApiOperation({ summary: 'Get list units' })
+  @Roles(UserRoles.superAdmin)
+  @Get('units')
+  async getListUnits(@Query() query: GetListDto): Promise<UnitsDto> {
+    const limit = parseInt(query.limit);
+    const offset = parseInt(query.offset);
+
+    let unitsList = [];
+    const scopes: any[] = [];
+
+    const count = await this.unitsService.getUnitsCount();
+
+    if (count) {
+      scopes.push({ method: ['pagination', { limit, offset }] });
+      unitsList = await this.unitsService.getListUnits(scopes);
+    }
+
+    return new UnitsDto(unitsList, PaginationHelper.buildPagination({ limit, offset }, count));
   }
 }

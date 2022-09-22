@@ -1,4 +1,8 @@
-import { Table, Column, Model, DataType } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, Scopes } from 'sequelize-typescript';
+
+@Scopes(() => ({
+    pagination: (query) => ({ limit: query.limit, offset: query.offset })
+}))
 
 @Table({
     tableName: 'units',
