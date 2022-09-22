@@ -136,3 +136,23 @@ Resources:
             Path: /admins/verifications/password
             Method: ANY
 
+
+  BiomarkersFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/biomarkers/src/main.handler
+      Description:
+      Events:
+        BiomarkersApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers
+            Method: ANY
+        CategoriesApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/categories
+            Method: ANY
+
