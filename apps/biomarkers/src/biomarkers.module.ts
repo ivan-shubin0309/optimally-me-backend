@@ -13,6 +13,8 @@ import { User } from '../../users/src/models';
 import { Category, Unit } from './models';
 import { modelProviders } from './model.providers';
 import { translatorInstance } from '../../common/src/utils/translator/translator.provider';
+import { CategoriesService } from '../../common/src/resources/categories/categories.service';
+import { UnitsService } from '../../common/src/resources/units/units.service';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { translatorInstance } from '../../common/src/utils/translator/translator
   providers: [
     SessionsService,
     BiomarkersService,
+    CategoriesService,
+    UnitsService,
     UsersService,
     JwtStrategy,
     ...guardProviders,
