@@ -9,4 +9,6 @@ module.exports = {
     "database": config.DB_NAME,
     "username": config.DB_USER,
     "password": config.DB_PASSWORD,
+    "dialect": "mysql",
+    "logging": "true"
 }

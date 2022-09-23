@@ -27,7 +27,7 @@ phases:
       - sam deploy
       - echo Build finished
   post_build:
-   commands:
+    commands:
       - echo Running migration for DB
       - npx sequelize db:migrate --url mysql://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME
       - echo Migrations completed.
