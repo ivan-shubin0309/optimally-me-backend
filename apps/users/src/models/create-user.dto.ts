@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsEmail, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { UsersValidationRules } from '../../../common/src/resources/users';
+import { UsersValidationRules, INVALID_EMAIL_ERROR_MESSAGE } from '../../../common/src/resources/users';
 
 export class CreateUserDto {
     @ApiProperty({ type: () => String, required: false })
@@ -8,7 +8,9 @@ export class CreateUserDto {
 
     @ApiProperty({ type: () => String, required: true })
     @IsNotEmpty()
-    @IsEmail()
+    @IsEmail({},{
+        message: INVALID_EMAIL_ERROR_MESSAGE
+    })
     readonly email: string;
 
     @ApiProperty({ type: () => String, required: true })
