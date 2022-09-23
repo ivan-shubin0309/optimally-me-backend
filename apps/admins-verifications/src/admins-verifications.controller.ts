@@ -39,11 +39,7 @@ export class AdminsVerificationsController {
     const user = await this.usersService.getUserByEmail(body.email, scopes);
 
     if (!user) {
-      throw new NotFoundException({
-        message: this.translator.translate('USER_NOT_FOUND'),
-        errorCode: 'USER_NOT_FOUND',
-        statusCode: HttpStatus.NOT_FOUND
-      });
+      return;
     }
 
     const token = await this.verificationsService.generateToken({ userId: user.id }, body.tokenLifeTime);
