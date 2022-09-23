@@ -21,7 +21,7 @@
     "test:e2e": "jest --config ./apps/serverless-nest/test/jest-e2e.json",
     "m:create": "sequelize-cli migration:create --name",
     "db:migrate:local": "NODE_ENV=local npx sequelize db:migrate",
-    "db:seed:local": "NODE_ENV=local npx sequelize db:seed"
+    "db:seed:local": "NODE_ENV=local npx sequelize db:seed --seed "
   },
   "dependencies": {
     "@aws-sdk/client-ses": "^3.170.0",
