@@ -16,14 +16,26 @@ export class Biomarker extends Model {
     name: string;
 
     @Column({
-        type: DataType.STRING,
+        type: DataType.NUMBER,
         allowNull: true
     })
-    category: string;
+    userId: number;
 
     @Column({
         type: DataType.NUMBER,
         allowNull: true
     })
-    unit: number;
+    categoryId: number;
+
+    @Column({
+        type: DataType.NUMBER,
+        allowNull: true
+    })
+    unitId: number;
+
+    @Column({
+        type: DataType.NUMBER,
+        allowNull: true
+    })
+    ruleId: number;
 }

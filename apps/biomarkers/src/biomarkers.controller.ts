@@ -1,13 +1,25 @@
-import { Get, Controller, Query } from '@nestjs/common';
+import {
+  Get,
+  Post,
+  Body,
+  Controller,
+  Inject,
+  Request,
+  Query,
+  HttpCode,
+  HttpStatus
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Sequelize } from 'sequelize-typescript';
 import { Roles } from '../../common/src/resources/common/role.decorator';
 import { UserRoles } from '../../common/src/resources/users';
 import { BiomarkersService } from './biomarkers.service';
-import { CategoriesService } from '../../common/src/resources/categories/categories.service';
+import { CategoriesService } from '../../common/src/resources/category/category.service';
 import { UnitsService } from '../../common/src/resources/units/units.service';
-import { CategoriesDto, UnitsDto } from './models';
+import { CategoriesDto, UnitsDto, CreateBiomarkerDto } from './models';
 import { GetListDto } from '../../common/src/models/get-list.dto';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
+
 
 @ApiBearerAuth()
 @ApiTags('biomarkers')
@@ -17,8 +29,18 @@ export class BiomarkersController {
     private readonly biomarkersService: BiomarkersService,
     private readonly categoriesService: CategoriesService,
     private readonly unitsService: UnitsService,
-    
+    @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
+
   ) {}
+
+  @ApiOperation({ summary: 'Create biomarker' })
+  @Roles(UserRoles.superAdmin)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Post('')
+  async createBiomarker(@Request() req, @Body() body: CreateBiomarkerDto): Promise<void> {
+    const { user } = req;
+    await this.biomarkersService.createBiomarker(body, user.userId);
+  }
 
   @ApiCreatedResponse({ type: () => CategoriesDto })
   @ApiOperation({ summary: 'Get list categories' })

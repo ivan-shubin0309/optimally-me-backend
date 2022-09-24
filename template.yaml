@@ -145,6 +145,11 @@ Resources:
       Handler: dist/apps/biomarkers/src/main.handler
       Description:
       Events:
+        BiomarkersApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers
+            Method: ANY
         CategoriesApi:
           Type: Api
           Properties:

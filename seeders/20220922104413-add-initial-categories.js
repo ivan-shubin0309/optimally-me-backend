@@ -9,31 +9,43 @@ module.exports = {
       },
       {
         id: 2,
-        name: 'Biochemistry',
+        name: 'Liver Function',
       },
       {
         id: 3,
-        name: 'Lipids',
+        name: 'Cholesterol (Lipids)',
       },
       {
         id: 4,
-        name: 'Kidney Function',
+        name: 'Haematinics',
       },
       {
         id: 5,
-        name: 'Testosterone',
+        name: 'Thyroid Function',
       },
       {
         id: 6,
-        name: 'Liver function tests',
+        name: 'Vitamins',
       },
       {
         id: 7,
-        name: 'Hematology',
+        name: 'Hormones',
       },
       {
         id: 8,
-        name: 'Thyroid',
+        name: 'Kidney Function',
+      },
+      {
+        id: 9,
+        name: 'Full Blood Count',
+      },
+      {
+        id: 10,
+        name: 'Bone Screen',
+      },
+      {
+        id: 10,
+        name: 'Minerals',
       },
     ], {});
   },
