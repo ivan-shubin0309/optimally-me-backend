@@ -1,14 +1,14 @@
 export enum EthnicityTypes {
-    'all' = 0,
-    'White' = 1,
-    'Indian' = 2,
-    'Pakistani' = 3,
-    'Bangladeshi' = 4,
-    'Black Caribbean' = 5,
-    'Black African' = 6,
-    'Chinese' = 7,
-    'Other Asian' = 8,
-    'Other ethnic group' = 9,
-    'Mixed ethnicity' = 10,
-    'None of the above' = 11
+    all = 0,
+    white = 1,
+    indian = 2,
+    pakistani = 3,
+    bangladeshi = 4,
+    blackCaribbean = 5,
+    blackAfrican = 6,
+    chinese = 7,
+    otherAsian = 8,
+    otherEthnicGroup = 9,
+    mixedEthnicity = 10,
+    noneOfTheAbove = 11
 }

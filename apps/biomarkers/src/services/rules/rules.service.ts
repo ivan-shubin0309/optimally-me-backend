@@ -5,7 +5,7 @@ import { CreateParamsHelper } from '../../../../common/src/utils/helpers/create-
 import { InteractionsService } from '../interactions/interactions.service';
 import { FiltersService } from '../filters/filters.service';
 import { RecommendationsService } from '../recommendations/recommendations.service';
-import { FilterSexAgeEthnicityOtherFeatureService } from '../filterSexAgeEthnicityOtherFeature/filter-sex-age-ethnicity-other-feature.service';
+import { FilterCharacteristicsService } from '../filterCharacteristicsService/filter-characteristics.service';
 import { CreateBiomarkerDto } from '../../../../biomarkers/src/models';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class RulesService {
     private readonly interactionsService: InteractionsService,
     private readonly filtersService: FiltersService,
     private readonly recommendationsService: RecommendationsService,
-    private readonly filterSexAgeEthnicityOtherFeatureService: FilterSexAgeEthnicityOtherFeatureService,
+    private readonly filterCharacteristicsService: FilterCharacteristicsService,
     @Inject('BIOMARKER_RULE_MODEL') private readonly biomarkerRuleModel: Repository<BiomarkerRule>,
     @Inject('LIBRARY_RULE_MODEL') private readonly libraryRuleModel: Repository<LibraryRule>
   ) {}
@@ -37,7 +37,7 @@ export class RulesService {
         const libraryFilterParam = this.createParamsHelper.createParamsForFilter(libraryRule.id, filter);
         const libraryFilter = await this.filtersService.createLibraryFilter(libraryFilterParam);
 
-        await this.filterSexAgeEthnicityOtherFeatureService.createLibraryFilterSexAgeEthnicityOtherFeature(filter, libraryFilter.id);
+        await this.filterCharacteristicsService.createLibraryFilterSexAgeEthnicityOtherFeature(filter, libraryFilter.id);
         if (filter.recommendationsIsOn) {
           await this.recommendationsService.createLibraryFilterRecommendations(filter, libraryFilter.id);
         }

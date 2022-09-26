@@ -1,8 +1,8 @@
 export enum AgeTypes {
     all = 0,
-    '0-19' = 1,
-    '20-50' = 2,
-    '50-59' = 3,
-    '>60' = 4,
-    '<50' = 5
+    upToNineteen = 1,
+    betweenTwentyAndFifty = 2,
+    betweenFiftyAndFiftyNine = 3,
+    afterSixty = 4,
+    upToFifty = 5
 }

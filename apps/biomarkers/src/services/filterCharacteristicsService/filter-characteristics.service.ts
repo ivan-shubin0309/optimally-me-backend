@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { CreateParamsHelper } from '../../utils/helpers/create-params.helper';
+import { CreateParamsHelper } from '../../../../common/src/utils/helpers/create-params.helper';
 import { FilterSexesService } from '../filterSexes/filter-sexes.service';
 import { FilterAgesService } from '../filterAges/filter-ages.service';
 import { FilterEthnicityService } from '../filterEthnicity/filter-ethnicity.service';
 import { FilterOtherFeaturesService } from '../filterOtherFeatures/filter-other-features.service';
 
 @Injectable()
-export class FilterSexAgeEthnicityOtherFeatureService {
+export class FilterCharacteristicsService {
   constructor(
     private readonly createParamsHelper: CreateParamsHelper,
     private readonly filterSexesService: FilterSexesService,

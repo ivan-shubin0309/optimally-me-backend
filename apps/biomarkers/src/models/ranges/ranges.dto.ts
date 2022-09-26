@@ -1,6 +1,5 @@
 import { IsNotEmpty, IsNumber, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { RangeItemDto } from './range-item.dto';
 
 export class RangesDto {
 
@@ -10,25 +9,65 @@ export class RangesDto {
     @IsNotEmpty()
     readonly criticalLow: number;
 
-    @ApiProperty({ type: () => RangeItemDto, required: true })
+    @ApiProperty({ type: () => Number, required: true })
+    @MaxLength(10)
+    @IsNumber()
     @IsNotEmpty()
-    readonly low: RangeItemDto;
+    readonly lowMin: number;
 
-    @ApiProperty({ type: () => RangeItemDto, required: true })
+    @ApiProperty({ type: () => Number, required: true })
+    @MaxLength(10)
+    @IsNumber()
     @IsNotEmpty()
-    readonly subOptimal: RangeItemDto;
+    readonly lowMax: number;
 
-    @ApiProperty({ type: () => RangeItemDto, required: true })
+    @ApiProperty({ type: () => Number, required: true })
+    @MaxLength(10)
+    @IsNumber()
     @IsNotEmpty()
-    readonly optimal: RangeItemDto;
+    readonly subOptimalMin: number;
 
-    @ApiProperty({ type: () => RangeItemDto, required: true })
+    @ApiProperty({ type: () => Number, required: true })
+    @MaxLength(10)
+    @IsNumber()
     @IsNotEmpty()
-    readonly supraOptimal: RangeItemDto;
+    readonly subOptimalMax: number;
 
-    @ApiProperty({ type: () => RangeItemDto, required: true })
+    @ApiProperty({ type: () => Number, required: true })
+    @MaxLength(10)
+    @IsNumber()
     @IsNotEmpty()
-    readonly high: RangeItemDto;
+    readonly optimalMin: number;
+
+    @ApiProperty({ type: () => Number, required: true })
+    @MaxLength(10)
+    @IsNumber()
+    @IsNotEmpty()
+    readonly optimalMax: number;
+
+    @ApiProperty({ type: () => Number, required: true })
+    @MaxLength(10)
+    @IsNumber()
+    @IsNotEmpty()
+    readonly supraOptimalMin: number;
+
+    @ApiProperty({ type: () => Number, required: true })
+    @MaxLength(10)
+    @IsNumber()
+    @IsNotEmpty()
+    readonly supraOptimalMax: number;
+
+    @ApiProperty({ type: () => Number, required: true })
+    @MaxLength(10)
+    @IsNumber()
+    @IsNotEmpty()
+    readonly highMin: number;
+
+    @ApiProperty({ type: () => Number, required: true })
+    @MaxLength(10)
+    @IsNumber()
+    @IsNotEmpty()
+    readonly highMax: number;
 
     @ApiProperty({ type: () => Number, required: true })
     @MaxLength(10)

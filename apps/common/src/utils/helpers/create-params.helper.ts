@@ -1,28 +1,26 @@
 
 export class CreateParamsHelper {
     createParamsForRecommendationBiomarkerFilter(element, filterId, biomarkerId, type) {
-        const filterRecommendationParam = {
+        return {
             biomarkerId: biomarkerId,
             filterId: filterId,
             recommendationId: element.id,
             type: type,
             recommendationOrder: element.order
         };
-        return filterRecommendationParam;
     }
 
     createParamsForRecommendationLibraryFilter(element, filterId, type) {
-        const filterRecommendationParam = {
+        return {
             filterId: filterId,
             recommendationId: element.id,
             type: type,
             recommendationOrder: element.order
         };
-        return filterRecommendationParam;
     }
 
     createParamsForBiomarkerRules(body) {
-        const biomarkerRuleParam = {
+        return {
             name: body.rule.name,
             summary: body.rule.summary,
             whatIsIt: body.rule.whatIsIt,
@@ -31,11 +29,10 @@ export class CreateParamsHelper {
             whatCanYouDo: body.rule.whatCanYouDo,
             interactionsIsOn: body.rule.interactionsIsOn
         };
-        return biomarkerRuleParam;
     }
 
     createParamsForInteraction(id, interaction) {
-        const interactionParam = {
+        return {
             ruleId: id,
             type: interaction.type,
             name: interaction.name,
@@ -43,70 +40,51 @@ export class CreateParamsHelper {
             impact: interaction.impact,
             effects: interaction.effects,
         };
-        return interactionParam;
     }
 
     createParamsForBiomarker(body, userId, ruleId) {
-        const biomarkerParam = {
+        return {
             name: body.name,
             userId,
             categoryId: body.category,
             unitId: body.unit,
             ruleId
-            };
-        return biomarkerParam;
+        };
     }
 
     createParamsForFilter(ruleId, filter) {
-        const biomarkerFilterParam = {
+        return {
             ruleId: ruleId,
             name: filter.name,
             criticalLow: filter.ranges.criticalLow,
-            lowMin: filter.ranges.low.min,
-            lowMax: filter.ranges.low.max,
-            subOptimalMin: filter.ranges.subOptimal.min,
-            subOptimalMax: filter.ranges.subOptimal.max,
-            optimalMin: filter.ranges.low.min,
-            optimalMax: filter.ranges.low.max,
-            supraOptimalMin: filter.ranges.supraOptimal.min,
-            supraOptimalMax: filter.ranges.supraOptimal.max,
-            HighMin: filter.ranges.high.min,
-            HighMax: filter.ranges.high.max,
+            lowMin: filter.ranges.lowMin,
+            lowMax: filter.ranges.lowMax,
+            subOptimalMin: filter.ranges.subOptimalMin,
+            subOptimalMax: filter.ranges.subOptimalMax,
+            optimalMin: filter.ranges.optimalMin,
+            optimalMax: filter.ranges.optimalMax,
+            supraOptimalMin: filter.ranges.supraOptimalMin,
+            supraOptimalMax: filter.ranges.supraOptimalMax,
+            HighMin: filter.ranges.highMin,
+            HighMax: filter.ranges.highMax,
             criticalHigh: filter.ranges.criticalHigh,
             recommendationsIsOn: filter.recommendationsIsOn
         };
-        return biomarkerFilterParam;
     }
 
     createParamsForSexFilter(filterId, sex) {
-        const biomarkerParam = {
-            filterId,
-            sex
-            };
-        return biomarkerParam;
+        return { filterId, sex };
     }
 
     createParamsForAgeFilter(filterId, age) {
-        const biomarkerParam = {
-            filterId,
-            age
-            };
-        return biomarkerParam;
+        return { filterId, age };
     }
 
     createParamsForEthnicityFilter(filterId, ethnicity) {
-        const biomarkerParam = {
-            filterId,
-            ethnicity
-            };
-        return biomarkerParam;
+        return { filterId, ethnicity };
     }
 
     createParamsForOtherFeature(filterId, otherFeature) {
-        const biomarkerParam = {
-            filterId,
-            otherFeature
-            };
-        return biomarkerParam;
+        return { filterId, otherFeature };
     }
 }

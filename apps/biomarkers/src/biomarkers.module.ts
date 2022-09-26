@@ -36,7 +36,7 @@ import { modelProviders } from './model.providers';
 import { translatorInstance } from '../../common/src/utils/translator/translator.provider';
 import { CategoriesService } from './services/category/category.service';
 import { UnitsService } from './services/units/units.service';
-import { FilterSexAgeEthnicityOtherFeatureService } from './services/filterSexAgeEthnicityOtherFeature/filter-sex-age-ethnicity-other-feature.service';
+import { FilterCharacteristicsService } from './services/filterCharacteristicsService/filter-characteristics.service';
 import { InteractionsService } from './services/interactions/interactions.service';
 import { RulesService } from './services/rules/rules.service';
 import { AlternativeNamesService } from './services/alternativeNames/alternative.service';
@@ -65,7 +65,7 @@ import { CreateParamsHelper } from '../../common/src/utils/helpers/create-params
     CategoriesService,
     InteractionsService,
     FiltersService,
-    FilterSexAgeEthnicityOtherFeatureService,
+    FilterCharacteristicsService,
     FilterSexesService,
     FilterAgesService,
     FilterEthnicityService,

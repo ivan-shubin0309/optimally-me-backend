@@ -15,19 +15,19 @@ export class CreateBiomarkerDto {
     @IsNotEmpty()
     readonly name: string;
 
-    @ApiProperty({ type: () => Array, required: false })
+    @ApiProperty({ type: () => Array<string>, required: false })
     @ArrayMaxSize(10, { message: ALTERNATIVE_NAMES_LIMIT_ERROR_MESSAGE })
     @IsArray()
     readonly alternativeNames: string[];
 
     @ApiProperty({ type: () => Number, description: EnumHelper.toDescription(CategoryTypes) })
-    @IsEnum(CategoryTypes)
     @IsNotEmpty()
+    @IsEnum(CategoryTypes)
     readonly category: number;
 
     @ApiProperty({ type: () => Number, description: EnumHelper.toDescription(UnitTypes) })
-    @IsEnum(UnitTypes)
     @IsNotEmpty()
+    @IsEnum(UnitTypes)
     readonly unit: number;
 
     @ApiProperty({ type: () => CreateRuleDto, required: true })

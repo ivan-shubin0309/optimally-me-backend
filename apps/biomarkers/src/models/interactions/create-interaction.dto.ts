@@ -1,13 +1,13 @@
 import { IsNotEmpty, MaxLength, MinLength, IsEnum, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
-import { InteractionTypes } from '../../resources/interactions/interaction-types';
+import { InteractionTypes } from '../../services/interactions/interaction-types';
 
 export class CreateInteractionDto {
 
     @ApiProperty({ type: () => Number, description: EnumHelper.toDescription(InteractionTypes) })
-    @IsEnum(InteractionTypes)
     @IsNotEmpty()
+    @IsEnum(InteractionTypes)
     readonly type: number;
 
     @ApiProperty({ type: () => String, required: true })

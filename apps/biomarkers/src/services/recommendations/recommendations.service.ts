@@ -6,7 +6,7 @@ import {
     ICreateLibraryFilterRecommendation,
     LibraryFilterRecommendation
 } from '../../../../biomarkers/src/models';
-import { CreateParamsHelper } from '../../utils/helpers/create-params.helper';
+import { CreateParamsHelper } from '../../../../common/src/utils/helpers/create-params.helper';
 import { RecommendationCategoryTypes } from './recommendation-category-types';
 
 @Injectable()

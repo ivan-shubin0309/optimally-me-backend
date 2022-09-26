@@ -1,4 +1,4 @@
 export enum InteractionTypes {
-    'medication' = 1,
-    'supplement' = 2,
+    medication = 1,
+    supplement = 2,
 }

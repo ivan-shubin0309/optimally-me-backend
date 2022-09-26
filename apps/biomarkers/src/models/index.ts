@@ -10,7 +10,6 @@ export * from './units/units.dto';
 export * from './interactions/create-interaction.dto';
 export * from './filters/create-filter.dto';
 export * from './rules/create-rule.dto';
-export * from './ranges/range-item.dto';
 export * from './ranges/ranges.dto';
 export * from './recommendations/recommendation-item.dto';
 export * from './recommendations/recommendations.dto';
