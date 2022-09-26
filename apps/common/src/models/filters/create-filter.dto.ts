@@ -1,4 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsEnum, IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { RangesDto } from '../ranges/ranges.dto';
 import { RecommendationsDto } from '../recommendations/recommendations.dto';
@@ -15,18 +15,30 @@ export class CreateFilterDto {
     readonly name: string;
 
     @ApiProperty({ type: () => Array<number[]>, description: EnumHelper.toDescription(SexTypes) })
+    @IsEnum(SexTypes, {
+        each: true,
+    })
     @IsNotEmpty()
     readonly sexFilters: number[];
 
     @ApiProperty({ type: () => Array<number[]>, description: EnumHelper.toDescription(AgeTypes) })
+    @IsEnum(AgeTypes, {
+        each: true,
+    })
     @IsNotEmpty()
     readonly ageFilters: number[];
 
     @ApiProperty({ type: () => Array<number[]>, description: EnumHelper.toDescription(EthnicityTypes) })
+    @IsEnum(EthnicityTypes, {
+        each: true,
+    })
     @IsNotEmpty()
     readonly ethnicityFilters: number[];
 
     @ApiProperty({ type: () => Array<number[]>, description: EnumHelper.toDescription(OtherFeatureTypes) })
+    @IsEnum(OtherFeatureTypes, {
+        each: true,
+    })
     @IsNotEmpty()
     readonly otherFeatures: number[];
 
@@ -35,6 +47,7 @@ export class CreateFilterDto {
     readonly ranges: RangesDto;
 
     @ApiProperty({ type: () => Boolean, required: true })
+    @IsBoolean()
     @IsNotEmpty()
     readonly recommendationsIsOn: boolean;
 

@@ -34,8 +34,8 @@ export class BiomarkersController {
   ) {}
 
   @ApiOperation({ summary: 'Create biomarker' })
-  @Roles(UserRoles.superAdmin)
   @HttpCode(HttpStatus.NO_CONTENT)
+  @Roles(UserRoles.superAdmin)
   @Post('')
   async createBiomarker(@Request() req, @Body() body: CreateBiomarkerDto): Promise<void> {
     const { user } = req;

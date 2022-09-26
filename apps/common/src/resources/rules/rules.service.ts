@@ -25,9 +25,11 @@ export class RulesService {
     const libraryRule = await this.createLibraryRule(libraryRuleParam);
 
     let interactionParam;
-    for await (const el of body.rule.interactions ) {
+    if (body.rule && body.rule.interactionsIsOn) {
+      for await (const el of body.rule.interactions ) {
         interactionParam = this.createParamsHelper.createParamsForInteraction(libraryRule.id, el);
         await this.interactionsService.createLibraryInteraction(interactionParam);
+      }
     }
 
     for await (const filter of body.rule.filters ) {
@@ -36,7 +38,9 @@ export class RulesService {
         const libraryFilter = await this.filtersService.createLibraryFilter(libraryFilterParam);
 
         await this.filterSexAgeEthnicityOtherFeatureService.createLibraryFilterSexAgeEthnicityOtherFeature(filter, libraryFilter.id);
-        await this.recommendationsService.createLibraryFilterRecommendations(filter, libraryFilter.id);
+        if (filter.recommendationsIsOn) {
+          await this.recommendationsService.createLibraryFilterRecommendations(filter, libraryFilter.id);
+        }
     }
   }
 

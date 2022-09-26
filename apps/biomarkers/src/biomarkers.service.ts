@@ -27,14 +27,16 @@ export class BiomarkersService {
         const biomarkerRuleParam = this.createParamsHelper.createParamsForBiomarkerRules(body);
         const biomarkerRule = await this.rulesService.createBiomarkerRule(biomarkerRuleParam);
 
-        if(body.rule && body.rule.name && body.rule.name.trim() !== '') {
+        if (body.rule && body.rule.name && body.rule.name.trim() !== '') {
             await this.rulesService.createLibraryRuleMethod(body);
         }
 
         let interactionParam;
-        for await (const el of body.rule.interactions ) {
-            interactionParam = this.createParamsHelper.createParamsForInteraction(biomarkerRule.id, el);
-            await this.interactionsService.createBiomarkerInteraction(interactionParam);
+        if (body.rule && body.rule.interactionsIsOn) {
+            for await (const el of body.rule.interactions ) {
+                interactionParam = this.createParamsHelper.createParamsForInteraction(biomarkerRule.id, el);
+                await this.interactionsService.createBiomarkerInteraction(interactionParam);
+            }
         }
 
         const biomarkerParam = this.createParamsHelper.createParamsForBiomarker(body, userId, biomarkerRule.id);
@@ -46,7 +48,9 @@ export class BiomarkersService {
             const biomarkerFilter = await this.filtersService.createBiomarkerFilter(biomarkerFilterParam);
 
             await this.filterSexAgeEthnicityOtherFeatureService.createFilterSexAgeEthnicityOtherFeature(filter, biomarkerFilter.id);
-            await this.recommendationsService.createFilterRecommendations(filter, biomarkerFilter.id, biomarker.id);
+            if (filter.recommendationsIsOn) {
+                await this.recommendationsService.createFilterRecommendations(filter, biomarkerFilter.id, biomarker.id);
+            }
 
             let alternativeNamesParam;
             for await (const el of body.alternativeNames ) {
