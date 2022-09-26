@@ -1,6 +1,6 @@
-import { IsNotEmpty, IsOptional, IsEmail } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsEmail, MinLength, MaxLength, Contains } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { INVALID_EMAIL_ERROR_MESSAGE } from '../../../common/src/resources/users';
+import { INVALID_EMAIL_ERROR_MESSAGE, INVALID_PASSWORD_ERROR_MESSAGE } from '../../../common/src/resources/users';
 
 export class LoginUserDto {
     @ApiProperty({ type: () => String, required: true })
@@ -11,6 +11,12 @@ export class LoginUserDto {
     readonly email: string;
 
     @ApiProperty({ type: () => String, required: true })
+    @MinLength(8, {
+        message: INVALID_PASSWORD_ERROR_MESSAGE,
+    })
+    @MaxLength(50, {
+        message: INVALID_PASSWORD_ERROR_MESSAGE,
+    })
     @IsNotEmpty()
     readonly password: string;
 

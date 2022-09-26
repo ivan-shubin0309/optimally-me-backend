@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UnitDto } from './unit.dto';
 import { Unit } from './unit.entity';
-import { PaginationDto } from '../../../common/src/models/pagination.dto';
+import { PaginationDto } from '../../../../common/src/models/pagination.dto';
 
 export class UnitsDto {
     @ApiProperty({ type: () => [UnitDto] })
