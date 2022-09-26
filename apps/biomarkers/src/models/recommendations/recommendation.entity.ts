@@ -5,7 +5,7 @@ import { Table, Column, Model, DataType, Scopes } from 'sequelize-typescript';
 }))
 
 @Table({
-    tableName: 'categories',
+    tableName: 'recommendations',
     timestamps: true,
     underscored: false
 })
@@ -16,7 +16,7 @@ export class Recommendation extends Model {
         type: DataType.NUMBER,
         allowNull: false,
     })
-    categories: number;
+    category: number;
 
     @Column({
         type: DataType.STRING,

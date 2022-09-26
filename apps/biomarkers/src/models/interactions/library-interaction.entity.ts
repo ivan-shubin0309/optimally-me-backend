@@ -1,4 +1,5 @@
-import { Table, Column, Model, Scopes, DataType } from 'sequelize-typescript';
+import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
+import { LibraryRule } from '../index';
 
 @Scopes(() => ({
 
@@ -9,6 +10,8 @@ import { Table, Column, Model, Scopes, DataType } from 'sequelize-typescript';
     underscored: false
 })
 export class LibraryInteraction extends Model {
+
+    @ForeignKey(() => LibraryRule)
     @Column({
         type: DataType.NUMBER,
         allowNull: true

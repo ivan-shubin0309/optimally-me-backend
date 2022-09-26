@@ -1,4 +1,6 @@
-import { Table, Column, Model, Scopes, DataType } from 'sequelize-typescript';
+import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
+import { Recommendation } from '../recommendations/recommendation.entity';
+import { LibraryFilter } from '../index';
 
 @Scopes(() => ({
 
@@ -9,12 +11,15 @@ import { Table, Column, Model, Scopes, DataType } from 'sequelize-typescript';
     underscored: false
 })
 export class LibraryFilterRecommendation extends Model {
+
+    @ForeignKey(() => LibraryFilter)
     @Column({
         type: DataType.NUMBER,
         allowNull: true,
     })
     filterId: number;
 
+    @ForeignKey(() => Recommendation)
     @Column({
         type: DataType.NUMBER,
         allowNull: true

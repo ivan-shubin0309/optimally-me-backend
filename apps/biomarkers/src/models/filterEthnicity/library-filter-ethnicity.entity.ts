@@ -1,4 +1,5 @@
-import { Table, Column, Model, DataType, Scopes } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, Scopes, ForeignKey } from 'sequelize-typescript';
+import { LibraryFilter } from '../index';
 
 @Scopes(() => ({
 }))
@@ -11,6 +12,7 @@ import { Table, Column, Model, DataType, Scopes } from 'sequelize-typescript';
 
 export class LibraryFilterEthnicity extends Model {
 
+    @ForeignKey(() => LibraryFilter)
     @Column({
         type: DataType.NUMBER,
         allowNull: false,
