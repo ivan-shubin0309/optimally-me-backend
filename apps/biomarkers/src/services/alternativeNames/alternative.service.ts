@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Repository } from 'sequelize-typescript';
-import { AlternativeName, ICreateAlternativeName } from '../../../../biomarkers/src/models';
+import { AlternativeName, ICreateAlternativeName } from '../../models';
 
 @Injectable()
 export class AlternativeNamesService {

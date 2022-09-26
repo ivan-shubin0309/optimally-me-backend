@@ -34,18 +34,18 @@ import {
 } from './models';
 import { modelProviders } from './model.providers';
 import { translatorInstance } from '../../common/src/utils/translator/translator.provider';
-import { CategoriesService } from '../../common/src/resources/category/category.service';
-import { UnitsService } from '../../common/src/resources/units/units.service';
-import { FilterSexAgeEthnicityOtherFeatureService } from '../../common/src/resources/filterSexAgeEthnicityOtherFeature/filter-sex-age-ethnicity-other-feature.service';
-import { InteractionsService } from '../../common/src/resources/interactions/interactions.service';
-import { RulesService } from '../../common/src/resources/rules/rules.service';
-import { AlternativeNamesService } from '../../common/src/resources/alternativeNames/alternative.service';
-import { FiltersService } from '../../common/src/resources/filters/filters.service';
-import { RecommendationsService } from '../../common/src/resources/recommendations/recommendations.service';
-import { FilterAgesService } from '../../common/src/resources/filterAges/filter-ages.service';
-import { FilterSexesService } from '../../common/src/resources/filterSexes/filter-sexes.service';
-import { FilterEthnicityService } from '../../common/src/resources/filterEthnicity/filter-ethnicity.service';
-import { FilterOtherFeaturesService } from '../../common/src/resources/filterOtherFeatures/filter-other-features.service';
+import { CategoriesService } from './services/category/category.service';
+import { UnitsService } from './services/units/units.service';
+import { FilterSexAgeEthnicityOtherFeatureService } from './services/filterSexAgeEthnicityOtherFeature/filter-sex-age-ethnicity-other-feature.service';
+import { InteractionsService } from './services/interactions/interactions.service';
+import { RulesService } from './services/rules/rules.service';
+import { AlternativeNamesService } from './services/alternativeNames/alternative.service';
+import { FiltersService } from './services/filters/filters.service';
+import { RecommendationsService } from './services/recommendations/recommendations.service';
+import { FilterAgesService } from './services/filterAges/filter-ages.service';
+import { FilterSexesService } from './services/filterSexes/filter-sexes.service';
+import { FilterEthnicityService } from './services/filterEthnicity/filter-ethnicity.service';
+import { FilterOtherFeaturesService } from './services/filterOtherFeatures/filter-other-features.service';
 import { CreateParamsHelper } from '../../common/src/utils/helpers/create-params.helper';
 
 

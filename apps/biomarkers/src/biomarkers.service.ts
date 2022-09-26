@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Repository } from 'sequelize-typescript';
 import { Biomarker, ICreateBiomarker } from './models';
-import { RulesService } from '../../common/src/resources/rules/rules.service';
-import { InteractionsService } from '../../common/src/resources/interactions/interactions.service';
-import { AlternativeNamesService } from '../../common/src/resources/alternativeNames/alternative.service';
-import { RecommendationsService } from '../../common/src/resources/recommendations/recommendations.service';
+import { RulesService } from './services/rules/rules.service';
+import { InteractionsService } from './services/interactions/interactions.service';
+import { AlternativeNamesService } from './services/alternativeNames/alternative.service';
+import { RecommendationsService } from './services/recommendations/recommendations.service';
 import { CreateParamsHelper } from '../../common/src/utils/helpers/create-params.helper';
-import { FiltersService } from '../../common/src/resources/filters/filters.service';
-import { FilterSexAgeEthnicityOtherFeatureService } from '../../common/src/resources/filterSexAgeEthnicityOtherFeature/filter-sex-age-ethnicity-other-feature.service';
+import { FiltersService } from './services/filters/filters.service';
+import { FilterSexAgeEthnicityOtherFeatureService } from './services/filterSexAgeEthnicityOtherFeature/filter-sex-age-ethnicity-other-feature.service';
 import { CreateBiomarkerDto } from './models';
 
 @Injectable()

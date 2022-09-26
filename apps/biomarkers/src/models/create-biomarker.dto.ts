@@ -1,9 +1,9 @@
-import { IsNotEmpty, MaxLength, MinLength, IsArray, ValidationArguments, ArrayMaxSize, IsEnum } from 'class-validator';
+import { IsNotEmpty, MaxLength, MinLength, IsArray, ArrayMaxSize, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateRuleDto } from '../../../common/src/models/rules/create-rule.dto';
+import { CreateRuleDto } from './rules/create-rule.dto';
 import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
-import { UnitTypes } from '../../../common/src/resources/units/units-types';
-import { CategoryTypes } from '../../../common/src/resources/category/category-types';
+import { UnitTypes } from '../services/units/units-types';
+import { CategoryTypes } from '../services/category/category-types';
 import { ALTERNATIVE_NAMES_LIMIT_ERROR_MESSAGE, BIOMARKER_NAME_ERROR_MESSAGE } from '../../../common/src/resources/users';
 import { Transform, TransformFnParams } from 'class-transformer';
 

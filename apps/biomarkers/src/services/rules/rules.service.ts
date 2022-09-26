@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Repository } from 'sequelize-typescript';
 import { BiomarkerRule, LibraryRule, ICreateRule } from '../../../../biomarkers/src/models';
-import { CreateParamsHelper } from '../../utils/helpers/create-params.helper';
+import { CreateParamsHelper } from '../../../../common/src/utils/helpers/create-params.helper';
 import { InteractionsService } from '../interactions/interactions.service';
 import { FiltersService } from '../filters/filters.service';
 import { RecommendationsService } from '../recommendations/recommendations.service';
