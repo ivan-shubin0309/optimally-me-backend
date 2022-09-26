@@ -44,7 +44,7 @@ module.exports = {
         name: 'Bone Screen',
       },
       {
-        id: 10,
+        id: 11,
         name: 'Minerals',
       },
     ], {});
@@ -52,7 +52,7 @@ module.exports = {
   down: async (queryInterface) => {
     await queryInterface.bulkDelete('categories', {
       where: {
-        id: [1, 2, 3, 4, 5, 6, 7, 8]
+        id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
       }
     });
   }
