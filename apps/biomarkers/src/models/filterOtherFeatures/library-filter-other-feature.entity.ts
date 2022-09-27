@@ -1,4 +1,4 @@
-import { Table, Column, Model, DataType, Scopes, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, Scopes, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { LibraryFilter } from '../index';
 
 @Scopes(() => ({
@@ -24,4 +24,7 @@ export class LibraryFilterOtherFeature extends Model {
         allowNull: false,
     })
     otherFeature: number;
+
+    @BelongsTo(() => LibraryFilter, 'id')
+    filtersLibrary: LibraryFilter;
 }

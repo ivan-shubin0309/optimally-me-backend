@@ -52,4 +52,16 @@ export class RulesService {
   createLibraryRule(body: ICreateRule):  Promise<LibraryRule> {
     return this.libraryRuleModel.create({ ...body });
   }
+
+  getListLibraryRules(scopes = []):  Promise<LibraryRule[]> {
+    return this.libraryRuleModel
+      .scope(scopes)
+      .findAll();
+  }
+
+  getLibraryRulesCount(scopes = []):  Promise<number> {
+    return this.libraryRuleModel
+      .scope(scopes)
+      .count();
+  }
 }

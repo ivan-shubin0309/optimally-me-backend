@@ -63,8 +63,17 @@ export class BiomarkersService {
         }
     }
 
-    create(body: ICreateBiomarker):  Promise<Biomarker> {
+    create(body: ICreateBiomarker): Promise<Biomarker> {
         return this.biomarkerModel.create({ ...body });
+    }
+
+    getBiomarkerByName(name: string): Promise<Biomarker> {
+        return this.biomarkerModel
+            .findOne({
+                where: {
+                    name
+                }
+            });
     }
 }
 

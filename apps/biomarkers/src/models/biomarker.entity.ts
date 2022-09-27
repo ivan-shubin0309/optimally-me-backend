@@ -3,7 +3,6 @@ import { User } from '../../../users/src/models/user.entity';
 import { Category, Unit, BiomarkerRule } from '../models';
 
 @Scopes(() => ({
-
 }))
 @Table({
     tableName: 'biomarkers',

@@ -5,7 +5,7 @@ module.exports = {
     await queryInterface.bulkInsert('categories', [
       {
         id: 1,
-        name: 'Biomechanics',
+        name: 'Biochemistry',
       },
       {
         id: 2,
