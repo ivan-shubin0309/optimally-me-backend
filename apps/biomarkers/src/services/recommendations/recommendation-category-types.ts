@@ -1,6 +1,8 @@
 export enum RecommendationCategoryTypes {
-    criticalLow = 1,
-    low = 2,
-    high = 3,
-    criticalHigh = 4
+    all = 0, 
+    diet = 1,
+    lifestyle = 2,
+    supplements = 3,
+    doctor = 4,
+    tests = 5
 }
