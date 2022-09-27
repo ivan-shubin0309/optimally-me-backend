@@ -25,6 +25,10 @@ import { GetListDto } from '../../common/src/models/get-list.dto';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
 import { RulesDto } from './models/rules/rules.dto';
 import { RulesService } from './services/rules/rules.service';
+import { RecommendationsService } from './services/recommendations/recommendations.service';
+import { ListRecommendationsDto } from './models/recommendations/list-recommendations.dto';
+import { GetListRecommendationsDto } from './models/recommendations/get-recommendations.dto';
+
 
 
 
@@ -38,6 +42,7 @@ export class BiomarkersController {
     private readonly unitsService: UnitsService,
     private readonly rulesService: RulesService,
     private readonly translator: TranslatorService,
+    private readonly recommendationsService: RecommendationsService,
     @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
 
   ) {}
@@ -134,5 +139,32 @@ export class BiomarkersController {
   @Delete('rules/:id')
   async deleteRule(@Param('id') id: number) {
     await this.rulesService.deleteLibraryRule(id);
+  }
+
+  @ApiCreatedResponse({ type: () => ListRecommendationsDto })
+  @ApiOperation({ summary: 'Get list Recommendations' })
+  @Roles(UserRoles.superAdmin)
+  @Get('recommendations')
+  async getListRecommendations(@Query() query: GetListRecommendationsDto): Promise<ListRecommendationsDto> {
+    const limit = parseInt(query.limit);
+    const offset = parseInt(query.offset);
+    const content = query.search;
+    const category = parseInt(query.category);
+
+    let recommendationsList = [];
+    const scopes: any[] = [{ method: ['byContent', content] }];
+
+    if (category !== 0) {
+      scopes.push({ method: ['byCategory', category] });
+    }
+
+    const count = await this.recommendationsService.getRecommendationsCount();
+
+    if (count) {
+      scopes.push({ method: ['pagination', { limit, offset }] });
+      recommendationsList = await this.recommendationsService.getListRecommendations(scopes);
+    }
+
+    return new ListRecommendationsDto(recommendationsList, PaginationHelper.buildPagination({ limit, offset }, count));
   }
 }
