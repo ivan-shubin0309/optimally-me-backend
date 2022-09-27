@@ -165,4 +165,9 @@ Resources:
           Properties:
             Path: /biomarkers/rules
             Method: ANY
+        RulesIdApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/rules/{id}
+            Method: ANY
 

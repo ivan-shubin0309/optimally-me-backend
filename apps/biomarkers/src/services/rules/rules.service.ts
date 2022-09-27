@@ -64,4 +64,13 @@ export class RulesService {
       .scope(scopes)
       .count();
   }
+
+  deleteLibraryRule( id: number ) {
+    return this.libraryRuleModel
+    .destroy({
+      where: {
+        id
+      }
+    });
+  }
 }
