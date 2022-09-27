@@ -66,11 +66,11 @@ export class RulesService {
   }
 
   deleteLibraryRule( id: number ) {
-      return this.libraryRuleModel
-      .destroy({
-        where: {
-          id
-        }
+    return this.libraryRuleModel
+    .destroy({
+      where: {
+        id
+      }
     });
   }
 }
