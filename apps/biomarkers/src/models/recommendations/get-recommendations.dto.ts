@@ -22,7 +22,7 @@ export class GetListRecommendationsDto {
     @IsOptional()
     readonly search: string;
 
-    @ApiProperty({ type: () => Number, required: true, default: '0', description: EnumHelper.toDescription(RecommendationCategoryTypes) })
+    @ApiProperty({ type: () => Number, required: true, default: '0' })
     @IsInt()
     @Max(5)
     @Min(0)
