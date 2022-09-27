@@ -3,7 +3,7 @@ import { User } from '../../../users/src/models/user.entity';
 import { Category, Unit, BiomarkerRule } from '../models';
 
 @Scopes(() => ({
-
+    byNameBiomarker: (name) => ({ where: { name } }),
 }))
 @Table({
     tableName: 'biomarkers',

@@ -1,9 +1,10 @@
-import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Model, Scopes, DataType, ForeignKey, BelongsTo, DefaultScope } from 'sequelize-typescript';
 import { Recommendation } from '../recommendations/recommendation.entity';
 import { LibraryFilter } from '../index';
 
+@DefaultScope(() => ({
+}))
 @Scopes(() => ({
-
 }))
 @Table({
     tableName: 'recommendationsLibraryFilter',
@@ -37,4 +38,7 @@ export class LibraryFilterRecommendation extends Model {
         allowNull: true
     })
     recommendationOrder: number;
+
+    @BelongsTo(() => LibraryFilter, 'Id')
+    filterLibrary: LibraryFilter;
 }

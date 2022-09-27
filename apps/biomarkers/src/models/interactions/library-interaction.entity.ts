@@ -1,8 +1,7 @@
-import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Model, Scopes, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { LibraryRule } from '../index';
 
 @Scopes(() => ({
-
 }))
 @Table({
     tableName: 'interactionsLibrary',
@@ -37,14 +36,17 @@ export class LibraryInteraction extends Model {
     alsoKnowAs: string;
 
     @Column({
-        type: DataType.STRING,
+        type: DataType.NUMBER,
         allowNull: true
     })
-    impact: string;
+    impact: number;
 
     @Column({
         type: DataType.STRING,
         allowNull: true
     })
     effects: string;
+
+    @BelongsTo(() => LibraryRule, 'id')
+    libraryRule: LibraryRule;
 }

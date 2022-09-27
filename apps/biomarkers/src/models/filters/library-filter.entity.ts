@@ -1,8 +1,36 @@
-import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Model, Scopes, DataType, ForeignKey, HasMany, BelongsTo, DefaultScope } from 'sequelize-typescript';
 import { LibraryRule } from '../index';
+import { LibraryFilterRecommendation } from '../filterRecommendations/library-filter-recommendation.entity';
+import { LibraryFilterSex } from '../filtersSex/library-filter-sex.entity';
+import { LibraryFilterAge } from '../filtersAge/library-filter-age.entity';
+import { LibraryFilterEthnicity } from '../filterEthnicity/library-filter-ethnicity.entity';
+import { LibraryFilterOtherFeature } from '../filterOtherFeatures/library-filter-other-feature.entity';
 
+@DefaultScope(() => ({
+    include: [
+        {
+            model: LibraryFilterRecommendation,
+            as: 'recommendations',
+        },
+        {
+            model: LibraryFilterSex,
+            as: 'sexFilters',
+        },
+        {
+            model: LibraryFilterAge,
+            as: 'ageFilters',
+        },
+        {
+            model: LibraryFilterEthnicity,
+            as: 'ethnicityFilters',
+        },
+        {
+            model: LibraryFilterOtherFeature,
+            as: 'otherFeatureFilters',
+        }
+    ]
+}))
 @Scopes(() => ({
-
 }))
 @Table({
     tableName: 'filtersLibrary',
@@ -14,7 +42,7 @@ export class LibraryFilter extends Model {
     @ForeignKey(() => LibraryRule)
     @Column({
         type: DataType.NUMBER,
-        allowNull: true
+        allowNull: false
     })
     ruleId: number;
 
@@ -101,4 +129,22 @@ export class LibraryFilter extends Model {
         allowNull: false
     })
     recommendationsIsOn: boolean;
+
+    @BelongsTo(() => LibraryRule, 'id')
+    libraryRule: LibraryRule;
+
+    @HasMany(() => LibraryFilterSex, 'filterId')
+    sexFilters: LibraryFilterSex[];
+
+    @HasMany(() => LibraryFilterAge, 'filterId')
+    ageFilters: LibraryFilterAge[];
+
+    @HasMany(() => LibraryFilterEthnicity, 'filterId')
+    ethnicityFilters: LibraryFilterEthnicity[];
+
+    @HasMany(() => LibraryFilterOtherFeature, 'filterId')
+    otherFeatureFilters: LibraryFilterOtherFeature[];
+
+    @HasMany(() => LibraryFilterRecommendation, 'filterId')
+    recommendations: LibraryFilterRecommendation[];
 }

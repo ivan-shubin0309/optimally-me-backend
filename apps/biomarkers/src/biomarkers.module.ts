@@ -31,6 +31,7 @@ import {
   LibraryFilter,
   LibraryFilterRecommendation,
   LibraryRule,
+  Recommendation
 } from './models';
 import { modelProviders } from './model.providers';
 import { translatorInstance } from '../../common/src/utils/translator/translator.provider';
@@ -99,7 +100,8 @@ import { CreateParamsHelper } from '../../common/src/utils/helpers/create-params
       LibraryFilterOtherFeature,
       LibraryFilter,
       LibraryFilterRecommendation,
-      LibraryRule
+      LibraryRule,
+      Recommendation
     ]),
     ...modelProviders
   ]

@@ -1,7 +1,25 @@
-import { Table, Column, Model, Scopes, DataType } from 'sequelize-typescript';
+import { Table, Column, Model, Scopes, DataType, HasMany } from 'sequelize-typescript';
+import { LibraryFilter } from '../filters/library-filter.entity';
+import { LibraryInteraction } from '../interactions/library-interaction.entity';
 
 @Scopes(() => ({
-
+    withLibraryFilters: () => ({
+        include: [
+            {
+                model: LibraryFilter,
+                as: 'filters'
+            }
+        ]
+    }),
+    withInteractions: () => ({
+        include: [
+            {
+                model: LibraryInteraction,
+                as: 'interactions',
+            }
+        ]
+    }),
+    pagination: (query) => ({ limit: query.limit, offset: query.offset })
 }))
 @Table({
     tableName: 'rulesLibrary',
@@ -9,6 +27,7 @@ import { Table, Column, Model, Scopes, DataType } from 'sequelize-typescript';
     underscored: false
 })
 export class LibraryRule extends Model {
+
     @Column({
         type: DataType.STRING,
         allowNull: false,
@@ -50,4 +69,10 @@ export class LibraryRule extends Model {
         allowNull: false
     })
     interactionsIsOn: boolean;
+
+    @HasMany(() => LibraryFilter, 'ruleId')
+    filters: LibraryFilter[];
+
+    @HasMany(() => LibraryInteraction, 'ruleId')
+    interactions: LibraryInteraction[];
 }

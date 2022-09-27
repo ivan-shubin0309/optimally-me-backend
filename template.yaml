@@ -160,4 +160,9 @@ Resources:
           Properties:
             Path: /biomarkers/units
             Method: ANY
+        RulesApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/rules
+            Method: ANY
 

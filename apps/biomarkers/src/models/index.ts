@@ -40,3 +40,4 @@ export * from './filterOtherFeatures/create-filter-other-feature.interface';
 export * from './filterOtherFeatures/library-filter-other-feature.entity';
 export * from './filterRecommendations/create-library-filter-recommendation.interface';
 export * from './filterRecommendations/library-filter-recommendation.entity';
+export * from './recommendations/recommendation.entity';

@@ -7,8 +7,10 @@ import {
   Request,
   Query,
   HttpCode,
-  HttpStatus
+  HttpStatus,
+  BadRequestException
 } from '@nestjs/common';
+import { TranslatorService } from 'nestjs-translator';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Sequelize } from 'sequelize-typescript';
 import { Roles } from '../../common/src/resources/common/role.decorator';
@@ -19,6 +21,8 @@ import { UnitsService } from './services/units/units.service';
 import { CategoriesDto, UnitsDto, CreateBiomarkerDto } from './models';
 import { GetListDto } from '../../common/src/models/get-list.dto';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
+import { RulesDto } from './models/rules/rules.dto';
+import { RulesService } from './services/rules/rules.service';
 
 
 @ApiBearerAuth()
@@ -29,6 +33,8 @@ export class BiomarkersController {
     private readonly biomarkersService: BiomarkersService,
     private readonly categoriesService: CategoriesService,
     private readonly unitsService: UnitsService,
+    private readonly rulesService: RulesService,
+    private readonly translator: TranslatorService,
     @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
 
   ) {}
@@ -39,6 +45,20 @@ export class BiomarkersController {
   @Post('')
   async createBiomarker(@Request() req, @Body() body: CreateBiomarkerDto): Promise<void> {
     const { user } = req;
+
+    const scopes: any[] = [
+      { method: ['byNameBiomarker', body.name] }
+    ];
+
+    const biomarker = await this.biomarkersService.getBiomarkerByName(body.name, scopes);
+
+    if (biomarker) {
+      throw new BadRequestException({
+        message: this.translator.translate('BIOMARKER_ALREADY_EXIST'),
+        errorCode: 'BIOMARKER_ALREADY_EXIST',
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+    }
     await this.biomarkersService.createBiomarker(body, user.userId);
   }
 
@@ -82,5 +102,29 @@ export class BiomarkersController {
     }
 
     return new UnitsDto(unitsList, PaginationHelper.buildPagination({ limit, offset }, count));
+  }
+
+  @ApiCreatedResponse({ type: () => RulesDto })
+  @ApiOperation({ summary: 'Get list Rules' })
+  @Roles(UserRoles.superAdmin)
+  @Get('rules')
+  async getListRules(@Query() query: GetListDto): Promise<RulesDto> {
+    const limit = parseInt(query.limit);
+    const offset = parseInt(query.offset);
+
+    let rulesList = [];
+    const scopes: any[] = [
+      { method: ['withLibraryFilters'] },
+      { method: ['withInteractions'] }
+    ];
+
+    const count = await this.rulesService.getLibraryRulesCount();
+
+    if (count) {
+      scopes.push({ method: ['pagination', { limit, offset }] });
+      rulesList = await this.rulesService.getListLibraryRules(scopes);
+    }
+
+    return new RulesDto(rulesList, PaginationHelper.buildPagination({ limit, offset }, count));
   }
 }

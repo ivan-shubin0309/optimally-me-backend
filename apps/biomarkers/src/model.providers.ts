@@ -19,7 +19,8 @@ import {
     LibraryFilterOtherFeature,
     LibraryFilter,
     LibraryFilterRecommendation,
-    LibraryRule
+    LibraryRule,
+    Recommendation
 } from './models';
 
 export const modelProviders = [
@@ -107,4 +108,9 @@ export const modelProviders = [
         provide: 'LIBRARY_RULE_MODEL',
         useValue: LibraryRule,
     },
+    {
+        provide: 'RECOMMENDATION_MODEL',
+        useValue: Recommendation,
+    },
 ];
+

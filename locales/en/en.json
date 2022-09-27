@@ -7,5 +7,6 @@
     "LINK_IS_USED": "Link already used",
     "LINK_IS_EXPIRED": "Link is expired",
     "RESTORE_PASSWORD_EMAIL_TEXT": "Hello, ${firstName} ${lastName},<br><br>Follow this <a href=\"${link}\">LINK</a> to restore your password in the OptimallyMe app. The link can be used only once.",
-    "RESTORE_PASSWORD_EMAIL_SUBJECT": "Restore password"
+    "RESTORE_PASSWORD_EMAIL_SUBJECT": "Restore password",
+    "BIOMARKER_ALREADY_EXIST": "Biomarker with that name already exist"
 }
