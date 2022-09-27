@@ -1,8 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, Max, Min } from 'class-validator';
-import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
-import { RecommendationCategoryTypes } from '../../services/recommendations/recommendation-category-types';
 
 export class GetListRecommendationsDto {
     @ApiProperty({ type: () => Number, required: true, default: '100' })
