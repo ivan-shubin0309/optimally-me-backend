@@ -3,7 +3,9 @@ import {
   Post,
   Body,
   Controller,
+  Delete,
   Inject,
+  Param,
   Request,
   Query,
   HttpCode,
@@ -11,7 +13,7 @@ import {
   BadRequestException
 } from '@nestjs/common';
 import { TranslatorService } from 'nestjs-translator';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags, ApiParam } from '@nestjs/swagger';
 import { Sequelize } from 'sequelize-typescript';
 import { Roles } from '../../common/src/resources/common/role.decorator';
 import { UserRoles } from '../../common/src/resources/users';
@@ -23,6 +25,7 @@ import { GetListDto } from '../../common/src/models/get-list.dto';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
 import { RulesDto } from './models/rules/rules.dto';
 import { RulesService } from './services/rules/rules.service';
+
 
 
 @ApiBearerAuth()
@@ -122,5 +125,14 @@ export class BiomarkersController {
     }
 
     return new RulesDto(rulesList, PaginationHelper.buildPagination({ limit, offset }, count));
+  }
+
+  @ApiOperation({ summary: 'Delete Rule' })
+  @ApiParam({ name: 'id' })
+  @Roles(UserRoles.superAdmin)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('rules/:id')
+  async deleteRule(@Param('id') id: number) {
+    await this.rulesService.deleteLibraryRule(id);
   }
 }
