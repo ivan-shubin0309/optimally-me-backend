@@ -7,7 +7,8 @@ import {
   Headers,
   HttpStatus,
   HttpCode,
-  Request
+  Request,
+  Put
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '../../common/src/resources/common/public.decorator';
@@ -18,6 +19,7 @@ import { UsersService } from '../../users/src/users.service';
 import { PasswordHelper } from '../../common/src/utils/helpers/password.helper';
 import { TranslatorService } from 'nestjs-translator';
 import { AdminsSessionDto } from './models';
+import { RefreshSessionDto } from '../../sessions/src/models';
 
 @ApiTags('admins')
 @Controller('admins')
@@ -56,6 +58,30 @@ export class AdminsSessionsController {
     const sessionOptions = { role: user.role, lifeTime: body.lifeTime };
     const sessionResult =  await this.sessionsService.create( user.id, sessionOptions);
 
+    return new AdminsSessionDto(sessionResult.accessToken, sessionResult.refreshToken, sessionResult.expiresAt, user.firstName, user.lastName);
+  }
+
+  @Public()
+  @ApiCreatedResponse({ type: () => AdminsSessionDto })
+  @ApiOperation({ summary: 'Refresh session' })
+  @Put('sessions')
+  async refresh(@Body() body: RefreshSessionDto): Promise<AdminsSessionDto> {
+    const oldSessionParams = this.sessionsService.verifyToken(body.refreshToken);
+
+    const scopes = [
+      { method: ['byRoles', [UserRoles.superAdmin]] }
+    ];
+
+    const user = await this.usersService.getUser(oldSessionParams.data.userId, scopes);
+
+    if (!user) {
+      throw new UnprocessableEntityException({
+        message: this.translator.translate('USER_NOT_FOUND'),
+        errorCode: 'USER_NOT_FOUND',
+        statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+      });
+    }
+    const sessionResult = await this.sessionsService.refresh(body.refreshToken);
     return new AdminsSessionDto(sessionResult.accessToken, sessionResult.refreshToken, sessionResult.expiresAt, user.firstName, user.lastName);
   }
 
