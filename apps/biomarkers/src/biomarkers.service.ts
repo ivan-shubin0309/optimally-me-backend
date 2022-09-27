@@ -67,9 +67,8 @@ export class BiomarkersService {
         return this.biomarkerModel.create({ ...body });
     }
 
-    getBiomarkerByName(name: string, scopes: any[]) :Promise<Biomarker> {
+    getBiomarkerByName(name: string): Promise<Biomarker> {
         return this.biomarkerModel
-            .scope(scopes || [])
             .findOne({
                 where: {
                     name

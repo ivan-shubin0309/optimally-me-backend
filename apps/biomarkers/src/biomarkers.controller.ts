@@ -46,11 +46,7 @@ export class BiomarkersController {
   async createBiomarker(@Request() req, @Body() body: CreateBiomarkerDto): Promise<void> {
     const { user } = req;
 
-    const scopes: any[] = [
-      { method: ['byNameBiomarker', body.name] }
-    ];
-
-    const biomarker = await this.biomarkersService.getBiomarkerByName(body.name, scopes);
+    const biomarker = await this.biomarkersService.getBiomarkerByName(body.name);
 
     if (biomarker) {
       throw new BadRequestException({
