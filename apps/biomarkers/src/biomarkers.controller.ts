@@ -172,7 +172,7 @@ export class BiomarkersController {
   }
 
   @ApiCreatedResponse({ type: () => FilterCharacteristicsDto })
-  @ApiOperation({ summary: 'Get list filter characteristics' })
+  @ApiOperation({ summary: 'Get filter characteristics' })
   @Roles(UserRoles.superAdmin)
   @Get('filters/characteristics')
   getFilterCharacteristics(): FilterCharacteristicsDto {
