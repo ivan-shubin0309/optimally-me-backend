@@ -4,6 +4,13 @@ import { FilterSexesService } from '../filterSexes/filter-sexes.service';
 import { FilterAgesService } from '../filterAges/filter-ages.service';
 import { FilterEthnicityService } from '../filterEthnicity/filter-ethnicity.service';
 import { FilterOtherFeaturesService } from '../filterOtherFeatures/filter-other-features.service';
+import { AgeTypes } from '../filterAges/age-types';
+import { SexTypes } from '../filterSexes/sex-types';
+import { EthnicityTypes } from '../filterEthnicity/ethnicity-types';
+import { OtherFeatureTypes } from '../filterOtherFeatures/other-feature-types';
+import { FilterCharacteristicsDto } from '../../models/filters/filter-characteristics.dto';
+import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
+
 
 @Injectable()
 export class FilterCharacteristicsService {
@@ -13,10 +20,9 @@ export class FilterCharacteristicsService {
     private readonly filterAgesService: FilterAgesService,
     private readonly filterEthnicityService: FilterEthnicityService,
     private readonly filterOtherFeaturesService: FilterOtherFeaturesService,
-
   ) {}
 
-    async createFilterSexAgeEthnicityOtherFeature(filter, filterId): Promise<void> {
+    async createFilterCharacteristics(filter, filterId): Promise<void> {
         if(filter.sexFilters && filter.sexFilters.length !== 0){
             for await (const sex of filter.sexFilters ) {
                 const sexFilterParam = this.createParamsHelper.createParamsForSexFilter(filterId, sex);
@@ -43,7 +49,7 @@ export class FilterCharacteristicsService {
         }
     }
 
-    async createLibraryFilterSexAgeEthnicityOtherFeature(filter, filterId): Promise<void> {
+    async createLibraryFilterCharacteristics(filter, filterId): Promise<void> {
         if(filter.sexFilters && filter.sexFilters.length !== 0){
             for await (const sex of filter.sexFilters ) {
                 const sexFilterParam = this.createParamsHelper.createParamsForSexFilter(filterId, sex);
@@ -68,5 +74,13 @@ export class FilterCharacteristicsService {
                 await this.filterOtherFeaturesService.createLibraryFilterOtherFeature(otherFeatureFilterParam);
             }
         }
+    }
+
+    getFilterCharacteristics(): FilterCharacteristicsDto {
+        const allSexTypes = EnumHelper.parseEnumToArrayNumberValues(SexTypes);
+        const allAgeTypes = EnumHelper.parseEnumToArrayNumberValues(AgeTypes);
+        const allEthnicityTypes = EnumHelper.parseEnumToArrayNumberValues(EthnicityTypes);
+        const allOtherFeatureTypes = EnumHelper.parseEnumToArrayNumberValues(OtherFeatureTypes);
+        return new FilterCharacteristicsDto(allSexTypes, allAgeTypes, allEthnicityTypes, allOtherFeatureTypes);
     }
 }

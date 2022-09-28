@@ -47,7 +47,7 @@ export class BiomarkersService {
             const biomarkerFilterParam = this.createParamsHelper.createParamsForFilter(biomarkerRule.id, filter);
             const biomarkerFilter = await this.filtersService.createBiomarkerFilter(biomarkerFilterParam);
 
-            await this.filterCharacteristicsService.createFilterSexAgeEthnicityOtherFeature(filter, biomarkerFilter.id);
+            await this.filterCharacteristicsService.createFilterCharacteristics(filter, biomarkerFilter.id);
             if (filter.recommendationsIsOn) {
                 await this.recommendationsService.createFilterRecommendations(filter, biomarkerFilter.id, biomarker.id);
             }

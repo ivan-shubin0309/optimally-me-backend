@@ -10,4 +10,9 @@ export class EnumHelper {
         }
         return description;
     }
+
+    static parseEnumToArrayNumberValues(EnumObject: any) {
+        const arrayStringValues = Object.keys(EnumObject).filter((v) => !isNaN(Number(v)));
+        return arrayStringValues.map(arrayStringValues => Number(arrayStringValues));
+    }
 }

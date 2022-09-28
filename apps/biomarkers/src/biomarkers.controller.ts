@@ -19,6 +19,7 @@ import { Roles } from '../../common/src/resources/common/role.decorator';
 import { UserRoles } from '../../common/src/resources/users';
 import { BiomarkersService } from './biomarkers.service';
 import { CategoriesService } from './services/category/category.service';
+import { FilterCharacteristicsService } from './services/filterCharacteristicsService/filter-characteristics.service';
 import { UnitsService } from './services/units/units.service';
 import { CategoriesDto, UnitsDto, CreateBiomarkerDto } from './models';
 import { GetListDto } from '../../common/src/models/get-list.dto';
@@ -28,6 +29,7 @@ import { RulesService } from './services/rules/rules.service';
 import { RecommendationsService } from './services/recommendations/recommendations.service';
 import { ListRecommendationsDto } from './models/recommendations/list-recommendations.dto';
 import { GetListRecommendationsDto } from './models/recommendations/get-recommendations.dto';
+import { FilterCharacteristicsDto } from './models/filters/filter-characteristics.dto';
 
 
 
@@ -43,6 +45,7 @@ export class BiomarkersController {
     private readonly rulesService: RulesService,
     private readonly translator: TranslatorService,
     private readonly recommendationsService: RecommendationsService,
+    private readonly filterCharacteristicsService: FilterCharacteristicsService,
     @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
 
   ) {}
@@ -166,5 +169,13 @@ export class BiomarkersController {
     }
 
     return new ListRecommendationsDto(recommendationsList, PaginationHelper.buildPagination({ limit, offset }, count));
+  }
+
+  @ApiCreatedResponse({ type: () => FilterCharacteristicsDto })
+  @ApiOperation({ summary: 'Get list Filter Characteristics' })
+  @Roles(UserRoles.superAdmin)
+  @Get('filters/characteristics')
+  getFilterCharacteristics(): FilterCharacteristicsDto {
+    return this.filterCharacteristicsService.getFilterCharacteristics();
   }
 }

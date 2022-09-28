@@ -37,7 +37,7 @@ export class RulesService {
         const libraryFilterParam = this.createParamsHelper.createParamsForFilter(libraryRule.id, filter);
         const libraryFilter = await this.filtersService.createLibraryFilter(libraryFilterParam);
 
-        await this.filterCharacteristicsService.createLibraryFilterSexAgeEthnicityOtherFeature(filter, libraryFilter.id);
+        await this.filterCharacteristicsService.createLibraryFilterCharacteristics(filter, libraryFilter.id);
         if (filter.recommendationsIsOn) {
           await this.recommendationsService.createLibraryFilterRecommendations(filter, libraryFilter.id);
         }
