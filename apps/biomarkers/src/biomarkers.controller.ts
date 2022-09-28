@@ -19,6 +19,7 @@ import { Roles } from '../../common/src/resources/common/role.decorator';
 import { UserRoles } from '../../common/src/resources/users';
 import { BiomarkersService } from './biomarkers.service';
 import { CategoriesService } from './services/category/category.service';
+import { FilterCharacteristicsService } from './services/filterCharacteristicsService/filter-characteristics.service';
 import { UnitsService } from './services/units/units.service';
 import { CategoriesDto, UnitsDto, CreateBiomarkerDto } from './models';
 import { GetListDto } from '../../common/src/models/get-list.dto';
@@ -28,6 +29,7 @@ import { RulesService } from './services/rules/rules.service';
 import { RecommendationsService } from './services/recommendations/recommendations.service';
 import { ListRecommendationsDto } from './models/recommendations/list-recommendations.dto';
 import { GetListRecommendationsDto } from './models/recommendations/get-recommendations.dto';
+import { FilterCharacteristicsDto } from './models/filters/filter-characteristics.dto';
 
 
 
@@ -43,6 +45,7 @@ export class BiomarkersController {
     private readonly rulesService: RulesService,
     private readonly translator: TranslatorService,
     private readonly recommendationsService: RecommendationsService,
+    private readonly filterCharacteristicsService: FilterCharacteristicsService,
     @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
 
   ) {}
@@ -109,7 +112,7 @@ export class BiomarkersController {
   }
 
   @ApiCreatedResponse({ type: () => RulesDto })
-  @ApiOperation({ summary: 'Get list Rules' })
+  @ApiOperation({ summary: 'Get list rules' })
   @Roles(UserRoles.superAdmin)
   @Get('rules')
   async getListRules(@Query() query: GetListDto): Promise<RulesDto> {
@@ -132,7 +135,7 @@ export class BiomarkersController {
     return new RulesDto(rulesList, PaginationHelper.buildPagination({ limit, offset }, count));
   }
 
-  @ApiOperation({ summary: 'Delete Rule' })
+  @ApiOperation({ summary: 'Delete rule' })
   @ApiParam({ name: 'id' })
   @Roles(UserRoles.superAdmin)
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -142,7 +145,7 @@ export class BiomarkersController {
   }
 
   @ApiCreatedResponse({ type: () => ListRecommendationsDto })
-  @ApiOperation({ summary: 'Get list Recommendations' })
+  @ApiOperation({ summary: 'Get list recommendations' })
   @Roles(UserRoles.superAdmin)
   @Get('recommendations')
   async getListRecommendations(@Query() query: GetListRecommendationsDto): Promise<ListRecommendationsDto> {
@@ -166,5 +169,13 @@ export class BiomarkersController {
     }
 
     return new ListRecommendationsDto(recommendationsList, PaginationHelper.buildPagination({ limit, offset }, count));
+  }
+
+  @ApiCreatedResponse({ type: () => FilterCharacteristicsDto })
+  @ApiOperation({ summary: 'Get filter characteristics' })
+  @Roles(UserRoles.superAdmin)
+  @Get('filters/characteristics')
+  getFilterCharacteristics(): FilterCharacteristicsDto {
+    return this.filterCharacteristicsService.getFilterCharacteristics();
   }
 }

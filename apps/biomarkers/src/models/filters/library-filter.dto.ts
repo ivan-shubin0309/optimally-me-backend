@@ -52,10 +52,16 @@ export class LibraryFilterDto {
     readonly optimalMax: number;
 
     @ApiProperty({ type: () => Number, required: true })
-    readonly HighMin: number;
+    readonly supraOptimalMin: number;
 
     @ApiProperty({ type: () => Number, required: true })
-    readonly HighMax: number;
+    readonly supraOptimalMax: number;
+
+    @ApiProperty({ type: () => Number, required: true })
+    readonly highMin: number;
+
+    @ApiProperty({ type: () => Number, required: true })
+    readonly highMax: number;
 
     @ApiProperty({ type: () => Number, required: true })
     readonly criticalHigh: number;
@@ -89,8 +95,10 @@ export class LibraryFilterDto {
         this.subOptimalMax = entity.subOptimalMax;
         this.optimalMin = entity.optimalMin;
         this.optimalMax = entity.optimalMax;
-        this.HighMin = entity.HighMin;
-        this.HighMax = entity.HighMax;
+        this.supraOptimalMin = entity.supraOptimalMin;
+        this.supraOptimalMax = entity.supraOptimalMax;
+        this.highMin = entity.HighMin;
+        this.highMax = entity.HighMax;
         this.criticalHigh = entity.criticalHigh;
         this.recommendationsIsOn = entity.recommendationsIsOn;
         this.recommendations = entity.recommendations && entity.recommendations.length

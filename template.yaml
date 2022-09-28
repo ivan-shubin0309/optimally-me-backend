@@ -175,4 +175,9 @@ Resources:
           Properties:
             Path: /biomarkers/recommendations
             Method: ANY
+        FiltersCharacteristicsApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/filters/characteristics
+            Method: ANY
 
