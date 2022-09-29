@@ -77,10 +77,10 @@ export class FilterCharacteristicsService {
     }
 
     getFilterCharacteristics(): FilterCharacteristicsDto {
-        const allSexTypes = EnumHelper.parseEnumToArrayNumberValues(SexTypes);
-        const allAgeTypes = EnumHelper.parseEnumToArrayNumberValues(AgeTypes);
-        const allEthnicityTypes = EnumHelper.parseEnumToArrayNumberValues(EthnicityTypes);
-        const allOtherFeatureTypes = EnumHelper.parseEnumToArrayNumberValues(OtherFeatureTypes);
+        const allSexTypes = EnumHelper.toCollection(SexTypes);
+        const allAgeTypes = EnumHelper.toCollection(AgeTypes);
+        const allEthnicityTypes = EnumHelper.toCollection(EthnicityTypes);
+        const allOtherFeatureTypes = EnumHelper.toCollection(OtherFeatureTypes);
         return new FilterCharacteristicsDto(allSexTypes, allAgeTypes, allEthnicityTypes, allOtherFeatureTypes);
     }
 }

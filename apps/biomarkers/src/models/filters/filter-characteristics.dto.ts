@@ -1,24 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
-import { SexTypes } from '../../services/filterSexes/sex-types';
-import { AgeTypes } from '../../services/filterAges/age-types';
-import { EthnicityTypes } from '../../services/filterEthnicity/ethnicity-types';
-import { OtherFeatureTypes } from '../../services/filterOtherFeatures/other-feature-types';
+import { CollectionDto } from 'apps/common/src/models/enum-collecction.dto';
 
 export class FilterCharacteristicsDto {
-    @ApiProperty({ type: () => Array<number>, description: EnumHelper.toDescription(SexTypes) })
-    readonly allSexTypes: number[];
+    @ApiProperty({ type: () => [CollectionDto] })
+    readonly allSexTypes: CollectionDto[];
 
-    @ApiProperty({ type: () => Array<number>, description: EnumHelper.toDescription(AgeTypes) })
-    readonly allAgeTypes: number[];
+    @ApiProperty({ type: () => [CollectionDto] })
+    readonly allAgeTypes: CollectionDto[];
 
-    @ApiProperty({ type: () => Array<number>, description: EnumHelper.toDescription(EthnicityTypes) })
-    readonly allEthnicityTypes: number[];
+    @ApiProperty({ type: () => [CollectionDto] })
+    readonly allEthnicityTypes: CollectionDto[];
 
-    @ApiProperty({ type: () => Array<number>, description: EnumHelper.toDescription(OtherFeatureTypes) })
-    readonly allOtherFeatureTypes: number[];
+    @ApiProperty({ type: () => [CollectionDto] })
+    readonly allOtherFeatureTypes: CollectionDto[];
 
-    constructor(allSexTypes: number[], allAgeTypes: number[], allEthnicityTypes: number[], allOtherFeatureTypes: number[]) {
+    constructor(allSexTypes: CollectionDto[], allAgeTypes: CollectionDto[], allEthnicityTypes: CollectionDto[], allOtherFeatureTypes: CollectionDto[]) {
         this.allSexTypes = allSexTypes;
         this.allAgeTypes = allAgeTypes;
         this.allEthnicityTypes = allEthnicityTypes;

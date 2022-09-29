@@ -1,3 +1,5 @@
+import { CollectionDto } from '../../models/enum-collecction.dto';
+
 export class EnumHelper {
     static toDescription(enumObject: any, label = 'Supported values'): string {
         let description = `${label}: `;
@@ -11,8 +13,16 @@ export class EnumHelper {
         return description;
     }
 
-    static parseEnumToArrayNumberValues(EnumObject: any) {
-        const arrayStringValues = Object.keys(EnumObject).filter((v) => !isNaN(Number(v)));
-        return arrayStringValues.map(arrayStringValues => Number(arrayStringValues));
+    static toCollection(enumObject: any): CollectionDto[] {
+        const resultArray = [];
+        for (const enumMember in enumObject) {
+            const isValue = Number(enumMember) >= 0;
+            if (!isValue) {
+                break;
+            }
+            resultArray.push(new CollectionDto(enumObject[enumMember], parseInt(enumMember)));
+        }
+
+        return resultArray;
     }
 }
