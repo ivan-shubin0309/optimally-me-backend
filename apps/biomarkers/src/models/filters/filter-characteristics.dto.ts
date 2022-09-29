@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
-import { SexTypes } from '../../services/filterSexes/sex-types';
-import { AgeTypes } from '../../services/filterAges/age-types';
-import { EthnicityTypes } from '../../services/filterEthnicity/ethnicity-types';
-import { OtherFeatureTypes } from '../../services/filterOtherFeatures/other-feature-types';
+import { AgeTypes } from 'apps/common/src/resources/filters/age-types';
+import { EthnicityTypes } from 'apps/common/src/resources/filters/ethnicity-types';
+import { OtherFeatureTypes } from 'apps/common/src/resources/filters/other-feature-types';
+import { SexTypes } from 'apps/common/src/resources/filters/sex-types';
+import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
 
 export class FilterCharacteristicsDto {
     @ApiProperty({ type: () => Array<number>, description: EnumHelper.toDescription(SexTypes) })

@@ -1,8 +1,24 @@
-import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
-import { User } from '../../../users/src/models/user.entity';
-import { Category, Unit, BiomarkerRule } from '../models';
+import { Table, Column, Model, Scopes, DataType, ForeignKey, HasMany } from 'sequelize-typescript';
+import { Filter } from './filters/filter.entity';
+import { Category } from './categories/category.entity';
+import { Unit } from './units/unit.entity';
+import { AlternativeName } from './alternativeNames/alternative-name.entity';
+import { BiomarkerTypes } from 'apps/common/src/resources/biomarkers/biomarker-types';
 
 @Scopes(() => ({
+    byId: (id) => ({ where: { id } }),
+    byType: (type) => ({ where: { type } }),
+    byName: (name) => ({ where: { name } }),
+    includeAll: () => ({
+        include: [
+            {
+                model: Filter.scope(['includeAll']),
+                as: 'filters',
+                required: false,
+            }
+        ]
+    }),
+    byIsDeleted: (isDeleted) => ({ where: { isDeleted } }),
 }))
 @Table({
     tableName: 'biomarkers',
@@ -12,16 +28,23 @@ import { Category, Unit, BiomarkerRule } from '../models';
 export class Biomarker extends Model {
     @Column({
         type: DataType.STRING,
-        allowNull: false,
+        allowNull: true,
     })
     name: string;
 
-    @ForeignKey(() => User)
+    @Column({
+        type: DataType.TINYINT,
+        allowNull: false,
+        defaultValue: BiomarkerTypes.biomarker
+    })
+    type: number;
+
+    @ForeignKey(() => Biomarker)
     @Column({
         type: DataType.NUMBER,
         allowNull: true
     })
-    userId: number;
+    templateId: number;
 
     @ForeignKey(() => Category)
     @Column({
@@ -37,10 +60,46 @@ export class Biomarker extends Model {
     })
     unitId: number;
 
-    @ForeignKey(() => BiomarkerRule)
     @Column({
-        type: DataType.NUMBER,
+        type: DataType.STRING,
         allowNull: true
     })
-    ruleId: number;
+    summary: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true
+    })
+    whatIsIt: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true
+    })
+    whatAreTheCauses: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true
+    })
+    whatAreTheRisks: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true
+    })
+    whatCanYouDo: string;
+
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    })
+    isDeleted: boolean;
+
+    @HasMany(() => AlternativeName)
+    alternativeNames: AlternativeName[];
+
+    @HasMany(() => Filter, 'biomarkerId')
+    filters: Filter[];
 }

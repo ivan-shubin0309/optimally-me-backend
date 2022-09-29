@@ -1,15 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BaseDto } from 'apps/common/src/base/base.dto';
 import { Unit } from './unit.entity';
 
-export class UnitDto {
-    @ApiProperty({ type: () => Number, required: true })
-    readonly id: number;
-
+export class UnitDto extends BaseDto<Unit> {
     @ApiProperty({ type: () => String, required: true })
     readonly unit: string;
 
     constructor(entity: Unit) {
-        this.id = entity.id;
+        super(entity);
         this.unit = entity.unit;
     }
 }

@@ -10,26 +10,30 @@ import {
   Query,
   HttpCode,
   HttpStatus,
-  BadRequestException
+  BadRequestException,
+  NotFoundException
 } from '@nestjs/common';
 import { TranslatorService } from 'nestjs-translator';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags, ApiParam } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { Sequelize } from 'sequelize-typescript';
 import { Roles } from '../../common/src/resources/common/role.decorator';
 import { UserRoles } from '../../common/src/resources/users';
 import { BiomarkersService } from './biomarkers.service';
-import { CategoriesService } from './services/category/category.service';
+import { CategoriesService } from './services/categories/categories.service';
 import { FilterCharacteristicsService } from './services/filterCharacteristicsService/filter-characteristics.service';
 import { UnitsService } from './services/units/units.service';
-import { CategoriesDto, UnitsDto, CreateBiomarkerDto } from './models';
 import { GetListDto } from '../../common/src/models/get-list.dto';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
-import { RulesDto } from './models/rules/rules.dto';
-import { RulesService } from './services/rules/rules.service';
 import { RecommendationsService } from './services/recommendations/recommendations.service';
-import { ListRecommendationsDto } from './models/recommendations/list-recommendations.dto';
-import { GetListRecommendationsDto } from './models/recommendations/get-recommendations.dto';
+import { BiomarkerTypes } from 'apps/common/src/resources/biomarkers/biomarker-types';
+import { CreateBiomarkerDto } from './models/create-biomarker.dto';
+import { CategoriesDto } from './models/categories/categories.dto';
+import { UnitsDto } from './models/units/units.dto';
 import { FilterCharacteristicsDto } from './models/filters/filter-characteristics.dto';
+import { BiomarkersDto } from './models/biomarkers.dto';
+import { RecommendationsDto } from './models/recommendations/recommendations.dto';
+import { GetRecommendationListDto } from './services/recommendations/get-recommendation-list.dto';
+import { BiomarkerDto } from './models/biomarker.dto';
 
 
 
@@ -42,7 +46,6 @@ export class BiomarkersController {
     private readonly biomarkersService: BiomarkersService,
     private readonly categoriesService: CategoriesService,
     private readonly unitsService: UnitsService,
-    private readonly rulesService: RulesService,
     private readonly translator: TranslatorService,
     private readonly recommendationsService: RecommendationsService,
     private readonly filterCharacteristicsService: FilterCharacteristicsService,
@@ -50,14 +53,16 @@ export class BiomarkersController {
 
   ) {}
 
+  @ApiCreatedResponse({ type: () => BiomarkerDto })
   @ApiOperation({ summary: 'Create biomarker' })
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.CREATED)
   @Roles(UserRoles.superAdmin)
   @Post('')
-  async createBiomarker(@Request() req, @Body() body: CreateBiomarkerDto): Promise<void> {
-    const { user } = req;
-
-    const biomarker = await this.biomarkersService.getBiomarkerByName(body.name);
+  async createBiomarker(@Body() body: CreateBiomarkerDto): Promise<BiomarkerDto> {
+    let biomarker = await this.biomarkersService.getOne([
+      { method: ['byName', body.name] },
+      { method: ['byType', BiomarkerTypes.biomarker] }
+    ]);
 
     if (biomarker) {
       throw new BadRequestException({
@@ -66,7 +71,10 @@ export class BiomarkersController {
         statusCode: HttpStatus.BAD_REQUEST
       });
     }
-    await this.biomarkersService.createBiomarker(body, user.userId);
+
+    biomarker = await this.biomarkersService.create(body);
+
+    return new BiomarkerDto(biomarker);
   }
 
   @ApiCreatedResponse({ type: () => CategoriesDto })
@@ -80,11 +88,11 @@ export class BiomarkersController {
     let categoriesList = [];
     const scopes: any[] = [];
 
-    const count = await this.categoriesService.getCategoriesCount();
+    const count = await this.categoriesService.getCount(scopes);
 
     if (count) {
       scopes.push({ method: ['pagination', { limit, offset }] });
-      categoriesList = await this.categoriesService.getListCategories(scopes);
+      categoriesList = await this.categoriesService.getList(scopes);
     }
 
     return new CategoriesDto(categoriesList, PaginationHelper.buildPagination({ limit, offset }, count));
@@ -101,38 +109,38 @@ export class BiomarkersController {
     let unitsList = [];
     const scopes: any[] = [];
 
-    const count = await this.unitsService.getUnitsCount();
+    const count = await this.unitsService.getCount(scopes);
 
     if (count) {
       scopes.push({ method: ['pagination', { limit, offset }] });
-      unitsList = await this.unitsService.getListUnits(scopes);
+      unitsList = await this.unitsService.getList(scopes);
     }
 
     return new UnitsDto(unitsList, PaginationHelper.buildPagination({ limit, offset }, count));
   }
 
-  @ApiCreatedResponse({ type: () => RulesDto })
+  @ApiCreatedResponse({ type: () => BiomarkersDto })
   @ApiOperation({ summary: 'Get list rules' })
   @Roles(UserRoles.superAdmin)
   @Get('rules')
-  async getListRules(@Query() query: GetListDto): Promise<RulesDto> {
+  async getListRules(@Query() query: GetListDto): Promise<BiomarkersDto> {
     const limit = parseInt(query.limit);
     const offset = parseInt(query.offset);
 
     let rulesList = [];
     const scopes: any[] = [
-      { method: ['withLibraryFilters'] },
-      { method: ['withInteractions'] }
+      { method: ['byType', BiomarkerTypes.rule] },
+      'includeAll'
     ];
 
-    const count = await this.rulesService.getLibraryRulesCount();
+    const count = await this.biomarkersService.getCount(scopes);
 
     if (count) {
       scopes.push({ method: ['pagination', { limit, offset }] });
-      rulesList = await this.rulesService.getListLibraryRules(scopes);
+      rulesList = await this.biomarkersService.getList(scopes);
     }
 
-    return new RulesDto(rulesList, PaginationHelper.buildPagination({ limit, offset }, count));
+    return new BiomarkersDto(rulesList, PaginationHelper.buildPagination({ limit, offset }, count));
   }
 
   @ApiOperation({ summary: 'Delete rule' })
@@ -140,35 +148,56 @@ export class BiomarkersController {
   @Roles(UserRoles.superAdmin)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('rules/:id')
-  async deleteRule(@Param('id') id: number) {
-    await this.rulesService.deleteLibraryRule(id);
+  async deleteRule(@Param('id') id: number): Promise<void> {
+    const biomarker = await this.biomarkersService.getOne([
+      { method: ['byId', id] },
+      { method: ['byType', BiomarkerTypes.rule] },
+      { method: ['byIsDeleted', false] }
+    ]);
+
+    if (!biomarker) {
+      throw new NotFoundException({
+        message: this.translator.translate('BIOMARKER_NOT_FOUND'),
+        errorCode: 'BIOMARKER_NOT_FOUND',
+        statusCode: HttpStatus.NOT_FOUND
+      });
+    }
+
+    await this.dbConnection.transaction(async transaction => {
+      await Promise.all(
+        biomarker.filters.map(filter => filter.destroy({ transaction }))
+      );
+      await biomarker.update({ isDeleted: true }, { transaction });
+    });
   }
 
-  @ApiCreatedResponse({ type: () => ListRecommendationsDto })
+  @ApiResponse({ type: () => RecommendationsDto })
   @ApiOperation({ summary: 'Get list recommendations' })
   @Roles(UserRoles.superAdmin)
   @Get('recommendations')
-  async getListRecommendations(@Query() query: GetListRecommendationsDto): Promise<ListRecommendationsDto> {
+  async getListRecommendations(@Query() query: GetRecommendationListDto): Promise<RecommendationsDto> {
     const limit = parseInt(query.limit);
     const offset = parseInt(query.offset);
-    const content = query.search;
-    const category = parseInt(query.category);
 
     let recommendationsList = [];
-    const scopes: any[] = [{ method: ['byContent', content] }];
+    const scopes: any[] = [];
 
-    if (category !== 0) {
-      scopes.push({ method: ['byCategory', category] });
+    if (query.category) {
+      scopes.push({ method: ['byCategory', query.category] });
     }
 
-    const count = await this.recommendationsService.getRecommendationsCount();
+    if (query.search) {
+      scopes.push({ method: ['byContent', query.search] });
+    }
+
+    const count = await this.recommendationsService.getCount(scopes);
 
     if (count) {
       scopes.push({ method: ['pagination', { limit, offset }] });
-      recommendationsList = await this.recommendationsService.getListRecommendations(scopes);
+      recommendationsList = await this.recommendationsService.getList(scopes);
     }
 
-    return new ListRecommendationsDto(recommendationsList, PaginationHelper.buildPagination({ limit, offset }, count));
+    return new RecommendationsDto(recommendationsList, PaginationHelper.buildPagination({ limit, offset }, count));
   }
 
   @ApiCreatedResponse({ type: () => FilterCharacteristicsDto })
