@@ -1,3 +1,4 @@
+import { InteractionTypes } from '../../../../common/src/resources/interactions/interaction-types';
 import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
 import { Filter } from '../filters/filter.entity';
 
@@ -19,7 +20,7 @@ export class Interaction extends Model {
         type: DataType.NUMBER,
         allowNull: false
     })
-    type: number;
+    type: InteractionTypes;
 
     @Column({
         type: DataType.STRING,
