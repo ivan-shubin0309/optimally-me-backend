@@ -1,5 +1,5 @@
 export enum OtherFeatureTypes {
-    none = 0,
-    pregnant = 1,
-    menopause = 2,
+    none = 1,
+    pregnant = 2,
+    menopause = 3,
 }

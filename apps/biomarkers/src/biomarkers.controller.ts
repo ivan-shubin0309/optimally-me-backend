@@ -187,7 +187,7 @@ export class BiomarkersController {
     }
 
     if (query.search) {
-      scopes.push({ method: ['byContent', query.search] });
+      scopes.push({ method: ['search', query.search] });
     }
 
     const count = await this.recommendationsService.getCount(scopes);
