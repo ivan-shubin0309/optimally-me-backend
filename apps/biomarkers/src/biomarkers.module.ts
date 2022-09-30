@@ -9,48 +9,14 @@ import { ConfigModule } from '../../common/src/utils/config/config.module';
 import { jwtModuleInstance } from '../../common/src/utils/jwt/jwt.module';
 import { sequelizeProvider } from '../../common/src/utils/database/database.provider';
 import { redisModuleInstance } from 'apps/common/src/utils/database/redis.provider';
-import { User } from '../../users/src/models';
-import {
-  Category,
-  Unit,
-  BiomarkerRule,
-  Biomarker,
-  BiomarkerInteraction,
-  AlternativeName,
-  FilterRecommendation,
-  BiomarkerFilter,
-  BiomarkerFilterAge,
-  LibraryFilterAge,
-  BiomarkerFilterSex,
-  LibraryFilterSex,
-  BiomarkerFilterEthnicity,
-  LibraryFilterEthnicity,
-  LibraryInteraction,
-  BiomarkerFilterOtherFeature,
-  LibraryFilterOtherFeature,
-  LibraryFilter,
-  LibraryFilterRecommendation,
-  LibraryRule,
-  Recommendation
-} from './models';
-import { modelProviders } from './model.providers';
+import { modelProviders } from './models.provider';
 import { translatorInstance } from '../../common/src/utils/translator/translator.provider';
-import { CategoriesService } from './services/category/category.service';
+import { BiomarkersFactory } from './biomarkers.factory';
+import { entities } from '../../common/src/utils/database/database-entity.provider';
 import { UnitsService } from './services/units/units.service';
-import { FilterCharacteristicsService } from './services/filterCharacteristicsService/filter-characteristics.service';
-import { InteractionsService } from './services/interactions/interactions.service';
-import { RulesService } from './services/rules/rules.service';
-import { AlternativeNamesService } from './services/alternativeNames/alternative.service';
-import { FiltersService } from './services/filters/filters.service';
+import { CategoriesService } from './services/categories/categories.service';
 import { RecommendationsService } from './services/recommendations/recommendations.service';
-import { FilterAgesService } from './services/filterAges/filter-ages.service';
-import { FilterSexesService } from './services/filterSexes/filter-sexes.service';
-import { FilterEthnicityService } from './services/filterEthnicity/filter-ethnicity.service';
-import { FilterOtherFeaturesService } from './services/filterOtherFeatures/filter-other-features.service';
-import { CreateParamsHelper } from '../../common/src/utils/helpers/create-params.helper';
-
-
-
+import { FilterCharacteristicsService } from './services/filterCharacteristicsService/filter-characteristics.service';
 
 @Module({
   imports: [
@@ -63,46 +29,15 @@ import { CreateParamsHelper } from '../../common/src/utils/helpers/create-params
   providers: [
     SessionsService,
     BiomarkersService,
-    CategoriesService,
-    InteractionsService,
-    FiltersService,
-    FilterCharacteristicsService,
-    FilterSexesService,
-    FilterAgesService,
-    FilterEthnicityService,
-    FilterOtherFeaturesService,
-    RecommendationsService,
-    AlternativeNamesService,
-    RulesService,
-    UnitsService,
     UsersService,
+    UnitsService,
+    RecommendationsService,
+    CategoriesService,
+    FilterCharacteristicsService,
     JwtStrategy,
-    CreateParamsHelper,
+    BiomarkersFactory,
     ...guardProviders,
-    sequelizeProvider([
-      User,
-      Category,
-      Unit,
-      BiomarkerRule,
-      Biomarker,
-      BiomarkerInteraction,
-      LibraryInteraction,
-      AlternativeName,
-      FilterRecommendation,
-      BiomarkerFilter,
-      BiomarkerFilterAge,
-      LibraryFilterAge,
-      BiomarkerFilterSex,
-      LibraryFilterSex,
-      BiomarkerFilterEthnicity,
-      LibraryFilterEthnicity,
-      BiomarkerFilterOtherFeature,
-      LibraryFilterOtherFeature,
-      LibraryFilter,
-      LibraryFilterRecommendation,
-      LibraryRule,
-      Recommendation
-    ]),
+    sequelizeProvider(entities),
     ...modelProviders
   ]
 })
