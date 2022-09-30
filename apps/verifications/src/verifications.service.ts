@@ -5,16 +5,16 @@ import { Sequelize, Repository } from 'sequelize-typescript';
 import { TokenTypes } from '../../common/src/resources/verificationTokens/token-types';
 import { VerificationToken } from './models/verification-token.entity';
 import { TranslatorService } from 'nestjs-translator';
-import { Transaction } from 'sequelize/types';
+import { BaseService } from 'apps/common/src/base/base.service';
 
 @Injectable()
-export class VerificationsService {
+export class VerificationsService extends BaseService<VerificationToken> {
   constructor(
     private readonly configService: ConfigService,
     @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
-    @Inject('VERIFICATION_TOKEN_MODEL') private readonly VerificationTokenModel: Repository<VerificationToken>,
+    @Inject('VERIFICATION_TOKEN_MODEL') protected readonly model: Repository<VerificationToken>,
     private readonly translatorService: TranslatorService,
-  ) { }
+  ) { super(model); }
 
   generateToken(data: any, tokenLifeTime: number): string {
     return JWT.sign(
@@ -27,9 +27,9 @@ export class VerificationsService {
   async saveToken(userId: number, token: string, type: TokenTypes, isDeletePreviousTokens = false): Promise<void> {
     await this.dbConnection.transaction(async transaction => {
       if (isDeletePreviousTokens) {
-        await this.VerificationTokenModel.destroy({ where: { type, userId }, transaction });
+        await this.model.destroy({ where: { type, userId }, transaction });
       }
-      await this.VerificationTokenModel.create({ userId, token, type }, { transaction });
+      await this.model.create({ userId, token, type }, { transaction });
     });
   }
 
@@ -45,15 +45,9 @@ export class VerificationsService {
     }
   }
 
-  getOne(scopes = [], transaction?: Transaction): Promise<VerificationToken> {
-    return this.VerificationTokenModel
-      .scope(scopes)
-      .findOne({ transaction });
-  }
-
-  async verifyToken(TokenTypes: number, token: string): Promise<VerificationToken> {
+  async verifyToken(tokenType: number, token: string): Promise<VerificationToken> {
     const verificationToken = await this.getOne([
-      { method: ['byType', TokenTypes] },
+      { method: ['byType', tokenType] },
       { method: ['byToken', token] }
     ]);
 

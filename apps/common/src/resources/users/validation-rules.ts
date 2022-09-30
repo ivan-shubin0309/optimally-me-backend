@@ -1,7 +1,11 @@
 export const UsersValidationRules = {
     emailMaxLength: 129,
-    passwordMaxLength: 50
+    passwordMaxLength: 50,
+    passwordMinLength: 8
 };
 
+export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+
 export const INVALID_EMAIL_ERROR_MESSAGE = 'Invalid email';
-export const INVALID_PASSWORD_ERROR_MESSAGE = 'Invalid password. Should contain at least 1 upper-case letter and 1 digit, spaces are not allowed.';
+export const PASSWORD_ERROR_MESSAGE = 'should contain at least 1 upper-case letter and 1 digit, spaces are not allowed.';
+
