@@ -1,36 +1,71 @@
-import { IsNotEmpty, MaxLength, MinLength, IsArray, ArrayMaxSize, IsEnum } from 'class-validator';
+import { IsNotEmpty, MaxLength, MinLength, IsArray, ArrayMaxSize, IsPositive, IsInt, IsString, ValidateNested, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateRuleDto } from './rules/create-rule.dto';
-import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
-import { UnitTypes } from '../services/units/units-types';
-import { CategoryTypes } from '../services/category/category-types';
-import { ALTERNATIVE_NAMES_LIMIT_ERROR_MESSAGE, BIOMARKER_NAME_ERROR_MESSAGE } from '../../../common/src/resources/users';
-import { Transform, TransformFnParams } from 'class-transformer';
+import { Transform, TransformFnParams, Type } from 'class-transformer';
+import { ALTERNATIVE_NAMES_LIMIT_ERROR_MESSAGE, biomarkerValidationRules } from '../../../common/src/resources/biomarkers/validation-rules';
+import { CreateFilterDto } from './filters/create-filter.dto';
 
 export class CreateBiomarkerDto {
     @ApiProperty({ type: () => String, required: true })
-    @MaxLength(200)
-    @MinLength(1, { message: BIOMARKER_NAME_ERROR_MESSAGE })
+    @MaxLength(biomarkerValidationRules.nameMaxLength)
+    @MinLength(biomarkerValidationRules.nameMinLength)
     @Transform(({ value }: TransformFnParams) => value?.trim())
     @IsNotEmpty()
     readonly name: string;
 
-    @ApiProperty({ type: () => Array<string>, required: false })
-    @ArrayMaxSize(10, { message: ALTERNATIVE_NAMES_LIMIT_ERROR_MESSAGE })
+    @ApiProperty({ type: () => [String], required: false })
+    @ArrayMaxSize(biomarkerValidationRules.alternativeNamesMax, { message: ALTERNATIVE_NAMES_LIMIT_ERROR_MESSAGE })
     @IsArray()
+    @IsString({ each: true })
     readonly alternativeNames: string[];
 
-    @ApiProperty({ type: () => Number, description: EnumHelper.toDescription(CategoryTypes) })
-    @IsNotEmpty()
-    @IsEnum(CategoryTypes)
-    readonly category: number;
+    @ApiProperty({ type: () => String, required: false })
+    @MaxLength(biomarkerValidationRules.nameMaxLength)
+    @Transform(({ value }: TransformFnParams) => value?.trim())
+    @IsOptional()
+    readonly ruleName: string;
 
-    @ApiProperty({ type: () => Number, description: EnumHelper.toDescription(UnitTypes) })
-    @IsNotEmpty()
-    @IsEnum(UnitTypes)
-    readonly unit: number;
+    @ApiProperty({ type: () => Number, required: false })
+    @IsInt()
+    @IsPositive()
+    @IsOptional()
+    readonly ruleId: number;
 
-    @ApiProperty({ type: () => CreateRuleDto, required: true })
+    @ApiProperty({ type: () => Number, required: true })
     @IsNotEmpty()
-    readonly rule: CreateRuleDto;
+    @IsInt()
+    @IsPositive()
+    readonly categoryId: number;
+
+    @ApiProperty({ type: () => Number, required: true })
+    @IsNotEmpty()
+    @IsInt()
+    @IsPositive()
+    readonly unitId: number;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsNotEmpty()
+    readonly summary: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsNotEmpty()
+    readonly whatIsIt: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsNotEmpty()
+    readonly whatAreTheCauses: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsNotEmpty()
+    readonly whatAreTheRisks: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsNotEmpty()
+    readonly whatCanYouDo: string;
+
+    @ApiProperty({ type: () => [CreateFilterDto], required: false })
+    @IsArray()
+    @ArrayMaxSize(biomarkerValidationRules.filtersMaxCount)
+    @ValidateNested()
+    @Type(() => CreateFilterDto)
+    readonly filters: CreateFilterDto[];
 }

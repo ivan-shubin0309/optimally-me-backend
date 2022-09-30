@@ -1,5 +1,5 @@
 import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
-import { Biomarker } from '../index';
+import { Biomarker } from '../biomarker.entity';
 
 @Scopes(() => ({
 
@@ -13,7 +13,7 @@ export class AlternativeName extends Model {
     @ForeignKey(() => Biomarker)
     @Column({
         type: DataType.NUMBER,
-        allowNull: true
+        allowNull: false
     })
     biomarkerId: number;
 

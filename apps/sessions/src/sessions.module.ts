@@ -8,9 +8,9 @@ import { ConfigModule } from '../../common/src/utils/config/config.module';
 import { jwtModuleInstance } from '../../common/src/utils/jwt/jwt.module';
 import { sequelizeProvider } from '../../common/src/utils/database/database.provider';
 import { redisModuleInstance } from 'apps/common/src/utils/database/redis.provider';
-import { User } from '../../users/src/models';
 import { modelProviders } from './model.provider';
 import { translatorInstance } from '../../common/src/utils/translator/translator.provider';
+import { entities } from '../../common/src/utils/database/database-entity.provider';
 
 @Module({
   imports: [
@@ -25,7 +25,7 @@ import { translatorInstance } from '../../common/src/utils/translator/translator
     UsersService,
     JwtStrategy,
     ...guardProviders,
-    sequelizeProvider([User]),
+    sequelizeProvider(entities),
     ...modelProviders
   ]
 })

@@ -10,10 +10,10 @@ import { translatorInstance } from '../../common/src/utils/translator/translator
 import { User } from '../../users/src/models';
 import { UsersService } from '../../users/src/users.service';
 import { modelProviders } from './models.provider';
-import { VerificationToken } from '../../verifications/src/models/verification-token.entity';
 import { AdminsVerificationsController } from './admins-verifications.controller';
 import { VerificationsService } from '../../verifications/src/verifications.service';
 import { MailerService } from '../../common/src/resources/mailer/mailer.service';
+import { entities } from '../../common/src/utils/database/database-entity.provider';
 
 @Module({
   imports: [
@@ -32,7 +32,7 @@ import { MailerService } from '../../common/src/resources/mailer/mailer.service'
     MailerService,
     JwtStrategy,
     ...guardProviders,
-    sequelizeProvider([User, VerificationToken]),
+    sequelizeProvider(entities),
     ...modelProviders,
   ],
 })
