@@ -78,7 +78,7 @@ export class WefitterService {
         return data;
     }
 
-    static prepareAuth(token): object {
+    private prepareAuth(token): object {
         return {
             headers: {
                 'Authorization': `bearer ${token}`
