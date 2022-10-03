@@ -67,7 +67,7 @@ export class WefitterController {
             });
         }
         const { wefitter: { publicId, bearer } } = user;
-        if (!user || !publicId || !bearer) {
+        if (!publicId || !bearer) {
             throw new BadRequestException({
                 message: this.translator.translate('WEFITTER_PROFILE_NOT_FOUND'),
                 errorCode: 'USER_NOT_FOUND',
