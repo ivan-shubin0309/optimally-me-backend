@@ -246,4 +246,25 @@ export class BiomarkersController {
 
     return new BiomarkerDto(biomarker);
   }
+
+  @ApiResponse({ type: () => BiomarkersDto })
+  @ApiOperation({ summary: 'Get list of biomarkers' })
+  @Roles(UserRoles.superAdmin)
+  @Get()
+  async getBiomarkersList(@Query() query: GetListDto): Promise<BiomarkersDto> {
+    const limit = parseInt(query.limit);
+    const offset = parseInt(query.offset);
+
+    let biomarkersList = [];
+    const scopes: any[] = [{ method: ['byType', BiomarkerTypes.biomarker] }];
+
+    const count = await this.recommendationsService.getCount(scopes);
+
+    if (count) {
+      scopes.push({ method: ['pagination', { limit, offset }] });
+      biomarkersList = await this.biomarkersService.getList(scopes);
+    }
+
+    return new BiomarkersDto(biomarkersList, PaginationHelper.buildPagination({ limit, offset }, count));
+  }
 }
