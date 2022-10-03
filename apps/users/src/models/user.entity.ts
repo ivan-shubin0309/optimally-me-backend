@@ -1,12 +1,22 @@
 import { UserRoles } from '../../../common/src/resources/users';
-import { Table, Column, Model, Scopes, DataType, BeforeCreate, BeforeUpdate } from 'sequelize-typescript';
+import { Table, Column, Model, Scopes, DataType, BeforeCreate, BeforeUpdate, HasOne } from 'sequelize-typescript';
 import { PasswordHelper } from '../../../common/src/utils/helpers/password.helper';
+import { UserWefitter } from '../../../wefitter/src/models/user-wefitter.entity';
 
 @Scopes(() => ({
     byRoles: (role: number) => ({
         where: { role }
     }),
-    byId: (id: number) => ({ where: { id } })
+    byId: (id: number) => ({ where: { id } }),
+    withWefitter: () => ({
+        include: [
+            {
+                model: UserWefitter,
+                as: 'wefitter',
+                required: false,
+            }
+        ]
+    }),
 }))
 @Table({
     tableName: 'users',
@@ -50,6 +60,9 @@ export class User extends Model {
         allowNull: true,
     })
     lastName: string;
+
+    @HasOne(() => UserWefitter, 'userId')
+    wefitter: UserWefitter;
 
     @BeforeCreate
     static hashPasswordBeforeCreate(model) {

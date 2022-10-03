@@ -12,6 +12,7 @@ import { Recommendation } from '../../../../biomarkers/src/models/recommendation
 import { Unit } from '../../../../biomarkers/src/models/units/unit.entity';
 import { User } from '../../../../users/src/models';
 import { VerificationToken } from '../../../../verifications/src/models/verification-token.entity';
+import { UserWefitter } from '../../../../wefitter/src/models/user-wefitter.entity';
 
 export const entities = [
     User,
@@ -28,4 +29,5 @@ export const entities = [
     FilterEthnicity,
     FilterOtherFeature,
     Interaction,
+    UserWefitter
 ];

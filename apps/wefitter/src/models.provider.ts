@@ -1,5 +1,5 @@
-import { User } from './models/user.entity';
-import { UserWefitter } from "../../wefitter/src/models/user-wefitter.entity";
+import { User } from '../../users/src/models/user.entity';
+import { UserWefitter } from './models/user-wefitter.entity';
 
 export const modelProviders = [
     {

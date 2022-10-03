@@ -7,21 +7,26 @@ import {
     HttpCode,
     HttpStatus,
     BadRequestException,
+    Inject,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
+import { WefitterService } from '../../wefitter/src/wefitter.service';
 import { Public } from '../../common/src/resources/common/public.decorator';
 import { Roles } from '../../common/src/resources/common/role.decorator';
 import { UserDto, CreateUserDto } from './models';
 import { UserRoles } from '../../common/src/resources/users';
 import { TranslatorService } from 'nestjs-translator';
+import { Sequelize } from 'sequelize-typescript';
 
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
     constructor(
         private readonly usersService: UsersService,
+        private readonly wefitterService: WefitterService,
         private readonly translator: TranslatorService,
+        @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
     ) {}
 
     @Roles(UserRoles.user)
@@ -50,8 +55,11 @@ export class UsersController {
             });
         }
 
-        await this.usersService.create(body);
+        await this.dbConnection.transaction(async transaction => {
+            const createdUser = await this.usersService.create(body, transaction);
 
+            await this.wefitterService.createProfile(createdUser, transaction);
+        });
         return {};
     }
 }

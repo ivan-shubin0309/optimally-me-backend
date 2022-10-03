@@ -11,5 +11,7 @@
     "BIOMARKER_ALREADY_EXIST": "Biomarker with that name already exist",
     "BIOMARKER_NOT_FOUND": "Biomarker not found",
     "USER_RESTORE_PASSWORD_EMAIL_TEXT": "Hello ${firstName} ${lastName}<br><br>Follow this <a href=\"${link}\">LINK</a> to restore your password in the OptimallyMe app. The link can be used only once.",
-    "USER_RESTORE_PASSWORD_EMAIL_SUBJECT": "Restore password"
+    "USER_RESTORE_PASSWORD_EMAIL_SUBJECT": "Restore password",
+    "WEFITTER_PROFILE_ALREADY_EXIST": "Wefitter profile already exist",
+    "WEFITTER_PROFILE_NOT_FOUND": "Wefitter profile not found"
 }

@@ -19,8 +19,8 @@ export class UsersService {
             });
     }
 
-    create(body: ICreateUser): Promise<User> {
-        return this.userModel.create({ ...body });
+    create(body: ICreateUser, transaction?: Transaction): Promise<User> {
+        return this.userModel.create({ ...body }, { transaction });
     }
 
     getUser(userId: number, scopes?: any[], transaction?: Transaction): Promise<User> {

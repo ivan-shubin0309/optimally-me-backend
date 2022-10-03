@@ -80,6 +80,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/biomarkers/tsconfig.app.json"
       }
+    },
+    "wefitter": {
+      "type": "application",
+      "root": "apps/wefitter",
+      "entryFile": "main",
+      "sourceRoot": "apps/wefitter/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/wefitter/tsconfig.app.json"
+      }
     }
   }
 }

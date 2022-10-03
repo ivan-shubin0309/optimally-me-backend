@@ -6,6 +6,7 @@
 .PHONY: build-AdminsVerificationsFunction
 .PHONY: build-BiomarkersFunction
 .PHONY: build-VerificationsFunction
+.PHONY: build-WefitterFunction
 
 
 build-RuntimeDependenciesLayer:
@@ -43,3 +44,6 @@ build-BiomarkersFunction:
 
 build-VerificationsFunction:
 	$(MAKE) HANDLER=apps/verifications/src/main.ts ENTITY=verifications build-lambda-common
+
+build-WefitterFunction:
+	$(MAKE) HANDLER=apps/wefitter/src/main.ts ENTITY=wefitter build-lambda-common

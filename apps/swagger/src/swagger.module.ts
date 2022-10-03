@@ -5,6 +5,7 @@ import { AdminsSessionsModule } from '../../admins-sessions/src/admins-sessions.
 import { AdminsVerificationsModule } from '../../admins-verifications/src/admins-verifications.module';
 import { BiomarkersModule } from '../../biomarkers/src/biomarkers.module';
 import { VerificationsModule } from '../../verifications/src/verifications.module';
+import { WefitterModule } from '../../wefitter/src/wefitter.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { VerificationsModule } from '../../verifications/src/verifications.modul
     AdminsVerificationsModule,
     BiomarkersModule,
     VerificationsModule,
+    WefitterModule
   ]
 })
 export class SwaggerAppModule { }
