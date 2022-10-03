@@ -1,6 +1,12 @@
+import { RecommendationCategoryTypes } from '../../../../common/src/resources/recommendations/recommendation-category-types';
 import { Table, Column, Model, DataType, Scopes } from 'sequelize-typescript';
+import { Op } from 'sequelize';
 
-@Scopes(() => ({}))
+@Scopes(() => ({
+    byCategory: (category) => ({ where: { category } }),
+    search: (searchString) => ({ where: { content: { [Op.like]: `%${searchString}%` } } }),
+    pagination: (query) => ({ limit: query.limit, offset: query.offset })
+}))
 
 @Table({
     tableName: 'recommendations',
@@ -13,7 +19,7 @@ export class Recommendation extends Model {
         type: DataType.NUMBER,
         allowNull: false,
     })
-    category: number;
+    category: RecommendationCategoryTypes;
 
     @Column({
         type: DataType.STRING,

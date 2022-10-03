@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsInt, IsOptional, IsPositive, Max, Min } from 'class-validator';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
 import { RecommendationCategoryTypes } from '../../../../common/src/resources/recommendations/recommendation-category-types';
 
@@ -22,10 +22,10 @@ export class GetRecommendationListDto {
     @IsOptional()
     readonly search: string;
 
-    @ApiProperty({ type: () => Number, required: true, default: '0', description: EnumHelper.toDescription(RecommendationCategoryTypes) })
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(RecommendationCategoryTypes) })
     @IsInt()
-    @Min(0)
+    @IsPositive()
     @IsOptional()
     @Type(() => Number)
-    readonly category: string = '0';
+    readonly category: string;
 }
