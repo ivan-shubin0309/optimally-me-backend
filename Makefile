@@ -5,6 +5,7 @@
 .PHONY: build-AdminsSessionsFunction
 .PHONY: build-AdminsVerificationsFunction
 .PHONY: build-BiomarkersFunction
+.PHONY: build-VerificationsFunction
 
 
 build-RuntimeDependenciesLayer:
@@ -39,3 +40,6 @@ build-AdminsVerificationsFunction:
 
 build-BiomarkersFunction:
 	$(MAKE) HANDLER=apps/biomarkers/src/main.ts ENTITY=biomarkers build-lambda-common
+
+build-VerificationsFunction:
+	$(MAKE) HANDLER=apps/verifications/src/main.ts ENTITY=verifications build-lambda-common

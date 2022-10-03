@@ -65,4 +65,19 @@ export class MailerService {
             user.email
         );
     }
+
+    async sendUserRestorePasswordEmail(user: User, link: string): Promise<void> {
+
+        return this.sendEmail(
+            this.translatorService.translate('USER_RESTORE_PASSWORD_EMAIL_TEXT', {
+                replace: {
+                    link,
+                    firstName: user.firstName,
+                    lastName: user.lastName
+                }
+            }),
+            this.translatorService.translate('USER_RESTORE_PASSWORD_EMAIL_SUBJECT'),
+            user.email
+        );
+    }
 }

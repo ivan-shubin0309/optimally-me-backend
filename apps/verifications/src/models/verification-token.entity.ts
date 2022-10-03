@@ -27,7 +27,7 @@ export class VerificationToken extends Model {
         allowNull: false,
         defaultValue: TokenTypes.password
     })
-    type: number;
+    type: TokenTypes;
 
     @Column({
         type: DataType.BOOLEAN,

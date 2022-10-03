@@ -1,3 +1,4 @@
 export enum TokenTypes {
-    password = 1
+    password = 1,
+    userPassword = 2,
 }
