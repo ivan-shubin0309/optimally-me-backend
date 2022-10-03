@@ -1,7 +1,7 @@
 import { IsNotEmpty, MaxLength, MinLength, IsArray, ArrayMaxSize, IsPositive, IsInt, IsString, ValidateNested, IsOptional, ArrayNotEmpty, ArrayUnique } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
-import { ALTERNATIVE_NAMES_LIMIT_ERROR_MESSAGE, biomarkerValidationRules } from '../../../common/src/resources/biomarkers/validation-rules';
+import { biomarkerValidationRules } from '../../../common/src/resources/biomarkers/validation-rules';
 import { CreateFilterDto } from './filters/create-filter.dto';
 
 export class CreateBiomarkerDto {
@@ -14,7 +14,7 @@ export class CreateBiomarkerDto {
 
     @ApiProperty({ type: () => [String], required: false })
     @IsOptional()
-    @ArrayMaxSize(biomarkerValidationRules.alternativeNamesMax, { message: ALTERNATIVE_NAMES_LIMIT_ERROR_MESSAGE })
+    @ArrayMaxSize(biomarkerValidationRules.alternativeNamesMax)
     @IsArray()
     @IsString({ each: true })
     @ArrayUnique()
