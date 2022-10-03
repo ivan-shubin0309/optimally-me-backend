@@ -15,7 +15,12 @@ import { BiomarkerTypes } from 'apps/common/src/resources/biomarkers/biomarker-t
                 model: Filter.scope(['includeAll']),
                 as: 'filters',
                 required: false,
-            }
+            },
+            {
+                model: AlternativeName,
+                as: 'alternativeNames',
+                required: false,
+            },
         ]
     }),
     byIsDeleted: (isDeleted) => ({ where: { isDeleted } }),

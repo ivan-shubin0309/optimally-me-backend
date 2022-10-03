@@ -1,14 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty } from 'class-validator';
+import { IsInt, IsNotEmpty, IsPositive } from 'class-validator';
 
 class RecommendationObject {
     @ApiProperty({ type: () => Number, required: true })
     @IsNotEmpty()
+    @IsPositive()
+    @IsInt()
     readonly order: number;
 
     @ApiProperty({ type: () => Number, required: true })
     @IsNotEmpty()
+    @IsPositive()
+    @IsInt()
     readonly recommendationId: number;
 }
 

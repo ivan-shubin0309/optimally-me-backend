@@ -1,4 +1,5 @@
 import { User } from '../../users/src/models';
+import { AlternativeName } from './models/alternativeNames/alternative-name.entity';
 import { Biomarker } from './models/biomarker.entity';
 import { Category } from './models/categories/category.entity';
 import { FilterEthnicity } from './models/filterEthnicity/filter-ethnicity.entity';
@@ -59,6 +60,10 @@ export const modelProviders = [
     {
         provide: 'FILTER_OTHER_FEATURE_MODEL',
         useValue: FilterOtherFeature
+    },
+    {
+        provide: 'ALTERNATIVE_NAME_MODEL',
+        useValue: AlternativeName
     }
 ];
 
