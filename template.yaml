@@ -150,6 +150,11 @@ Resources:
           Properties:
             Path: /biomarkers
             Method: ANY
+        BiomarkersByIdApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/{id}
+            Method: ANY
         CategoriesApi:
           Type: Api
           Properties:

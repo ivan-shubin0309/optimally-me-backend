@@ -1,7 +1,7 @@
-import { IsNotEmpty, MaxLength, MinLength, IsArray, ArrayMaxSize, IsPositive, IsInt, IsString, ValidateNested, IsOptional } from 'class-validator';
+import { IsNotEmpty, MaxLength, MinLength, IsArray, ArrayMaxSize, IsPositive, IsInt, IsString, ValidateNested, IsOptional, ArrayNotEmpty, ArrayUnique } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
-import { ALTERNATIVE_NAMES_LIMIT_ERROR_MESSAGE, biomarkerValidationRules } from '../../../common/src/resources/biomarkers/validation-rules';
+import { biomarkerValidationRules } from '../../../common/src/resources/biomarkers/validation-rules';
 import { CreateFilterDto } from './filters/create-filter.dto';
 
 export class CreateBiomarkerDto {
@@ -13,9 +13,11 @@ export class CreateBiomarkerDto {
     readonly name: string;
 
     @ApiProperty({ type: () => [String], required: false })
-    @ArrayMaxSize(biomarkerValidationRules.alternativeNamesMax, { message: ALTERNATIVE_NAMES_LIMIT_ERROR_MESSAGE })
+    @IsOptional()
+    @ArrayMaxSize(biomarkerValidationRules.alternativeNamesMax)
     @IsArray()
     @IsString({ each: true })
+    @ArrayUnique()
     readonly alternativeNames: string[];
 
     @ApiProperty({ type: () => String, required: false })
@@ -42,28 +44,28 @@ export class CreateBiomarkerDto {
     @IsPositive()
     readonly unitId: number;
 
-    @ApiProperty({ type: () => String, required: false })
+    @ApiProperty({ type: () => String, required: true })
     @IsNotEmpty()
     readonly summary: string;
 
-    @ApiProperty({ type: () => String, required: false })
+    @ApiProperty({ type: () => String, required: true })
     @IsNotEmpty()
     readonly whatIsIt: string;
 
-    @ApiProperty({ type: () => String, required: false })
+    @ApiProperty({ type: () => String, required: true })
     @IsNotEmpty()
     readonly whatAreTheCauses: string;
 
-    @ApiProperty({ type: () => String, required: false })
+    @ApiProperty({ type: () => String, required: true })
     @IsNotEmpty()
     readonly whatAreTheRisks: string;
 
-    @ApiProperty({ type: () => String, required: false })
+    @ApiProperty({ type: () => String, required: true })
     @IsNotEmpty()
     readonly whatCanYouDo: string;
 
-    @ApiProperty({ type: () => [CreateFilterDto], required: false })
-    @IsArray()
+    @ApiProperty({ type: () => [CreateFilterDto], required: true })
+    @ArrayNotEmpty()
     @ArrayMaxSize(biomarkerValidationRules.filtersMaxCount)
     @ValidateNested()
     @Type(() => CreateFilterDto)

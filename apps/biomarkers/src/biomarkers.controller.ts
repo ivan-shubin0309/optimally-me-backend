@@ -11,11 +11,12 @@ import {
   HttpCode,
   HttpStatus,
   BadRequestException,
-  NotFoundException
+  NotFoundException,
+  Put
 } from '@nestjs/common';
 import { TranslatorService } from 'nestjs-translator';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { Sequelize } from 'sequelize-typescript';
+import { Not, Sequelize } from 'sequelize-typescript';
 import { Roles } from '../../common/src/resources/common/role.decorator';
 import { UserRoles } from '../../common/src/resources/users';
 import { BiomarkersService } from './biomarkers.service';
@@ -25,7 +26,7 @@ import { UnitsService } from './services/units/units.service';
 import { GetListDto } from '../../common/src/models/get-list.dto';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
 import { RecommendationsService } from './services/recommendations/recommendations.service';
-import { BiomarkerTypes } from 'apps/common/src/resources/biomarkers/biomarker-types';
+import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-types';
 import { CreateBiomarkerDto } from './models/create-biomarker.dto';
 import { CategoriesDto } from './models/categories/categories.dto';
 import { UnitsDto } from './models/units/units.dto';
@@ -34,6 +35,7 @@ import { BiomarkersDto } from './models/biomarkers.dto';
 import { RecommendationsDto } from './models/recommendations/recommendations.dto';
 import { GetRecommendationListDto } from './services/recommendations/get-recommendation-list.dto';
 import { BiomarkerDto } from './models/biomarker.dto';
+import { EntityByIdDto } from '../../common/src/models/entity-by-id.dto';
 
 
 
@@ -206,5 +208,42 @@ export class BiomarkersController {
   @Get('filters/characteristics')
   getFilterCharacteristics(): FilterCharacteristicsDto {
     return this.filterCharacteristicsService.getFilterCharacteristics();
+  }
+
+  @ApiResponse({ type: () => BiomarkerDto })
+  @ApiOperation({ summary: 'Update biomarker' })
+  @Roles(UserRoles.superAdmin)
+  @Put('/:id')
+  async updateBiomarker(@Param() param: EntityByIdDto, @Body() body: CreateBiomarkerDto): Promise<BiomarkerDto> {
+    let biomarker = await this.biomarkersService.getOne([
+      { method: ['byId', param.id] },
+      { method: ['byType', BiomarkerTypes.biomarker] },
+      'includeAll'
+    ]);
+
+    if (!biomarker) {
+      throw new NotFoundException({
+        message: this.translator.translate('BIOMARKER_NOT_FOUND'),
+        errorCode: 'BIOMARKER_NOT_FOUND',
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+    }
+
+    const biomarkerWithName = await this.biomarkersService.getOne([
+      { method: ['byName', body.name] },
+      { method: ['byType', BiomarkerTypes.biomarker] },
+    ]);
+
+    if (biomarkerWithName && biomarkerWithName.id !== biomarker.id) {
+      throw new BadRequestException({
+        message: this.translator.translate('BIOMARKER_ALREADY_EXIST'),
+        errorCode: 'BIOMARKER_ALREADY_EXIST',
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+    }
+
+    biomarker = await this.biomarkersService.update(biomarker, body);
+
+    return new BiomarkerDto(biomarker);
   }
 }

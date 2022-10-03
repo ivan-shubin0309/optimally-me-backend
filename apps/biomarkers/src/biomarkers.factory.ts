@@ -15,6 +15,7 @@ import { FilterSex } from './models/filtersSex/filter-sex.entity';
 import { FilterAge } from './models/filtersAge/filter-age.entity';
 import { FilterEthnicity } from './models/filterEthnicity/filter-ethnicity.entity';
 import { FilterOtherFeature } from './models/filterOtherFeatures/filter-other-feature.entity';
+import { AlternativeName } from './models/alternativeNames/alternative-name.entity';
 
 @Injectable()
 export class BiomarkersFactory {
@@ -27,6 +28,7 @@ export class BiomarkersFactory {
         @Inject('FILTER_AGE_MODEL') readonly filterAgeModel: Repository<FilterAge>,
         @Inject('FILTER_ETHNICITY_MODEL') readonly filterEthnicityModel: Repository<FilterEthnicity>,
         @Inject('FILTER_OTHER_FEATURE_MODEL') readonly filterOtherFeatureModel: Repository<FilterOtherFeature>,
+        @Inject('ALTERNATIVE_NAME_MODEL') readonly alternativeNameModel: Repository<AlternativeName>,
     ) { }
 
     private async create(body: CreateBiomarkerDto & { templateId?: number, type: BiomarkerTypes }, transaction?: Transaction): Promise<Biomarker> {
@@ -38,6 +40,10 @@ export class BiomarkersFactory {
         }
 
         const promises = body.filters.map(filter => this.attachFilter(filter, createdBiomarker.id, transaction));
+
+        if (body.alternativeNames && body.alternativeNames.length) {
+            promises.push(this.attachAlternativeNames(body.alternativeNames, createdBiomarker.id, transaction));
+        }
 
         await Promise.all(promises);
 
@@ -62,15 +68,21 @@ export class BiomarkersFactory {
         return this.create(Object.assign({ type: BiomarkerTypes.rule }, body), transaction);
     }
 
-    private async attachFilter(filter: CreateFilterDto, biomarkerId: number, transaction?: Transaction): Promise<void> {
+    async attachFilter(filter: CreateFilterDto, biomarkerId: number, transaction?: Transaction): Promise<void> {
         const filterToCreate: any = Object.assign({ biomarkerId }, filter);
         const createdFilter = await this.filterModel.create(filterToCreate, { transaction });
 
-        await Promise.all([
-            this.attachRecommendationsToFilter(filter.recommendation, createdFilter.id, transaction),
-            this.attachInteractionsToFilter(filter.interactions, createdFilter.id, transaction),
-            this.attachFilterCharacteristics(filter, createdFilter.id, transaction),
-        ]);
+        const promises = [this.attachFilterCharacteristics(filter, createdFilter.id, transaction)];
+
+        if (filter.recommendation) {
+            promises.push(this.attachRecommendationsToFilter(filter.recommendation, createdFilter.id, transaction));
+        }
+
+        if (filter.interactions) {
+            promises.push(this.attachInteractionsToFilter(filter.interactions, createdFilter.id, transaction));
+        }
+
+        await Promise.all(promises);
     }
 
     private async attachRecommendationsToFilter(recommendation: CreateRecommendationDto, filterId: number, transaction?: Transaction): Promise<void> {
@@ -157,5 +169,9 @@ export class BiomarkersFactory {
         }
 
         await Promise.all(promises);
+    }
+
+    async attachAlternativeNames(alternativeNames: string[], biomarkerId: number, transaction?: Transaction): Promise<void> {
+        await this.alternativeNameModel.bulkCreate(alternativeNames.map(alternativeName => ({ biomarkerId, name: alternativeName })), { transaction });
     }
 }

@@ -2,7 +2,7 @@ import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-ty
 import { Biomarker } from '../biomarker.entity';
 
 @Scopes(() => ({
-
+    byBiomarkerId: (biomarkerId) => ({ where: { biomarkerId } }),
 }))
 @Table({
     tableName: 'alternativeNames',

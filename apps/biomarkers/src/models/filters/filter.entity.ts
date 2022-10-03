@@ -42,6 +42,7 @@ import { FilterRecommendation } from '../recommendations/filter-recommendation.e
             },
         ]
     }),
+    byBiomarkerId: (biomarkerId) => ({ where: { biomarkerId } }),
 }))
 @Table({
     tableName: 'filters',
