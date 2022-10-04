@@ -76,8 +76,8 @@ export class BiomarkersFactory {
 
         const promises = [this.attachFilterCharacteristics(filter, createdFilter.id, transaction)];
 
-        if (filter.recommendation) {
-            promises.push(this.attachRecommendationsToFilter(filter.recommendation, createdFilter.id, transaction));
+        if (filter.recommendations) {
+            promises.push(this.attachRecommendationsToFilter(filter.recommendations, createdFilter.id, transaction));
         }
 
         if (filter.interactions) {
@@ -87,50 +87,8 @@ export class BiomarkersFactory {
         await Promise.all(promises);
     }
 
-    private async attachRecommendationsToFilter(recommendation: CreateRecommendationDto, filterId: number, transaction?: Transaction): Promise<void> {
-        const recommendationsToCreate = [];
-
-        if (recommendation.criticalLow && recommendation.criticalLow.length) {
-            recommendation.criticalLow.forEach(criticalLow => {
-                recommendationsToCreate.push({
-                    order: criticalLow.order,
-                    recommendationId: criticalLow.recommendationId,
-                    filterId,
-                    type: RecommendationTypes.criticalLow
-                });
-            });
-        }
-        if (recommendation.low && recommendation.low.length) {
-            recommendation.low.forEach(low => {
-                recommendationsToCreate.push({
-                    order: low.order,
-                    recommendationId: low.recommendationId,
-                    filterId,
-                    type: RecommendationTypes.low
-                });
-            });
-        }
-        if (recommendation.high && recommendation.high.length) {
-            recommendation.high.forEach(high => {
-                recommendationsToCreate.push({
-                    order: high.order,
-                    recommendationId: high.recommendationId,
-                    filterId,
-                    type: RecommendationTypes.high
-                });
-            });
-        }
-        if (recommendation.criticalHigh && recommendation.criticalHigh.length) {
-            recommendation.criticalHigh.forEach(criticalHigh => {
-                recommendationsToCreate.push({
-                    order: criticalHigh.order,
-                    recommendationId: criticalHigh.recommendationId,
-                    filterId,
-                    type: RecommendationTypes.criticalHigh
-                });
-            });
-        }
-
+    private async attachRecommendationsToFilter(recommendations: CreateRecommendationDto[], filterId: number, transaction?: Transaction): Promise<void> {
+        const recommendationsToCreate: any[] = recommendations.map(recommendation => Object.assign({ filterId }, recommendation));
         await this.filterRecommendationModel.bulkCreate(recommendationsToCreate, { transaction });
     }
 
