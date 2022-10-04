@@ -76,23 +76,24 @@ export class CreateFilterDto {
     @Type(() => CreateInteractionDto)
     readonly interactions: CreateInteractionDto[];
 
-    @ApiProperty({ type: () => [Number], required: false, description: EnumHelper.toDescription(AgeTypes) })
+    @ApiProperty({ type: () => [Number], required: true, description: EnumHelper.toDescription(AgeTypes) })
     @ArrayMinSize(1)
     @IsEnum(AgeTypes, { each: true })
     readonly ages: number[];
 
-    @ApiProperty({ type: () => [Number], required: false, description: EnumHelper.toDescription(SexTypes) })
+    @ApiProperty({ type: () => [Number], required: true, description: EnumHelper.toDescription(SexTypes) })
     @ArrayMinSize(1)
     @IsEnum(SexTypes, { each: true })
     readonly sexes: number[];
 
-    @ApiProperty({ type: () => [Number], required: false, description: EnumHelper.toDescription(EthnicityTypes) })
+    @ApiProperty({ type: () => [Number], required: true, description: EnumHelper.toDescription(EthnicityTypes) })
     @ArrayMinSize(1)
     @IsEnum(EthnicityTypes, { each: true })
     readonly ethnicities: number[];
 
     @ApiProperty({ type: () => [Number], required: false, description: EnumHelper.toDescription(OtherFeatureTypes) })
-    @ArrayMinSize(1)
+    @IsOptional()
+    @IsArray()
     @IsEnum(OtherFeatureTypes, { each: true })
     readonly otherFeatures: number[];
 }
