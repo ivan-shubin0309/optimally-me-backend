@@ -1,5 +1,4 @@
 export enum SexTypes {
-    all = 1,
-    male = 2,
-    female = 3
+    male = 1,
+    female = 2
 }

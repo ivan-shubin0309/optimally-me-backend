@@ -65,7 +65,9 @@ export class BiomarkersFactory {
     }
 
     async createRule(body: CreateBiomarkerDto, transaction?: Transaction): Promise<Biomarker> {
-        return this.create(Object.assign({ type: BiomarkerTypes.rule }, body), transaction);
+        const ruleToCreate = Object.assign({ type: BiomarkerTypes.rule, name: null }, body);
+        ruleToCreate.name = ruleToCreate.ruleName;
+        return this.create(ruleToCreate, transaction);
     }
 
     async attachFilter(filter: CreateFilterDto, biomarkerId: number, transaction?: Transaction): Promise<void> {

@@ -13,5 +13,9 @@
     "USER_RESTORE_PASSWORD_EMAIL_TEXT": "Hello ${firstName} ${lastName}<br><br>Follow this <a href=\"${link}\">LINK</a> to restore your password in the OptimallyMe app. The link can be used only once.",
     "USER_RESTORE_PASSWORD_EMAIL_SUBJECT": "Restore password",
     "WEFITTER_PROFILE_ALREADY_EXIST": "Wefitter profile already exist",
-    "WEFITTER_PROFILE_NOT_FOUND": "Wefitter profile not found"
+    "WEFITTER_PROFILE_NOT_FOUND": "Wefitter profile not found",
+    "UNIT_NOT_FOUND": "Unit with specified id is not found",
+    "CATEGORY_NOT_FOUND": "Category with specified id is not found",
+    "RECOMMENDATION_NOT_FOUND": "Recommendation with specified id is not found",
+    "RULE_NOT_FOUND": "Rule with specified id is not found"
 }

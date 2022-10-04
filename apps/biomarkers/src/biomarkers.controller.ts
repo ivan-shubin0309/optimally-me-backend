@@ -73,6 +73,8 @@ export class BiomarkersController {
       });
     }
 
+    await this.biomarkersService.validateBody(body);
+
     biomarker = await this.biomarkersService.create(body);
 
     return new BiomarkerDto(biomarker);
@@ -131,6 +133,7 @@ export class BiomarkersController {
     let rulesList = [];
     const scopes: any[] = [
       { method: ['byType', BiomarkerTypes.rule] },
+      { method: ['byIsDeleted', false] },
       'includeAll'
     ];
 
@@ -241,6 +244,8 @@ export class BiomarkersController {
       });
     }
 
+    await this.biomarkersService.validateBody(body);
+
     biomarker = await this.biomarkersService.update(biomarker, body);
 
     return new BiomarkerDto(biomarker);
@@ -265,5 +270,27 @@ export class BiomarkersController {
     }
 
     return new BiomarkersDto(biomarkersList, PaginationHelper.buildPagination({ limit, offset }, count));
+  }
+
+  @ApiOperation({ summary: 'Get biomarker by id' })
+  @ApiParam({ name: 'id' })
+  @Roles(UserRoles.superAdmin)
+  @Get('/:id')
+  async getBiomarkerById(@Param('id') id: number): Promise<BiomarkerDto> {
+    const biomarker = await this.biomarkersService.getOne([
+      { method: ['byId', id] },
+      { method: ['byType', BiomarkerTypes.biomarker] },
+      'includeAll'
+    ]);
+
+    if (!biomarker) {
+      throw new NotFoundException({
+        message: this.translator.translate('BIOMARKER_NOT_FOUND'),
+        errorCode: 'BIOMARKER_NOT_FOUND',
+        statusCode: HttpStatus.NOT_FOUND
+      });
+    }
+
+    return new BiomarkerDto(biomarker);
   }
 }
