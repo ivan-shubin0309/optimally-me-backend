@@ -24,7 +24,8 @@ import { BiomarkerTypes } from 'apps/common/src/resources/biomarkers/biomarker-t
         ]
     }),
     byIsDeleted: (isDeleted) => ({ where: { isDeleted } }),
-    pagination: (query) => ({ limit: query.limit, offset: query.offset })
+    pagination: (query) => ({ limit: query.limit, offset: query.offset }),
+    orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
 }))
 @Table({
     tableName: 'biomarkers',

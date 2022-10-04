@@ -35,6 +35,7 @@ import { RecommendationsDto } from './models/recommendations/recommendations.dto
 import { GetRecommendationListDto } from './services/recommendations/get-recommendation-list.dto';
 import { BiomarkerDto } from './models/biomarker.dto';
 import { EntityByIdDto } from '../../common/src/models/entity-by-id.dto';
+import { GetBiomarkerListDto } from './models/get-biomarker-list.dto';
 
 
 
@@ -255,16 +256,22 @@ export class BiomarkersController {
   @ApiOperation({ summary: 'Get list of biomarkers' })
   @Roles(UserRoles.superAdmin)
   @Get()
-  async getBiomarkersList(@Query() query: GetListDto): Promise<BiomarkersDto> {
+  async getBiomarkersList(@Query() query: GetBiomarkerListDto): Promise<BiomarkersDto> {
     const limit = parseInt(query.limit);
     const offset = parseInt(query.offset);
 
     let biomarkersList = [];
     const scopes: any[] = [{ method: ['byType', BiomarkerTypes.biomarker] }];
 
-    const count = await this.recommendationsService.getCount(scopes);
+    const count = await this.biomarkersService.getCount(scopes);
 
     if (count) {
+      if (query.orderBy !== 'createdAt') {
+        scopes.push({ method: ['orderBy', [[query.orderBy, query.orderType], ['createdAt', 'desc']]] });
+      } else {
+        scopes.push({ method: ['orderBy', [['createdAt', query.orderType]]] });
+      }  
+
       scopes.push({ method: ['pagination', { limit, offset }] });
       biomarkersList = await this.biomarkersService.getList(scopes);
     }
