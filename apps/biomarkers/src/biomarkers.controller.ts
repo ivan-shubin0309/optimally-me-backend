@@ -6,7 +6,6 @@ import {
   Delete,
   Inject,
   Param,
-  Request,
   Query,
   HttpCode,
   HttpStatus,
@@ -16,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { TranslatorService } from 'nestjs-translator';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { Not, Sequelize } from 'sequelize-typescript';
+import { Sequelize } from 'sequelize-typescript';
 import { Roles } from '../../common/src/resources/common/role.decorator';
 import { UserRoles } from '../../common/src/resources/users';
 import { BiomarkersService } from './biomarkers.service';
