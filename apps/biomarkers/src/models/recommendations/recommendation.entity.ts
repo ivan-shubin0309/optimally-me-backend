@@ -5,7 +5,8 @@ import { Op } from 'sequelize';
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
     search: (searchString) => ({ where: { content: { [Op.like]: `%${searchString}%` } } }),
-    pagination: (query) => ({ limit: query.limit, offset: query.offset })
+    pagination: (query) => ({ limit: query.limit, offset: query.offset }),
+    byId: (id) => ({ where: { id } }),
 }))
 
 @Table({

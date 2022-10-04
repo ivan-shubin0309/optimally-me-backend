@@ -1,7 +1,8 @@
 import { Table, Column, Model, DataType, Scopes } from 'sequelize-typescript';
 
 @Scopes(() => ({
-    pagination: (query) => ({ limit: query.limit, offset: query.offset })
+    pagination: (query) => ({ limit: query.limit, offset: query.offset }),
+    byId: (id) => ({ where: { id } }),
 }))
 
 @Table({
