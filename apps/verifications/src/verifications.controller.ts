@@ -107,6 +107,7 @@ export class VerificationsController {
     @ApiOperation({ summary: 'Redirect code to mobile app' })
     @Get('password/redirect')
     async redirectToRestorePassword(@Query() query: VerificationTokenDto, @Response() response) {
-        response.redirect(`${this.configService.get('MOBILE_FRONTEND_BASE_URL')}restore-password?code=${query.token}`);
+        response.set('Content-Type', 'text/html');
+        response.send(Buffer.from(`<!DOCTYPE html><html><head><title></title><meta charset="UTF-8" /><meta http-equiv="refresh" content="3; URL=${this.configService.get('MOBILE_FRONTEND_BASE_URL')}restore-password?code=${query.token}" /></head><body></body></html>`));
     }
 }
