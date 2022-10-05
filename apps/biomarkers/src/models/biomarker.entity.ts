@@ -4,6 +4,7 @@ import { Category } from './categories/category.entity';
 import { Unit } from './units/unit.entity';
 import { AlternativeName } from './alternativeNames/alternative-name.entity';
 import { BiomarkerTypes } from 'apps/common/src/resources/biomarkers/biomarker-types';
+import { Op } from 'sequelize';
 
 @Scopes(() => ({
     byId: (id) => ({ where: { id } }),
@@ -44,7 +45,22 @@ import { BiomarkerTypes } from 'apps/common/src/resources/biomarkers/biomarker-t
             },
         ]
     }),
-    subQuery: (isEnabled: boolean) => ({ subQuery: isEnabled })
+    subQuery: (isEnabled: boolean) => ({ subQuery: isEnabled }),
+    search: (searchString) => ({
+        include: [
+            {
+                model: Category,
+                as: 'category',
+                required: true,
+            },
+        ],
+        where: {
+            [Op.or]: [
+                { name: { [Op.like]: `%${searchString}%` } },
+                { '$category.name$': { [Op.like]: `%${searchString}%` } }
+            ]
+        }
+    })
 }))
 @Table({
     tableName: 'biomarkers',
