@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { InteractionTypes } from '../../../../common/src/resources/interactions/interaction-types';
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, Length } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, Length, Max, Min } from 'class-validator';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
 import { InteractionValidationRules } from '../../../../common/src/resources/interactions/validation-rules';
 
@@ -22,6 +22,10 @@ export class CreateInteractionDto {
 
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
+    @IsNumber()
+    @IsInt()
+    @Min(InteractionValidationRules.impactMin)
+    @Max(InteractionValidationRules.impactMax)
     impact: number;
 
     @ApiProperty({ type: () => String, required: false })
