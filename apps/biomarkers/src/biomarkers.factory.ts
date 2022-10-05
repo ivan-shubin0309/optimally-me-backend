@@ -100,28 +100,28 @@ export class BiomarkersFactory {
     private async attachFilterCharacteristics(filter: CreateFilterDto, filterId: number, transaction?: Transaction): Promise<void> {
         const promises = [];
         if (filter.ages && filter.ages.length) {
-            const agesToCreate: any[] = filter.ages.map(age => Object.assign({ filterId }, age));
+            const agesToCreate: any[] = filter.ages.map(age => ({ filterId, age }));
 
             promises.push(
                 this.filterAgeModel.bulkCreate(agesToCreate, { transaction })
             );
         }
         if (filter.sexes && filter.sexes.length) {
-            const sexesToCreate: any[] = filter.sexes.map(sex => Object.assign({ filterId }, sex));
+            const sexesToCreate: any[] = filter.sexes.map(sex => ({ filterId, sex }));
 
             promises.push(
                 this.filterSexModel.bulkCreate(sexesToCreate, { transaction })
             );
         }
         if (filter.ethnicities && filter.ethnicities.length) {
-            const ethnicitiesToCreate: any[] = filter.ethnicities.map(ethnicity => Object.assign({ filterId }, ethnicity));
+            const ethnicitiesToCreate: any[] = filter.ethnicities.map(ethnicity => ({ filterId, ethnicity }));
 
             promises.push(
                 this.filterEthnicityModel.bulkCreate(ethnicitiesToCreate, { transaction })
             );
         }
         if (filter.otherFeatures && filter.otherFeatures.length) {
-            const otherFeaturesToCreate: any[] = filter.otherFeatures.map(otherFeature => Object.assign({ filterId }, otherFeature));
+            const otherFeaturesToCreate: any[] = filter.otherFeatures.map(otherFeature => ({ filterId, otherFeature }));
 
             promises.push(
                 this.filterOtherFeatureModel.bulkCreate(otherFeaturesToCreate, { transaction })
