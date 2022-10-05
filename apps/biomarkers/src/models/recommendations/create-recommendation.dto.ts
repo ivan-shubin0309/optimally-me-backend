@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsInt, IsNotEmpty, IsPositive } from 'class-validator';
+import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
+import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsPositive } from 'class-validator';
+import { RecommendationTypes } from '../../../../common/src/resources/recommendations/recommendation-types';
 
-class RecommendationObject {
+export class CreateRecommendationDto {
     @ApiProperty({ type: () => Number, required: true })
     @IsNotEmpty()
     @IsPositive()
@@ -14,22 +15,10 @@ class RecommendationObject {
     @IsPositive()
     @IsInt()
     readonly recommendationId: number;
-}
 
-export class CreateRecommendationDto {
-    @ApiProperty({ type: () => [RecommendationObject], required: false })
-    @Type(() => RecommendationObject)
-    readonly criticalLow: RecommendationObject[];
-
-    @ApiProperty({ type: () => [RecommendationObject], required: false })
-    @Type(() => RecommendationObject)
-    readonly low: RecommendationObject[];
-
-    @ApiProperty({ type: () => [RecommendationObject], required: false })
-    @Type(() => RecommendationObject)
-    readonly high: RecommendationObject[];
-
-    @ApiProperty({ type: () => [RecommendationObject], required: false })
-    @Type(() => RecommendationObject)
-    readonly criticalHigh: RecommendationObject[];
+    @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(RecommendationTypes) })
+    @IsNotEmpty()
+    @IsEnum(RecommendationTypes)
+    @IsNumber()
+    readonly type: number;
 }

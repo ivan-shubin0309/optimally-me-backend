@@ -22,6 +22,10 @@ export function MaxFieldValueRepeatCount(fieldName: string, maxCount: number, va
                         .values(valuesMap)
                         .find(value => value > count);
                 },
+                defaultMessage(args: ValidationArguments): string {
+                    const [propertyName, count] = args.constraints;
+                    return `${args.property} count of same values must be equal or less than ${count}`;
+                },
             }
         });
     };

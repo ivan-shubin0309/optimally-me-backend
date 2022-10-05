@@ -100,35 +100,25 @@ export class BiomarkersService extends BaseService<Biomarker> {
             const recommendationIdsMap = {};
 
             body.filters.forEach(filter => {
-                if (filter.recommendation) {
-                    const recommendation = filter.recommendation;
-
-                    if (recommendation.criticalLow && recommendation.criticalLow.length) {
-                        recommendation.criticalLow.forEach(criticalLow => { recommendationIdsMap[criticalLow.recommendationId] = true; });
-                    }
-                    if (recommendation.low && recommendation.low.length) {
-                        recommendation.low.forEach(low => { recommendationIdsMap[low.recommendationId] = true; });
-                    }
-                    if (recommendation.high && recommendation.high.length) {
-                        recommendation.high.forEach(high => { recommendationIdsMap[high.recommendationId] = true; });
-                    }
-                    if (recommendation.criticalHigh && recommendation.criticalHigh.length) {
-                        recommendation.criticalHigh.forEach(criticalHigh => { recommendationIdsMap[criticalHigh.recommendationId]; });
-                    }
+                if (filter.recommendations && filter.recommendations.length) {
+                    filter.recommendations.forEach(recommendation => { recommendationIdsMap[recommendation.recommendationId] = true; });
                 }
             });
 
             const recommendationIds = Object.keys(recommendationIdsMap);
-            const recommendationsCount = await this.recommendationModel
-                .scope([{ method: ['byId', recommendationIds] }])
-                .count();
 
-            if (recommendationsCount !== recommendationIds.length) {
-                throw new BadRequestException({
-                    message: this.translator.translate('RECOMMENDATION_NOT_FOUND'),
-                    errorCode: 'RECOMMENDATION_NOT_FOUND',
-                    statusCode: HttpStatus.BAD_REQUEST
-                });
+            if (recommendationIds.length) {
+                const recommendationsCount = await this.recommendationModel
+                    .scope([{ method: ['byId', recommendationIds] }])
+                    .count();
+
+                if (recommendationsCount !== recommendationIds.length) {
+                    throw new BadRequestException({
+                        message: this.translator.translate('RECOMMENDATION_NOT_FOUND'),
+                        errorCode: 'RECOMMENDATION_NOT_FOUND',
+                        statusCode: HttpStatus.BAD_REQUEST
+                    });
+                }
             }
         }
     }

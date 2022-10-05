@@ -9,7 +9,7 @@ import { CreateInteractionDto } from '../interactions/create-interaction.dto';
 import { CreateRecommendationDto } from '../recommendations/create-recommendation.dto';
 import { Type } from 'class-transformer';
 import { MaxFieldValueRepeatCount } from '../../../../common/src/resources/common/max-field-value-repeat-count.decorator';
-import { FilterValidationRules, INTERACTION_TYPE_COUNT_ERROR_MESSAGE } from '../../../../common/src/resources/filters/validation-rules';
+import { FilterValidationRules } from '../../../../common/src/resources/filters/validation-rules';
 
 export class CreateFilterDto {
     @ApiProperty({ type: () => String, required: true })
@@ -64,15 +64,18 @@ export class CreateFilterDto {
     @IsOptional()
     readonly criticalHigh: number;
 
-    @ApiProperty({ type: () => CreateRecommendationDto, required: false })
+    @ApiProperty({ type: () => [CreateRecommendationDto], required: false })
     @IsOptional()
-    readonly recommendation: CreateRecommendationDto;
+    @IsArray()
+    @ArrayMaxSize(FilterValidationRules.recommendationArrayMaxLength)
+    @MaxFieldValueRepeatCount('type', FilterValidationRules.recommendationTypesMaxCount)
+    readonly recommendations: CreateRecommendationDto[];
 
     @ApiProperty({ type: () => [CreateInteractionDto], required: false })
     @IsOptional()
     @IsArray()
     @ArrayMaxSize(FilterValidationRules.interactionArrayMaxLength)
-    @MaxFieldValueRepeatCount('type', FilterValidationRules.interactionTypesMaxCount, { message: `type ${INTERACTION_TYPE_COUNT_ERROR_MESSAGE}` })
+    @MaxFieldValueRepeatCount('type', FilterValidationRules.interactionTypesMaxCount)
     @Type(() => CreateInteractionDto)
     readonly interactions: CreateInteractionDto[];
 
