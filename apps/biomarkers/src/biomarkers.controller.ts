@@ -271,6 +271,10 @@ export class BiomarkersController {
       scopes.push({ method: ['search', query.search] });
     }
 
+    if (query.categoryIds && query.categoryIds.length) {
+      scopes.push({ method: ['byCategoryId', query.categoryIds] });
+    }
+
     const count = await this.biomarkersService.getCount(scopes);
 
     if (count) {
