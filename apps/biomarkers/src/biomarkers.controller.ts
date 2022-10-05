@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { TranslatorService } from 'nestjs-translator';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { Sequelize } from 'sequelize-typescript';
+import { Repository, Sequelize } from 'sequelize-typescript';
 import { Roles } from '../../common/src/resources/common/role.decorator';
 import { UserRoles } from '../../common/src/resources/users';
 import { BiomarkersService } from './biomarkers.service';
@@ -36,9 +36,8 @@ import { GetRecommendationListDto } from './services/recommendations/get-recomme
 import { BiomarkerDto } from './models/biomarker.dto';
 import { EntityByIdDto } from '../../common/src/models/entity-by-id.dto';
 import { GetBiomarkerListDto } from './models/get-biomarker-list.dto';
-
-
-
+import { sortingServerValues as biomarkerSortingServerValues } from 'apps/common/src/resources/biomarkers/sorting-field-names';
+import { Biomarker } from './models/biomarker.entity';
 
 @ApiBearerAuth()
 @ApiTags('biomarkers')
@@ -52,7 +51,7 @@ export class BiomarkersController {
     private readonly recommendationsService: RecommendationsService,
     private readonly filterCharacteristicsService: FilterCharacteristicsService,
     @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
-
+    @Inject('BIOMARKER_MODEL') private readonly biomarkerModel: Repository<Biomarker>,
   ) {}
 
   @ApiCreatedResponse({ type: () => BiomarkerDto })
@@ -259,20 +258,25 @@ export class BiomarkersController {
   async getBiomarkersList(@Query() query: GetBiomarkerListDto): Promise<BiomarkersDto> {
     const limit = parseInt(query.limit);
     const offset = parseInt(query.offset);
+    const orderBy = biomarkerSortingServerValues[query.orderBy](this.biomarkerModel);
 
     let biomarkersList = [];
-    const scopes: any[] = [{ method: ['byType', BiomarkerTypes.biomarker] }];
+    const scopes: any[] = [
+      { method: ['byType', BiomarkerTypes.biomarker] },
+      'withCategory',
+      'withUnit'
+    ];
 
     const count = await this.biomarkersService.getCount(scopes);
 
     if (count) {
-      if (query.orderBy !== 'createdAt') {
-        scopes.push({ method: ['orderBy', [[query.orderBy, query.orderType], ['createdAt', 'desc']]] });
+      if (orderBy[0] !== 'createdAt') {
+        scopes.push({ method: ['orderBy', [[...orderBy, query.orderType], ['createdAt', 'desc']]] });
       } else {
         scopes.push({ method: ['orderBy', [['createdAt', query.orderType]]] });
       }  
 
-      scopes.push({ method: ['pagination', { limit, offset }] });
+      scopes.push({ method: ['pagination', { limit, offset }] }, 'includeAll');
       biomarkersList = await this.biomarkersService.getList(scopes);
     }
 
@@ -287,6 +291,8 @@ export class BiomarkersController {
     const biomarker = await this.biomarkersService.getOne([
       { method: ['byId', id] },
       { method: ['byType', BiomarkerTypes.biomarker] },
+      'withCategory',
+      'withUnit',
       'includeAll'
     ]);
 

@@ -1,4 +1,4 @@
-import { Table, Column, Model, Scopes, DataType, ForeignKey, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, Scopes, DataType, ForeignKey, HasMany, BelongsTo } from 'sequelize-typescript';
 import { Filter } from './filters/filter.entity';
 import { Category } from './categories/category.entity';
 import { Unit } from './units/unit.entity';
@@ -26,6 +26,25 @@ import { BiomarkerTypes } from 'apps/common/src/resources/biomarkers/biomarker-t
     byIsDeleted: (isDeleted) => ({ where: { isDeleted } }),
     pagination: (query) => ({ limit: query.limit, offset: query.offset }),
     orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
+    withUnit: () => ({
+        include: [
+            {
+                model: Unit,
+                as: 'unit',
+                required: false,
+            },
+        ]
+    }),
+    withCategory: () => ({
+        include: [
+            {
+                model: Category,
+                as: 'category',
+                required: false,
+            },
+        ]
+    }),
+    subQuery: (isEnabled: boolean) => ({ subQuery: isEnabled })
 }))
 @Table({
     tableName: 'biomarkers',
@@ -109,4 +128,10 @@ export class Biomarker extends Model {
 
     @HasMany(() => Filter, 'biomarkerId')
     filters: Filter[];
+
+    @BelongsTo(() => Category)
+    category: Category;
+
+    @BelongsTo(() => Unit)
+    unit: Unit;
 }

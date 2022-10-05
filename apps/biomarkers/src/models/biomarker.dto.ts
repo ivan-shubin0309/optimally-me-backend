@@ -4,7 +4,9 @@ import { BiomarkerTypes } from '../../../common/src/resources/biomarkers/biomark
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { AlternativeNameDto } from './alternativeNames/alternative-name.dto';
 import { Biomarker } from './biomarker.entity';
+import { CategoryDto } from './categories/category.dto';
 import { FilterDto } from './filters/filter.dto';
+import { UnitDto } from './units/unit.dto';
 
 export class BiomarkerDto extends BaseDto<Biomarker> {
     constructor(entity: Biomarker) {
@@ -25,6 +27,12 @@ export class BiomarkerDto extends BaseDto<Biomarker> {
             : undefined;
         this.filters = entity.filters && entity.filters.length
             ? entity.filters.map(filter => new FilterDto(filter))
+            : undefined;
+        this.unit = entity.unit
+            ? new UnitDto(entity.unit)
+            : undefined;
+        this.category = entity.category
+            ? new CategoryDto(entity.category)
             : undefined;
     }
 
@@ -63,4 +71,10 @@ export class BiomarkerDto extends BaseDto<Biomarker> {
 
     @ApiProperty({ type: () => [FilterDto], required: false })
     filters: FilterDto[];
+
+    @ApiProperty({ type: () => UnitDto, required: false })
+    unit: UnitDto;
+
+    @ApiProperty({ type: () => CategoryDto, required: false })
+    category: CategoryDto;
 }

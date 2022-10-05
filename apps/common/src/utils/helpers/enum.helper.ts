@@ -13,14 +13,14 @@ export class EnumHelper {
         return description;
     }
 
-    static toCollection(enumObject: any): CollectionDto[] {
+    static toCollection(enumObject: any, clientValues?: any): CollectionDto[] {
         const resultArray = [];
         for (const enumMember in enumObject) {
             const isValue = Number(enumMember) >= 0;
             if (!isValue) {
                 break;
             }
-            resultArray.push(new CollectionDto(enumObject[enumMember], parseInt(enumMember)));
+            resultArray.push(new CollectionDto(clientValues ? clientValues[enumMember] : enumObject[enumMember], parseInt(enumMember)));
         }
 
         return resultArray;
