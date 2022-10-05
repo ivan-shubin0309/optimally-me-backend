@@ -12,6 +12,7 @@ export class FilterRecommendationDto extends BaseDto<FilterRecommendation>{
         this.filterId = entity.filterId;
         this.recommendationId = entity.recommendationId;
         this.order = entity.order;
+        this.type = entity.type;
         this.recommendation = entity.recommendation && new RecommendationDto(entity.recommendation);
     }
 

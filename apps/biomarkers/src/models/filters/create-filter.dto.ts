@@ -4,7 +4,7 @@ import { EthnicityTypes } from '../../../../common/src/resources/filters/ethnici
 import { OtherFeatureTypes } from '../../../../common/src/resources/filters/other-feature-types';
 import { SexTypes } from '../../../../common/src/resources/filters/sex-types';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
-import { ArrayMaxSize, ArrayMinSize, IsArray, IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsEnum, IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
 import { CreateInteractionDto } from '../interactions/create-interaction.dto';
 import { CreateRecommendationDto } from '../recommendations/create-recommendation.dto';
 import { Type } from 'class-transformer';
@@ -69,6 +69,8 @@ export class CreateFilterDto {
     @IsArray()
     @ArrayMaxSize(FilterValidationRules.recommendationArrayMaxLength)
     @MaxFieldValueRepeatCount('type', FilterValidationRules.recommendationTypesMaxCount)
+    @ValidateNested()
+    @Type(() => CreateRecommendationDto)
     readonly recommendations: CreateRecommendationDto[];
 
     @ApiProperty({ type: () => [CreateInteractionDto], required: false })
@@ -76,6 +78,7 @@ export class CreateFilterDto {
     @IsArray()
     @ArrayMaxSize(FilterValidationRules.interactionArrayMaxLength)
     @MaxFieldValueRepeatCount('type', FilterValidationRules.interactionTypesMaxCount)
+    @ValidateNested()
     @Type(() => CreateInteractionDto)
     readonly interactions: CreateInteractionDto[];
 

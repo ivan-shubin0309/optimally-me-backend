@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { InteractionTypes } from '../../../../common/src/resources/interactions/interaction-types';
-import { IsEnum, IsNotEmpty, IsOptional, Length } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, Length } from 'class-validator';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
 import { InteractionValidationRules } from '../../../../common/src/resources/interactions/validation-rules';
 
@@ -8,6 +8,7 @@ export class CreateInteractionDto {
     @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(InteractionTypes) })
     @IsNotEmpty()
     @IsEnum(InteractionTypes)
+    @IsNumber()
     type: number;
 
     @ApiProperty({ type: () => String, required: true })
