@@ -31,4 +31,9 @@ export class GetBiomarkerListDto {
     @IsString()
     @IsEnum(orderTypes)
     readonly orderType: string = 'desc';
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    @IsString()
+    readonly search: string;
 }

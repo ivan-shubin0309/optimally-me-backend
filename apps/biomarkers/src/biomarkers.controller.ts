@@ -267,6 +267,10 @@ export class BiomarkersController {
       'withUnit'
     ];
 
+    if (query.search) {
+      scopes.push({ method: ['search', query.search] });
+    }
+
     const count = await this.biomarkersService.getCount(scopes);
 
     if (count) {
