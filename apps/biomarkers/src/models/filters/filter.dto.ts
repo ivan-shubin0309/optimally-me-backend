@@ -13,6 +13,11 @@ export class FilterDto extends BaseDto<Filter> {
         super(entity);
         this.biomarkerId = entity.biomarkerId;
         this.name = entity.name;
+        this.summary = entity.summary;
+        this.whatIsIt = entity.whatIsIt;
+        this.whatAreTheCauses = entity.whatAreTheCauses;
+        this.whatAreTheRisks = entity.whatAreTheRisks;
+        this.whatCanYouDo = entity.whatCanYouDo;
         this.criticalLow = entity.criticalLow;
         this.lowMin = entity.lowMin;
         this.lowMax = entity.lowMax;
@@ -50,6 +55,21 @@ export class FilterDto extends BaseDto<Filter> {
 
     @ApiProperty({ type: () => String, required: true })
     name: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    summary: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    whatIsIt: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    whatAreTheCauses: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    whatAreTheRisks: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    whatCanYouDo: string;
 
     @ApiProperty({ type: () => Number, required: false })
     criticalLow: number;

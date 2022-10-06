@@ -104,36 +104,6 @@ export class Biomarker extends Model {
     unitId: number;
 
     @Column({
-        type: DataType.STRING,
-        allowNull: true
-    })
-    summary: string;
-
-    @Column({
-        type: DataType.STRING,
-        allowNull: true
-    })
-    whatIsIt: string;
-
-    @Column({
-        type: DataType.STRING,
-        allowNull: true
-    })
-    whatAreTheCauses: string;
-
-    @Column({
-        type: DataType.STRING,
-        allowNull: true
-    })
-    whatAreTheRisks: string;
-
-    @Column({
-        type: DataType.STRING,
-        allowNull: true
-    })
-    whatCanYouDo: string;
-
-    @Column({
         type: DataType.BOOLEAN,
         allowNull: false,
         defaultValue: false

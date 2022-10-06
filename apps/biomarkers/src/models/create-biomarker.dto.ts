@@ -44,26 +44,6 @@ export class CreateBiomarkerDto {
     @IsPositive()
     readonly unitId: number;
 
-    @ApiProperty({ type: () => String, required: true })
-    @IsNotEmpty()
-    readonly summary: string;
-
-    @ApiProperty({ type: () => String, required: true })
-    @IsNotEmpty()
-    readonly whatIsIt: string;
-
-    @ApiProperty({ type: () => String, required: true })
-    @IsNotEmpty()
-    readonly whatAreTheCauses: string;
-
-    @ApiProperty({ type: () => String, required: true })
-    @IsNotEmpty()
-    readonly whatAreTheRisks: string;
-
-    @ApiProperty({ type: () => String, required: true })
-    @IsNotEmpty()
-    readonly whatCanYouDo: string;
-
     @ApiProperty({ type: () => [CreateFilterDto], required: true })
     @ArrayNotEmpty()
     @ArrayMaxSize(biomarkerValidationRules.filtersMaxCount)

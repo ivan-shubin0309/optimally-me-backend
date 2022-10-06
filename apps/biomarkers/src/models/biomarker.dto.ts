@@ -16,11 +16,6 @@ export class BiomarkerDto extends BaseDto<Biomarker> {
         this.type = entity.type;
         this.categoryId = entity.categoryId;
         this.unitId = entity.unitId;
-        this.summary = entity.summary;
-        this.whatIsIt = entity.whatIsIt;
-        this.whatAreTheCauses = entity.whatAreTheCauses;
-        this.whatAreTheRisks = entity.whatAreTheRisks;
-        this.whatCanYouDo = entity.whatCanYouDo;
         this.isDeleted = entity.isDeleted;
         this.alternativeNames = entity.alternativeNames && entity.alternativeNames.length
             ? entity.alternativeNames.map(alternativeName => new AlternativeNameDto(alternativeName))
@@ -47,21 +42,6 @@ export class BiomarkerDto extends BaseDto<Biomarker> {
 
     @ApiProperty({ type: () => Number, required: true })
     unitId: number;
-
-    @ApiProperty({ type: () => String, required: false })
-    summary: string;
-
-    @ApiProperty({ type: () => String, required: false })
-    whatIsIt: string;
-
-    @ApiProperty({ type: () => String, required: false })
-    whatAreTheCauses: string;
-
-    @ApiProperty({ type: () => String, required: false })
-    whatAreTheRisks: string;
-
-    @ApiProperty({ type: () => String, required: false })
-    whatCanYouDo: string;
 
     @ApiProperty({ type: () => Boolean, required: true })
     isDeleted: boolean;
