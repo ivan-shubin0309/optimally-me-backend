@@ -1,5 +1,5 @@
 import { Body, Controller, Inject, HttpCode, HttpStatus, NotFoundException, Post, Patch, Get, Query } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MailerService } from '../../common/src/resources/mailer/mailer.service';
 import { UserRoles } from '../../common/src/resources/users';
 import { TranslatorService } from 'nestjs-translator';
@@ -13,7 +13,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { SetPasswordDto } from './models/set-password.dto';
 import { SessionsService } from '../../sessions/src/sessions.service';
 import { ConfigService } from '../../common/src/utils/config/config.service';
-import { AdminsSessionDto } from '../../admins-sessions/src/models';
+import { UserSessionDto } from '../../users/src/models/user-session.dto';
 
 @ApiTags('admins/verifications')
 @Controller('admins/verifications')
@@ -73,10 +73,10 @@ export class AdminsVerificationsController {
   }
 
   @Public()
-  @ApiCreatedResponse({ type: () => AdminsSessionDto })
+  @ApiResponse({ type: () => UserSessionDto })
   @ApiOperation({ summary: 'Restore password' })
   @Patch('password')
-  async restorePassword(@Body() body: SetPasswordDto): Promise <AdminsSessionDto> {
+  async restorePassword(@Body() body: SetPasswordDto): Promise<UserSessionDto> {
 
     const verificationToken = await this.verificationsService.verifyToken(TokenTypes.password, body.token);
 
@@ -102,6 +102,7 @@ export class AdminsVerificationsController {
       role: user.role,
       lifeTime: this.configService.get('JWT_EXPIRES_IN')
     });
-    return new AdminsSessionDto(sessionResult.accessToken, sessionResult.refreshToken, sessionResult.expiresAt, user.firstName, user.lastName);
+
+    return new UserSessionDto(sessionResult, user);
   }
 }

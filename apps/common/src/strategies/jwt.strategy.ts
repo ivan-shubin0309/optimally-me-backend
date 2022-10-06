@@ -1,7 +1,7 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { ForbiddenException, HttpStatus, Injectable } from '@nestjs/common';
-import { UserSessionDto } from '../../../sessions/src/models';
+import { SessionDataDto } from '../../../sessions/src/models';
 import { SessionsService } from 'apps/sessions/src/sessions.service';
 import { ConfigService } from '../../../common/src/utils/config/config.service';
 
@@ -26,7 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             .then(user => this.success(user));
     }
 
-    async validate(payload: UserSessionDto) {
+    async validate(payload: SessionDataDto) {
         if (!payload) {
             throw new ForbiddenException({ 
                 message: 'USER_UNAUTHORIZED', 
