@@ -46,7 +46,7 @@ export class VerificationsController {
         const token = await this.verificationsService.generateToken({ userId: user.id }, body.tokenLifeTime);
         await this.verificationsService.saveToken(user.id, token, TokenTypes.userPassword, false);
 
-        await this.mailerService.sendUserRestorePasswordEmail(user, `${this.configService.get('SWAGGER_BACKEND_URL')}verifications/password/redirect?code=${token}&isRedirect=true`);
+        await this.mailerService.sendUserRestorePasswordEmail(user, `${this.configService.get('SWAGGER_BACKEND_URL')}verifications/password/redirect?token=${token}`);
     }
 
     @Public()
