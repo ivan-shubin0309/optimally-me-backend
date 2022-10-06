@@ -18,6 +18,7 @@ import { WefitterProfileDto } from './models/wefitter-profile.dto';
 import { UsersService } from '../../users/src/users.service';
 import { WefitterConnectionsDto } from './models/wefitter-connections.dto';
 import { DeleteConnectionDto } from './models/delete-connection.dto';
+import { GetUserConnectionsDto } from './models/get-user-connections.dto';
 
 @ApiTags('wefitter')
 @Controller('wefitter')
@@ -83,7 +84,7 @@ export class WefitterController {
     @ApiResponse({ type: () => WefitterConnectionsDto })
     @ApiOperation({ summary: 'Get wefitter connections' })
     @Get('connections')
-    async getUserConnections(@Request() req): Promise<WefitterConnectionsDto> {
+    async getUserConnections(@Request() req, @Query() query: GetUserConnectionsDto): Promise<WefitterConnectionsDto> {
         const scopes = [
             { method: ['withWefitter'] }
         ];
@@ -103,7 +104,7 @@ export class WefitterController {
                 statusCode: HttpStatus.BAD_REQUEST
             });
         }
-        const connections = await this.wefitterService.getConnections(publicId, bearer);
+        const connections = await this.wefitterService.getConnections(publicId, bearer, query);
         return new WefitterConnectionsDto(connections);
     }
 
