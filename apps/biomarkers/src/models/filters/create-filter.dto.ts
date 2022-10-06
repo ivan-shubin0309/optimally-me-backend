@@ -16,6 +16,26 @@ export class CreateFilterDto {
     @IsNotEmpty()
     readonly name: string;
 
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    readonly summary: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    readonly whatIsIt: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    readonly whatAreTheCauses: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    readonly whatAreTheRisks: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    readonly whatCanYouDo: string;
+
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
     readonly criticalLow: number;
