@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { sortingFieldNames } from '../../../common/src/resources/biomarkers/sorting-field-names';
 import { orderTypes } from '../../../common/src/resources/common/order-types';
-import { Type } from 'class-transformer';
-import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { ArrayUnique, IsArray, IsEnum, IsInt, IsNotEmpty, IsOptional, IsPositive, IsString, Max, Min } from 'class-validator';
 
 export class GetBiomarkerListDto {
     @ApiProperty({ type: () => Number, required: true, default: '100' })
@@ -36,4 +36,14 @@ export class GetBiomarkerListDto {
     @IsOptional()
     @IsString()
     readonly search: string;
+
+    @ApiProperty({ type: () => [Number], required: false })
+    @IsOptional()
+    @IsArray()
+    @ArrayUnique()
+    @IsPositive({ each: true })
+    @IsInt({ each: true })
+    @Type(() => Number)
+    @Transform(({ value }) => typeof value === 'number' ? [value] : value)
+    readonly categoryIds: number[];
 }

@@ -60,7 +60,8 @@ import { Op } from 'sequelize';
                 { '$category.name$': { [Op.like]: `%${searchString}%` } }
             ]
         }
-    })
+    }),
+    byCategoryId: (categoryIds: number | number[]) => ({ where: { categoryId: categoryIds } }),
 }))
 @Table({
     tableName: 'biomarkers',
