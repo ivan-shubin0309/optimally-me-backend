@@ -1,6 +1,6 @@
 import { UserRoles } from '../../../common/src/resources/users';
 
-export class UserSessionDto {
+export class SessionDataDto {
     constructor(data: any) {
         this.userId = data.userId;
         this.role = data.role;

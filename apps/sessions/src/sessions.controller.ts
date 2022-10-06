@@ -19,6 +19,7 @@ import { UserRoles } from '../../common/src/resources/users';
 import { UsersService } from '../../users/src/users.service';
 import { PasswordHelper } from '../../common/src/utils/helpers/password.helper';
 import { TranslatorService } from 'nestjs-translator';
+import { UserSessionDto } from '../../users/src/models/user-session.dto';
 
 @ApiTags('sessions')
 @Controller('sessions')
@@ -30,10 +31,10 @@ export class SessionsController {
   ) {}
 
   @Public()
-  @ApiCreatedResponse({ type: () => SessionDto })
+  @ApiCreatedResponse({ type: () => UserSessionDto })
   @ApiOperation({ summary: 'Start session' })
   @Post('')
-  async create(@Body() body: LoginUserDto): Promise<SessionDto> {
+  async create(@Body() body: LoginUserDto): Promise<UserSessionDto> {
     const scopes = [
       { method: ['byRoles', [UserRoles.user]] }
     ];
@@ -54,10 +55,12 @@ export class SessionsController {
       });
     }
 
-    return this.sessionsService.create(user.id, {
+    const session = await this.sessionsService.create(user.id, {
       role: user.role,
       lifeTime: body.lifeTime
     });
+
+    return new UserSessionDto(session, user);
   }
 
   @ApiBearerAuth()
@@ -73,10 +76,10 @@ export class SessionsController {
   }
 
   @Public()
-  @ApiCreatedResponse({ type: () => SessionDto })
+  @ApiCreatedResponse({ type: () => UserSessionDto })
   @ApiOperation({ summary: 'Refresh session' })
   @Put('')
-  async refresh(@Body() body: RefreshSessionDto): Promise<SessionDto> {
+  async refresh(@Body() body: RefreshSessionDto): Promise<UserSessionDto> {
     const oldSessionParams = this.sessionsService.verifyToken(body.refreshToken);
 
     const scopes = [
@@ -93,6 +96,8 @@ export class SessionsController {
       });
     }
 
-    return this.sessionsService.refresh(body.refreshToken);
+    const session = await this.sessionsService.refresh(body.refreshToken);
+
+    return new UserSessionDto(session, user);
   }
 }

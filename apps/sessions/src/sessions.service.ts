@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { SessionDto, UserSessionDto } from '../../sessions/src/models';
+import { SessionDto, SessionDataDto } from '../../sessions/src/models';
 import { DateTime } from 'luxon';
 import { RedisService } from '@liaoliaots/nestjs-redis';
 import { ObjectKeyComposer } from 'apps/common/src/utils/helpers/object-key-composer.helper';
@@ -40,7 +40,7 @@ export class SessionsService {
     async create(userId: number, sessionOptions?: any): Promise<SessionDto> {
         const uniqueKey = uuid.v4();
 
-        const tokenParams: UserSessionDto = {
+        const tokenParams: SessionDataDto = {
             userId,
             role: sessionOptions.role,
             sessionId: uniqueKey
@@ -84,8 +84,8 @@ export class SessionsService {
         return this.redisClient.lrem(this.getSessionAppendix(userId), 0, accessToken);
     }
 
-    async findSession(accessToken: string): Promise<UserSessionDto> {
-        const cachedSession: UserSessionDto = JSON.parse(await this.redisClient.get(accessToken));
+    async findSession(accessToken: string): Promise<SessionDataDto> {
+        const cachedSession: SessionDataDto = JSON.parse(await this.redisClient.get(accessToken));
 
         if (!cachedSession) {
             return null;

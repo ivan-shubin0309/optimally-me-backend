@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, NotFoundException, Patch, Post, UnprocessableEntityException, Inject, Get, Query, Response } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MailerService } from '../../common/src/resources/mailer/mailer.service';
 import { UserRoles } from '../../common/src/resources/users';
 import { TranslatorService } from 'nestjs-translator';
@@ -12,6 +12,8 @@ import { Sequelize } from 'sequelize-typescript';
 import { RestorePasswordDto } from './models/restore-password.dto';
 import { SetPasswordDto } from './models/set-password.dto';
 import { ConfigService } from '../../common/src/utils/config/config.service';
+import { SessionsService } from '../../sessions/src/sessions.service';
+import { UserSessionDto } from 'apps/users/src/models/user-session.dto';
 
 @ApiTags('verifications')
 @Controller('verifications')
@@ -23,6 +25,7 @@ export class VerificationsController {
         private readonly mailerService: MailerService,
         @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
         private readonly configService: ConfigService,
+        private readonly sessionsService: SessionsService,
     ) { }
 
     @Public()
@@ -50,10 +53,10 @@ export class VerificationsController {
     }
 
     @Public()
-    @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiResponse({ type: () => UserSessionDto })
     @ApiOperation({ summary: 'Restore password' })
     @Patch('password')
-    async restorePassword(@Body() body: SetPasswordDto) {
+    async restorePassword(@Body() body: SetPasswordDto): Promise<UserSessionDto> {
         const verificationToken = await this.verificationsService.getOne([
             { method: ['byType', TokenTypes.userPassword] },
             { method: ['byToken', body.token] }
@@ -78,6 +81,13 @@ export class VerificationsController {
 
             await verificationToken.update({ isUsed: true }, { transaction });
         });
+
+        const session = await this.sessionsService.create(user.id, {
+            role: user.role,
+            lifeTime: this.configService.get('JWT_EXPIRES_IN')
+        });
+
+        return new UserSessionDto(session, user);
     }
 
     @Public()
@@ -106,7 +116,7 @@ export class VerificationsController {
     @Public()
     @ApiOperation({ summary: 'Redirect code to mobile app' })
     @Get('password/redirect')
-    async redirectToRestorePassword(@Query() query: VerificationTokenDto, @Response() response) {
+    async redirectToRestorePassword(@Query() query: VerificationTokenDto, @Response() response): Promise<void> {
         response.set('Content-Type', 'text/html');
         response.send(Buffer.from(`<!DOCTYPE html><html><head><title></title><meta charset="UTF-8" /><meta http-equiv="refresh" content="3; URL=${this.configService.get('MOBILE_FRONTEND_BASE_URL')}restore-password?code=${query.token}" /></head><body></body></html>`));
     }

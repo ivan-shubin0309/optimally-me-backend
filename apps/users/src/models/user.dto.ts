@@ -12,13 +12,13 @@ export class UserDto {
         this.lastName = data.lastName;
     }
 
-    @ApiProperty({ type: () => String, required: true })
-    readonly id: string;
+    @ApiProperty({ type: () => Number, required: true })
+    readonly id: number;
 
     @ApiProperty({ type: () => String, required: true })
     readonly email: string;
 
-    @ApiProperty({ type: () => String, required: true })
+    @ApiProperty({ type: () => Number, required: true })
     readonly role: number;
 
     @ApiProperty({ type: () => String, required: true })
