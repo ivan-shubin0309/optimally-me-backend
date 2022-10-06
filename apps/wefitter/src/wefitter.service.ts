@@ -9,6 +9,7 @@ import { UserWefitter } from './models/user-wefitter.entity';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import { Redis } from 'ioredis';
 import { ICreateProfile } from './models/create-profile.interface';
+import { GetUserConnectionsDto } from './models/get-user-connections.dto';
 
 
 @Injectable()
@@ -47,13 +48,15 @@ export class WefitterService {
     }
 
     private async getNewToken(): Promise<string> {
-        const url = `${this.baseUrl}/token/`
-        const axiosResponse = await axios.post(url, {}, {auth: {
-                username:  this.appPublicId,
+        const url = `${this.baseUrl}/token/`;
+        const axiosResponse = await axios.post(url, {}, {
+            auth: {
+                username: this.appPublicId,
                 password: this.secret
-            }}
-    );
-        const { data: { bearer} } = axiosResponse;
+            }
+        }
+        );
+        const { data: { bearer } } = axiosResponse;
         return bearer;
     }
 
@@ -67,7 +70,7 @@ export class WefitterService {
 
     private async createProfileRequest(user: User): Promise<ICreateProfile> {
         await this.initToken();
-        const link = `${this.baseUrl}/profile/`
+        const link = `${this.baseUrl}/profile/`;
         const postData = {
             given_name: user.firstName ? user.firstName : '',
             family_name: user.lastName ? user.lastName : '',
@@ -83,7 +86,7 @@ export class WefitterService {
             headers: {
                 'Authorization': `bearer ${token}`
             }
-        }
+        };
     }
 
     async createProfile(user: User, transaction?: Transaction): Promise<object> {
@@ -104,22 +107,28 @@ export class WefitterService {
     }
 
     async getProfile(publicId: string, userToken: string): Promise<object> {
-        const link = `${this.baseUrl}/profile/${publicId}/`
-        const axiosResponse = await axios.get(link, {...this.prepareAuth(userToken)});
+        const link = `${this.baseUrl}/profile/${publicId}/`;
+        const axiosResponse = await axios.get(link, { ...this.prepareAuth(userToken) });
         const { data } = axiosResponse;
         return data;
     }
 
-    async getConnections(publicId: string, userToken: string): Promise<any> {
-        const link = `${this.baseUrl}/profile/${publicId}/connections/`
-        const axiosResponse = await axios.get(link, {...this.prepareAuth(userToken)});
+    async getConnections(publicId: string, userToken: string, query?: GetUserConnectionsDto): Promise<any> {
+        const link = `${this.baseUrl}/profile/${publicId}/connections/`;
+        const axiosResponse = await axios.get(
+            link,
+            {
+                ...this.prepareAuth(userToken),
+                params: { redirect: query && query.redirect, redirect_on_error: query && query.redirectOnError }
+            }
+        );
         const { data } = axiosResponse;
         return data;
     }
 
     async deleteConnection(publicId: string, userToken: string, connectionSlug: string): Promise<any> {
         const link = `${this.baseUrl}/connection/${connectionSlug}/connect/?profile=${publicId}`;
-        const axiosResponse = await axios.delete(link, {...this.prepareAuth(userToken)});
+        const axiosResponse = await axios.delete(link, { ...this.prepareAuth(userToken) });
         const { status } = axiosResponse;
         return status == HttpStatus.OK;
     }
