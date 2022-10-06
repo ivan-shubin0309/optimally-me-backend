@@ -314,4 +314,26 @@ export class BiomarkersController {
 
     return new BiomarkerDto(biomarker);
   }
+
+  @ApiOperation({ summary: 'Delete biomarker by id' })
+  @ApiParam({ name: 'id' })
+  @Roles(UserRoles.superAdmin)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('/:id')
+  async removeBiomarker(@Param('id') id: number): Promise<void> {
+    const biomarker = await this.biomarkersService.getOne([
+      { method: ['byId', id] },
+      { method: ['byType', BiomarkerTypes.biomarker] }
+    ]);
+
+    if (!biomarker) {
+      throw new NotFoundException({
+        message: this.translator.translate('BIOMARKER_NOT_FOUND'),
+        errorCode: 'BIOMARKER_NOT_FOUND',
+        statusCode: HttpStatus.NOT_FOUND
+      });
+    }
+
+    await biomarker.destroy();
+  }
 }
