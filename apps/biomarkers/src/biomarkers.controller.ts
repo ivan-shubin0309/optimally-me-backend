@@ -38,6 +38,8 @@ import { EntityByIdDto } from '../../common/src/models/entity-by-id.dto';
 import { GetBiomarkerListDto } from './models/get-biomarker-list.dto';
 import { sortingServerValues as biomarkerSortingServerValues } from 'apps/common/src/resources/biomarkers/sorting-field-names';
 import { Biomarker } from './models/biomarker.entity';
+import { AlternativeNamesService } from './services/alternative-names/alternative-names.service';
+import { FiltersService } from './services/filters/filters.service';
 
 @ApiBearerAuth()
 @ApiTags('biomarkers')
@@ -52,6 +54,8 @@ export class BiomarkersController {
     private readonly filterCharacteristicsService: FilterCharacteristicsService,
     @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
     @Inject('BIOMARKER_MODEL') private readonly biomarkerModel: Repository<Biomarker>,
+    private readonly alternativeNamesService: AlternativeNamesService,
+    private readonly filtersService: FiltersService,
   ) {}
 
   @ApiCreatedResponse({ type: () => BiomarkerDto })
@@ -168,9 +172,10 @@ export class BiomarkersController {
     }
 
     await this.dbConnection.transaction(async transaction => {
-      await Promise.all(
-        biomarker.filters.map(filter => filter.destroy({ transaction }))
-      );
+      await Promise.all([
+        this.alternativeNamesService.removeByBiomarkerId(biomarker.id, transaction),
+        this.filtersService.removeByBiomarkerId(biomarker.id, transaction)
+      ]);
       await biomarker.update({ isDeleted: true }, { transaction });
     });
   }
