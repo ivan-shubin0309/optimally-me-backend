@@ -9,6 +9,7 @@ export class DeleteConnectionDto {
     readonly connectionSlug: string;
 
     @ApiProperty({ type: () => Boolean, required: true, default: false })
+    @IsNotEmpty()
     @Type(() => Boolean)
     readonly deleteData: boolean;
 }
