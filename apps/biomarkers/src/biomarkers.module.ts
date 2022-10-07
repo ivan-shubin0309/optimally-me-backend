@@ -17,6 +17,8 @@ import { UnitsService } from './services/units/units.service';
 import { CategoriesService } from './services/categories/categories.service';
 import { RecommendationsService } from './services/recommendations/recommendations.service';
 import { FilterCharacteristicsService } from './services/filterCharacteristicsService/filter-characteristics.service';
+import { AlternativeNamesService } from './services/alternative-names/alternative-names.service';
+import { FiltersService } from './services/filters/filters.service';
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { FilterCharacteristicsService } from './services/filterCharacteristicsSe
     FilterCharacteristicsService,
     JwtStrategy,
     BiomarkersFactory,
+    AlternativeNamesService,
+    FiltersService,
     ...guardProviders,
     sequelizeProvider(entities),
     ...modelProviders
