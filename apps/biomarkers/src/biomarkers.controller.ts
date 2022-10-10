@@ -53,7 +53,6 @@ export class BiomarkersController {
     private readonly recommendationsService: RecommendationsService,
     private readonly filterCharacteristicsService: FilterCharacteristicsService,
     @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
-    @Inject('BIOMARKER_MODEL') private readonly biomarkerModel: Repository<Biomarker>,
     private readonly alternativeNamesService: AlternativeNamesService,
     private readonly filtersService: FiltersService,
   ) {}
@@ -263,7 +262,7 @@ export class BiomarkersController {
   async getBiomarkersList(@Query() query: GetBiomarkerListDto): Promise<BiomarkersDto> {
     const limit = parseInt(query.limit);
     const offset = parseInt(query.offset);
-    const orderBy = biomarkerSortingServerValues[query.orderBy](this.biomarkerModel);
+    const orderBy = biomarkerSortingServerValues[query.orderBy];
 
     let biomarkersList = [];
     const scopes: any[] = [
@@ -284,7 +283,7 @@ export class BiomarkersController {
 
     if (count) {
       if (orderBy[0] !== 'createdAt') {
-        scopes.push({ method: ['orderBy', [[...orderBy, query.orderType], ['createdAt', 'desc']]] });
+        scopes.push({ method: ['orderBy', [[orderBy, query.orderType], ['createdAt', 'desc']]] });
       } else {
         scopes.push({ method: ['orderBy', [['createdAt', query.orderType]]] });
       }  

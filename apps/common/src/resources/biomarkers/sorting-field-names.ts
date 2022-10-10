@@ -1,6 +1,3 @@
-import { Biomarker } from '../../../../biomarkers/src/models/biomarker.entity';
-import { Repository } from 'sequelize-typescript';
-
 export const sortingFieldNames = [
     'createdAt',
     'name',
@@ -8,7 +5,7 @@ export const sortingFieldNames = [
 ];
 
 export const sortingServerValues = {
-    'createdAt': (biomarkerModel: Repository<Biomarker>) => ['createdAt'],
-    'name': (biomarkerModel: Repository<Biomarker>) => ['name'],
-    'categoryName': (biomarkerModel: Repository<Biomarker>) => [biomarkerModel.associations.category, 'name']
+    'createdAt': 'createdAt',
+    'name': () => 'name',
+    'categoryName': '$category.name$'
 };
