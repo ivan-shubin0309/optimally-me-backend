@@ -2,6 +2,13 @@ import { User } from '../../../users/src/models';
 import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
 import { Biomarker } from '../../../biomarkers/src/models/biomarker.entity';
 
+export interface IUserResult {
+    readonly name: string,
+    readonly value: number,
+    readonly userId: number,
+    readonly biomarkerId: number,
+}
+
 @Scopes(() => ({
     byId: (id) => ({ where: { id } }),
     pagination: (query) => ({ limit: query.limit, offset: query.offset }),
