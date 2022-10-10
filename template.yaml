@@ -228,3 +228,31 @@ Resources:
             Path: /verifications/password/redirect
             Method: ANY
 
+  AdminsUsersFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/admins-users/src/main.handler
+      Description: 
+      Events:
+        AdminsUsersApi:
+          Type: Api
+          Properties:
+            Path: /admins/users
+            Method: ANY
+
+  AdminsResultsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/admins-results/src/main.handler
+      Description: 
+      Events:
+        AdminsUsersApi:
+          Type: Api
+          Properties:
+            Path: /admins/users/{id}/results
+            Method: ANY
+
