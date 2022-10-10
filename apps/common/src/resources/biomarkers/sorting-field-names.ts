@@ -1,3 +1,5 @@
+import sequelize from 'sequelize';
+
 export const sortingFieldNames = [
     'createdAt',
     'name',
@@ -7,5 +9,5 @@ export const sortingFieldNames = [
 export const sortingServerValues = {
     'createdAt': 'createdAt',
     'name': 'name',
-    'categoryName': '$category.name$'
+    'categoryName': sequelize.literal('`category.name`')
 };
