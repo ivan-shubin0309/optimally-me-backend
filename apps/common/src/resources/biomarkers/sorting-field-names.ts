@@ -6,6 +6,6 @@ export const sortingFieldNames = [
 
 export const sortingServerValues = {
     'createdAt': 'createdAt',
-    'name': () => 'name',
+    'name': 'name',
     'categoryName': '$category.name$'
 };
