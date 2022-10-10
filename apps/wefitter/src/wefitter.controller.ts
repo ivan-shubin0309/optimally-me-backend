@@ -126,8 +126,7 @@ export class WefitterController {
                 statusCode: HttpStatus.BAD_REQUEST
             });
         }
-        const { wefitter: { publicId, bearer } } = user;
-        if (!publicId || !bearer) {
+        if (!user.wefitter || !user.wefitter.publicId || !user.wefitter.bearer) {
             throw new BadRequestException({
                 message: this.translator.translate('WEFITTER_PROFILE_NOT_FOUND'),
                 errorCode: 'USER_NOT_FOUND',
@@ -137,9 +136,6 @@ export class WefitterController {
         if (deleteData) {
             // TODO Delete data from our DB
         }
-        await this.wefitterService.deleteConnection(publicId, bearer, connectionSlug);
-
-
+        await this.wefitterService.deleteConnection(user.wefitter.publicId, user.wefitter.bearer, connectionSlug);
     }
-
 }
