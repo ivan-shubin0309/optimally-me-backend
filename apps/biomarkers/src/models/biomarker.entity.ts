@@ -36,24 +36,17 @@ import { Op } from 'sequelize';
             },
         ]
     }),
-    withCategory: () => ({
+    withCategory: (isRequired = false) => ({
         include: [
             {
                 model: Category,
                 as: 'category',
-                required: false,
+                required: isRequired,
             },
         ]
     }),
     subQuery: (isEnabled: boolean) => ({ subQuery: isEnabled }),
     search: (searchString) => ({
-        include: [
-            {
-                model: Category,
-                as: 'category',
-                required: true,
-            },
-        ],
         where: {
             [Op.or]: [
                 { name: { [Op.like]: `%${searchString}%` } },

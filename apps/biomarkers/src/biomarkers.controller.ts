@@ -267,7 +267,7 @@ export class BiomarkersController {
     let biomarkersList = [];
     const scopes: any[] = [
       { method: ['byType', BiomarkerTypes.biomarker] },
-      'withCategory',
+      { method: ['withCategory', true] },
       'withUnit'
     ];
 
@@ -282,7 +282,7 @@ export class BiomarkersController {
     const count = await this.biomarkersService.getCount(scopes);
 
     if (count) {
-      if (orderBy[0] !== 'createdAt') {
+      if (orderBy !== 'createdAt') {
         scopes.push({ method: ['orderBy', [[orderBy, query.orderType], ['createdAt', 'desc']]] });
       } else {
         scopes.push({ method: ['orderBy', [['createdAt', query.orderType]]] });
