@@ -24,15 +24,21 @@ export interface IUserResult {
 export class UserResult extends Model {
     @Column({
         type: DataType.STRING,
-        allowNull: true,
+        allowNull: false,
     })
     name: string;
 
     @Column({
         type: DataType.FLOAT,
-        allowNull: true,
+        allowNull: false,
     })
     value: number;
+
+    @Column({
+        type: DataType.DATEONLY,
+        allowNull: false,
+    })
+    date: string;
 
     @ForeignKey(() => User)
     @Column({
