@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { User } from './models';
 import { Transaction } from 'sequelize/types';
 import { ICreateUser } from './models/create-user.interface';
-import { BaseService } from 'apps/common/src/base/base.service';
+import { BaseService } from '../../common/src/base/base.service';
 import { Repository } from 'sequelize-typescript';
 
 @Injectable()
