@@ -89,6 +89,24 @@
       "compilerOptions": {
         "tsConfigPath": "apps/wefitter/tsconfig.app.json"
       }
+    },
+    "admins-users": {
+      "type": "application",
+      "root": "apps/admins-users",
+      "entryFile": "main",
+      "sourceRoot": "apps/admins-users/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/admins-users/tsconfig.app.json"
+      }
+    },
+    "admins-results": {
+      "type": "application",
+      "root": "apps/admins-results",
+      "entryFile": "main",
+      "sourceRoot": "apps/admins-results/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/admins-results/tsconfig.app.json"
+      }
     }
   }
 }
