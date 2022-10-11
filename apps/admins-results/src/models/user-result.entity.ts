@@ -1,6 +1,7 @@
 import { User } from '../../../users/src/models';
 import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
 import { Biomarker } from '../../../biomarkers/src/models/biomarker.entity';
+import { Op } from 'sequelize';
 
 export interface IUserResult {
     readonly name: string,
@@ -15,6 +16,7 @@ export interface IUserResult {
     orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
     byUserId: (userId) => ({ where: { userId } }),
     byBiomarkerId: (biomarkerId) => ({ where: { biomarkerId } }),
+    byDateAndBiomarkerId: (data: Array<{ date: string, biomarkerId: number }>) => ({ where: { [Op.or]: data } }),
 }))
 @Table({
     tableName: 'userResults',

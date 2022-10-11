@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UsersService } from '../../users/src/users.service';
 import { EntityByIdDto } from '../../common/src/models/entity-by-id.dto';
@@ -44,7 +44,8 @@ export class AdminsResultsController {
 
     const biomarkerIdsMap = body.results.reduce(
       (biomarkerIdsObject, result) => {
-        biomarkerIdsObject[result.biomarkerId] = true; return biomarkerIdsObject;
+        biomarkerIdsObject[result.biomarkerId] = true;
+        return biomarkerIdsObject;
       },
       {}
     );
@@ -60,6 +61,23 @@ export class AdminsResultsController {
         message: this.translator.translate('BIOMARKER_NOT_FOUND'),
         errorCode: 'BIOMARKER_NOT_FOUND',
         statusCode: HttpStatus.NOT_FOUND
+      });
+    }
+
+    const resultsCount = await this.adminsResultsService.getCount([
+      {
+        method: [
+          'byDateAndBiomarkerId',
+          body.results.map(result => ({ biomarkerId: result.biomarkerId, date: result.date }))
+        ]
+      }
+    ]);
+
+    if (resultsCount) {
+      throw new BadRequestException({
+        message: this.translator.translate('RESULT_ALREADY_EXIST'),
+        errorCode: 'RESULT_ALREADY_EXIST',
+        statusCode: HttpStatus.BAD_REQUEST
       });
     }
 
