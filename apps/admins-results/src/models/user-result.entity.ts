@@ -13,6 +13,8 @@ export interface IUserResult {
     byId: (id) => ({ where: { id } }),
     pagination: (query) => ({ limit: query.limit, offset: query.offset }),
     orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
+    byUserId: (userId) => ({ where: { userId } }),
+    byBiomarkerId: (biomarkerId) => ({ where: { biomarkerId } }),
 }))
 @Table({
     tableName: 'userResults',
