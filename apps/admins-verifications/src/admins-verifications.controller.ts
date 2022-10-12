@@ -1,5 +1,5 @@
 import { Body, Controller, Inject, HttpCode, HttpStatus, NotFoundException, Post, Patch, Get, Query } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MailerService } from '../../common/src/resources/mailer/mailer.service';
 import { UserRoles } from '../../common/src/resources/users';
 import { TranslatorService } from 'nestjs-translator';
@@ -43,7 +43,7 @@ export class AdminsVerificationsController {
     }
 
     const token = await this.verificationsService.generateToken({ userId: user.id }, body.tokenLifeTime);
-    await this.verificationsService.saveToken(user.id, token, TokenTypes.password, false);
+    await this.verificationsService.saveToken(user.id, token, TokenTypes.password, true);
 
     await this.mailerService.sendRestorePasswordEmail(user, token);
   }
