@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, NotFoundException, Patch, Post, UnprocessableEntityException, Inject, Get, Query, Response } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, NotFoundException, Patch, Post, Inject, Get, Query, Response } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MailerService } from '../../common/src/resources/mailer/mailer.service';
 import { UserRoles } from '../../common/src/resources/users';
@@ -47,7 +47,7 @@ export class VerificationsController {
         }
 
         const token = await this.verificationsService.generateToken({ userId: user.id }, body.tokenLifeTime);
-        await this.verificationsService.saveToken(user.id, token, TokenTypes.userPassword, false);
+        await this.verificationsService.saveToken(user.id, token, TokenTypes.userPassword, true);
 
         await this.mailerService.sendUserRestorePasswordEmail(user, `${this.configService.get('SWAGGER_BACKEND_URL')}/verifications/password/redirect?token=${token}`);
     }
