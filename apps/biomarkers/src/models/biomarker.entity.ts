@@ -55,6 +55,15 @@ import { Op } from 'sequelize';
         }
     }),
     byCategoryId: (categoryIds: number | number[]) => ({ where: { categoryId: categoryIds } }),
+    withRule: () => ({
+        include: [
+            {
+                model: Biomarker,
+                as: 'rule',
+                required: false,
+            },
+        ]
+    }),
 }))
 @Table({
     tableName: 'biomarkers',
@@ -114,4 +123,7 @@ export class Biomarker extends Model {
 
     @BelongsTo(() => Unit)
     unit: Unit;
+
+    @BelongsTo(() => Biomarker, 'templateId')
+    rule: Biomarker;
 }
