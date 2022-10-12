@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { TranslatorService } from 'nestjs-translator';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags, ApiParam, ApiResponse } from '@nestjs/swagger';
-import { Repository, Sequelize } from 'sequelize-typescript';
+import { Sequelize } from 'sequelize-typescript';
 import { Roles } from '../../common/src/resources/common/role.decorator';
 import { UserRoles } from '../../common/src/resources/users';
 import { BiomarkersService } from './biomarkers.service';
@@ -37,7 +37,6 @@ import { BiomarkerDto } from './models/biomarker.dto';
 import { EntityByIdDto } from '../../common/src/models/entity-by-id.dto';
 import { GetBiomarkerListDto } from './models/get-biomarker-list.dto';
 import { sortingServerValues as biomarkerSortingServerValues } from 'apps/common/src/resources/biomarkers/sorting-field-names';
-import { Biomarker } from './models/biomarker.entity';
 import { AlternativeNamesService } from './services/alternative-names/alternative-names.service';
 import { FiltersService } from './services/filters/filters.service';
 
@@ -295,6 +294,7 @@ export class BiomarkersController {
     return new BiomarkersDto(biomarkersList, PaginationHelper.buildPagination({ limit, offset }, count));
   }
 
+  @ApiResponse({ type: () => BiomarkerDto })
   @ApiOperation({ summary: 'Get biomarker by id' })
   @ApiParam({ name: 'id' })
   @Roles(UserRoles.superAdmin)
@@ -305,7 +305,8 @@ export class BiomarkersController {
       { method: ['byType', BiomarkerTypes.biomarker] },
       'withCategory',
       'withUnit',
-      'includeAll'
+      'includeAll',
+      'withRule',
     ]);
 
     if (!biomarker) {

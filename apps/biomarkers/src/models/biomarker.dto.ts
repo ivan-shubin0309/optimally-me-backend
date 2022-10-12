@@ -29,6 +29,11 @@ export class BiomarkerDto extends BaseDto<Biomarker> {
         this.category = entity.category
             ? new CategoryDto(entity.category)
             : undefined;
+
+        if (entity.rule) {
+            this.ruleId = entity.rule.id;
+            this.ruleName = entity.rule.name;
+        }
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -57,4 +62,10 @@ export class BiomarkerDto extends BaseDto<Biomarker> {
 
     @ApiProperty({ type: () => CategoryDto, required: false })
     category: CategoryDto;
+
+    @ApiProperty({ type: () => Number, required: false })
+    ruleId: number;
+
+    @ApiProperty({ type: () => String, required: false })
+    ruleName: string;
 }
