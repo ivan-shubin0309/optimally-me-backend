@@ -146,7 +146,6 @@ export class WefitterController {
     @Roles(UserRoles.user)
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Redirect connection' })
-    @HttpCode(HttpStatus.NO_CONTENT)
     @Get('connections/redirect')
     async connectionRedirect(@Query() query: ConnectionRedirectDto, @Response() response) {
         let link = `${this.configService.get('MOBILE_FRONTEND_BASE_URL')}connectionResult?connection=${query.connection}`;
