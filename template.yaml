@@ -209,6 +209,11 @@ Resources:
           Properties:
             Path: /wefitter/connection
             Method: ANY
+        WefitterConnectionsRedirectApi:
+          Type: Api
+          Properties:
+            Path: /wefitter/connections/redirect
+            Method: ANY
   VerificationsFunction:
     Type: AWS::Serverless::Function
     Metadata:
