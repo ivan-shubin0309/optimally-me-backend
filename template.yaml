@@ -209,6 +209,12 @@ Resources:
           Properties:
             Path: /wefitter/connection
             Method: ANY
+        WefitterUserDataApi:
+          Type: Api
+          Properties:
+            Path: /wefitter/user-data
+            Method: ANY
+
   VerificationsFunction:
     Type: AWS::Serverless::Function
     Metadata:
