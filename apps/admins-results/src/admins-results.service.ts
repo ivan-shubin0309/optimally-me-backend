@@ -13,4 +13,10 @@ export class AdminsResultsService extends BaseService<UserResult> {
   create(body: IUserResult, transaction?: Transaction): Promise<UserResult> {
     return this.model.create({ ...body }, { transaction });
   }
+
+  async bulkCreate(data: IUserResult[], transaction?: Transaction): Promise<void> {
+    //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    await this.model.bulkCreate(data, { transaction });
+  }
 }
