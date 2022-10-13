@@ -22,6 +22,7 @@ import { DeleteConnectionDto } from './models/delete-connection.dto';
 import { GetUserConnectionsDto } from './models/get-user-connections.dto';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import { ConnectionRedirectDto } from './models/connection-redirect.dto';
+import { Public } from 'apps/common/src/resources/common/public.decorator';
 
 @ApiTags('wefitter')
 @Controller('wefitter')
@@ -144,7 +145,7 @@ export class WefitterController {
     }
 
     @Roles(UserRoles.user)
-    @ApiBearerAuth()
+    @Public()
     @ApiOperation({ summary: 'Redirect connection' })
     @Get('connections/redirect')
     async connectionRedirect(@Query() query: ConnectionRedirectDto, @Response() response) {
