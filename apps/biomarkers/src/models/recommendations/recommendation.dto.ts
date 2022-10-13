@@ -12,6 +12,7 @@ export class RecommendationDto extends BaseDto<Recommendation> {
         this.content = entity.content;
         this.title = entity.title;
         this.type = entity.type;
+        this.productLink = entity.productLink;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -25,4 +26,7 @@ export class RecommendationDto extends BaseDto<Recommendation> {
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(RecommendationActionTypes) })
     readonly type: number;
+
+    @ApiProperty({ type: () => String, required: false })
+    readonly productLink: string;
 }
