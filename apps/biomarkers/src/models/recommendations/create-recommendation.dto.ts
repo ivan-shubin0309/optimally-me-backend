@@ -1,24 +1,29 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
-import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsPositive } from 'class-validator';
-import { RecommendationTypes } from '../../../../common/src/resources/recommendations/recommendation-types';
+import { RecommendationCategoryTypes } from 'apps/common/src/resources/recommendations/recommendation-category-types';
+import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { RecommendationActionTypes } from '../../../../common/src/resources/recommendations/recommendation-action-types';
 
 export class CreateRecommendationDto {
-    @ApiProperty({ type: () => Number, required: true })
+    @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(RecommendationCategoryTypes) })
     @IsNotEmpty()
-    @IsPositive()
-    @IsInt()
-    readonly order: number;
+    @IsNumber()
+    @IsEnum(RecommendationCategoryTypes)
+    readonly category: number;
 
-    @ApiProperty({ type: () => Number, required: true })
+    @ApiProperty({ type: () => String, required: true })
     @IsNotEmpty()
-    @IsPositive()
-    @IsInt()
-    readonly recommendationId: number;
+    @IsString()
+    readonly title: string;
 
-    @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(RecommendationTypes) })
-    @IsNotEmpty()
-    @IsEnum(RecommendationTypes)
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(RecommendationActionTypes) })
+    @IsOptional()
+    @IsEnum(RecommendationActionTypes)
     @IsNumber()
     readonly type: number;
+
+    @ApiProperty({ type: () => String, required: true })
+    @IsOptional()
+    @IsString()
+    readonly content: number;
 }

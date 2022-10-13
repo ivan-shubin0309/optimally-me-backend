@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-types';
-import { RecommendationTypes } from '../../common/src/resources/recommendations/recommendation-types';
 import { Repository } from 'sequelize-typescript';
 import { Transaction } from 'sequelize/types';
 import { Biomarker } from './models/biomarker.entity';
@@ -9,7 +8,7 @@ import { CreateFilterDto } from './models/filters/create-filter.dto';
 import { Filter } from './models/filters/filter.entity';
 import { CreateInteractionDto } from './models/interactions/create-interaction.dto';
 import { Interaction } from './models/interactions/interaction.entity';
-import { CreateRecommendationDto } from './models/recommendations/create-recommendation.dto';
+import { AddRecommendationDto } from './models/recommendations/add-recommendation.dto';
 import { FilterRecommendation } from './models/recommendations/filter-recommendation.entity';
 import { FilterSex } from './models/filtersSex/filter-sex.entity';
 import { FilterAge } from './models/filtersAge/filter-age.entity';
@@ -87,7 +86,7 @@ export class BiomarkersFactory {
         await Promise.all(promises);
     }
 
-    private async attachRecommendationsToFilter(recommendations: CreateRecommendationDto[], filterId: number, transaction?: Transaction): Promise<void> {
+    private async attachRecommendationsToFilter(recommendations: AddRecommendationDto[], filterId: number, transaction?: Transaction): Promise<void> {
         const recommendationsToCreate: any[] = recommendations.map(recommendation => Object.assign({ filterId }, recommendation));
         await this.filterRecommendationModel.bulkCreate(recommendationsToCreate, { transaction });
     }

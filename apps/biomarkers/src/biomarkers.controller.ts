@@ -39,6 +39,8 @@ import { GetBiomarkerListDto } from './models/get-biomarker-list.dto';
 import { sortingServerValues as biomarkerSortingServerValues } from 'apps/common/src/resources/biomarkers/sorting-field-names';
 import { AlternativeNamesService } from './services/alternative-names/alternative-names.service';
 import { FiltersService } from './services/filters/filters.service';
+import { RecommendationDto } from './models/recommendations/recommendation.dto';
+import { CreateRecommendationDto } from './models/recommendations/create-recommendation.dto';
 
 @ApiBearerAuth()
 @ApiTags('biomarkers')
@@ -340,5 +342,16 @@ export class BiomarkersController {
     }
 
     await biomarker.destroy();
+  }
+
+  @ApiCreatedResponse({ type: () => RecommendationDto })
+  @ApiOperation({ summary: 'Create recommendation' })
+  @HttpCode(HttpStatus.CREATED)
+  @Roles(UserRoles.superAdmin)
+  @Post('recommendations')
+  async createRecommendation(@Body() body: CreateRecommendationDto): Promise<RecommendationDto> {
+    const recommendation = await this.recommendationsService.create(body);
+
+    return new RecommendationDto(recommendation);
   }
 }
