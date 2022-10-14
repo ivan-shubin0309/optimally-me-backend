@@ -1,6 +1,7 @@
 import { RecommendationCategoryTypes } from '../../../../common/src/resources/recommendations/recommendation-category-types';
 import { Table, Column, Model, DataType, Scopes } from 'sequelize-typescript';
 import { Op } from 'sequelize';
+import { RecommendationActionTypes } from '../../../../common/src/resources/recommendations/recommendation-action-types';
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
@@ -24,7 +25,19 @@ export class Recommendation extends Model {
 
     @Column({
         type: DataType.STRING,
-        allowNull: false,
+        allowNull: true,
     })
     content: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true,
+    })
+    title: string;
+
+    @Column({
+        type: DataType.TINYINT,
+        allowNull: true,
+    })
+    type: RecommendationActionTypes;
 }
