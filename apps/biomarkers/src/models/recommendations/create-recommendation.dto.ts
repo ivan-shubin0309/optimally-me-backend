@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { RecommendationCategoryTypes } from 'apps/common/src/resources/recommendations/recommendation-category-types';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
 import { RecommendationActionTypes } from '../../../../common/src/resources/recommendations/recommendation-action-types';
 
 export class CreateRecommendationDto {
@@ -14,6 +14,7 @@ export class CreateRecommendationDto {
     @ApiProperty({ type: () => String, required: true })
     @IsNotEmpty()
     @IsString()
+    @MaxLength(255)
     readonly title: string;
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(RecommendationActionTypes) })
@@ -25,5 +26,6 @@ export class CreateRecommendationDto {
     @ApiProperty({ type: () => String, required: true })
     @IsOptional()
     @IsString()
+    @MaxLength(255)
     readonly content: string;
 }
