@@ -23,9 +23,15 @@ export class CreateRecommendationDto {
     @IsNumber()
     readonly type: number;
 
-    @ApiProperty({ type: () => String, required: true })
+    @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsString()
     @MaxLength(255)
     readonly content: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    @IsString()
+    @MaxLength(255)
+    readonly productLink: string;
 }

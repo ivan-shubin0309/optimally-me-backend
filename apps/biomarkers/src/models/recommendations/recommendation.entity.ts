@@ -40,4 +40,10 @@ export class Recommendation extends Model {
         allowNull: true,
     })
     type: RecommendationActionTypes;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true,
+    })
+    productLink: string;
 }
