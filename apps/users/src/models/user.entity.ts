@@ -17,6 +17,7 @@ import { UserWefitter } from '../../../wefitter/src/models/user-wefitter.entity'
             }
         ]
     }),
+    pagination: (query) => ({ limit: query.limit, offset: query.offset }),
 }))
 @Table({
     tableName: 'users',

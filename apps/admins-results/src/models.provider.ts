@@ -22,7 +22,6 @@ export const modelProviders = [
         provide: 'USER_RESULT_MODEL',
         useValue: UserResult,
     },
-    ,
     {
         provide: 'BIOMARKER_MODEL',
         useValue: Biomarker,

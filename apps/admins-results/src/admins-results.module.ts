@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { BiomarkersService } from '../../biomarkers/src/biomarkers.service';
 import { JwtStrategy } from '../../common/src/strategies/jwt.strategy';
-import { ConfigModule } from '../../common/src/utils/config/config.module';
 import { entities } from '../../common/src/utils/database/database-entity.provider';
 import { sequelizeProvider } from '../../common/src/utils/database/database.provider';
 import { redisModuleInstance } from '../../common/src/utils/database/redis.provider';
@@ -10,9 +9,11 @@ import { jwtModuleInstance } from '../../common/src/utils/jwt/jwt.module';
 import { translatorInstance } from '../../common/src/utils/translator/translator.provider';
 import { SessionsService } from '../../sessions/src/sessions.service';
 import { UsersService } from '../../users/src/users.service';
+import { ConfigModule } from '../../common/src/utils/config/config.module';
 import { AdminsResultsController } from './admins-results.controller';
 import { AdminsResultsService } from './admins-results.service';
 import { modelProviders } from './models.provider';
+import { BiomarkersFactory } from 'apps/biomarkers/src/biomarkers.factory';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { modelProviders } from './models.provider';
   providers: [
     AdminsResultsService,
     BiomarkersService,
+    BiomarkersFactory,
     SessionsService,
     UsersService,
     JwtStrategy,

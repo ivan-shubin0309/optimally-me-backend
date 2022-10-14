@@ -6,7 +6,8 @@ import { AdminsVerificationsModule } from '../../admins-verifications/src/admins
 import { BiomarkersModule } from '../../biomarkers/src/biomarkers.module';
 import { VerificationsModule } from '../../verifications/src/verifications.module';
 import { WefitterModule } from '../../wefitter/src/wefitter.module';
-import { AdminsUsersModule } from 'apps/admins-users/src/admins-users.module';
+import { AdminsUsersModule } from '../../admins-users/src/admins-users.module';
+import { AdminsResultsModule } from '../../admins-results/src/admins-results.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AdminsUsersModule } from 'apps/admins-users/src/admins-users.module';
     VerificationsModule,
     WefitterModule,
     AdminsUsersModule,
+    AdminsResultsModule,
   ]
 })
 export class SwaggerAppModule { }

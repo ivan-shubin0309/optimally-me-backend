@@ -9,6 +9,7 @@ export class UserResultDto extends BaseDto<UserResult> {
         this.userId = data.userId;
         this.name = data.name;
         this.value = data.value;
+        this.date = data.date;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -22,4 +23,7 @@ export class UserResultDto extends BaseDto<UserResult> {
 
     @ApiProperty({ type: () => Number, required: true })
     readonly value: number;
+
+    @ApiProperty({ type: () => String, required: true })
+    readonly date: string;
 }
