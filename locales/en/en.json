@@ -17,5 +17,6 @@
     "UNIT_NOT_FOUND": "Unit with specified id is not found",
     "CATEGORY_NOT_FOUND": "Category with specified id is not found",
     "RECOMMENDATION_NOT_FOUND": "Recommendation with specified id is not found",
-    "RULE_NOT_FOUND": "Rule with specified id is not found"
+    "RULE_NOT_FOUND": "Rule with specified id is not found",
+    "RESULT_ALREADY_EXIST": "User result with specified biomarker id and date already exist"
 }
