@@ -17,7 +17,7 @@ export class CreateFilterDto {
     readonly name: string;
 
     @ApiProperty({ type: () => String, required: false })
-    @IsOptional()
+    @IsNotEmpty()
     readonly summary: string;
 
     @ApiProperty({ type: () => String, required: false })
