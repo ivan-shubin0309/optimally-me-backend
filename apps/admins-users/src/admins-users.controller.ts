@@ -1,5 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UsersService } from '../../users/src/users.service';
 import { GetListDto } from '../../common/src/models/get-list.dto';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
@@ -7,6 +7,7 @@ import { UsersDto } from '../../users/src/models/users.dto';
 import { UserRoles } from '../../common/src/resources/users';
 import { Roles } from '../../common/src/resources/common/role.decorator';
 
+@ApiBearerAuth()
 @ApiTags('admins/users')
 @Controller('admins/users')
 export class AdminsUsersController {

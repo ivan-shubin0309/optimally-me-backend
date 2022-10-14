@@ -11,6 +11,7 @@ import {
     NotFoundException,
     Body,
     Patch,
+    Response,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { WefitterService } from './wefitter.service';
@@ -25,6 +26,9 @@ import { GetUserConnectionsDto } from './models/get-user-connections.dto';
 import { UserWefitterDto } from './models/user-wefitter.dto';
 import { SessionDataDto } from '../../sessions/src/models';
 import { PatchUserWefitterDto } from './models/patch-user-wefitter.dto';
+import { ConfigService } from '../../common/src/utils/config/config.service';
+import { ConnectionRedirectDto } from './models/connection-redirect.dto';
+import { Public } from 'apps/common/src/resources/common/public.decorator';
 
 @ApiTags('wefitter')
 @Controller('wefitter')
@@ -33,6 +37,7 @@ export class WefitterController {
         private readonly wefitterService: WefitterService,
         private readonly usersService: UsersService,
         private readonly translator: TranslatorService,
+        private readonly configService: ConfigService,
     ) {}
 
     @Roles(UserRoles.user)
@@ -183,5 +188,18 @@ export class WefitterController {
         userWefitter = await userWefitter.update(body);
 
         return new UserWefitterDto(userWefitter);
+    }
+
+
+    @Public()
+    @ApiOperation({ summary: 'Redirect connection' })
+    @Get('connections/redirect')
+    async connectionRedirect(@Query() query: ConnectionRedirectDto, @Response() response) {
+        let link = `${this.configService.get('MOBILE_FRONTEND_BASE_URL')}connectionResult?connection=${query.connection}`;
+        if (query.error) {
+            link = `${link}&error=${query.error}`;
+        }
+        response.set('Content-Type', 'text/html');
+        response.send(Buffer.from(`<!DOCTYPE html><html><head><title></title><meta charset="UTF-8" /><meta http-equiv="refresh" content="3; URL=${link}" /></head><body></body></html>`));
     }
 }
