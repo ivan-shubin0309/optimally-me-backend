@@ -144,7 +144,6 @@ export class WefitterController {
         await this.wefitterService.deleteConnection(user.wefitter.publicId, user.wefitter.bearer, connectionSlug);
     }
 
-    @Roles(UserRoles.user)
     @Public()
     @ApiOperation({ summary: 'Redirect connection' })
     @Get('connections/redirect')
