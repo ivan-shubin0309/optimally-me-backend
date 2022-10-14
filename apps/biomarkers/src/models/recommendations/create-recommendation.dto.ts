@@ -25,5 +25,5 @@ export class CreateRecommendationDto {
     @ApiProperty({ type: () => String, required: true })
     @IsOptional()
     @IsString()
-    readonly content: number;
+    readonly content: string;
 }
