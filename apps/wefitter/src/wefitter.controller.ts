@@ -8,6 +8,9 @@ import {
     Delete,
     HttpCode,
     Query,
+    NotFoundException,
+    Body,
+    Patch,
     Response,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -20,6 +23,9 @@ import { UsersService } from '../../users/src/users.service';
 import { WefitterConnectionsDto } from './models/wefitter-connections.dto';
 import { DeleteConnectionDto } from './models/delete-connection.dto';
 import { GetUserConnectionsDto } from './models/get-user-connections.dto';
+import { UserWefitterDto } from './models/user-wefitter.dto';
+import { SessionDataDto } from '../../sessions/src/models';
+import { PatchUserWefitterDto } from './models/patch-user-wefitter.dto';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import { ConnectionRedirectDto } from './models/connection-redirect.dto';
 import { Public } from 'apps/common/src/resources/common/public.decorator';
@@ -143,6 +149,47 @@ export class WefitterController {
         }
         await this.wefitterService.deleteConnection(user.wefitter.publicId, user.wefitter.bearer, connectionSlug);
     }
+
+    @Roles(UserRoles.user)
+    @ApiBearerAuth()
+    @ApiResponse({ type: () => UserWefitterDto })
+    @ApiOperation({ summary: 'Get wefitter user data' })
+    @Get('user-data')
+    async getUserWefitter(@Request() req: Request & { user: SessionDataDto }): Promise<UserWefitterDto> {
+        const userWefitters = await this.wefitterService.getUserWefitter(req.user.userId);
+
+        if (!userWefitters) {
+            throw new NotFoundException({
+                message: this.translator.translate('USER_WEFITTER_NOT_FOUND'),
+                errorCode: 'USER_WEFITTER_NOT_FOUND',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        return new UserWefitterDto(userWefitters);
+    }
+
+    @Roles(UserRoles.user)
+    @ApiBearerAuth()
+    @ApiResponse({ type: () => UserWefitterDto })
+    @ApiOperation({ summary: 'Patch wefitter user data' })
+    @Patch('user-data')
+    async patch(@Request() req: Request & { user: SessionDataDto }, @Body() body: PatchUserWefitterDto): Promise<UserWefitterDto> {
+        let userWefitter = await this.wefitterService.getUserWefitter(req.user.userId);
+
+        if (!userWefitter) {
+            throw new NotFoundException({
+                message: this.translator.translate('USER_WEFITTER_NOT_FOUND'),
+                errorCode: 'USER_WEFITTER_NOT_FOUND',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        userWefitter = await userWefitter.update(body);
+
+        return new UserWefitterDto(userWefitter);
+    }
+
 
     @Public()
     @ApiOperation({ summary: 'Redirect connection' })

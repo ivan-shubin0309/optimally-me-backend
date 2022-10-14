@@ -132,4 +132,10 @@ export class WefitterService {
         const { status } = axiosResponse;
         return status == HttpStatus.OK;
     }
+
+    getUserWefitter(userId: number): Promise<UserWefitter> {
+        return this.userWefitterModel
+            .scope([{ method: ['byUserId', userId] }])
+            .findOne();
+    }
 }

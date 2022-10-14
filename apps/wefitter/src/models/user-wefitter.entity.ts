@@ -36,4 +36,25 @@ export class UserWefitter extends Model {
         allowNull: false,
     })
     reference: string;
+
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    })
+    isAppleHealthConnected: boolean;
+
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    })
+    isSamsungHealthConnected: boolean;
+
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    })
+    isAndroidSdkConnected: boolean;
 }
