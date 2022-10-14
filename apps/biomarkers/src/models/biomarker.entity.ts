@@ -12,11 +12,11 @@ import { Op } from 'sequelize';
     byName: (name) => ({ where: { name } }),
     includeAll: () => ({
         include: [
-            {
+            /*{
                 model: Filter.scope(['includeAll']),
                 as: 'filters',
                 required: false,
-            },
+            },*/
             {
                 model: AlternativeName,
                 as: 'alternativeNames',
