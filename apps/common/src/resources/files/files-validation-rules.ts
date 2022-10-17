@@ -20,5 +20,6 @@ export const rules = {
     },
     supportedTypes: {
         [FileTypes.recommendation]: FILE_TYPES,
-    }
+    },
+    maxUploadFiles: 16
 };

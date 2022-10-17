@@ -3,6 +3,7 @@ import { ConfigService } from '../../common/src/utils/config/config.service';
 import { Repository } from 'sequelize-typescript';
 import { File } from './models/file.entity';
 import { S3 } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import { createPresignedPost as s3CreatePresignedPost, PresignedPost } from '@aws-sdk/s3-presigned-post';
 import { Transaction } from 'sequelize/types';
 import { FileStatuses } from '../../common/src/resources/files/file-statuses';
@@ -48,18 +49,19 @@ export default class S3Service {
         }
     }
 
-    async uploadFileToS3(data, fileKey, contentType, contentEncoding) {
+    async uploadFileToS3(data, fileKey, contentType, contentEncoding): Promise<Upload> {
         const { bucket } = this;
 
-        return this.s3Connection
-            .upload({
+        return new Upload({
+            client: this.s3Connection,
+            params: {
                 Bucket: bucket,
                 Key: fileKey,
                 Body: data,
                 ACL: 'public-read',
                 ContentEncoding: contentType,
                 ContentType: contentEncoding,
-            })
-            .promise();
+            }
+        });
     }
 }
