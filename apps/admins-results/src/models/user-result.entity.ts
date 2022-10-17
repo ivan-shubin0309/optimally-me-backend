@@ -1,7 +1,8 @@
 import { User } from '../../../users/src/models';
-import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Model, Scopes, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { Biomarker } from '../../../biomarkers/src/models/biomarker.entity';
 import { Op } from 'sequelize';
+import { Unit } from '../../../biomarkers/src/models/units/unit.entity';
 
 export interface IUserResult {
     readonly name: string,
@@ -17,6 +18,15 @@ export interface IUserResult {
     byUserId: (userId) => ({ where: { userId } }),
     byBiomarkerId: (biomarkerId) => ({ where: { biomarkerId } }),
     byDateAndBiomarkerId: (data: Array<{ date: string, biomarkerId: number }>) => ({ where: { [Op.or]: data } }),
+    withUnit: () => ({
+        include: [
+            {
+                model: Unit,
+                as: 'unit',
+                required: false,
+            },
+        ]
+    }),
 }))
 @Table({
     tableName: 'userResults',
@@ -55,4 +65,14 @@ export class UserResult extends Model {
         allowNull: false,
     })
     biomarkerId: number;
+
+    @ForeignKey(() => Unit)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: true,
+    })
+    unitId: number;
+
+    @BelongsTo(() => Unit)
+    unit: Unit;
 }

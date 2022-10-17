@@ -25,4 +25,10 @@ export class CreateUserResultDto {
     @IsOnlyDate()
     @IsDateInPast()
     readonly date: string;
+
+    @ApiProperty({ type: () => Number, required: true })
+    @IsNotEmpty()
+    @IsInt()
+    @IsPositive()
+    readonly unitId: number;
 }

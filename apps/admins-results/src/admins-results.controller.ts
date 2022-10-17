@@ -1,5 +1,5 @@
 import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UsersService } from '../../users/src/users.service';
 import { EntityByIdDto } from '../../common/src/models/entity-by-id.dto';
 import { Roles } from '../../common/src/resources/common/role.decorator';
@@ -12,6 +12,7 @@ import { GetListDto } from '../../common/src/models/get-list.dto';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
 import { UserResultsDto } from './models/user-results.dto';
 import { CreateUserResultsDto } from './models/create-user-results.dto';
+import { UnitsService } from '../../biomarkers/src/services/units/units.service';
 
 @ApiBearerAuth()
 @ApiTags('admins/users/results')
@@ -22,6 +23,7 @@ export class AdminsResultsController {
     private readonly usersService: UsersService,
     private readonly translator: TranslatorService,
     private readonly biomarkersService: BiomarkersService,
+    private readonly unitsService: UnitsService,
   ) { }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -29,6 +31,8 @@ export class AdminsResultsController {
   @Roles(UserRoles.superAdmin)
   @Post('/:id/results')
   async createResult(@Param() param: EntityByIdDto, @Body() body: CreateUserResultsDto): Promise<void> {
+    const biomarkerIdsMap = {}, unitIdsMap = {};
+
     const user = await this.usersService.getOne([
       { method: ['byId', param.id] },
       { method: ['byRoles', UserRoles.user] }
@@ -42,24 +46,32 @@ export class AdminsResultsController {
       });
     }
 
-    const biomarkerIdsMap = body.results.reduce(
-      (biomarkerIdsObject, result) => {
-        biomarkerIdsObject[result.biomarkerId] = true;
-        return biomarkerIdsObject;
-      },
-      {}
+    body.results.forEach(
+      (result) => {
+        biomarkerIdsMap[result.biomarkerId] = true;
+        unitIdsMap[result.unitId] = true;
+      }
     );
-    const biomarkerIdsCount = Object.keys(biomarkerIdsMap).length;
 
+    const biomarkerIdsCount = Object.keys(biomarkerIdsMap).length;
     const biomarkersCount = await this.biomarkersService.getCount([
       { method: ['byId', body.results.map(result => result.biomarkerId)] },
       { method: ['byType', BiomarkerTypes.biomarker] }
     ]);
-
     if (biomarkersCount !== biomarkerIdsCount) {
       throw new NotFoundException({
         message: this.translator.translate('BIOMARKER_NOT_FOUND'),
         errorCode: 'BIOMARKER_NOT_FOUND',
+        statusCode: HttpStatus.NOT_FOUND
+      });
+    }
+
+    const unitIdsCount = Object.keys(unitIdsMap).length;
+    const unitsCount = await this.unitsService.getCount([{ method: ['byId', body.results.map(result => result.unitId)] }]);
+    if (unitIdsCount !== unitsCount) {
+      throw new NotFoundException({
+        message: this.translator.translate('UNIT_NOT_FOUND'),
+        errorCode: 'UNIT_NOT_FOUND',
         statusCode: HttpStatus.NOT_FOUND
       });
     }
@@ -113,7 +125,10 @@ export class AdminsResultsController {
     const count = await this.adminsResultsService.getCount(scopes);
 
     if (count) {
-      scopes.push({ method: ['pagination', { limit, offset }] });
+      scopes.push(
+        { method: ['pagination', { limit, offset }] },
+        'withUnit'
+      );
       resultsList = await this.adminsResultsService.getList(scopes);
     }
 
