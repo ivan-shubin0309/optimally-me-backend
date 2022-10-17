@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UnitDto } from 'apps/biomarkers/src/models/units/unit.dto';
-import { BaseDto } from 'apps/common/src/base/base.dto';
+import { UnitDto } from '../../../biomarkers/src/models/units/unit.dto';
+import { BaseDto } from '../../../common/src/base/base.dto';
+import { UserResultBiomarkerDto } from './user-result-biomarker.dto';
 import { UserResult } from './user-result.entity';
 
 export class UserResultDto extends BaseDto<UserResult> {
@@ -12,6 +13,7 @@ export class UserResultDto extends BaseDto<UserResult> {
         this.date = data.date;
         this.unitId = data.unitId;
         this.unit = data.unit && new UnitDto(data.unit);
+        this.biomarker = data.biomarker && new UserResultBiomarkerDto(data.biomarker);
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -31,4 +33,7 @@ export class UserResultDto extends BaseDto<UserResult> {
 
     @ApiProperty({ type: () => UnitDto, required: true })
     readonly unit: UnitDto;
+
+    @ApiProperty({ type: () => UserResultBiomarkerDto, required: true })
+    readonly biomarker: UserResultBiomarkerDto;
 }

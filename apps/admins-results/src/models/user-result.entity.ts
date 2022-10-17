@@ -27,6 +27,15 @@ export interface IUserResult {
             },
         ]
     }),
+    withBiomarker: () => ({
+        include: [
+            {
+                model: Biomarker,
+                as: 'biomarker',
+                required: false,
+            },
+        ]
+    }),
 }))
 @Table({
     tableName: 'userResults',
@@ -69,4 +78,7 @@ export class UserResult extends Model {
 
     @BelongsTo(() => Unit)
     unit: Unit;
+
+    @BelongsTo(() => Biomarker)
+    biomarker: Biomarker;
 }

@@ -127,7 +127,8 @@ export class AdminsResultsController {
     if (count) {
       scopes.push(
         { method: ['pagination', { limit, offset }] },
-        'withUnit'
+        'withUnit',
+        'withBiomarker'
       );
       resultsList = await this.adminsResultsService.getList(scopes);
     }
