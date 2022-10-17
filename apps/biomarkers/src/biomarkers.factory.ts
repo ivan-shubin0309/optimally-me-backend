@@ -46,9 +46,7 @@ export class BiomarkersFactory {
 
         await Promise.all(promises);
 
-        return this.biomarkerModel
-            .scope([{ method: ['byId', createdBiomarker.id] }, 'includeAll'])
-            .findOne({ transaction });
+        return createdBiomarker;
     }
 
     async createBiomarker(body: CreateBiomarkerDto, transaction?: Transaction): Promise<Biomarker> {
