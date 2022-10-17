@@ -138,7 +138,7 @@ export class BiomarkersController {
     const scopes: any[] = [
       { method: ['byType', BiomarkerTypes.rule] },
       { method: ['byIsDeleted', false] },
-      'includeAll'
+      'withFilters'
     ];
 
     const count = await this.biomarkersService.getCount(scopes);
@@ -222,11 +222,14 @@ export class BiomarkersController {
   @Roles(UserRoles.superAdmin)
   @Put('/:id')
   async updateBiomarker(@Param() param: EntityByIdDto, @Body() body: CreateBiomarkerDto): Promise<BiomarkerDto> {
-    let biomarker = await this.biomarkersService.getOne([
-      { method: ['byId', param.id] },
-      { method: ['byType', BiomarkerTypes.biomarker] },
-      'includeAll'
-    ]);
+    let biomarker = await this.biomarkersService.getOne(
+      [
+        { method: ['byId', param.id] },
+        { method: ['byType', BiomarkerTypes.biomarker] }
+      ],
+      null,
+      { filters: { isIncludeAll: true } }
+    );
 
     if (!biomarker) {
       throw new NotFoundException({
