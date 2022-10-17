@@ -5,10 +5,10 @@ import { Op } from 'sequelize';
 import { Unit } from '../../../biomarkers/src/models/units/unit.entity';
 
 export interface IUserResult {
-    readonly name: string,
     readonly value: number,
     readonly userId: number,
     readonly biomarkerId: number,
+    readonly date: string,
 }
 
 @Scopes(() => ({
@@ -34,12 +34,6 @@ export interface IUserResult {
     underscored: false
 })
 export class UserResult extends Model {
-    @Column({
-        type: DataType.STRING,
-        allowNull: false,
-    })
-    name: string;
-
     @Column({
         type: DataType.FLOAT,
         allowNull: false,

@@ -8,7 +8,6 @@ export class UserResultDto extends BaseDto<UserResult> {
         super(data);
         this.biomarkerId = data.biomarkerId;
         this.userId = data.userId;
-        this.name = data.name;
         this.value = data.value;
         this.date = data.date;
         this.unitId = data.unitId;
@@ -20,9 +19,6 @@ export class UserResultDto extends BaseDto<UserResult> {
 
     @ApiProperty({ type: () => Number, required: true })
     readonly biomarkerId: number;
-
-    @ApiProperty({ type: () => String, required: true })
-    readonly name: string;
 
     @ApiProperty({ type: () => Number, required: true })
     readonly value: number;
