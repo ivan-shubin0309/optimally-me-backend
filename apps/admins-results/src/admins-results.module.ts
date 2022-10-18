@@ -13,8 +13,9 @@ import { ConfigModule } from '../../common/src/utils/config/config.module';
 import { AdminsResultsController } from './admins-results.controller';
 import { AdminsResultsService } from './admins-results.service';
 import { modelProviders } from './models.provider';
-import { BiomarkersFactory } from '../../biomarkers/src/biomarkers.factory';
 import { UnitsService } from '../../biomarkers/src/services/units/units.service';
+import { BiomarkersFactory } from 'apps/biomarkers/src/biomarkers.factory';
+import { FiltersService } from 'apps/biomarkers/src/services/filters/filters.service';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { UnitsService } from '../../biomarkers/src/services/units/units.service'
     UnitsService,
     SessionsService,
     UsersService,
+    FiltersService,
     JwtStrategy,
     ...guardProviders,
     sequelizeProvider(entities),

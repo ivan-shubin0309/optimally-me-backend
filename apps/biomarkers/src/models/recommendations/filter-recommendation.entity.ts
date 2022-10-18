@@ -12,7 +12,8 @@ import { Recommendation } from './recommendation.entity';
                 required: false,
             }
         ]
-    })
+    }),
+    byFilterId: (filterId) => ({ where: { filterId } }),
 }))
 @Table({
     tableName: 'filterRecommendations',
