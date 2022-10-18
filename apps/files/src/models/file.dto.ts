@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { FileTypes } from '../../../common/src/resources/files/file-types';
+import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { ConfigService } from '../../../common/src/utils/config/config.service';
 import { File } from './file.entity';
+import { FILE_TYPES } from 'apps/common/src/resources/files/files-validation-rules';
 
 export class FileDto {
     constructor(file: File, configService: ConfigService) {
@@ -11,7 +14,6 @@ export class FileDto {
         this.fileKey = file.fileKey;
         this.type = file.type;
         this.isUsed = file.isUsed;
-        this.type = file.type;
         this.status = file.status;
     }
 
@@ -30,17 +32,17 @@ export class FileDto {
     @ApiProperty({ type: () => String, required: false })
     readonly fileKey: string;
 
-    @ApiProperty({ type: Number, enum: FileTypes, required: false })
-    readonly type: FileTypes;
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(FileTypes) })
+    readonly type: number;
 
     @ApiProperty({ type: () => Boolean, required: false })
     readonly isUsed: boolean;
 
     @ApiProperty({ type: String, enum: FILE_TYPES, required: false })
-    readonly contentType: FILE_TYPES;
+    readonly contentType: string;
 
-    @ApiProperty({ type: Number, enum: FileStatuses, required: false })
-    readonly status: FileStatuses;
+    @ApiProperty({ type: () => Number, enum: FileStatuses, required: false })
+    readonly status: number;
 
     buildLink(file: File, configService: ConfigService) {
         if (!file) {
