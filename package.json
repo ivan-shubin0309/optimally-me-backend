@@ -26,7 +26,6 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.188.0",
     "@aws-sdk/client-ses": "^3.170.0",
-    "@aws-sdk/lib-storage": "^3.188.0",
     "@aws-sdk/s3-presigned-post": "^3.188.0",
     "@liaoliaots/nestjs-redis": "^9.0.1",
     "@nestjs/common": "^9.0.0",

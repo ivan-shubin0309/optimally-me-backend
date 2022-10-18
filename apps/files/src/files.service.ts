@@ -6,7 +6,7 @@ import { File } from './models/file.entity';
 import { FileTypes } from '../../common/src/resources/files/file-types';
 import { Transaction } from 'sequelize/types';
 import { TranslatorService } from 'nestjs-translator';
-import S3Service from './s3.service';
+import { S3Service } from './s3.service';
 import { SessionDataDto } from '../../sessions/src/models';
 import { FilesContentTypesDto } from './models/files-content-types.dto';
 import { rules } from '../../common/src/resources/files/files-validation-rules';
@@ -105,5 +105,11 @@ export class FilesService extends BaseService<File> {
 
             return fileToCreate;
         });
+    }
+
+    update(scopes: any[], body: { status: FileStatuses }, transaction?: Transaction): Promise<[affectedCount: number, affectedRows: File[]]> {
+        //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        return this.model.scope(scopes).update(body, { transaction });
     }
 }

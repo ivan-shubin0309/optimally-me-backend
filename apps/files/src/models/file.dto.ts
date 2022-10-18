@@ -1,15 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { FileTypes } from '../../../common/src/resources/files/file-types';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
-import { ConfigService } from '../../../common/src/utils/config/config.service';
 import { File } from './file.entity';
-import { FILE_TYPES } from 'apps/common/src/resources/files/files-validation-rules';
+import { FileStatuses } from '../../../common/src/resources/files/file-statuses';
 
 export class FileDto {
-    constructor(file: File, configService: ConfigService) {
+    constructor(file: File) {
         this.id = file.id;
         this.userId = file.userId;
-        this.link = this.buildLink(file, configService);
+        this.link = file.link;
         this.name = file.name;
         this.fileKey = file.fileKey;
         this.type = file.type;
@@ -38,20 +37,6 @@ export class FileDto {
     @ApiProperty({ type: () => Boolean, required: false })
     readonly isUsed: boolean;
 
-    @ApiProperty({ type: String, enum: FILE_TYPES, required: false })
-    readonly contentType: string;
-
-    @ApiProperty({ type: () => Number, enum: FileStatuses, required: false })
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(FileStatuses) })
     readonly status: number;
-
-    buildLink(file: File, configService: ConfigService) {
-        if (!file) {
-            return null;
-        }
-        const fileKey = file.fileKey;
-        const domain = configService.get('AWS_S3_DOMAIN');
-        const bucket = configService.get('AWS_S3_BUCKET');
-
-        return `${domain}/${bucket}/${fileKey}`;
-    }
 }

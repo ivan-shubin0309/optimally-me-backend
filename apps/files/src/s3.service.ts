@@ -3,13 +3,12 @@ import { ConfigService } from '../../common/src/utils/config/config.service';
 import { Repository } from 'sequelize-typescript';
 import { File } from './models/file.entity';
 import { S3 } from '@aws-sdk/client-s3';
-import { Upload } from '@aws-sdk/lib-storage';
 import { createPresignedPost as s3CreatePresignedPost, PresignedPost } from '@aws-sdk/s3-presigned-post';
 import { Transaction } from 'sequelize/types';
 import { FileStatuses } from '../../common/src/resources/files/file-statuses';
 
 @Injectable()
-export default class S3Service {
+export class S3Service {
     readonly bucket: string;
     readonly s3Connection: S3;
 
@@ -45,23 +44,9 @@ export default class S3Service {
             const { bucket } = this;
             await this.s3Connection.headObject({ Key: `${file.fileKey}`, Bucket: bucket });
 
-            await this.fileModel.update({ status: FileStatuses.loaded }, { where: { id: file.id }, transaction });
+            //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            await this.fileModel.scope([{ method: ['byId', file.id] }]).update({ status: FileStatuses.loaded }, { transaction });
         }
-    }
-
-    async uploadFileToS3(data, fileKey, contentType, contentEncoding): Promise<Upload> {
-        const { bucket } = this;
-
-        return new Upload({
-            client: this.s3Connection,
-            params: {
-                Bucket: bucket,
-                Key: fileKey,
-                Body: data,
-                ACL: 'public-read',
-                ContentEncoding: contentType,
-                ContentType: contentEncoding,
-            }
-        });
     }
 }

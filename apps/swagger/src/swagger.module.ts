@@ -8,6 +8,7 @@ import { VerificationsModule } from '../../verifications/src/verifications.modul
 import { WefitterModule } from '../../wefitter/src/wefitter.module';
 import { AdminsUsersModule } from '../../admins-users/src/admins-users.module';
 import { AdminsResultsModule } from '../../admins-results/src/admins-results.module';
+import { FilesModule } from '../../files/src/files.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AdminsResultsModule } from '../../admins-results/src/admins-results.mod
     WefitterModule,
     AdminsUsersModule,
     AdminsResultsModule,
+    FilesModule,
   ]
 })
 export class SwaggerAppModule { }

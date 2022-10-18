@@ -4,6 +4,9 @@ import { User } from '../../../users/src/models';
 import { FileTypes } from '../../../common/src/resources/files/file-types';
 
 @Scopes(() => ({
+    byId: (id: number | number[]) => ({ where: { id } }),
+    byType: (type: number) => ({ where: { type } }),
+    byUserId: (userId: number) => ({ where: { userId } }),
 }))
 @Table({
     tableName: 'files',
@@ -55,4 +58,6 @@ export class File extends Model {
         defaultValue: false,
     })
     isResized: boolean;
+
+    link: string;
 }

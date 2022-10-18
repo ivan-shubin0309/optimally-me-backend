@@ -15,7 +15,7 @@ export class FilesAwsMetaDto {
     @ApiProperty({ type: () => [FilesAwsMeta], required: true })
     readonly files;
 
-    constructor(files: File[], awsResponses) {
+    constructor(files: File[], awsResponses: any) {
         this.files = files.map((file, index) => ({ file: new FileDto(file), meta: new AwsMetaDto(awsResponses[index]) }));
     }
 }

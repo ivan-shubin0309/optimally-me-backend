@@ -9,6 +9,7 @@
 .PHONY: build-WefitterFunction
 .PHONY: build-AdminsUsersFunction
 .PHONY: build-AdminsResultsFunction
+.PHONY: build-FilesFunction
 
 
 build-RuntimeDependenciesLayer:
@@ -55,3 +56,6 @@ build-AdminsUsersFunction:
 
 build-AdminsResultsFunction:
 	$(MAKE) HANDLER=apps/admins-results/src/main.ts ENTITY=admins-results build-lambda-common
+
+build-FilesFunction:
+	$(MAKE) HANDLER=apps/files/src/main.ts ENTITY=files build-lambda-common

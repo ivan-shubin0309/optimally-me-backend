@@ -267,3 +267,17 @@ Resources:
             Path: /admins/users/{id}/results
             Method: ANY
 
+  FilesFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/files/src/main.handler
+      Description: 
+      Events:
+        FilesApi:
+          Type: Api
+          Properties:
+            Path: /files
+            Method: ANY
+

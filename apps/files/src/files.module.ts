@@ -12,6 +12,7 @@ import { UsersService } from '../../users/src/users.service';
 import { FilesController } from './files.controller';
 import { FilesService } from './files.service';
 import { modelProviders } from './models.provider';
+import { S3Service } from './s3.service';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { modelProviders } from './models.provider';
   controllers: [FilesController],
   providers: [
     FilesService,
+    S3Service,
     SessionsService,
     UsersService,
     JwtStrategy,
