@@ -15,7 +15,7 @@ export class UserResultBiomarkerDto extends BaseDto<Biomarker> {
         this.ruleId = entity.templateId;
     }
 
-    @ApiProperty({ type: () => Number, required: true })
+    @ApiProperty({ type: () => String, required: true })
     name: string;
 
     @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(BiomarkerTypes) })
