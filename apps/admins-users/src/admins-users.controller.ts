@@ -54,7 +54,7 @@ export class AdminsUsersController {
     if (!user) {
       throw new NotFoundException({
         message: this.translator.translate('USER_NOT_FOUND'),
-        errorCode: 'BIOMARKER_NOT_FOUND',
+        errorCode: 'USER_NOT_FOUND',
         statusCode: HttpStatus.NOT_FOUND
       });
     }
