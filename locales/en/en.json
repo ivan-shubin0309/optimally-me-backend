@@ -18,5 +18,8 @@
     "CATEGORY_NOT_FOUND": "Category with specified id is not found",
     "RECOMMENDATION_NOT_FOUND": "Recommendation with specified id is not found",
     "RULE_NOT_FOUND": "Rule with specified id is not found",
-    "RESULT_ALREADY_EXIST": "User result with specified biomarker id and date already exist"
+    "RESULT_ALREADY_EXIST": "User result with specified biomarker id and date already exist",
+    "INVALID_FILE_TYPE": "File type is invalid",
+    "FILE_NOT_FOUND": "File is not found",
+    "FILE_IS_USED": "File already in use"
 }
