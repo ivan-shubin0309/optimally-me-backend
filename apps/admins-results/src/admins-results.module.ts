@@ -14,6 +14,7 @@ import { AdminsResultsController } from './admins-results.controller';
 import { AdminsResultsService } from './admins-results.service';
 import { modelProviders } from './models.provider';
 import { BiomarkersFactory } from 'apps/biomarkers/src/biomarkers.factory';
+import { FiltersService } from 'apps/biomarkers/src/services/filters/filters.service';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { BiomarkersFactory } from 'apps/biomarkers/src/biomarkers.factory';
     BiomarkersFactory,
     SessionsService,
     UsersService,
+    FiltersService,
     JwtStrategy,
     ...guardProviders,
     sequelizeProvider(entities),
