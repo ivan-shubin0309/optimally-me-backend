@@ -11,6 +11,12 @@ import { Unit } from './models/units/unit.entity';
 import { Category } from './models/categories/category.entity';
 import { Recommendation } from './models/recommendations/recommendation.entity';
 import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-types';
+import { Transaction } from 'sequelize/types';
+import { FiltersService } from './services/filters/filters.service';
+
+interface IBiomarkerGetOneOptions {
+    readonly filters?: { isIncludeAll: boolean }
+}
 
 @Injectable()
 export class BiomarkersService extends BaseService<Biomarker> {
@@ -24,16 +30,19 @@ export class BiomarkersService extends BaseService<Biomarker> {
         @Inject('UNIT_MODEL') readonly unitModel: Repository<Unit>,
         @Inject('CATEGORY_MODEL') readonly categoryModel: Repository<Category>,
         @Inject('RECOMMENDATION_MODEL') readonly recommendationModel: Repository<Recommendation>,
+        private readonly filtersService: FiltersService,
     ) { super(model); }
 
     async create(body: CreateBiomarkerDto): Promise<Biomarker> {
-        return this.dbConnection.transaction(transaction => {
+        const createdBiomarker = await this.dbConnection.transaction(transaction => {
             return this.biomarkersFactory.createBiomarker(body, transaction);
         });
+
+        return this.getOne([{ method: ['byId', createdBiomarker.id] }], null, { filters: { isIncludeAll: true } });
     }
 
     async update(biomarker: Biomarker, body: CreateBiomarkerDto): Promise<Biomarker> {
-        return this.dbConnection.transaction(async transaction => {
+        const biomarkerId = await this.dbConnection.transaction(async transaction => {
             const scopes: any[] = [{ method: ['byBiomarkerId', biomarker.id] }];
 
             await Promise.all([
@@ -51,11 +60,10 @@ export class BiomarkersService extends BaseService<Biomarker> {
 
             await Promise.all(promises);
 
-            return this.getOne(
-                [{ method: ['byId', biomarker.id] }, 'includeAll'],
-                transaction
-            );
+            return biomarker.id;
         });
+
+        return this.getOne([{ method: ['byId', biomarkerId] }], null, { filters: { isIncludeAll: true } });
     }
 
     async validateBody(body: CreateBiomarkerDto): Promise<void> {
@@ -121,6 +129,21 @@ export class BiomarkersService extends BaseService<Biomarker> {
                 }
             }
         }
+    }
+
+    async getOne(scopes: any[], transaction?: Transaction, options: IBiomarkerGetOneOptions = {}): Promise<Biomarker> {
+        const biomarker = await super.getOne(scopes, transaction);
+
+        if (options.filters) {
+            const filterScopes: any[] = [{ method: ['byBiomarkerId', biomarker.id] }];
+
+            const filters = await this.filtersService.getList(filterScopes, transaction, { isIncludeAll: options.filters.isIncludeAll });
+
+            biomarker.setDataValue('filters', filters);
+            biomarker.filters = filters;
+        }
+
+        return biomarker;
     }
 }
 

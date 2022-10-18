@@ -10,16 +10,20 @@ import { Op } from 'sequelize';
     byId: (id) => ({ where: { id } }),
     byType: (type) => ({ where: { type } }),
     byName: (name) => ({ where: { name } }),
-    includeAll: () => ({
+    withAlternativeNames: () => ({
         include: [
-            /*{
-                model: Filter.scope(['includeAll']),
-                as: 'filters',
-                required: false,
-            },*/
             {
                 model: AlternativeName,
                 as: 'alternativeNames',
+                required: false,
+            },
+        ]
+    }),
+    withFilters: () => ({
+        include: [
+            {
+                model: Filter,
+                as: 'filters',
                 required: false,
             },
         ]

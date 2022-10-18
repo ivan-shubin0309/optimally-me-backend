@@ -11,11 +11,6 @@ import { FilterRecommendation } from '../recommendations/filter-recommendation.e
     includeAll: () => ({
         include: [
             {
-                model: FilterRecommendation.scope(['includeAll']),
-                as: 'filterRecommendations',
-                required: false,
-            },
-            {
                 model: Interaction,
                 as: 'interactions',
                 required: false,
