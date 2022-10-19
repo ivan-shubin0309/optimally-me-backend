@@ -252,6 +252,11 @@ Resources:
           Properties:
             Path: /admins/users
             Method: ANY
+        AdminsUserByIdApi:
+          Type: Api
+          Properties:
+            Path: /admins/users/{id}
+            Method: ANY
 
   AdminsResultsFunction:
     Type: AWS::Serverless::Function

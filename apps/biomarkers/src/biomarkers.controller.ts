@@ -146,7 +146,7 @@ export class BiomarkersController {
     const scopes: any[] = [
       { method: ['byType', BiomarkerTypes.rule] },
       { method: ['byIsDeleted', false] },
-      'includeAll'
+      'withFilters'
     ];
 
     const count = await this.biomarkersService.getCount(scopes);
@@ -233,11 +233,14 @@ export class BiomarkersController {
   @Roles(UserRoles.superAdmin)
   @Put('/:id')
   async updateBiomarker(@Param() param: EntityByIdDto, @Body() body: CreateBiomarkerDto): Promise<BiomarkerDto> {
-    let biomarker = await this.biomarkersService.getOne([
-      { method: ['byId', param.id] },
-      { method: ['byType', BiomarkerTypes.biomarker] },
-      'includeAll'
-    ]);
+    let biomarker = await this.biomarkersService.getOne(
+      [
+        { method: ['byId', param.id] },
+        { method: ['byType', BiomarkerTypes.biomarker] }
+      ],
+      null,
+      { filters: { isIncludeAll: true } }
+    );
 
     if (!biomarker) {
       throw new NotFoundException({
@@ -300,7 +303,11 @@ export class BiomarkersController {
         scopes.push({ method: ['orderBy', [['createdAt', query.orderType]]] });
       }  
 
-      scopes.push({ method: ['pagination', { limit, offset }] }, 'includeAll');
+      scopes.push(
+        { method: ['pagination', { limit, offset }] },
+        'withFilters',
+        'withAlternativeNames'
+      );
       biomarkersList = await this.biomarkersService.getList(scopes);
     }
 
@@ -313,14 +320,18 @@ export class BiomarkersController {
   @Roles(UserRoles.superAdmin)
   @Get('/:id')
   async getBiomarkerById(@Param('id') id: number): Promise<BiomarkerDto> {
-    const biomarker = await this.biomarkersService.getOne([
-      { method: ['byId', id] },
-      { method: ['byType', BiomarkerTypes.biomarker] },
-      'withCategory',
-      'withUnit',
-      'includeAll',
-      'withRule',
-    ]);
+    const biomarker = await this.biomarkersService.getOne(
+      [
+        { method: ['byId', id] },
+        { method: ['byType', BiomarkerTypes.biomarker] },
+        'withCategory',
+        'withUnit',
+        'withAlternativeNames',
+        'withRule',
+      ],
+      null,
+      { filters: { isIncludeAll: true } }
+    );
 
     if (!biomarker) {
       throw new NotFoundException({

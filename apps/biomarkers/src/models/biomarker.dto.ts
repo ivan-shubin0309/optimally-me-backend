@@ -36,7 +36,7 @@ export class BiomarkerDto extends BaseDto<Biomarker> {
         }
     }
 
-    @ApiProperty({ type: () => Number, required: true })
+    @ApiProperty({ type: () => String, required: true })
     name: string;
 
     @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(BiomarkerTypes) })
