@@ -24,7 +24,9 @@
     "db:seed:local": "NODE_ENV=local npx sequelize db:seed --seed "
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.188.0",
     "@aws-sdk/client-ses": "^3.170.0",
+    "@aws-sdk/s3-presigned-post": "^3.188.0",
     "@liaoliaots/nestjs-redis": "^9.0.1",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.2.0",

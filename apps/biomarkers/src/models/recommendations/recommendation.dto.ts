@@ -3,6 +3,7 @@ import { BaseDto } from '../../../../common/src/base/base.dto';
 import { RecommendationActionTypes } from 'apps/common/src/resources/recommendations/recommendation-action-types';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
 import { Recommendation } from './recommendation.entity';
+import { FileDto } from 'apps/files/src/models/file.dto';
 
 
 export class RecommendationDto extends BaseDto<Recommendation> {
@@ -13,6 +14,9 @@ export class RecommendationDto extends BaseDto<Recommendation> {
         this.title = entity.title;
         this.type = entity.type;
         this.productLink = entity.productLink;
+        this.file = entity.files && entity.files.length
+            ? new FileDto(entity.files[0])
+            : undefined;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -29,4 +33,7 @@ export class RecommendationDto extends BaseDto<Recommendation> {
 
     @ApiProperty({ type: () => String, required: false })
     readonly productLink: string;
+
+    @ApiProperty({ type: () => FileDto, required: false })
+    readonly file: FileDto;
 }

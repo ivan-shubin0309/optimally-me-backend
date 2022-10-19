@@ -19,6 +19,10 @@ import { RecommendationsService } from './services/recommendations/recommendatio
 import { FilterCharacteristicsService } from './services/filterCharacteristicsService/filter-characteristics.service';
 import { AlternativeNamesService } from './services/alternative-names/alternative-names.service';
 import { FiltersService } from './services/filters/filters.service';
+import { FilesService } from '../../files/src/files.service';
+import { RecommendationFilesService } from './services/recommendations/recommendation-files.service';
+import { S3Service } from '../../files/src/s3.service';
+import { FileHelper } from '../../common/src/utils/helpers/file.helper';
 
 @Module({
   imports: [
@@ -40,6 +44,10 @@ import { FiltersService } from './services/filters/filters.service';
     BiomarkersFactory,
     AlternativeNamesService,
     FiltersService,
+    FilesService,
+    RecommendationFilesService,
+    S3Service,
+    FileHelper,
     ...guardProviders,
     sequelizeProvider(entities),
     ...modelProviders

@@ -41,6 +41,11 @@ import { AlternativeNamesService } from './services/alternative-names/alternativ
 import { FiltersService } from './services/filters/filters.service';
 import { RecommendationDto } from './models/recommendations/recommendation.dto';
 import { CreateRecommendationDto } from './models/recommendations/create-recommendation.dto';
+import { FilesService } from '../../files/src/files.service';
+import { FileTypes } from '../../common/src/resources/files/file-types';
+import { RecommendationFilesService } from './services/recommendations/recommendation-files.service';
+import { ConfigService } from '../../common/src/utils/config/config.service';
+import { FileHelper } from 'apps/common/src/utils/helpers/file.helper';
 
 @ApiBearerAuth()
 @ApiTags('biomarkers')
@@ -56,6 +61,9 @@ export class BiomarkersController {
     @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
     private readonly alternativeNamesService: AlternativeNamesService,
     private readonly filtersService: FiltersService,
+    private readonly filesService: FilesService,
+    private readonly recommendationFilesService: RecommendationFilesService,
+    private readonly configService: ConfigService,
   ) {}
 
   @ApiCreatedResponse({ type: () => BiomarkerDto })
@@ -202,7 +210,10 @@ export class BiomarkersController {
     const count = await this.recommendationsService.getCount(scopes);
 
     if (count) {
-      scopes.push({ method: ['pagination', { limit, offset }] });
+      scopes.push(
+        { method: ['pagination', { limit, offset }] },
+        'withFiles'
+      );
       recommendationsList = await this.recommendationsService.getList(scopes);
     }
 
@@ -361,7 +372,18 @@ export class BiomarkersController {
   @Roles(UserRoles.superAdmin)
   @Post('recommendations')
   async createRecommendation(@Body() body: CreateRecommendationDto): Promise<RecommendationDto> {
-    const recommendation = await this.recommendationsService.create(body);
+    await this.filesService.checkCanUse(body.fileId, FileTypes.recommendation, null, true);
+
+    let recommendation = await this.recommendationsService.create(body);
+
+    if (body.fileId) {
+      await this.recommendationFilesService.create({ recommendationId: recommendation.id, fileId: body.fileId });
+    }
+
+    recommendation = await this.recommendationsService.getOne([
+      { method: ['byId', recommendation.id] },
+      'withFiles'
+    ]);
 
     return new RecommendationDto(recommendation);
   }

@@ -14,6 +14,8 @@ import { User } from '../../../../users/src/models';
 import { VerificationToken } from '../../../../verifications/src/models/verification-token.entity';
 import { UserWefitter } from '../../../../wefitter/src/models/user-wefitter.entity';
 import { UserResult } from '../../../../admins-results/src/models/user-result.entity';
+import { File } from '../../../../files/src/models/file.entity';
+import { RecommendationFile } from '../../../../biomarkers/src/models/recommendations/recommendation-file.entity';
 
 export const entities = [
     User,
@@ -32,4 +34,6 @@ export const entities = [
     Interaction,
     UserWefitter,
     UserResult,
+    File,
+    RecommendationFile,
 ];

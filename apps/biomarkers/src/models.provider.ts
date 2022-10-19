@@ -1,3 +1,4 @@
+import { File } from 'apps/files/src/models/file.entity';
 import { User } from '../../users/src/models';
 import { AlternativeName } from './models/alternativeNames/alternative-name.entity';
 import { Biomarker } from './models/biomarker.entity';
@@ -9,6 +10,7 @@ import { FilterAge } from './models/filtersAge/filter-age.entity';
 import { FilterSex } from './models/filtersSex/filter-sex.entity';
 import { Interaction } from './models/interactions/interaction.entity';
 import { FilterRecommendation } from './models/recommendations/filter-recommendation.entity';
+import { RecommendationFile } from './models/recommendations/recommendation-file.entity';
 import { Recommendation } from './models/recommendations/recommendation.entity';
 import { Unit } from './models/units/unit.entity';
 
@@ -64,6 +66,14 @@ export const modelProviders = [
     {
         provide: 'ALTERNATIVE_NAME_MODEL',
         useValue: AlternativeName
+    },
+    {
+        provide: 'FILE_MODEL',
+        useValue: File
+    },
+    {
+        provide: 'RECOMMENDATION_FILE_MODEL',
+        useValue: RecommendationFile
     }
 ];
 
