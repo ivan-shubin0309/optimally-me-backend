@@ -58,6 +58,4 @@ export class File extends Model {
         defaultValue: false,
     })
     isResized: boolean;
-
-    link: string;
 }

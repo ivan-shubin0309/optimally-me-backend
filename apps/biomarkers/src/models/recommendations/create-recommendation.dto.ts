@@ -33,7 +33,7 @@ export class CreateRecommendationDto {
     @IsOptional()
     @IsString()
     @MaxLength(255)
-    readonly productLink: number;
+    readonly productLink: string;
 
     @ApiProperty({ type: () => Number, required: false })
     @IsNotEmpty()
