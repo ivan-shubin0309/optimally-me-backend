@@ -36,7 +36,7 @@ export class CreateRecommendationDto {
     readonly productLink: number;
 
     @ApiProperty({ type: () => Number, required: false })
-    @IsOptional()
+    @IsNotEmpty()
     @IsNumber()
     @IsPositive()
     @IsInt()
