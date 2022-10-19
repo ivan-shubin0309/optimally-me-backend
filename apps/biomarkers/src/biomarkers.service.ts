@@ -13,6 +13,7 @@ import { Recommendation } from './models/recommendations/recommendation.entity';
 import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-types';
 import { Transaction } from 'sequelize/types';
 import { FiltersService } from './services/filters/filters.service';
+import { UpdateBiomarkerDto } from './models/update-biomarker.dto';
 
 interface IBiomarkerGetOneOptions {
     readonly filters?: { isIncludeAll: boolean }
@@ -38,19 +39,36 @@ export class BiomarkersService extends BaseService<Biomarker> {
             return this.biomarkersFactory.createBiomarker(body, transaction);
         });
 
-        return this.getOne([{ method: ['byId', createdBiomarker.id] }], null, { filters: { isIncludeAll: true } });
+        return this.getOne(
+            [
+                { method: ['byId', createdBiomarker.id] },
+                'withCategory',
+                'withUnit',
+                'withAlternativeNames',
+                'withRule',
+            ],
+            null,
+            { filters: { isIncludeAll: true } }
+        );
     }
 
     async update(biomarker: Biomarker, body: CreateBiomarkerDto): Promise<Biomarker> {
         const biomarkerId = await this.dbConnection.transaction(async transaction => {
             const scopes: any[] = [{ method: ['byBiomarkerId', biomarker.id] }];
 
+            const biomarkerUpdateBody = new UpdateBiomarkerDto(body);
+
             await Promise.all([
                 this.alternativeNameModel.scope(scopes).destroy({ transaction }),
                 this.filterModel.scope(scopes).destroy({ transaction }),
             ]);
 
-            await biomarker.update(body, { transaction });
+            if (body.ruleName) {
+                const rule = await this.biomarkersFactory.createRule(body, transaction);
+                biomarkerUpdateBody.templateId = rule.id;
+            }
+
+            await biomarker.update(biomarkerUpdateBody, { transaction });
 
             const promises = body.filters.map(filter => this.biomarkersFactory.attachFilter(filter, biomarker.id, transaction));
 
@@ -63,7 +81,17 @@ export class BiomarkersService extends BaseService<Biomarker> {
             return biomarker.id;
         });
 
-        return this.getOne([{ method: ['byId', biomarkerId] }], null, { filters: { isIncludeAll: true } });
+        return this.getOne(
+            [
+                { method: ['byId', biomarkerId] },
+                'withCategory',
+                'withUnit',
+                'withAlternativeNames',
+                'withRule',
+            ],
+            null,
+            { filters: { isIncludeAll: true } }
+        );
     }
 
     async validateBody(body: CreateBiomarkerDto): Promise<void> {
