@@ -210,7 +210,10 @@ export class BiomarkersController {
     const count = await this.recommendationsService.getCount(scopes);
 
     if (count) {
-      scopes.push({ method: ['pagination', { limit, offset }] });
+      scopes.push(
+        { method: ['pagination', { limit, offset }] },
+        'withFiles'
+      );
       recommendationsList = await this.recommendationsService.getList(scopes);
     }
 
@@ -368,12 +371,8 @@ export class BiomarkersController {
 
     recommendation = await this.recommendationsService.getOne([
       { method: ['byId', recommendation.id] },
-      'withFile'
+      'withFiles'
     ]);
-
-    if (recommendation.file) {
-      FileHelper.setBaseLink(this.configService, recommendation.file);
-    }
 
     return new RecommendationDto(recommendation);
   }

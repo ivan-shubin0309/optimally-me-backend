@@ -3,12 +3,15 @@ import { FileTypes } from '../../../common/src/resources/files/file-types';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { File } from './file.entity';
 import { FileStatuses } from '../../../common/src/resources/files/file-statuses';
+import { FileHelper } from 'apps/common/src/utils/helpers/file.helper';
 
 export class FileDto {
     constructor(file: File) {
         this.id = file.id;
         this.userId = file.userId;
-        this.link = file.link;
+        this.link = FileHelper
+            .getInstance()
+            .buildBaseLink(file);
         this.name = file.name;
         this.fileKey = file.fileKey;
         this.type = file.type;

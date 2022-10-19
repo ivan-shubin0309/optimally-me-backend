@@ -10,11 +10,11 @@ import { RecommendationFile } from './recommendation-file.entity';
     search: (searchString) => ({ where: { content: { [Op.like]: `%${searchString}%` } } }),
     pagination: (query) => ({ limit: query.limit, offset: query.offset }),
     byId: (id) => ({ where: { id } }),
-    withFile: () => ({
+    withFiles: () => ({
         include: [
             {
                 model: File,
-                as: 'file',
+                as: 'files',
                 required: false,
             },
         ]
@@ -59,5 +59,5 @@ export class Recommendation extends Model {
     productLink: string;
 
     @BelongsToMany(() => File, () => RecommendationFile, 'recommendationId', 'fileId')
-    file: File;
+    files: File[];
 }

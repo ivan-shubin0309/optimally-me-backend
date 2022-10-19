@@ -14,7 +14,9 @@ export class RecommendationDto extends BaseDto<Recommendation> {
         this.title = entity.title;
         this.type = entity.type;
         this.productLink = entity.productLink;
-        this.file = entity.file && new FileDto(entity.file);
+        this.file = entity.files && entity.files.length
+            ? new FileDto(entity.files[0])
+            : undefined;
     }
 
     @ApiProperty({ type: () => Number, required: true })

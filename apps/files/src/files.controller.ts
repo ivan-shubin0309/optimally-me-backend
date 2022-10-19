@@ -50,10 +50,6 @@ export class FilesController {
 
     const files = await this.filesService.createFilesInDb(req.user.userId, filesRequests);
 
-    files.forEach(file => {
-      FileHelper.setBaseLink(this.configService, file);
-    });
-
     return new FilesAwsMetaDto(files, awsResponses);
   }
 
