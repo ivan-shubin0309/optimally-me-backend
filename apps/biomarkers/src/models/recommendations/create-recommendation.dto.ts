@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { RecommendationCategoryTypes } from '../../../../common/src/resources/recommendations/recommendation-category-types';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
-import { IsArray, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength, ValidateNested } from 'class-validator';
+import { IsArray, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength, MinLength, ValidateNested } from 'class-validator';
 import { RecommendationActionTypes } from '../../../../common/src/resources/recommendations/recommendation-action-types';
 import { CreateRecommendationImpactDto } from '../recommendationImpacts/create-recommendation-impact.dto';
 import { Type } from 'class-transformer';
 import { ArrayDistinct } from '../../../../common/src/resources/common/array-distinct.decorator';
+import { recommendationValidationRules } from 'apps/common/src/resources/recommendations/recommendation-validation-rules';
 
 export class CreateRecommendationDto {
     @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(RecommendationCategoryTypes) })
@@ -35,7 +36,8 @@ export class CreateRecommendationDto {
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsString()
-    @MaxLength(255)
+    @MaxLength(recommendationValidationRules.productLinkMaxLength)
+    @MinLength(recommendationValidationRules.productLinkMinLength)
     readonly productLink: string;
 
     @ApiProperty({ type: () => Number, required: false })
