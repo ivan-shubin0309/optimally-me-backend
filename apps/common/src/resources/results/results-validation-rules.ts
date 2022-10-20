@@ -1,3 +1,3 @@
 export const resultsValidationRules = {
-    maxValue: 10,
+    maxValue: 9999999999,
 };
