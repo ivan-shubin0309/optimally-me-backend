@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsInt, IsPositive, Max } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsInt, IsPositive, Max, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOnlyDate } from '../../../common/src/resources/common/is-only-date.decorator';
 import { IsDateInPast } from '../../../common/src/resources/common/is-date-in-past.decorator';
@@ -15,7 +15,8 @@ export class CreateUserResultDto {
     @ApiProperty({ type: () => Number, required: true })
     @IsNotEmpty()
     @IsNumber()
-    @NumberMaxCharacters(resultsValidationRules.maxValue)
+    @NumberMaxCharacters(resultsValidationRules.valueMaxLength)
+    @Min(resultsValidationRules.valueMin)
     readonly value: number;
 
     @ApiProperty({ type: () => String, required: true })
