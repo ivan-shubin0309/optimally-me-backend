@@ -80,7 +80,7 @@ export class AdminsResultsController {
       {
         method: [
           'byDateAndBiomarkerId',
-          body.results.map(result => ({ biomarkerId: result.biomarkerId, date: result.date }))
+          body.results.map(result => ({ biomarkerId: result.biomarkerId, date: result.date, userId: param.id }))
         ]
       }
     ]);
