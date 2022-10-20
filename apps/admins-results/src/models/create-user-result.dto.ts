@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsOnlyDate } from '../../../common/src/resources/common/is-only-date.decorator';
 import { IsDateInPast } from '../../../common/src/resources/common/is-date-in-past.decorator';
 import { resultsValidationRules } from '../../../common/src/resources/results/results-validation-rules';
+import { NumberMaxCharacters } from '../../../common/src/resources/common/number-max-characters';
 
 export class CreateUserResultDto {
     @ApiProperty({ type: () => Number, required: true })
@@ -14,7 +15,7 @@ export class CreateUserResultDto {
     @ApiProperty({ type: () => Number, required: true })
     @IsNotEmpty()
     @IsNumber()
-    @Max(resultsValidationRules.maxValue)
+    @NumberMaxCharacters(resultsValidationRules.maxValue)
     readonly value: number;
 
     @ApiProperty({ type: () => String, required: true })
