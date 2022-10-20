@@ -17,7 +17,7 @@ export interface IUserResult {
     orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
     byUserId: (userId) => ({ where: { userId } }),
     byBiomarkerId: (biomarkerId) => ({ where: { biomarkerId } }),
-    byDateAndBiomarkerId: (data: Array<{ date: string, biomarkerId: number }>) => ({ where: { [Op.or]: data } }),
+    byDateAndBiomarkerId: (data: Array<{ date: string, biomarkerId: number, userId: number }>) => ({ where: { [Op.or]: data } }),
     withUnit: () => ({
         include: [
             {
