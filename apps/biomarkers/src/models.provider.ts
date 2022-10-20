@@ -9,6 +9,7 @@ import { Filter } from './models/filters/filter.entity';
 import { FilterAge } from './models/filtersAge/filter-age.entity';
 import { FilterSex } from './models/filtersSex/filter-sex.entity';
 import { Interaction } from './models/interactions/interaction.entity';
+import { RecommendationImpact } from './models/recommendationImpacts/recommendation-impact.entity';
 import { FilterRecommendation } from './models/recommendations/filter-recommendation.entity';
 import { RecommendationFile } from './models/recommendations/recommendation-file.entity';
 import { Recommendation } from './models/recommendations/recommendation.entity';
@@ -74,6 +75,10 @@ export const modelProviders = [
     {
         provide: 'RECOMMENDATION_FILE_MODEL',
         useValue: RecommendationFile
+    },
+    {
+        provide: 'RECOMMENDATION_IMPACT_MODEL',
+        useValue: RecommendationImpact
     }
 ];
 

@@ -16,6 +16,7 @@ import { UserWefitter } from '../../../../wefitter/src/models/user-wefitter.enti
 import { UserResult } from '../../../../admins-results/src/models/user-result.entity';
 import { File } from '../../../../files/src/models/file.entity';
 import { RecommendationFile } from '../../../../biomarkers/src/models/recommendations/recommendation-file.entity';
+import { RecommendationImpact } from '../../../../biomarkers/src/models/recommendationImpacts/recommendation-impact.entity';
 
 export const entities = [
     User,
@@ -36,4 +37,5 @@ export const entities = [
     UserResult,
     File,
     RecommendationFile,
+    RecommendationImpact,
 ];

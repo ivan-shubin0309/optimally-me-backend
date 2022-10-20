@@ -1,9 +1,10 @@
 import { RecommendationCategoryTypes } from '../../../../common/src/resources/recommendations/recommendation-category-types';
-import { Table, Column, Model, DataType, Scopes, BelongsToMany } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, Scopes, BelongsToMany, HasMany } from 'sequelize-typescript';
 import { Op } from 'sequelize';
 import { RecommendationActionTypes } from '../../../../common/src/resources/recommendations/recommendation-action-types';
 import { File } from '../../../../files/src/models/file.entity';
 import { RecommendationFile } from './recommendation-file.entity';
+import { RecommendationImpact } from '../recommendationImpacts/recommendation-impact.entity';
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
@@ -18,7 +19,16 @@ import { RecommendationFile } from './recommendation-file.entity';
                 required: false,
             },
         ]
-    })
+    }),
+    withImpacts: () => ({
+        include: [
+            {
+                model: RecommendationImpact,
+                as: 'impacts',
+                required: false,
+            },
+        ]
+    }),
 }))
 
 @Table({
@@ -60,4 +70,7 @@ export class Recommendation extends Model {
 
     @BelongsToMany(() => File, () => RecommendationFile, 'recommendationId', 'fileId')
     files: File[];
+
+    @HasMany(() => RecommendationImpact)
+    impacts: RecommendationImpact[];
 }
