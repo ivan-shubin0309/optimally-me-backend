@@ -45,8 +45,10 @@ import { FilesService } from '../../files/src/files.service';
 import { FileTypes } from '../../common/src/resources/files/file-types';
 import { RecommendationFilesService } from './services/recommendations/recommendation-files.service';
 import { ConfigService } from '../../common/src/utils/config/config.service';
-import { FileHelper } from 'apps/common/src/utils/helpers/file.helper';
 import { RecommendationImpactsService } from './services/recommendation-impacts/recommendation-impacts.service';
+import { CacheService } from '../../common/src/resources/cache/cache.service';
+
+const RULE_PREFIX = 'rule';
 
 @ApiBearerAuth()
 @ApiTags('biomarkers')
@@ -66,6 +68,7 @@ export class BiomarkersController {
     private readonly recommendationFilesService: RecommendationFilesService,
     private readonly configService: ConfigService,
     private readonly recommendationImpactsService: RecommendationImpactsService,
+    private readonly cacheService: CacheService,
   ) {}
 
   @ApiCreatedResponse({ type: () => BiomarkerDto })
@@ -180,6 +183,8 @@ export class BiomarkersController {
         statusCode: HttpStatus.NOT_FOUND
       });
     }
+
+    await this.cacheService.del(RULE_PREFIX, param.id);
 
     await this.dbConnection.transaction(async transaction => {
       await Promise.all([
@@ -426,6 +431,12 @@ export class BiomarkersController {
   @Roles(UserRoles.superAdmin)
   @Get('rules/:id')
   async getRuleById(@Param() param: EntityByIdDto): Promise<BiomarkerDto> {
+    let biomarkerDto = await this.cacheService.get(RULE_PREFIX, param.id);
+
+    if (biomarkerDto) {
+      return biomarkerDto;
+    }
+
     const biomarker = await this.biomarkersService.getOne(
       [
         { method: ['byId', param.id] },
@@ -444,6 +455,10 @@ export class BiomarkersController {
       });
     }
 
-    return new BiomarkerDto(biomarker);
+    biomarkerDto = new BiomarkerDto(biomarker);
+
+    await this.cacheService.set(RULE_PREFIX, param.id, biomarkerDto);
+
+    return biomarkerDto;
   }
 }
