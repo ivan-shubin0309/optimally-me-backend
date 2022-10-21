@@ -37,6 +37,7 @@ import { BiomarkerDto } from './models/biomarker.dto';
 import { EntityByIdDto } from '../../common/src/models/entity-by-id.dto';
 import { GetBiomarkerListDto } from './models/get-biomarker-list.dto';
 import { sortingServerValues as biomarkerSortingServerValues } from 'apps/common/src/resources/biomarkers/sorting-field-names';
+import { sortingServerValues as recommendationSortingServerValues } from 'apps/common/src/resources/recommendations/sorting-field-names';
 import { AlternativeNamesService } from './services/alternative-names/alternative-names.service';
 import { FiltersService } from './services/filters/filters.service';
 import { RecommendationDto } from './models/recommendations/recommendation.dto';
@@ -45,7 +46,6 @@ import { FilesService } from '../../files/src/files.service';
 import { FileTypes } from '../../common/src/resources/files/file-types';
 import { RecommendationFilesService } from './services/recommendations/recommendation-files.service';
 import { ConfigService } from '../../common/src/utils/config/config.service';
-import { FileHelper } from 'apps/common/src/utils/helpers/file.helper';
 import { RecommendationImpactsService } from './services/recommendation-impacts/recommendation-impacts.service';
 
 @ApiBearerAuth()
@@ -197,6 +197,7 @@ export class BiomarkersController {
   async getListRecommendations(@Query() query: GetRecommendationListDto): Promise<RecommendationsDto> {
     const limit = parseInt(query.limit);
     const offset = parseInt(query.offset);
+    const orderBy = recommendationSortingServerValues[query.orderBy];
 
     let recommendationsList = [];
     const scopes: any[] = [];
@@ -212,6 +213,12 @@ export class BiomarkersController {
     const count = await this.recommendationsService.getCount(scopes);
 
     if (count) {
+      if (orderBy !== 'createdAt') {
+        scopes.push({ method: ['orderBy', [[orderBy, query.orderType], ['createdAt', 'desc']]] });
+      } else {
+        scopes.push({ method: ['orderBy', [['createdAt', query.orderType]]] });
+      }  
+
       scopes.push(
         { method: ['pagination', { limit, offset }] },
         'withFiles'
