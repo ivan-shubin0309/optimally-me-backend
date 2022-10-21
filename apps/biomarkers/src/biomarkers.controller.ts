@@ -425,10 +425,10 @@ export class BiomarkersController {
   @ApiParam({ name: 'id' })
   @Roles(UserRoles.superAdmin)
   @Get('rules/:id')
-  async getRuleById(@Param('id') id: number): Promise<BiomarkerDto> {
+  async getRuleById(@Param() param: EntityByIdDto): Promise<BiomarkerDto> {
     const biomarker = await this.biomarkersService.getOne(
       [
-        { method: ['byId', id] },
+        { method: ['byId', param.id] },
         { method: ['byType', BiomarkerTypes.rule] },
         { method: ['byIsDeleted', false] },
       ],
