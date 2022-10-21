@@ -1,8 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { RecommendationCategoryTypes } from 'apps/common/src/resources/recommendations/recommendation-category-types';
+import { RecommendationCategoryTypes } from '../../../../common/src/resources/recommendations/recommendation-category-types';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
-import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength } from 'class-validator';
+import { IsArray, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength, ValidateNested } from 'class-validator';
 import { RecommendationActionTypes } from '../../../../common/src/resources/recommendations/recommendation-action-types';
+import { CreateRecommendationImpactDto } from '../recommendationImpacts/create-recommendation-impact.dto';
+import { Type } from 'class-transformer';
+import { ArrayDistinct } from '../../../../common/src/resources/common/array-distinct.decorator';
 
 export class CreateRecommendationDto {
     @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(RecommendationCategoryTypes) })
@@ -41,4 +44,12 @@ export class CreateRecommendationDto {
     @IsPositive()
     @IsInt()
     readonly fileId: number;
+
+    @ApiProperty({ type: () => [CreateRecommendationImpactDto], required: false })
+    @IsOptional()
+    @IsArray()
+    @ArrayDistinct('biomarkerId')
+    @ValidateNested()
+    @Type(() => CreateRecommendationImpactDto)
+    readonly impacts: CreateRecommendationImpactDto[];
 }

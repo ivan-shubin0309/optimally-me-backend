@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from '../../../../common/src/base/base.dto';
-import { RecommendationActionTypes } from 'apps/common/src/resources/recommendations/recommendation-action-types';
+import { RecommendationActionTypes } from '../../../../common/src/resources/recommendations/recommendation-action-types';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
 import { Recommendation } from './recommendation.entity';
-import { FileDto } from 'apps/files/src/models/file.dto';
+import { FileDto } from '../../../../files/src/models/file.dto';
+import { RecommendationImpactDto } from '../recommendationImpacts/recommendation-impact.dto';
 
 
 export class RecommendationDto extends BaseDto<Recommendation> {
@@ -16,6 +17,9 @@ export class RecommendationDto extends BaseDto<Recommendation> {
         this.productLink = entity.productLink;
         this.file = entity.files && entity.files.length
             ? new FileDto(entity.files[0])
+            : undefined;
+        this.impacts = entity.impacts && entity.impacts.length
+            ? entity.impacts.map(impact => new RecommendationImpactDto(impact))
             : undefined;
     }
 
@@ -36,4 +40,7 @@ export class RecommendationDto extends BaseDto<Recommendation> {
 
     @ApiProperty({ type: () => FileDto, required: false })
     readonly file: FileDto;
+
+    @ApiProperty({ type: () => [RecommendationImpactDto], required: false })
+    readonly impacts: RecommendationImpactDto[];
 }

@@ -3,7 +3,7 @@ import { registerDecorator, ValidationArguments, ValidationOptions } from 'class
 export function ArrayPropertyCombinationDistinct(properties: string[], validationOptions?: ValidationOptions) {
     return (object: object, propertyName: string): void => {
         registerDecorator({
-            name: 'ArrayDistinct',
+            name: 'ArrayPropertyCombinationDistinct',
             target: object.constructor,
             propertyName,
             constraints: properties,

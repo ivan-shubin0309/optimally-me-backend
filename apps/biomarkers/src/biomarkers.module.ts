@@ -23,6 +23,7 @@ import { FilesService } from '../../files/src/files.service';
 import { RecommendationFilesService } from './services/recommendations/recommendation-files.service';
 import { S3Service } from '../../files/src/s3.service';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
+import { RecommendationImpactsService } from './services/recommendation-impacts/recommendation-impacts.service';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { FileHelper } from '../../common/src/utils/helpers/file.helper';
     RecommendationFilesService,
     S3Service,
     FileHelper,
+    RecommendationImpactsService,
     ...guardProviders,
     sequelizeProvider(entities),
     ...modelProviders

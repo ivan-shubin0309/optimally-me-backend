@@ -46,6 +46,7 @@ import { FileTypes } from '../../common/src/resources/files/file-types';
 import { RecommendationFilesService } from './services/recommendations/recommendation-files.service';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import { FileHelper } from 'apps/common/src/utils/helpers/file.helper';
+import { RecommendationImpactsService } from './services/recommendation-impacts/recommendation-impacts.service';
 
 @ApiBearerAuth()
 @ApiTags('biomarkers')
@@ -64,6 +65,7 @@ export class BiomarkersController {
     private readonly filesService: FilesService,
     private readonly recommendationFilesService: RecommendationFilesService,
     private readonly configService: ConfigService,
+    private readonly recommendationImpactsService: RecommendationImpactsService,
   ) {}
 
   @ApiCreatedResponse({ type: () => BiomarkerDto })
@@ -374,17 +376,47 @@ export class BiomarkersController {
   async createRecommendation(@Body() body: CreateRecommendationDto): Promise<RecommendationDto> {
     await this.filesService.checkCanUse(body.fileId, FileTypes.recommendation, null, true);
 
-    let recommendation = await this.recommendationsService.create(body);
-
-    if (body.fileId) {
-      await this.recommendationFilesService.create({ recommendationId: recommendation.id, fileId: body.fileId });
+    const biomarkerIdsMap = body.impacts.reduce(
+      (idsMap, impact) => {
+        idsMap[impact.biomarkerId] = true;
+        return idsMap;
+      },
+      {}
+    );
+    const biomarkerIdsCount = Object.keys(biomarkerIdsMap).length;
+    const biomarkersCount = await this.biomarkersService.getCount([
+      { method: ['byId', body.impacts.map(impact => impact.biomarkerId)] },
+      { method: ['byType', BiomarkerTypes.biomarker] },
+      { method: ['byIsDeleted', false] }
+    ]);
+    if (biomarkersCount !== biomarkerIdsCount) {
+      throw new NotFoundException({
+        message: this.translator.translate('BIOMARKER_NOT_FOUND'),
+        errorCode: 'BIOMARKER_NOT_FOUND',
+        statusCode: HttpStatus.NOT_FOUND
+      });
     }
 
-    recommendation = await this.recommendationsService.getOne([
-      { method: ['byId', recommendation.id] },
-      'withFiles'
+    let createdRecommendation = await this.dbConnection.transaction(async transaction => {
+      const recommendation = await this.recommendationsService.create(body, transaction);
+
+      if (body.fileId) {
+        await this.recommendationFilesService.create({ recommendationId: recommendation.id, fileId: body.fileId }, transaction);
+      }
+
+      if (body.impacts && body.impacts.length) {
+        await this.recommendationImpactsService.bulkCreate(body.impacts, recommendation.id, transaction);
+      }
+
+      return recommendation;
+    });
+
+    createdRecommendation = await this.recommendationsService.getOne([
+      { method: ['byId', createdRecommendation.id] },
+      'withFiles',
+      'withImpacts'
     ]);
 
-    return new RecommendationDto(recommendation);
+    return new RecommendationDto(createdRecommendation);
   }
 }
