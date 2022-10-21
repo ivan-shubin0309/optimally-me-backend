@@ -162,7 +162,7 @@ export class BiomarkersService extends BaseService<Biomarker> {
     async getOne(scopes: any[], transaction?: Transaction, options: IBiomarkerGetOneOptions = {}): Promise<Biomarker> {
         const biomarker = await super.getOne(scopes, transaction);
 
-        if (options.filters) {
+        if (biomarker && options.filters) {
             const filterScopes: any[] = [{ method: ['byBiomarkerId', biomarker.id] }];
 
             const filters = await this.filtersService.getList(filterScopes, transaction, { isIncludeAll: options.filters.isIncludeAll });

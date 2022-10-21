@@ -32,7 +32,7 @@ export class FiltersService extends BaseService<Filter> {
 
         const filters = await super.getList(filterScopes, transaction);
 
-        if (options.isIncludeAll) {
+        if (filters.length && options.isIncludeAll) {
             const recommendationsList = await this.filterRecommendationModel
                 .scope([{ method: ['byFilterId', filters.map(filter => filter.id)] }, 'includeAll'])
                 .findAll({ transaction });
