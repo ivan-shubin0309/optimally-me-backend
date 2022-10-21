@@ -166,9 +166,9 @@ export class BiomarkersController {
   @Roles(UserRoles.superAdmin)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('rules/:id')
-  async deleteRule(@Param('id') id: number): Promise<void> {
+  async deleteRule(@Param() param: EntityByIdDto): Promise<void> {
     const biomarker = await this.biomarkersService.getOne([
-      { method: ['byId', id] },
+      { method: ['byId', param.id] },
       { method: ['byType', BiomarkerTypes.rule] },
       { method: ['byIsDeleted', false] }
     ]);
@@ -351,9 +351,9 @@ export class BiomarkersController {
   @Roles(UserRoles.superAdmin)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/:id')
-  async removeBiomarker(@Param('id') id: number): Promise<void> {
+  async removeBiomarker(@Param() param: EntityByIdDto): Promise<void> {
     const biomarker = await this.biomarkersService.getOne([
-      { method: ['byId', id] },
+      { method: ['byId', param.id] },
       { method: ['byType', BiomarkerTypes.biomarker] }
     ]);
 
@@ -418,5 +418,32 @@ export class BiomarkersController {
     ]);
 
     return new RecommendationDto(createdRecommendation);
+  }
+
+  @ApiResponse({ type: () => BiomarkerDto })
+  @ApiOperation({ summary: 'Get rule by id' })
+  @ApiParam({ name: 'id' })
+  @Roles(UserRoles.superAdmin)
+  @Get('rules/:id')
+  async getRuleById(@Param('id') id: number): Promise<BiomarkerDto> {
+    const biomarker = await this.biomarkersService.getOne(
+      [
+        { method: ['byId', id] },
+        { method: ['byType', BiomarkerTypes.rule] },
+        { method: ['byIsDeleted', false] },
+      ],
+      null,
+      { filters: { isIncludeAll: true } }
+    );
+
+    if (!biomarker) {
+      throw new NotFoundException({
+        message: this.translator.translate('BIOMARKER_NOT_FOUND'),
+        errorCode: 'BIOMARKER_NOT_FOUND',
+        statusCode: HttpStatus.NOT_FOUND
+      });
+    }
+
+    return new BiomarkerDto(biomarker);
   }
 }
