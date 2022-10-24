@@ -4,7 +4,7 @@ import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
 import { IsArray, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength, MinLength, ValidateNested } from 'class-validator';
 import { RecommendationActionTypes } from '../../../../common/src/resources/recommendations/recommendation-action-types';
 import { CreateRecommendationImpactDto } from '../recommendationImpacts/create-recommendation-impact.dto';
-import { Type } from 'class-transformer';
+import { Transform, TransformFnParams, Type } from 'class-transformer';
 import { ArrayDistinct } from '../../../../common/src/resources/common/array-distinct.decorator';
 import { recommendationValidationRules } from 'apps/common/src/resources/recommendations/recommendation-validation-rules';
 
@@ -18,7 +18,9 @@ export class CreateRecommendationDto {
     @ApiProperty({ type: () => String, required: true })
     @IsNotEmpty()
     @IsString()
-    @MaxLength(255)
+    @MinLength(recommendationValidationRules.titleMinLength)
+    @MaxLength(recommendationValidationRules.titleMaxLength)
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     readonly title: string;
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(RecommendationActionTypes) })
