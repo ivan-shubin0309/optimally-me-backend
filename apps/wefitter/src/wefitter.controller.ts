@@ -125,7 +125,7 @@ export class WefitterController {
     @HttpCode(HttpStatus.NO_CONTENT)
     @Delete('connection')
     async deleteUserConnections(@Request() req, @Query() query: DeleteConnectionDto): Promise<void> {
-        const { connectionSlug, deleteData } = query;
+        const { connectionSlug, deleteData, isWefitterConnectionSlug } = query;
         const scopes = [
             { method: ['withWefitter'] }
         ];
@@ -147,7 +147,10 @@ export class WefitterController {
         if (deleteData) {
             // TODO Delete data from our DB
         }
-        await this.wefitterService.deleteConnection(user.wefitter.publicId, user.wefitter.bearer, connectionSlug);
+
+        if (isWefitterConnectionSlug) {
+            await this.wefitterService.deleteConnection(user.wefitter.publicId, user.wefitter.bearer, connectionSlug);
+        }
     }
 
     @Roles(UserRoles.user)
