@@ -3,10 +3,12 @@ import { recommendationCategoryOrder } from './recommendation-category-types';
 
 export const sortingFieldNames = [
     'createdAt',
-    'category'
+    'category',
+    'title'
 ];
 
 export const sortingServerValues = {
     'createdAt': 'createdAt',
-    'category': sequelize.literal(`FIELD(category, ${recommendationCategoryOrder.join(',')})`)
+    'category': sequelize.literal(`FIELD(category, ${recommendationCategoryOrder.join(',')})`),
+    'title': 'title'
 };
