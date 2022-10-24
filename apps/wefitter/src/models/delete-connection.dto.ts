@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { nonWefitterConnactionSlugs } from '../../../common/src/resources/wefitter/non-wefitter-connection-slugs';
-import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { Type } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
 
