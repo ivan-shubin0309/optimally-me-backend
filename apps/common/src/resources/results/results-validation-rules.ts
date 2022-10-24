@@ -1,4 +1,4 @@
 export const resultsValidationRules = {
     valueMaxLength: 10,
-    valueMin: 1,
+    valueMin: 0,
 };
