@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { NonWefitterConnactionSlugs } from '../../../common/src/resources/wefitter/non-wefitter-connection-slugs';
+import { nonWefitterConnactionSlugs } from '../../../common/src/resources/wefitter/non-wefitter-connection-slugs';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { Type } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
 
 export class DeleteConnectionDto {
-    @ApiProperty({ type: () => String, required: true, description: EnumHelper.toDescription(NonWefitterConnactionSlugs) })
+    @ApiProperty({ type: () => String, required: true, description: nonWefitterConnactionSlugs.join(', ') })
     @Type(() => String)
     @IsNotEmpty()
     readonly connectionSlug: string;
