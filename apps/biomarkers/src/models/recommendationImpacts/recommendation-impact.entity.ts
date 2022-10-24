@@ -35,19 +35,19 @@ export class RecommendationImpact extends Model {
 
     @Column({
         type: DataType.INTEGER,
-        allowNull: false,
+        allowNull: true,
     })
     impactLevelHigh: number;
 
     @Column({
         type: DataType.INTEGER,
-        allowNull: false,
+        allowNull: true,
     })
     qualityOfEvidenceHigh: number;
 
     @Column({
         type: DataType.INTEGER,
-        allowNull: false,
+        allowNull: true,
     })
     strengthOfEvidenceHigh: number;
 
@@ -59,19 +59,19 @@ export class RecommendationImpact extends Model {
 
     @Column({
         type: DataType.INTEGER,
-        allowNull: false,
+        allowNull: true,
     })
     impactLevelLow: number;
 
     @Column({
         type: DataType.INTEGER,
-        allowNull: false,
+        allowNull: true,
     })
     qualityOfEvidenceLow: number;
 
     @Column({
         type: DataType.INTEGER,
-        allowNull: false,
+        allowNull: true,
     })
     strengthOfEvidenceLow: number;
 }

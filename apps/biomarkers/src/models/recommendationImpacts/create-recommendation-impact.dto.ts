@@ -11,13 +11,13 @@ export class CreateRecommendationImpactDto {
     readonly biomarkerId: number;
 
     @ApiProperty({ type: () => String, required: false })
-    @IsOptional()
+    @IsNotEmpty()
     @IsString()
     @MaxLength(recommendationImpactsValidationRules.descriptionMaxLength)
     readonly descriptionHigh: string;
 
     @ApiProperty({ type: () => Number, required: true })
-    @IsNotEmpty()
+    @IsOptional()
     @IsNumber()
     @IsInt()
     @Min(recommendationImpactsValidationRules.impactLevelMinValue)
@@ -25,7 +25,7 @@ export class CreateRecommendationImpactDto {
     readonly impactLevelHigh: number;
 
     @ApiProperty({ type: () => Number, required: true })
-    @IsNotEmpty()
+    @IsOptional()
     @IsNumber()
     @IsInt()
     @Min(recommendationImpactsValidationRules.qualityOfEvidenceMinValue)
@@ -33,7 +33,7 @@ export class CreateRecommendationImpactDto {
     readonly qualityOfEvidenceHigh: number;
 
     @ApiProperty({ type: () => Number, required: true })
-    @IsNotEmpty()
+    @IsOptional()
     @IsNumber()
     @IsInt()
     @Min(recommendationImpactsValidationRules.strengthOfEvidenceMinValue)
@@ -41,13 +41,13 @@ export class CreateRecommendationImpactDto {
     readonly strengthOfEvidenceHigh: number;
 
     @ApiProperty({ type: () => String, required: false })
-    @IsOptional()
+    @IsNotEmpty()
     @IsString()
     @MaxLength(recommendationImpactsValidationRules.descriptionMaxLength)
     readonly descriptionLow: string;
 
     @ApiProperty({ type: () => Number, required: true })
-    @IsNotEmpty()
+    @IsOptional()
     @IsNumber()
     @IsInt()
     @Min(recommendationImpactsValidationRules.impactLevelMinValue)
@@ -55,7 +55,7 @@ export class CreateRecommendationImpactDto {
     readonly impactLevelLow: number;
 
     @ApiProperty({ type: () => Number, required: true })
-    @IsNotEmpty()
+    @IsOptional()
     @IsNumber()
     @IsInt()
     @Min(recommendationImpactsValidationRules.qualityOfEvidenceMinValue)
@@ -63,7 +63,7 @@ export class CreateRecommendationImpactDto {
     readonly qualityOfEvidenceLow: number;
 
     @ApiProperty({ type: () => Number, required: true })
-    @IsNotEmpty()
+    @IsOptional()
     @IsNumber()
     @IsInt()
     @Min(recommendationImpactsValidationRules.strengthOfEvidenceMinValue)
