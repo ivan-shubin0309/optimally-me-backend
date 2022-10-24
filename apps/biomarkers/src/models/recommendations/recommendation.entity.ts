@@ -10,6 +10,7 @@ import { RecommendationImpact } from '../recommendationImpacts/recommendation-im
     byCategory: (category) => ({ where: { category } }),
     search: (searchString) => ({ where: { content: { [Op.like]: `%${searchString}%` } } }),
     pagination: (query) => ({ limit: query.limit, offset: query.offset }),
+    orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
     byId: (id) => ({ where: { id } }),
     withFiles: () => ({
         include: [
