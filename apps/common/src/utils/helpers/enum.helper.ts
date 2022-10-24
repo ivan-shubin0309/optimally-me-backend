@@ -25,4 +25,12 @@ export class EnumHelper {
 
         return resultArray;
     }
+
+    static toOrderByKeys(enumObject: any, orderType: 'desc' | 'asc' = 'desc'): CollectionDto[] {
+        let collection = EnumHelper.toCollection(enumObject);
+
+        collection = collection.sort((obj1, obj2) => obj1.key.localeCompare(obj2.key));
+
+        return orderType === 'desc' ? collection : collection.reverse();
+    }
 }
