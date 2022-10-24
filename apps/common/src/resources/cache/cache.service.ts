@@ -1,8 +1,7 @@
 import { RedisService } from '@liaoliaots/nestjs-redis';
 import { Injectable } from '@nestjs/common';
 import { Redis } from 'ioredis';
-
-const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
+import { CacheTime } from './cache-time';
 
 @Injectable()
 export class CacheService {
@@ -14,8 +13,8 @@ export class CacheService {
         this.redisClient = redisService.getClient();
     }
 
-    async set(prefix: string, key: number, value: any): Promise<void> {
-        await this.redisClient.set(`${prefix}_${key}`, JSON.stringify(value), 'PX', DAY_IN_MILLISECONDS);
+    async set(prefix: string, key: number, value: any, cacheTime: CacheTime = CacheTime.day): Promise<void> {
+        await this.redisClient.set(`${prefix}_${key}`, JSON.stringify(value), 'PX', cacheTime);
     }
 
     async get(prefix: string, key: number): Promise<any> {
