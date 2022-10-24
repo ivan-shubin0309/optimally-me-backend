@@ -151,7 +151,6 @@ export class BiomarkersController {
     const scopes: any[] = [
       { method: ['byType', BiomarkerTypes.rule] },
       { method: ['byIsDeleted', false] },
-      'withFilters'
     ];
 
     const count = await this.biomarkersService.getCount(scopes);
