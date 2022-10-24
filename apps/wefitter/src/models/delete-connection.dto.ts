@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { nonWefitterConnactionSlugs } from '../../../common/src/resources/wefitter/non-wefitter-connection-slugs';
+import { nonWefitterConnectionSlugs } from '../../../common/src/resources/wefitter/non-wefitter-connection-slugs';
 import { Type } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
 
 export class DeleteConnectionDto {
-    @ApiProperty({ type: () => String, required: true, description: nonWefitterConnactionSlugs.join(', ') })
+    @ApiProperty({ type: () => String, required: true, description: nonWefitterConnectionSlugs.join(', ') })
     @Type(() => String)
     @IsNotEmpty()
     readonly connectionSlug: string;
