@@ -5,7 +5,7 @@ import { IsBoolean, IsNotEmpty } from 'class-validator';
 import { ParseBoolean } from '../../../common/src/resources/common/parse-boolean.decorator';
 
 export class DeleteConnectionDto {
-    @ApiProperty({ type: () => String, required: true, description: nonWefitterConnectionSlugs.join(', ') })
+    @ApiProperty({ type: () => String, required: true, description: Object.values(nonWefitterConnectionSlugs).join(', ') })
     @Type(() => String)
     @IsNotEmpty()
     readonly connectionSlug: string;

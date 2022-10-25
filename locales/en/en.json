@@ -21,5 +21,6 @@
     "RESULT_ALREADY_EXIST": "User result with specified biomarker id and date already exist",
     "INVALID_FILE_TYPE": "File type is invalid",
     "FILE_NOT_FOUND": "File is not found",
-    "FILE_IS_USED": "File already in use"
+    "FILE_IS_USED": "File already in use",
+    "WRONG_CONNECTION_SLUG": "Wron connection slug"
 }
