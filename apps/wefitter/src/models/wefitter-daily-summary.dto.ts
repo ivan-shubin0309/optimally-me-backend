@@ -1,16 +1,16 @@
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { WefitterHeartRateDto } from './wefitter-heart-rate.dto';
 import { WefitterStressSummaryDto } from './wefitter-stress-summary.dto';
 
 export class WefitterDailySummaryDto {
-    @ApiProperty({ type: () => String, required: true })
-    @IsNotEmpty()
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
     readonly bearer: string;
 
-    @ApiProperty({ type: () => String, required: true })
-    @IsNotEmpty()
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
     readonly date: string;
 
     @ApiProperty({ type: () => Number, required: false })
@@ -43,11 +43,13 @@ export class WefitterDailySummaryDto {
 
     @ApiProperty({ type: () => WefitterHeartRateDto, required: false })
     @IsOptional()
+    @ValidateNested()
     @Type(() => WefitterHeartRateDto)
     readonly heart_rate_summary: WefitterHeartRateDto;
 
     @ApiProperty({ type: () => WefitterStressSummaryDto, required: false })
     @IsOptional()
+    @ValidateNested()
     @Type(() => WefitterStressSummaryDto)
     readonly stress_summary: WefitterStressSummaryDto;
 

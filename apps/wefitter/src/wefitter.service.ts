@@ -142,9 +142,9 @@ export class WefitterService {
             .findOne();
     }
 
-    getUserWefitterByBearer(bearer: string): Promise<UserWefitter> {
+    getUserWefitterByPublicId(publicId: string): Promise<UserWefitter> {
         return this.userWefitterModel
-            .scope([{ method: ['byBearer', bearer] }])
+            .scope([{ method: ['byPublicId', publicId] }])
             .findOne();
     }
 
@@ -159,18 +159,18 @@ export class WefitterService {
             bmrCalories: data.bmr_calories,
             points: data.points,
             source: data.source,
-            heartSateSummaryMin: data.heart_rate_summary.min,
-            heartSateSummaryMax: data.heart_rate_summary.max,
-            heartSateSummaryAverage: data.heart_rate_summary.average,
-            heartSateSummaryResting: data.heart_rate_summary.resting,
-            stressQualifier: data.stress_summary.stress_qualifier,
-            averageStressLevel: data.stress_summary.average_stress_level,
-            maxStressLevel: data.stress_summary.max_stress_level,
-            restStressDuration: data.stress_summary.rest_stress_duration,
-            lowStressDuration: data.stress_summary.low_stress_duration,
-            mediumStressDuration: data.stress_summary.medium_stress_duration,
-            highStressDuration: data.stress_summary.high_stress_duration,
-            stressDuration: data.stress_summary.stress_duration,
+            heartSateSummaryMin: data.heart_rate_summary && data.heart_rate_summary.min,
+            heartSateSummaryMax: data.heart_rate_summary && data.heart_rate_summary.max,
+            heartSateSummaryAverage: data.heart_rate_summary && data.heart_rate_summary.average,
+            heartSateSummaryResting: data.heart_rate_summary && data.heart_rate_summary.resting,
+            stressQualifier: data.stress_summary && data.stress_summary.stress_qualifier,
+            averageStressLevel: data.stress_summary && data.stress_summary.average_stress_level,
+            maxStressLevel: data.stress_summary && data.stress_summary.max_stress_level,
+            restStressDuration: data.stress_summary && data.stress_summary.rest_stress_duration,
+            lowStressDuration: data.stress_summary && data.stress_summary.low_stress_duration,
+            mediumStressDuration: data.stress_summary && data.stress_summary.medium_stress_duration,
+            highStressDuration: data.stress_summary && data.stress_summary.high_stress_duration,
+            stressDuration: data.stress_summary && data.stress_summary.stress_duration,
         }, { transaction });
     }
 }

@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsOptional } from 'class-validator';
 
 export class WefitterStressSummaryDto {
 
-    @ApiProperty({ type: () => String, required: true })
-    @IsNotEmpty()
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
     readonly stress_qualifier: string;
 
     @ApiProperty({ type: () => Number, required: false })

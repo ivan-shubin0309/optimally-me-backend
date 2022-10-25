@@ -22,37 +22,37 @@ export class UserWefitterDailySummary extends Model {
     date: string;
 
     @Column({
-        type: DataType.INTEGER,
+        type: DataType.DOUBLE,
         allowNull: true,
     })
     distance: number;
 
     @Column({
-        type: DataType.INTEGER,
+        type: DataType.DOUBLE,
         allowNull: true,
     })
     steps: number;
 
     @Column({
-        type: DataType.INTEGER,
+        type: DataType.DOUBLE,
         allowNull: true,
     })
     calories: number;
 
     @Column({
-        type: DataType.INTEGER,
+        type: DataType.DOUBLE,
         allowNull: true,
     })
     activeCalories: number;
 
     @Column({
-        type: DataType.INTEGER,
+        type: DataType.DOUBLE,
         allowNull: true,
     })
     bmrCalories: number;
 
     @Column({
-        type: DataType.INTEGER,
+        type: DataType.DOUBLE,
         allowNull: true,
     })
     points: number;

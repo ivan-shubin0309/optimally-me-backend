@@ -9,12 +9,12 @@ module.exports = {
         userId INTEGER NOT NULL,
 
         date DATE NOT NULL,
-        distance INTEGER NULL,
-        steps INTEGER NULL,
-        calories INTEGER NULL,
-        activeCalories INTEGER NULL,
-        bmrCalories INTEGER NULL,
-        points INTEGER NULL,
+        distance DOUBLE NULL,
+        steps DOUBLE NULL,
+        calories DOUBLE NULL,
+        activeCalories DOUBLE NULL,
+        bmrCalories DOUBLE NULL,
+        points DOUBLE NULL,
         source VARCHAR(255) NOT NULL,
         
         heartRateSummaryMin INTEGER NULL,
@@ -22,7 +22,7 @@ module.exports = {
         heartRateSummaryAverage INTEGER NULL,
         heartRateSummaryResting INTEGER NULL,
         
-        stressQualifier VARCHAR(255) NOT NULL,
+        stressQualifier VARCHAR(255) NULL,
         averageStressLevel INTEGER NULL,
         maxStressLevel INTEGER NULL,
         restStressDuration VARCHAR(255) NULL,

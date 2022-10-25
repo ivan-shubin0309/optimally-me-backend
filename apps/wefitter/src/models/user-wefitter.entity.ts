@@ -4,7 +4,6 @@ import { User } from '../../../users/src/models';
 
 @Scopes(() => ({
     byUserId: (userId) => ({ where: { userId } }),
-    byBearer: (bearer) => ({ where: { bearer } }),
     byPublicId: (publicId) => ({ where: { publicId } }),
 }))
 @Table({
