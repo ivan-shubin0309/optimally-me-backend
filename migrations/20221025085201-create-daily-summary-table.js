@@ -8,7 +8,7 @@ module.exports = {
          
         userId INTEGER NOT NULL,
 
-        date DATA NOT NULL,
+        date DATE NOT NULL,
         distance INTEGER NULL,
         steps INTEGER NULL,
         calories INTEGER NULL,

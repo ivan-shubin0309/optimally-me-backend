@@ -1,5 +1,6 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { WefitterHeartRateDto } from './wefitter-heart-rate.dto';
 import { WefitterStressSummaryDto } from './wefitter-stress-summary.dto';
 
@@ -13,21 +14,27 @@ export class WefitterDailySummaryDto {
     readonly date: string;
 
     @ApiProperty({ type: () => Number, required: false })
+    @IsOptional()
     readonly distance: number;
 
     @ApiProperty({ type: () => Number, required: false })
+    @IsOptional()
     readonly steps: number;
 
     @ApiProperty({ type: () => Number, required: false })
+    @IsOptional()
     readonly calories: number;
 
     @ApiProperty({ type: () => Number, required: false })
+    @IsOptional()
     readonly active_calories: number;
 
     @ApiProperty({ type: () => Number, required: false })
+    @IsOptional()
     readonly bmr_calories: number;
 
     @ApiProperty({ type: () => Number, required: false })
+    @IsOptional()
     readonly points: number;
 
     @ApiProperty({ type: () => String, required: true })
@@ -35,9 +42,13 @@ export class WefitterDailySummaryDto {
     readonly source: string;
 
     @ApiProperty({ type: () => WefitterHeartRateDto, required: false })
+    @IsOptional()
+    @Type(() => WefitterHeartRateDto)
     readonly heart_rate_summary: WefitterHeartRateDto;
 
     @ApiProperty({ type: () => WefitterStressSummaryDto, required: false })
+    @IsOptional()
+    @Type(() => WefitterStressSummaryDto)
     readonly stress_summary: WefitterStressSummaryDto;
 
 }
