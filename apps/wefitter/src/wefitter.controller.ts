@@ -30,6 +30,7 @@ import { ConfigService } from '../../common/src/utils/config/config.service';
 import { ConnectionRedirectDto } from './models/connection-redirect.dto';
 import { Public } from 'apps/common/src/resources/common/public.decorator';
 import { WefitterUserDailySummaryDto } from './models/wefitter-user-daily-summary.dto';
+import { nonWefitterFieldNames } from '../../common/src/resources/wefitter/non-wefitter-connection-slugs';
 
 @ApiTags('wefitter')
 @Controller('wefitter')
@@ -151,6 +152,16 @@ export class WefitterController {
 
         if (isWefitterConnectionSlug) {
             await this.wefitterService.deleteConnection(user.wefitter.publicId, user.wefitter.bearer, connectionSlug);
+        } else {
+            const fieldName = nonWefitterFieldNames[connectionSlug];
+            if (!fieldName) {
+                throw new BadRequestException({
+                    message: this.translator.translate('WRONG_CONNECTION_SLUG'),
+                    errorCode: 'WRONG_CONNECTION_SLUG',
+                    statusCode: HttpStatus.BAD_REQUEST
+                });
+            }
+            await user.wefitter.update({ [fieldName]: false });
         }
     }
 
