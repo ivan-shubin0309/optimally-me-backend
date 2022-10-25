@@ -209,12 +209,16 @@ export class BiomarkersController {
     let recommendationsList = [];
     const scopes: any[] = [];
 
-    if (query.category) {
+    if (query.category && query.category.length) {
       scopes.push({ method: ['byCategory', query.category] });
     }
 
     if (query.search) {
       scopes.push({ method: ['search', query.search] });
+    }
+
+    if (typeof query.isArchived === 'boolean') {
+      scopes.push({ method: ['byIsArchived', query.isArchived] });
     }
 
     const count = await this.recommendationsService.getCount(scopes);

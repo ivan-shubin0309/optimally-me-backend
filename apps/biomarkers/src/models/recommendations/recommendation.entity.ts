@@ -30,6 +30,7 @@ import { RecommendationImpact } from '../recommendationImpacts/recommendation-im
             },
         ]
     }),
+    byIsArchived: (isArchived: boolean) => ({ where: { isArchived } }),
 }))
 
 @Table({
