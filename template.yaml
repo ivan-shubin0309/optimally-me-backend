@@ -180,6 +180,11 @@ Resources:
           Properties:
             Path: /biomarkers/recommendations
             Method: ANY
+        RecommendationByIdApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/recommendations/{id}
+            Method: ANY
         FiltersCharacteristicsApi:
           Type: Api
           Properties:
