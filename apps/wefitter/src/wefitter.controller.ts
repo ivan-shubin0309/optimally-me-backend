@@ -29,6 +29,7 @@ import { PatchUserWefitterDto } from './models/patch-user-wefitter.dto';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import { ConnectionRedirectDto } from './models/connection-redirect.dto';
 import { Public } from 'apps/common/src/resources/common/public.decorator';
+import { WefitterDailySummaryDto } from './models/wefitter-daily-summary.dto';
 
 @ApiTags('wefitter')
 @Controller('wefitter')
@@ -204,5 +205,23 @@ export class WefitterController {
         }
         response.set('Content-Type', 'text/html');
         response.send(Buffer.from(`<!DOCTYPE html><html><head><title></title><meta charset="UTF-8" /><meta http-equiv="refresh" content="3; URL=${link}" /></head><body></body></html>`));
+    }
+
+    @Public()
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Wefitter push daily summary data' })
+    @Post('push/daily-summary')
+    async pushDailySummary(@Body() body: WefitterDailySummaryDto): Promise<object> {
+        const user = await this.wefitterService.getUserWefitterByBearer(body.bearer);
+        if (!user) {
+            throw new BadRequestException({
+                message: this.translator.translate('USER_NOT_FOUND'),
+                errorCode: 'USER_NOT_FOUND',
+                statusCode: HttpStatus.BAD_REQUEST
+            });
+        }
+
+        await this.wefitterService.saveDailySummaryData(user.userId, body);
+        return {};
     }
 }
