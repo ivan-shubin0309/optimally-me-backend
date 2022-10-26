@@ -149,7 +149,7 @@ export class WefitterService {
     }
 
     async saveDailySummaryData(userId: number, data: WefitterDailySummaryDto, transaction?: Transaction): Promise<void> {
-        this.userWefitterDailySummary.create({
+        await this.userWefitterDailySummary.create({
             userId,
             date: data.date,
             distance: data.distance,
