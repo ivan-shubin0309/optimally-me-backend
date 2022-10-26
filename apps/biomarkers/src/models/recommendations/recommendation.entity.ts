@@ -24,7 +24,7 @@ import { RecommendationImpact } from '../recommendationImpacts/recommendation-im
     withImpacts: () => ({
         include: [
             {
-                model: RecommendationImpact,
+                model: RecommendationImpact.scope('withBiomarker'),
                 as: 'impacts',
                 required: false,
             },

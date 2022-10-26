@@ -17,6 +17,7 @@ export class RecommendationImpactDto extends BaseDto<RecommendationImpact>{
         this.impactLevelLow = entity.impactLevelLow;
         this.qualityOfEvidenceLow = entity.qualityOfEvidenceLow;
         this.strengthOfEvidenceLow = entity.strengthOfEvidenceLow;
+        this.biomarkerName = entity.biomarker && entity.biomarker.name;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -48,4 +49,7 @@ export class RecommendationImpactDto extends BaseDto<RecommendationImpact>{
 
     @ApiProperty({ type: () => Number, required: true })
     strengthOfEvidenceLow: number;
+
+    @ApiProperty({ type: () => String, required: false })
+    biomarkerName: string;
 }
