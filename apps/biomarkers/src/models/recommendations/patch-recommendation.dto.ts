@@ -5,5 +5,5 @@ export class PatchRecommendationDto {
     @ApiProperty({ type: () => Boolean })
     @IsNotEmpty()
     @IsBoolean()
-    isArchived: boolean;
+    readonly isArchived: boolean;
 }
