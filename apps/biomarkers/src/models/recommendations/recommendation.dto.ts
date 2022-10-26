@@ -15,6 +15,7 @@ export class RecommendationDto extends BaseDto<Recommendation> {
         this.title = entity.title;
         this.type = entity.type;
         this.productLink = entity.productLink;
+        this.isArchived = entity.isArchived;
         this.file = entity.files && entity.files.length
             ? new FileDto(entity.files[0])
             : undefined;
@@ -40,6 +41,9 @@ export class RecommendationDto extends BaseDto<Recommendation> {
 
     @ApiProperty({ type: () => FileDto, required: false })
     readonly file: FileDto;
+
+    @ApiProperty({ type: () => Boolean, required: true })
+    readonly isArchived: boolean;
 
     @ApiProperty({ type: () => [RecommendationImpactDto], required: false })
     readonly impacts: RecommendationImpactDto[];

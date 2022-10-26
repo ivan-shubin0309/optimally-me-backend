@@ -69,6 +69,13 @@ export class Recommendation extends Model {
     })
     productLink: string;
 
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    })
+    isArchived: boolean;
+
     @BelongsToMany(() => File, () => RecommendationFile, 'recommendationId', 'fileId')
     files: File[];
 

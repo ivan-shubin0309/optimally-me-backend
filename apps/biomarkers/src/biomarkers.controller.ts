@@ -11,7 +11,8 @@ import {
   HttpStatus,
   BadRequestException,
   NotFoundException,
-  Put
+  Put,
+  Patch
 } from '@nestjs/common';
 import { TranslatorService } from 'nestjs-translator';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags, ApiParam, ApiResponse } from '@nestjs/swagger';
@@ -48,6 +49,7 @@ import { RecommendationFilesService } from './services/recommendations/recommend
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import { RecommendationImpactsService } from './services/recommendation-impacts/recommendation-impacts.service';
 import { CacheService } from '../../common/src/resources/cache/cache.service';
+import { PatchRecommendationDto } from './models/recommendations/patch-recommendation.dto';
 
 const RULE_PREFIX = 'rule';
 
@@ -467,5 +469,29 @@ export class BiomarkersController {
     await this.cacheService.set(RULE_PREFIX, param.id, biomarkerDto);
 
     return biomarkerDto;
+  }
+
+  @ApiCreatedResponse({ type: () => RecommendationDto })
+  @ApiOperation({ summary: 'Archive recommendation' })
+  @Roles(UserRoles.superAdmin)
+  @Patch('recommendations/:id')
+  async patchRecommendation(@Body() body: PatchRecommendationDto, @Param() params: EntityByIdDto): Promise<RecommendationDto> {
+    let recommendation = await this.recommendationsService.getOne([
+      { method: ['byId', params.id] },
+      'withFiles',
+      'withImpacts'
+    ]);
+
+    if (!recommendation) {
+      throw new NotFoundException({
+        message: this.translator.translate('RECOMMENDATION_NOT_FOUND'),
+        errorCode: 'RECOMMENDATION_NOT_FOUND',
+        statusCode: HttpStatus.NOT_FOUND
+      });
+    }
+
+    recommendation = await recommendation.update({ isArchived: body.isArchived });
+
+    return new RecommendationDto(recommendation);
   }
 }
