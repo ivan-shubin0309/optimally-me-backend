@@ -224,6 +224,11 @@ Resources:
           Properties:
             Path: /wefitter/connections/redirect
             Method: ANY
+        WefitterUserDailySummary:
+          Type: Api
+          Properties:
+            Path: /wefitter/push/daily-summary
+            Method: POST
 
   VerificationsFunction:
     Type: AWS::Serverless::Function

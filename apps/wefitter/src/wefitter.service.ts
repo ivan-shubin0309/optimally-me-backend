@@ -10,6 +10,8 @@ import { ConfigService } from '../../common/src/utils/config/config.service';
 import { Redis } from 'ioredis';
 import { ICreateProfile } from './models/create-profile.interface';
 import { GetUserConnectionsDto } from './models/get-user-connections.dto';
+import { UserWefitterDailySummary } from './models/wefitter-daily-summary.entity';
+import { WefitterDailySummaryDto } from './models/wefitter-daily-summary.dto';
 
 
 @Injectable()
@@ -29,6 +31,7 @@ export class WefitterService {
         private readonly redisService: RedisService,
         @Inject('USER_MODEL') private userModel: typeof User,
         @Inject('USER_WEFITTER_MODEL') private userWefitterModel: typeof UserWefitter,
+        @Inject('USER_WEFITTER_DAILY_SUMMARY_MODEL') private userWefitterDailySummary: typeof UserWefitterDailySummary,
     ) {
         this.redisClient = redisService.getClient();
         this.baseUrl = this.configService.get('WEFITTER_API_URL');
@@ -137,5 +140,37 @@ export class WefitterService {
         return this.userWefitterModel
             .scope([{ method: ['byUserId', userId] }])
             .findOne();
+    }
+
+    getUserWefitterByPublicId(publicId: string): Promise<UserWefitter> {
+        return this.userWefitterModel
+            .scope([{ method: ['byPublicId', publicId] }])
+            .findOne();
+    }
+
+    async saveDailySummaryData(userId: number, data: WefitterDailySummaryDto, transaction?: Transaction): Promise<void> {
+        await this.userWefitterDailySummary.create({
+            userId,
+            date: data.date,
+            distance: data.distance,
+            steps: data.steps,
+            calories: data.calories,
+            activeCalories: data.active_calories,
+            bmrCalories: data.bmr_calories,
+            points: data.points,
+            source: data.source,
+            heartRateSummaryMin: data.heart_rate_summary && data.heart_rate_summary.min,
+            heartRateSummaryMax: data.heart_rate_summary && data.heart_rate_summary.max,
+            heartRateSummaryAverage: data.heart_rate_summary && data.heart_rate_summary.average,
+            heartRateSummaryResting: data.heart_rate_summary && data.heart_rate_summary.resting,
+            stressQualifier: data.stress_summary && data.stress_summary.stress_qualifier,
+            averageStressLevel: data.stress_summary && data.stress_summary.average_stress_level,
+            maxStressLevel: data.stress_summary && data.stress_summary.max_stress_level,
+            restStressDuration: data.stress_summary && data.stress_summary.rest_stress_duration,
+            lowStressDuration: data.stress_summary && data.stress_summary.low_stress_duration,
+            mediumStressDuration: data.stress_summary && data.stress_summary.medium_stress_duration,
+            highStressDuration: data.stress_summary && data.stress_summary.high_stress_duration,
+            stressDuration: data.stress_summary && data.stress_summary.stress_duration,
+        }, { transaction });
     }
 }

@@ -3,7 +3,8 @@ import { User } from '../../../users/src/models';
 
 
 @Scopes(() => ({
-    byUserId: (userId) => ({ where: { userId } })
+    byUserId: (userId) => ({ where: { userId } }),
+    byPublicId: (publicId) => ({ where: { publicId } }),
 }))
 @Table({
     tableName: 'userWefitter',

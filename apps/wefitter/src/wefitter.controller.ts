@@ -28,7 +28,8 @@ import { SessionDataDto } from '../../sessions/src/models';
 import { PatchUserWefitterDto } from './models/patch-user-wefitter.dto';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import { ConnectionRedirectDto } from './models/connection-redirect.dto';
-import { Public } from '../../common/src/resources/common/public.decorator';
+import { Public } from 'apps/common/src/resources/common/public.decorator';
+import { WefitterUserDailySummaryDto } from './models/wefitter-user-daily-summary.dto';
 import { nonWefitterFieldNames } from '../../common/src/resources/wefitter/non-wefitter-connection-slugs';
 
 @ApiTags('wefitter')
@@ -215,5 +216,23 @@ export class WefitterController {
         }
         response.set('Content-Type', 'text/html');
         response.send(Buffer.from(`<!DOCTYPE html><html><head><title></title><meta charset="UTF-8" /><meta http-equiv="refresh" content="3; URL=${link}" /></head><body></body></html>`));
+    }
+
+    @Public()
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Wefitter push daily summary data' })
+    @Post('push/daily-summary')
+    async pushDailySummary(@Body() body: WefitterUserDailySummaryDto): Promise<object> {
+        const user = await this.wefitterService.getUserWefitterByPublicId(body.profile);
+        if (!user) {
+            throw new BadRequestException({
+                message: this.translator.translate('USER_NOT_FOUND'),
+                errorCode: 'USER_NOT_FOUND',
+                statusCode: HttpStatus.BAD_REQUEST
+            });
+        }
+
+        await this.wefitterService.saveDailySummaryData(user.userId, body.data);
+        return {};
     }
 }
