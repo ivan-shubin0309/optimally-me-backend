@@ -5,7 +5,8 @@ export enum RecommendationCategoryTypes {
     lifestyle = 2,
     supplements = 3,
     doctor = 4,
-    tests = 5
+    tests = 5,
+    information = 6
 }
 
 export const recommendationCategoryOrder = EnumHelper
