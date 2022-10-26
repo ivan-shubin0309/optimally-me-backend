@@ -520,4 +520,53 @@ export class BiomarkersController {
 
     return new RecommendationDto(recommendation);
   }
+
+  @ApiCreatedResponse({ type: () => RecommendationDto })
+  @ApiOperation({ summary: 'Update recommendation' })
+  @Roles(UserRoles.superAdmin)
+  @Put('recommendations/:id')
+  async updateRecommendation(@Body() body: CreateRecommendationDto, @Param() params: EntityByIdDto): Promise<RecommendationDto> {
+    let recommendation = await this.recommendationsService.getOne([
+      { method: ['byId', params.id] },
+      'withFiles',
+      'withImpacts'
+    ]);
+
+    if (!recommendation) {
+      throw new NotFoundException({
+        message: this.translator.translate('RECOMMENDATION_NOT_FOUND'),
+        errorCode: 'RECOMMENDATION_NOT_FOUND',
+        statusCode: HttpStatus.NOT_FOUND
+      });
+    }
+
+    await this.filesService.checkCanUse(body.fileId, FileTypes.recommendation, null, true);
+
+    const biomarkerIdsMap = body.impacts.reduce(
+      (idsMap, impact) => {
+        idsMap[impact.biomarkerId] = true;
+        return idsMap;
+      },
+      {}
+    );
+    const biomarkerIdsCount = Object.keys(biomarkerIdsMap).length;
+    const biomarkersCount = await this.biomarkersService.getCount([
+      { method: ['byId', body.impacts.map(impact => impact.biomarkerId)] },
+      { method: ['byType', BiomarkerTypes.biomarker] },
+      { method: ['byIsDeleted', false] }
+    ]);
+    if (biomarkersCount !== biomarkerIdsCount) {
+      throw new NotFoundException({
+        message: this.translator.translate('BIOMARKER_NOT_FOUND'),
+        errorCode: 'BIOMARKER_NOT_FOUND',
+        statusCode: HttpStatus.NOT_FOUND
+      });
+    }
+
+    await this.recommendationsService.update(recommendation, body);
+
+    recommendation = await recommendation.reload();
+
+    return new RecommendationDto(recommendation);
+  }
 }
