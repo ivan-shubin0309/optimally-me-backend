@@ -498,4 +498,26 @@ export class BiomarkersController {
 
     return new RecommendationDto(recommendation);
   }
+
+  @ApiCreatedResponse({ type: () => RecommendationDto })
+  @ApiOperation({ summary: 'Get recommendation by id' })
+  @Roles(UserRoles.superAdmin)
+  @Get('recommendations/:id')
+  async getRecommendationById(@Param() params: EntityByIdDto): Promise<RecommendationDto> {
+    const recommendation = await this.recommendationsService.getOne([
+      { method: ['byId', params.id] },
+      'withFiles',
+      'withImpacts'
+    ]);
+
+    if (!recommendation) {
+      throw new NotFoundException({
+        message: this.translator.translate('RECOMMENDATION_NOT_FOUND'),
+        errorCode: 'RECOMMENDATION_NOT_FOUND',
+        statusCode: HttpStatus.NOT_FOUND
+      });
+    }
+
+    return new RecommendationDto(recommendation);
+  }
 }
