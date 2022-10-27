@@ -1,0 +1,1 @@
+export const RECOMMENDATION_COPY_TITLE_PREFIX = 'Copy of';

@@ -6,6 +6,8 @@ import { S3 } from '@aws-sdk/client-s3';
 import { createPresignedPost as s3CreatePresignedPost, PresignedPost } from '@aws-sdk/s3-presigned-post';
 import { Transaction } from 'sequelize/types';
 import { FileStatuses } from '../../common/src/resources/files/file-statuses';
+import { IAwsCopyFile } from './files.service';
+import { SessionDataDto } from '../../sessions/src/models';
 
 @Injectable()
 export class S3Service {
@@ -48,5 +50,32 @@ export class S3Service {
             //@ts-ignore
             await this.fileModel.scope([{ method: ['byId', file.id] }]).update({ status: FileStatuses.loaded }, { transaction });
         }
+    }
+
+    async copyFiles(files: IAwsCopyFile[], user: SessionDataDto, transaction?: Transaction): Promise<File[]> {
+        const copiedFiles = await Promise.all(
+            files.map(async (file) => {
+                const params = {
+                    Bucket: this.bucket,
+                    CopySource: `${this.bucket}/${file.copySourceKey}`,
+                    Key: file.key,
+                    ACL: 'public-read',
+                };
+
+                await this.s3Connection.copyObject(params);
+
+                return {
+                    userId: user.userId,
+                    name: `${file.fileName}.${file.extension}`,
+                    fileKey: file.key,
+                    status: FileStatuses.loaded,
+                    type: file.type,
+                    isUsed: false,
+                    isResized: false,
+                };
+            })
+        );
+
+        return await this.fileModel.bulkCreate(copiedFiles, { transaction });
     }
 }

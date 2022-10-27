@@ -185,6 +185,11 @@ Resources:
           Properties:
             Path: /biomarkers/recommendations/{id}
             Method: ANY
+        RecommendationCopyApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/recommendations/{id}/copy
+            Method: ANY
         FiltersCharacteristicsApi:
           Type: Api
           Properties:

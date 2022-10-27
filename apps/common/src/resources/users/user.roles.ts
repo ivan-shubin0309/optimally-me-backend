@@ -3,3 +3,8 @@ export enum UserRoles {
     admin = 2,
     superAdmin = 3,
 }
+
+export const adminRoles = [
+    UserRoles.admin,
+    UserRoles.superAdmin
+];

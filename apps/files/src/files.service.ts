@@ -10,15 +10,21 @@ import { S3Service } from './s3.service';
 import { SessionDataDto } from '../../sessions/src/models';
 import { FilesContentTypesDto } from './models/files-content-types.dto';
 import { rules } from '../../common/src/resources/files/files-validation-rules';
-import { UserRoles } from '../../common/src/resources/users';
+import { adminRoles } from '../../common/src/resources/users';
 import * as uuid from 'uuid';
+import { FILE_PREFIX } from '../../common/src/resources/files/constants';
 
 interface IAwsFile {
     acl?: string,
     fileName?: string,
     key?: string,
-    contentType: string,
+    contentType?: string,
     type: number,
+}
+
+export interface IAwsCopyFile extends IAwsFile {
+    copySourceKey: string,
+    extension: string,
 }
 
 @Injectable()
@@ -97,10 +103,10 @@ export class FilesService extends BaseService<File> {
                 });
 
             fileToCreate.acl = 'public-read';
-            fileToCreate.fileName = `optimallyme_${uuid.v4()}.${extension}`;
-            fileToCreate.key = `files/admins/${fileToCreate.fileName}`;
-            if (user.role !== UserRoles.admin) {
-                fileToCreate.key = `files/user_${user.userId}/${fileToCreate.fileName}`;
+            fileToCreate.fileName = `${FILE_PREFIX}_${uuid.v4()}.${extension}`;
+            fileToCreate.key = `files/user_${user.userId}/${fileToCreate.fileName}`;
+            if (adminRoles.includes(user.role)) {
+                fileToCreate.key = `files/admins/${fileToCreate.fileName}`;
             }
 
             return fileToCreate;
@@ -111,5 +117,52 @@ export class FilesService extends BaseService<File> {
         //eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
         return this.model.scope(scopes).update(body, { transaction });
+    }
+
+    prepareFilesForCopy(files: File[], user: SessionDataDto): IAwsCopyFile[] {
+        let pathToFiles = `files/user_${user.userId}/`;
+        if (adminRoles.includes(user.role)) {
+            pathToFiles = 'files/admins/';
+        }
+
+        return files.map((file) => {
+            const extension = file.name.split('.')[1];
+            const copiedFileName = `${FILE_PREFIX}_${uuid.v4()}`;
+            const copiedFileKey = `${pathToFiles}${copiedFileName}.${extension}`;
+
+            return {
+                extension,
+                fileName: copiedFileName,
+                key: copiedFileKey,
+                acl: 'public-read',
+                type: file.type,
+                copySourceKey: file.fileKey,
+            };
+        });
+    }
+
+    async duplicateFiles(fileIds: number[], user: SessionDataDto, transaction?: Transaction): Promise<File[]> {
+        const fileInstances = await this.model
+            .scope([
+                { method: ['byId', fileIds] },
+                { method: ['orderByLiteral', 'id', fileIds, 'asc'] }
+            ])
+            .findAll({ transaction });
+
+        if (fileInstances.length === 0) {
+            return fileInstances;
+        }
+
+        const filesData = this.prepareFilesForCopy(fileInstances, user);
+
+        const copiedFiles = await this.s3Service.copyFiles(filesData, user, transaction);
+
+        return copiedFiles;
+    }
+
+    async markFilesAsUsed(fileIds: number[], transaction?: Transaction): Promise<void> {
+        //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        await this.model.scope([{ method: ['byId', fileIds] }]).update({ isUsed: true }, { transaction });
     }
 }

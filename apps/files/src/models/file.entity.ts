@@ -2,11 +2,15 @@ import { FileStatuses } from '../../../common/src/resources/files/file-statuses'
 import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
 import { User } from '../../../users/src/models';
 import { FileTypes } from '../../../common/src/resources/files/file-types';
+import { literal } from 'sequelize';
 
 @Scopes(() => ({
     byId: (id: number | number[]) => ({ where: { id } }),
     byType: (type: number) => ({ where: { type } }),
     byUserId: (userId: number) => ({ where: { userId } }),
+    orderByLiteral: (field: string, values: any[], order: string) => ({
+        order: [literal(`FIELD(${field}, ${values.join(',')}) ${order}`)]
+    }),
 }))
 @Table({
     tableName: 'files',
