@@ -570,4 +570,26 @@ export class BiomarkersController {
 
     return new RecommendationDto(recommendation);
   }
+
+  @ApiOperation({ summary: 'Delete recommendation by id' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Roles(UserRoles.superAdmin)
+  @Delete('recommendations/:id')
+  async deleteRecommendationById(@Param() params: EntityByIdDto): Promise<void> {
+    const recommendation = await this.recommendationsService.getOne([
+      { method: ['byId', params.id] },
+      'withFiles',
+      'withImpacts'
+    ]);
+
+    if (!recommendation) {
+      throw new NotFoundException({
+        message: this.translator.translate('RECOMMENDATION_NOT_FOUND'),
+        errorCode: 'RECOMMENDATION_NOT_FOUND',
+        statusCode: HttpStatus.NOT_FOUND
+      });
+    }
+
+    await recommendation.destroy();
+  }
 }
