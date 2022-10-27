@@ -232,7 +232,8 @@ export class BiomarkersController {
 
       scopes.push(
         { method: ['pagination', { limit, offset }] },
-        'withFiles'
+        'withFiles',
+        'withImpacts'
       );
       recommendationsList = await this.recommendationsService.getList(scopes);
     }

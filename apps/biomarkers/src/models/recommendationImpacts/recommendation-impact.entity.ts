@@ -1,9 +1,18 @@
-import { Table, Column, Model, DataType, Scopes, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, Scopes, ForeignKey, HasOne, BelongsTo } from 'sequelize-typescript';
 import { Biomarker } from '../biomarker.entity';
 import { Recommendation } from '../recommendations/recommendation.entity';
 
 @Scopes(() => ({
     byId: (id) => ({ where: { id } }),
+    withBiomarker: () => ({
+        include: [
+            {
+                model: Biomarker,
+                as: 'biomarker',
+                required: false,
+            },
+        ]
+    }),
 }))
 
 @Table({
@@ -74,4 +83,7 @@ export class RecommendationImpact extends Model {
         allowNull: true,
     })
     strengthOfEvidenceLow: number;
+
+    @BelongsTo(() => Biomarker, 'biomarkerId')
+    biomarker: Biomarker;
 }
