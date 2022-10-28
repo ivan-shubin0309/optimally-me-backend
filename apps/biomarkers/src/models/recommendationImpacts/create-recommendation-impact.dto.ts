@@ -11,7 +11,7 @@ export class CreateRecommendationImpactDto {
     readonly biomarkerId: number;
 
     @ApiProperty({ type: () => String, required: true })
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     @MaxLength(recommendationImpactsValidationRules.descriptionMaxLength)
     readonly descriptionHigh: string;
@@ -41,7 +41,7 @@ export class CreateRecommendationImpactDto {
     readonly strengthOfEvidenceHigh: number;
 
     @ApiProperty({ type: () => String, required: true })
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     @MaxLength(recommendationImpactsValidationRules.descriptionMaxLength)
     readonly descriptionLow: string;

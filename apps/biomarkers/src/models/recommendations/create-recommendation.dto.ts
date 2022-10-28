@@ -7,6 +7,7 @@ import { CreateRecommendationImpactDto } from '../recommendationImpacts/create-r
 import { Transform, TransformFnParams, Type } from 'class-transformer';
 import { ArrayDistinct } from '../../../../common/src/resources/common/array-distinct.decorator';
 import { recommendationValidationRules } from 'apps/common/src/resources/recommendations/recommendation-validation-rules';
+import { OneOf } from '../../../../common/src/resources/common/one-of.decorator';
 
 export class CreateRecommendationDto {
     @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(RecommendationCategoryTypes) })
@@ -53,6 +54,7 @@ export class CreateRecommendationDto {
     @IsOptional()
     @IsArray()
     @ArrayDistinct('biomarkerId')
+    @OneOf(['descriptionLow', 'descriptionHigh'], { each: true })
     @ValidateNested()
     @Type(() => CreateRecommendationImpactDto)
     readonly impacts: CreateRecommendationImpactDto[];
