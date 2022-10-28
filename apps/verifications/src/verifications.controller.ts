@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, NotFoundException, Patch, Post, Inject, Get, Query, Response } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, NotFoundException, Patch, Post, Inject, Get, Query, Response, ForbiddenException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MailerService } from '../../common/src/resources/mailer/mailer.service';
 import { UserRoles } from '../../common/src/resources/users';
@@ -13,7 +13,9 @@ import { RestorePasswordDto } from './models/restore-password.dto';
 import { SetPasswordDto } from './models/set-password.dto';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import { SessionsService } from '../../sessions/src/sessions.service';
-import { UserSessionDto } from 'apps/users/src/models/user-session.dto';
+import { UserSessionDto } from '../../users/src/models/user-session.dto';
+import { DateTime } from 'luxon';
+import { RESTORE_PASSWORD_HOURS_LIMIT, RESTORE_PASSWORD_LIMIT } from '../../common/src/resources/verificationTokens/constants';
 
 @ApiTags('verifications')
 @Controller('verifications')
@@ -43,6 +45,20 @@ export class VerificationsController {
                 message: this.translator.translate('USER_NOT_FOUND'),
                 errorCode: 'USER_NOT_FOUND',
                 statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        const restorationCount = await this.verificationsService.getCount([
+            { method: ['byType', TokenTypes.userPassword] },
+            { method: ['byUserId', user.id] },
+            { method: ['byAfterDate', DateTime.utc().minus({ hours: RESTORE_PASSWORD_HOURS_LIMIT }).toISO()] }
+        ]);
+
+        if (restorationCount >= RESTORE_PASSWORD_LIMIT) {
+            throw new ForbiddenException({
+                message: this.translator.translate('RESTORE_PASSWORD_LIMIT'),
+                errorCode: 'RESTORE_PASSWORD_LIMIT',
+                statusCode: HttpStatus.FORBIDDEN
             });
         }
 
