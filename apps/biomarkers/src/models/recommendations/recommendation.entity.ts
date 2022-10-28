@@ -5,10 +5,24 @@ import { RecommendationActionTypes } from '../../../../common/src/resources/reco
 import { File } from '../../../../files/src/models/file.entity';
 import { RecommendationFile } from './recommendation-file.entity';
 import { RecommendationImpact } from '../recommendationImpacts/recommendation-impact.entity';
+import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
+import { CollectionDto } from '../../../../common/src/models/enum-collecction.dto';
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
-    search: (searchString) => ({ where: { content: { [Op.like]: `%${searchString}%` } } }),
+    search: (searchString) => ({
+        where: {
+            [Op.or]: [
+                { title: { [Op.like]: `%${searchString}%` } },
+                {
+                    category: EnumHelper
+                        .toCollection(RecommendationCategoryTypes)
+                        .filter((categoryType: CollectionDto) => categoryType.key.includes(searchString))
+                        .map((categoryType: CollectionDto) => categoryType.value)
+                }
+            ]
+        }
+    }),
     pagination: (query) => ({ limit: query.limit, offset: query.offset }),
     orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
     byId: (id) => ({ where: { id } }),
