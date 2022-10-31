@@ -6,7 +6,12 @@ import { Recommendation } from '../../models/recommendations/recommendation.enti
 import { Transaction } from 'sequelize/types';
 import { RecommendationFile } from '../../models/recommendations/recommendation-file.entity';
 import { RecommendationImpact } from '../../models/recommendationImpacts/recommendation-impact.entity';
-import { UpdateRecommendationDto } from '../../models/recommendations/update-recommendation.dto';
+import { RecommendationDataDto } from '../../models/recommendations/recommendation-data.dto';
+import { RECOMMENDATION_COPY_TITLE_PREFIX } from '../../../../common/src/resources/recommendations/constants';
+import { recommendationValidationRules } from '../../../../common/src/resources/recommendations/recommendation-validation-rules';
+import { FilesService } from '../../../../files/src/files.service';
+import { SessionDataDto } from '../../../../sessions/src/models';
+import { RecommendationImpactDto } from '../../models/recommendationImpacts/recommendation-impact.dto';
 
 @Injectable()
 export class RecommendationsService extends BaseService<Recommendation> {
@@ -15,9 +20,10 @@ export class RecommendationsService extends BaseService<Recommendation> {
     @Inject('RECOMMENDATION_FILE_MODEL') readonly recommendationFileModel: Repository<RecommendationFile>,
     @Inject('RECOMMENDATION_IMPACT_MODEL') readonly recommendationImpactModel: Repository<RecommendationImpact>,
     @Inject('SEQUELIZE') readonly dbConnection: Sequelize,
+    readonly filesService: FilesService,
   ) { super(model); }
 
-  create(body: CreateRecommendationDto, transaction?: Transaction) {
+  create(body: CreateRecommendationDto | RecommendationDataDto, transaction?: Transaction) {
     return this.model.create({ ...body }, { transaction });
   }
 
@@ -45,7 +51,7 @@ export class RecommendationsService extends BaseService<Recommendation> {
 
       await Promise.all(deletePromises);
 
-      const updateBody = new UpdateRecommendationDto(body);
+      const updateBody = new RecommendationDataDto(body);
 
       await recommendation.update(updateBody, { transaction });
 
@@ -55,6 +61,45 @@ export class RecommendationsService extends BaseService<Recommendation> {
 
       if (body.impacts && body.impacts.length) {
         const impactsToCreate: any[] = body.impacts.map(impact => Object.assign({ recommendationId: recommendation.id }, impact));
+
+        await this.recommendationImpactModel.bulkCreate(impactsToCreate, { transaction });
+      }
+    });
+  }
+
+  async copy(recommendation: Recommendation, user: SessionDataDto) {
+    const recommendationToCreate = new RecommendationDataDto(recommendation);
+    recommendationToCreate.title = `${RECOMMENDATION_COPY_TITLE_PREFIX} ${recommendationToCreate.title}`
+      .substring(0, recommendationValidationRules.titleMaxLength)
+      .trim();
+
+    await this.dbConnection.transaction(async transaction => {
+      const createdRecommendation = await this.create(recommendationToCreate, transaction);
+
+      if (recommendation.files && recommendation.files.length) {
+        const createdFiles = await this.filesService.duplicateFiles(recommendation.files.map(file => file.id), user, transaction);
+
+        await this.recommendationFileModel.bulkCreate(
+          createdFiles.map(file => ({ fileId: file.id, recommendationId: createdRecommendation.id })),
+          { transaction }
+        );
+
+        await this.filesService.markFilesAsUsed(createdFiles.map(file => file.id), transaction);
+      }
+
+      if (recommendation.impacts && recommendation.impacts.length) {
+        const impactsToCreate: any[] = recommendation.impacts.map(impact => {
+          const impactToCreate = Object.assign(
+            new RecommendationImpactDto(impact),
+            {
+              recommendationId: createdRecommendation.id,
+              id: null,
+              createdAt: null,
+              updatedAt: null,
+            }
+          );
+          return impactToCreate;
+        });
 
         await this.recommendationImpactModel.bulkCreate(impactsToCreate, { transaction });
       }

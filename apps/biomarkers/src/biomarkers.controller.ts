@@ -12,7 +12,8 @@ import {
   BadRequestException,
   NotFoundException,
   Put,
-  Patch
+  Patch,
+  Request
 } from '@nestjs/common';
 import { TranslatorService } from 'nestjs-translator';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags, ApiParam, ApiResponse } from '@nestjs/swagger';
@@ -50,6 +51,7 @@ import { ConfigService } from '../../common/src/utils/config/config.service';
 import { RecommendationImpactsService } from './services/recommendation-impacts/recommendation-impacts.service';
 import { CacheService } from '../../common/src/resources/cache/cache.service';
 import { PatchRecommendationDto } from './models/recommendations/patch-recommendation.dto';
+import { SessionDataDto } from '../../sessions/src/models';
 
 const RULE_PREFIX = 'rule';
 
@@ -591,5 +593,27 @@ export class BiomarkersController {
     }
 
     await recommendation.destroy();
+  }
+
+  @ApiOperation({ summary: 'Copy recommendation' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Roles(UserRoles.superAdmin)
+  @Patch('recommendations/:id/copy')
+  async copyRecommendation(@Param() params: EntityByIdDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
+    const recommendation = await this.recommendationsService.getOne([
+      { method: ['byId', params.id] },
+      'withFiles',
+      'withImpacts'
+    ]);
+
+    if (!recommendation) {
+      throw new NotFoundException({
+        message: this.translator.translate('RECOMMENDATION_NOT_FOUND'),
+        errorCode: 'RECOMMENDATION_NOT_FOUND',
+        statusCode: HttpStatus.NOT_FOUND
+      });
+    }
+
+    await this.recommendationsService.copy(recommendation, req.user);
   }
 }
