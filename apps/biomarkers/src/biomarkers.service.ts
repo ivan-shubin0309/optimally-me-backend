@@ -110,6 +110,21 @@ export class BiomarkersService extends BaseService<Biomarker> {
             }
         }
 
+        if (body.ruleName) {
+            const templateBiomarker = await this.getOne([
+                { method: ['byName', body.ruleName] },
+                { method: ['byType', BiomarkerTypes.rule] },
+                { method: ['byIsDeleted', false] }
+            ]);
+            if (templateBiomarker) {
+                throw new BadRequestException({
+                    message: this.translator.translate('RULE_ALREADY_EXIST'),
+                    errorCode: 'RULE_ALREADY_EXIST',
+                    statusCode: HttpStatus.BAD_REQUEST
+                });
+            }
+        }
+
         const unitInstance = await this.unitModel
             .scope([{ method: ['byId', body.unitId] }])
             .findOne();
