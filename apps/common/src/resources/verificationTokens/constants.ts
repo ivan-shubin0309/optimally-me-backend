@@ -1,1 +1,2 @@
 export const RESTORE_PASSWORD_HOURS_LIMIT = 24;
+export const RESTORE_PASSWORD_LIMIT = 5;
