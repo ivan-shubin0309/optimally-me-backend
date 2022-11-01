@@ -4,12 +4,14 @@ import { EthnicityTypes } from '../../../../common/src/resources/filters/ethnici
 import { OtherFeatureTypes } from '../../../../common/src/resources/filters/other-feature-types';
 import { SexTypes } from '../../../../common/src/resources/filters/sex-types';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
-import { ArrayMaxSize, ArrayMinSize, IsArray, IsEnum, IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsPositive, Min, ValidateNested } from 'class-validator';
 import { CreateInteractionDto } from '../interactions/create-interaction.dto';
 import { AddRecommendationDto } from '../recommendations/add-recommendation.dto';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
 import { MaxFieldValueRepeatCount } from '../../../../common/src/resources/common/max-field-value-repeat-count.decorator';
 import { FilterValidationRules } from '../../../../common/src/resources/filters/validation-rules';
+import { NumberMaxCharacters } from '../../../../common/src/resources/common/number-max-characters';
+import { CheckAllowedRecommendationTypes } from '../../../../common/src/resources/filters/check-allowed-recommendation-types.decorator';
 
 export class CreateFilterDto {
     @ApiProperty({ type: () => String, required: true })
@@ -39,57 +41,94 @@ export class CreateFilterDto {
 
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
-    readonly criticalLow: number;
+    @IsNumber()
+    @Min(FilterValidationRules.rangeMinValue)
+    @NumberMaxCharacters(FilterValidationRules.rangeMaxCharactersCount)
+    readonly criticalLow: number = null;
 
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
-    readonly lowMin: number;
+    @IsNumber()
+    @Min(FilterValidationRules.rangeMinValue)
+    @NumberMaxCharacters(FilterValidationRules.rangeMaxCharactersCount)
+    readonly lowMin: number = null;
 
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
-    readonly lowMax: number;
+    @IsNumber()
+    @Min(FilterValidationRules.rangeMinValue)
+    @NumberMaxCharacters(FilterValidationRules.rangeMaxCharactersCount)
+    readonly lowMax: number = null;
 
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
-    readonly subOptimalMin: number;
+    @IsNumber()
+    @Min(FilterValidationRules.rangeMinValue)
+    @NumberMaxCharacters(FilterValidationRules.rangeMaxCharactersCount)
+    readonly subOptimalMin: number = null;
 
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
-    readonly subOptimalMax: number;
+    @IsNumber()
+    @Min(FilterValidationRules.rangeMinValue)
+    @NumberMaxCharacters(FilterValidationRules.rangeMaxCharactersCount)
+    readonly subOptimalMax: number = null;
 
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
-    readonly optimalMin: number;
+    @IsNumber()
+    @Min(FilterValidationRules.rangeMinValue)
+    @NumberMaxCharacters(FilterValidationRules.rangeMaxCharactersCount)
+    readonly optimalMin: number = null;
 
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
-    readonly optimalMax: number;
+    @IsNumber()
+    @Min(FilterValidationRules.rangeMinValue)
+    @NumberMaxCharacters(FilterValidationRules.rangeMaxCharactersCount)
+    readonly optimalMax: number = null;
 
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
-    readonly supraOptimalMin: number;
+    @IsNumber()
+    @Min(FilterValidationRules.rangeMinValue)
+    @NumberMaxCharacters(FilterValidationRules.rangeMaxCharactersCount)
+    readonly supraOptimalMin: number = null;
 
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
-    readonly supraOptimalMax: number;
+    @IsNumber()
+    @Min(FilterValidationRules.rangeMinValue)
+    @NumberMaxCharacters(FilterValidationRules.rangeMaxCharactersCount)
+    readonly supraOptimalMax: number = null;
 
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
-    readonly highMin: number;
+    @IsNumber()
+    @Min(FilterValidationRules.rangeMinValue)
+    @NumberMaxCharacters(FilterValidationRules.rangeMaxCharactersCount)
+    readonly highMin: number = null;
 
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
-    readonly highMax: number;
+    @IsNumber()
+    @Min(FilterValidationRules.rangeMinValue)
+    @NumberMaxCharacters(FilterValidationRules.rangeMaxCharactersCount)
+    readonly highMax: number = null;
 
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
-    readonly criticalHigh: number;
+    @IsNumber()
+    @Min(FilterValidationRules.rangeMinValue)
+    @NumberMaxCharacters(FilterValidationRules.rangeMaxCharactersCount)
+    readonly criticalHigh: number = null;
 
     @ApiProperty({ type: () => [AddRecommendationDto], required: false })
     @IsOptional()
     @IsArray()
     @ArrayMaxSize(FilterValidationRules.recommendationArrayMaxLength)
     @MaxFieldValueRepeatCount('type', FilterValidationRules.recommendationTypesMaxCount)
+    @CheckAllowedRecommendationTypes({ each: true })
     @ValidateNested()
     @Type(() => AddRecommendationDto)
     readonly recommendations: AddRecommendationDto[];
