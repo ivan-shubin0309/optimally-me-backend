@@ -42,6 +42,13 @@ export class VerificationToken extends Model {
     })
     token: string;
 
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    })
+    isExpired: boolean;
+
     @ForeignKey(() => User)
     @Column({
         type: DataType.INTEGER,

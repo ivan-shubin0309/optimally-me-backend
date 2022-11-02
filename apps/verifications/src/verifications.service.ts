@@ -24,10 +24,15 @@ export class VerificationsService extends BaseService<VerificationToken> {
     );
   }
 
-  async saveToken(userId: number, token: string, type: TokenTypes, isDeletePreviousTokens = false): Promise<void> {
+  async saveToken(userId: number, token: string, type: TokenTypes, isExpirePreviousTokens = false): Promise<void> {
     await this.dbConnection.transaction(async transaction => {
-      if (isDeletePreviousTokens) {
-        await this.model.destroy({ where: { type, userId }, transaction });
+      if (isExpirePreviousTokens) {
+        await this.model
+          .scope([
+            { method: ['byType', type] },
+            { method: ['byUserId', userId] }
+          ])
+          .update({ isExpired: true }, { transaction } as any);
       }
       await this.model.create({ userId, token, type }, { transaction });
     });
@@ -35,7 +40,7 @@ export class VerificationsService extends BaseService<VerificationToken> {
 
   decodeToken(token: string, customMessage = 'LINK_EXPIRED'): any {
     try {
-      return JWT.verify(token, this.configService.get('JWT_SECRET'));
+      return JWT.verify(token, this.configService.get('JWT_SECRET'), { ignoreExpiration: false });
     } catch (e) {
       throw new UnprocessableEntityException({
         message: this.translatorService.translate(customMessage),
@@ -63,6 +68,14 @@ export class VerificationsService extends BaseService<VerificationToken> {
       throw new BadRequestException({
         message: this.translatorService.translate('LINK_IS_USED'),
         errorCode: 'LINK_IS_USED',
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+    }
+
+    if (verificationToken.isExpired) {
+      throw new BadRequestException({
+        message: this.translatorService.translate('LINK_IS_EXPIRED'),
+        errorCode: 'LINK_IS_EXPIRED',
         statusCode: HttpStatus.BAD_REQUEST
       });
     }
