@@ -394,35 +394,43 @@ export class BiomarkersController {
   @HttpCode(HttpStatus.CREATED)
   @Roles(UserRoles.superAdmin)
   @Post('recommendations')
-  async createRecommendation(@Body() body: CreateRecommendationDto): Promise<RecommendationDto> {
-    await this.filesService.checkCanUse(body.fileId, FileTypes.recommendation, null, true);
+  async createRecommendation(@Body() body: CreateRecommendationDto, @Request() req: Request & { user: SessionDataDto }): Promise<RecommendationDto> {
+    const file = await this.filesService.checkCanUse(body.fileId, FileTypes.recommendation, null, false);
 
-    const biomarkerIdsMap = body.impacts.reduce(
-      (idsMap, impact) => {
-        idsMap[impact.biomarkerId] = true;
-        return idsMap;
-      },
-      {}
-    );
-    const biomarkerIdsCount = Object.keys(biomarkerIdsMap).length;
-    const biomarkersCount = await this.biomarkersService.getCount([
-      { method: ['byId', body.impacts.map(impact => impact.biomarkerId)] },
-      { method: ['byType', BiomarkerTypes.biomarker] },
-      { method: ['byIsDeleted', false] }
-    ]);
-    if (biomarkersCount !== biomarkerIdsCount) {
-      throw new NotFoundException({
-        message: this.translator.translate('BIOMARKER_NOT_FOUND'),
-        errorCode: 'BIOMARKER_NOT_FOUND',
-        statusCode: HttpStatus.NOT_FOUND
-      });
+    if (body.impacts && body.impacts.length) {
+      const biomarkerIdsMap = body.impacts.reduce(
+        (idsMap, impact) => {
+          idsMap[impact.biomarkerId] = true;
+          return idsMap;
+        },
+        {}
+      );
+      const biomarkerIdsCount = Object.keys(biomarkerIdsMap).length;
+      const biomarkersCount = await this.biomarkersService.getCount([
+        { method: ['byId', body.impacts.map(impact => impact.biomarkerId)] },
+        { method: ['byType', BiomarkerTypes.biomarker] },
+        { method: ['byIsDeleted', false] }
+      ]);
+      if (biomarkersCount !== biomarkerIdsCount) {
+        throw new NotFoundException({
+          message: this.translator.translate('BIOMARKER_NOT_FOUND'),
+          errorCode: 'BIOMARKER_NOT_FOUND',
+          statusCode: HttpStatus.NOT_FOUND
+        });
+      }
     }
 
     let createdRecommendation = await this.dbConnection.transaction(async transaction => {
       const recommendation = await this.recommendationsService.create(body, transaction);
 
       if (body.fileId) {
-        await this.recommendationFilesService.create({ recommendationId: recommendation.id, fileId: body.fileId }, transaction);
+        let fileId = body.fileId;
+        if (file.isUsed) {
+          const [copiedFile] = await this.filesService.duplicateFiles([file.id], req.user, transaction);
+          fileId = copiedFile.id;
+        }
+        await this.recommendationFilesService.create({ recommendationId: recommendation.id, fileId }, transaction);
+        await this.filesService.markFilesAsUsed([fileId], transaction);
       }
 
       if (body.impacts && body.impacts.length) {
