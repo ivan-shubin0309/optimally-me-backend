@@ -1,5 +1,5 @@
 export const recommendationImpactsValidationRules = {
-    descriptionMaxLength: 255,
+    descriptionMaxLength: 10000,
     impactLevelMaxValue: 10,
     impactLevelMinValue: -10,
     qualityOfEvidenceMaxValue: 5,

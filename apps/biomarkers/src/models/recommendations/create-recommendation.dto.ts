@@ -33,7 +33,7 @@ export class CreateRecommendationDto {
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsString()
-    @MaxLength(255)
+    @MaxLength(recommendationValidationRules.contentMaxLength)
     readonly content: string;
 
     @ApiProperty({ type: () => String, required: false })
