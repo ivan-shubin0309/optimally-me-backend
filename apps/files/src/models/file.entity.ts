@@ -62,4 +62,11 @@ export class File extends Model {
         defaultValue: false,
     })
     isResized: boolean;
+
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+        defaultValue: false,
+    })
+    bytes: number;
 }

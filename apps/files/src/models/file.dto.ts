@@ -17,6 +17,7 @@ export class FileDto {
         this.type = file.type;
         this.isUsed = file.isUsed;
         this.status = file.status;
+        this.bytes = file.bytes;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -42,4 +43,7 @@ export class FileDto {
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(FileStatuses) })
     readonly status: number;
+
+    @ApiProperty({ type: () => Number, required: false })
+    readonly bytes: number;
 }
