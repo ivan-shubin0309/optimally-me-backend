@@ -47,7 +47,7 @@ export class FilesService extends BaseService<File> {
         return this.model.bulkCreate(filesForSave);
     }
 
-    async checkCanUse(fileId: number, type: FileTypes, transaction?: Transaction, isUsed = true): Promise<void> {
+    async checkCanUse(fileId: number, type: FileTypes, transaction?: Transaction, isUsed = true): Promise<File> {
         const scopes = [
             { method: ['byId', fileId] },
             { method: ['byType', type] }
@@ -79,6 +79,8 @@ export class FilesService extends BaseService<File> {
                 statusCode: HttpStatus.BAD_REQUEST
             });
         }
+
+        return file;
     }
 
     prepareFiles(body: FilesContentTypesDto, user: SessionDataDto): IAwsFile[] {
@@ -155,7 +157,17 @@ export class FilesService extends BaseService<File> {
 
         const filesData = this.prepareFilesForCopy(fileInstances, user);
 
-        const copiedFiles = await this.s3Service.copyFiles(filesData, user, transaction);
+        let copiedFiles;
+
+        try {
+            copiedFiles = await this.s3Service.copyFiles(filesData, user, transaction);
+        } catch (err) {
+            throw new UnprocessableEntityException({
+                message: err.message,
+                errorCode: 'S3_ERROR',
+                statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+            });
+        }
 
         return copiedFiles;
     }
