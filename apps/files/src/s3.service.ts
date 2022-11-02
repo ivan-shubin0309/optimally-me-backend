@@ -44,11 +44,13 @@ export class S3Service {
     async markFileAsUploaded(file: File, transaction?: Transaction): Promise<void> {
         if (file.status !== FileStatuses.loaded) {
             const { bucket } = this;
-            await this.s3Connection.headObject({ Key: `${file.fileKey}`, Bucket: bucket });
+            const headObject = await this.s3Connection.headObject({ Key: `${file.fileKey}`, Bucket: bucket });
 
-            //eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
-            await this.fileModel.scope([{ method: ['byId', file.id] }]).update({ status: FileStatuses.loaded }, { transaction });
+            await this.fileModel
+                .scope([{ method: ['byId', file.id] }])
+                //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                //@ts-ignore
+                .update({ status: FileStatuses.loaded, bytes: headObject.ContentLength }, { transaction });
         }
     }
 

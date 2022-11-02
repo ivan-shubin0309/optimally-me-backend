@@ -73,9 +73,9 @@ export class FilesService extends BaseService<File> {
         try {
             await this.s3Service.markFileAsUploaded(file, transaction);
         } catch (error) {
-            throw new BadRequestException({
-                message: this.translator.translate('FILE_NOT_FOUND'),
-                errorCode: 'FILE_NOT_FOUND',
+            throw new UnprocessableEntityException({
+                message: this.translator.translate('FILE_NOT_FOUND_ON_S3'),
+                errorCode: 'FILE_NOT_FOUND_ON_S3',
                 statusCode: HttpStatus.BAD_REQUEST
             });
         }
@@ -176,5 +176,19 @@ export class FilesService extends BaseService<File> {
         //eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
         await this.model.scope([{ method: ['byId', fileIds] }]).update({ isUsed: true }, { transaction });
+    }
+
+    async markFilesAsUploaded(files: File[]): Promise<void> {
+        try {
+            await Promise.all(
+                files.map(file => this.s3Service.markFileAsUploaded(file))
+            );
+        } catch (error) {
+            throw new UnprocessableEntityException({
+                message: this.translator.translate('FILE_NOT_FOUND_ON_S3'),
+                errorCode: 'FILE_NOT_FOUND_ON_S3',
+                statusCode: HttpStatus.BAD_REQUEST
+            });
+        }
     }
 }

@@ -9,7 +9,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../../common/src/resources/common/role.decorator';
 import { UserRoles } from '../../common/src/resources/users';
 import { TranslatorService } from 'nestjs-translator';
@@ -23,6 +23,7 @@ import { PatchFilesDto } from './models/patch-files.dto';
 import { FileStatuses } from '../../common/src/resources/files/file-statuses';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
+import { FileDto } from './models/file.dto';
 
 @ApiBearerAuth()
 @ApiTags('files')
@@ -54,14 +55,15 @@ export class FilesController {
   }
 
   @ApiOperation({ summary: 'Patch file statuses to be loaded' })
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiResponse({ type: () => [FileDto] })
+  @HttpCode(HttpStatus.OK)
   @Roles(UserRoles.superAdmin)
   @Patch('')
-  async patchFileStatuses(@Body() body: PatchFilesDto): Promise<void> {
+  async patchFileStatuses(@Body() body: PatchFilesDto): Promise<FileDto[]> {
     const scopes = [{ method: ['byId', body.fileIds] }];
-    const filesCount = await this.filesService.getCount(scopes);
+    let files = await this.filesService.getList(scopes);
 
-    if (filesCount !== body.fileIds.length) {
+    if (files.length !== body.fileIds.length) {
       throw new NotFoundException({
         message: this.translator.translate('FILE_NOT_FOUND'),
         errorCode: 'FILE_NOT_FOUND',
@@ -69,6 +71,10 @@ export class FilesController {
       });
     }
 
-    await this.filesService.update(scopes, { status: FileStatuses.loaded });
+    await this.filesService.markFilesAsUploaded(files);
+
+    files = await this.filesService.getList(scopes);
+
+    return files.map(file => new FileDto(file));
   }
 }

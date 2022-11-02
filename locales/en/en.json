@@ -23,5 +23,6 @@
     "FILE_NOT_FOUND": "File is not found",
     "FILE_IS_USED": "File already in use",
     "WRONG_CONNECTION_SLUG": "Wron connection slug",
-    "RULE_ALREADY_EXIST": "Rule with that name already exist"
+    "RULE_ALREADY_EXIST": "Rule with that name already exist",
+    "FILE_NOT_FOUND_ON_S3": "File not found on s3"
 }
