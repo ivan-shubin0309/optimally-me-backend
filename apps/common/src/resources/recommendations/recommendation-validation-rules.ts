@@ -3,4 +3,5 @@ export const recommendationValidationRules = {
     productLinkMinLength: 1,
     titleMaxLength: 200,
     titleMinLength: 1,
+    contentMaxLength: 10000
 };
