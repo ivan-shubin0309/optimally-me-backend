@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, NotFoundException, Patch, Post, Inject, Get, Query, Response, ForbiddenException } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, NotFoundException, Patch, Post, Inject, Get, Query, Response, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MailerService } from '../../common/src/resources/mailer/mailer.service';
 import { UserRoles } from '../../common/src/resources/users';
@@ -35,10 +35,30 @@ export class VerificationsController {
     @ApiOperation({ summary: 'Send restore password' })
     @Post('password')
     async sendRestorePassword(@Body() body: RestorePasswordDto): Promise<void> {
-        const scopes = [
-            { method: ['byRoles', [UserRoles.user]] }
-        ];
-        const user = await this.usersService.getUserByEmail(body.email, scopes);
+        const scopes: any[] = [{ method: ['byRoles', [UserRoles.user]] }];
+
+        if (body.email) {
+            scopes.push({ method: ['byEmail', body.email] });
+        }
+
+        if (body.token) {
+            const verificationToken = await this.verificationsService.getOne([
+                { method: ['byType', TokenTypes.userPassword] },
+                { method: ['byToken', body.token] }
+            ]);
+
+            if (!verificationToken) {
+                throw new BadRequestException({
+                    message: this.translator.translate('LINK_INVALID'),
+                    errorCode: 'LINK_INVALID',
+                    statusCode: HttpStatus.BAD_REQUEST
+                });
+            }
+
+            scopes.push({ method: ['byId', verificationToken.userId] });
+        }
+
+        const user = await this.usersService.getOne(scopes);
 
         if (!user) {
             throw new NotFoundException({
