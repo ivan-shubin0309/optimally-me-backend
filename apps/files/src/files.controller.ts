@@ -20,10 +20,8 @@ import { ApiDescriptions } from '../../common/src/resources/files/api-descriptio
 import { FilesContentTypesDto } from './models/files-content-types.dto';
 import { SessionDataDto } from '../../sessions/src/models';
 import { PatchFilesDto } from './models/patch-files.dto';
-import { FileStatuses } from '../../common/src/resources/files/file-statuses';
 import { ConfigService } from '../../common/src/utils/config/config.service';
-import { FileHelper } from '../../common/src/utils/helpers/file.helper';
-import { FileDto } from './models/file.dto';
+import { FilesDto } from './models/files.dto';
 
 @ApiBearerAuth()
 @ApiTags('files')
@@ -55,11 +53,11 @@ export class FilesController {
   }
 
   @ApiOperation({ summary: 'Patch file statuses to be loaded' })
-  @ApiResponse({ type: () => [FileDto] })
+  @ApiResponse({ type: () => FilesDto })
   @HttpCode(HttpStatus.OK)
   @Roles(UserRoles.superAdmin)
   @Patch('')
-  async patchFileStatuses(@Body() body: PatchFilesDto): Promise<FileDto[]> {
+  async patchFileStatuses(@Body() body: PatchFilesDto): Promise<FilesDto> {
     const scopes = [{ method: ['byId', body.fileIds] }];
     let files = await this.filesService.getList(scopes);
 
@@ -75,6 +73,6 @@ export class FilesController {
 
     files = await this.filesService.getList(scopes);
 
-    return files.map(file => new FileDto(file));
+    return new FilesDto(files);
   }
 }
