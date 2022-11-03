@@ -161,6 +161,7 @@ export class FilesService extends BaseService<File> {
 
         try {
             copiedFiles = await this.s3Service.copyFiles(filesData, user, transaction);
+            await this.markFilesAsUploaded(copiedFiles, transaction);
         } catch (err) {
             throw new UnprocessableEntityException({
                 message: err.message,
@@ -178,10 +179,10 @@ export class FilesService extends BaseService<File> {
         await this.model.scope([{ method: ['byId', fileIds] }]).update({ isUsed: true }, { transaction });
     }
 
-    async markFilesAsUploaded(files: File[]): Promise<void> {
+    async markFilesAsUploaded(files: File[], transaction?: Transaction): Promise<void> {
         try {
             await Promise.all(
-                files.map(file => this.s3Service.markFileAsUploaded(file))
+                files.map(file => this.s3Service.markFileAsUploaded(file, transaction))
             );
         } catch (error) {
             throw new UnprocessableEntityException({
