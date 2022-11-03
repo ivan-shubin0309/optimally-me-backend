@@ -174,9 +174,9 @@ export class FilesService extends BaseService<File> {
     }
 
     async markFilesAsUsed(fileIds: number[], transaction?: Transaction): Promise<void> {
-        //eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        await this.model.scope([{ method: ['byId', fileIds] }]).update({ isUsed: true }, { transaction });
+        await this.model
+            .scope([{ method: ['byId', fileIds] }])
+            .update({ isUsed: true }, { transaction } as any);
     }
 
     async markFilesAsUploaded(files: File[], transaction?: Transaction): Promise<void> {
@@ -191,5 +191,11 @@ export class FilesService extends BaseService<File> {
                 statusCode: HttpStatus.BAD_REQUEST
             });
         }
+    }
+
+    async markFilesAsUnused(fileIds: number[], transaction?: Transaction): Promise<void> {
+        await this.model
+            .scope([{ method: ['byId', fileIds] }])
+            .update({ isUsed: false }, { transaction } as any);
     }
 }

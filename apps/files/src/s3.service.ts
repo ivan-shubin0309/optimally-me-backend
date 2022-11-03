@@ -70,7 +70,7 @@ export class S3Service {
                     userId: user.userId,
                     name: `${file.fileName}.${file.extension}`,
                     fileKey: file.key,
-                    status: FileStatuses.loaded,
+                    status: FileStatuses.pending,
                     type: file.type,
                     isUsed: false,
                     isResized: false,

@@ -9,6 +9,7 @@ export class RestorePasswordDto {
     @Xor('token')
     readonly email: string;
 
+    @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsString()
     readonly token: string;

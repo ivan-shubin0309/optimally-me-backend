@@ -12,6 +12,7 @@ import { recommendationValidationRules } from '../../../../common/src/resources/
 import { FilesService } from '../../../../files/src/files.service';
 import { SessionDataDto } from '../../../../sessions/src/models';
 import { RecommendationImpactDto } from '../../models/recommendationImpacts/recommendation-impact.dto';
+import { FileTypes } from '../../../../common/src/resources/files/file-types';
 
 @Injectable()
 export class RecommendationsService extends BaseService<Recommendation> {
@@ -23,8 +24,35 @@ export class RecommendationsService extends BaseService<Recommendation> {
     readonly filesService: FilesService,
   ) { super(model); }
 
-  create(body: CreateRecommendationDto | RecommendationDataDto, transaction?: Transaction) {
-    return this.model.create({ ...body }, { transaction });
+  async create(body: CreateRecommendationDto, user: SessionDataDto): Promise<Recommendation> {
+    const file = await this.filesService.checkCanUse(body.fileId, FileTypes.recommendation, null, false);
+
+    const createdRecommendation = await this.dbConnection.transaction(async transaction => {
+      const recommendation = await this.model.create(body as any, { transaction });
+
+      if (body.fileId) {
+        let fileId = body.fileId;
+        if (file.isUsed) {
+          const [copiedFile] = await this.filesService.duplicateFiles([file.id], user, transaction);
+          fileId = copiedFile.id;
+        }
+        await this.attachFiles([{ recommendationId: recommendation.id, fileId }], transaction);
+      }
+
+      if (body.impacts && body.impacts.length) {
+        const impactsToCreate: any[] = body.impacts.map(impact => Object.assign({ recommendationId: recommendation.id }, impact));
+
+        await this.recommendationImpactModel.bulkCreate(impactsToCreate, { transaction });
+      }
+
+      return recommendation;
+    });
+
+    return this.getOne([
+      { method: ['byId', createdRecommendation.id] },
+      'withFiles',
+      'withImpacts'
+    ]);
   }
 
   async update(recommendation: Recommendation, body: CreateRecommendationDto): Promise<void> {
@@ -32,13 +60,7 @@ export class RecommendationsService extends BaseService<Recommendation> {
       const deletePromises = [];
 
       if (recommendation.files && recommendation.files.length) {
-        deletePromises.push(
-          this.recommendationFileModel
-            .scope([
-              { method: ['byFileIdAndRecommendationId', recommendation.files.map(file => ({ fileId: file.id, recommendationId: recommendation.id }))] }
-            ])
-            .destroy({ transaction })
-        );
+        deletePromises.push(this.dettachFiles(recommendation, transaction));
       }
 
       if (recommendation.impacts && recommendation.impacts.length) {
@@ -56,7 +78,7 @@ export class RecommendationsService extends BaseService<Recommendation> {
       await recommendation.update(updateBody, { transaction });
 
       if (body.fileId) {
-        await this.recommendationFileModel.create({ recommendationId: recommendation.id, fileId: body.fileId }, { transaction });
+        await this.attachFiles([{ recommendationId: recommendation.id, fileId: body.fileId }], transaction);
       }
 
       if (body.impacts && body.impacts.length) {
@@ -74,7 +96,7 @@ export class RecommendationsService extends BaseService<Recommendation> {
       .trim();
 
     await this.dbConnection.transaction(async transaction => {
-      const createdRecommendation = await this.create(recommendationToCreate, transaction);
+      const createdRecommendation = await this.model.create(recommendationToCreate as any, { transaction });
 
       if (recommendation.files && recommendation.files.length) {
         const createdFiles = await this.filesService.duplicateFiles(recommendation.files.map(file => file.id), user, transaction);
@@ -104,5 +126,20 @@ export class RecommendationsService extends BaseService<Recommendation> {
         await this.recommendationImpactModel.bulkCreate(impactsToCreate, { transaction });
       }
     });
+  }
+
+  async attachFiles(files: [{ recommendationId: number, fileId: number }], transaction?: Transaction): Promise<void> {
+    await this.recommendationFileModel.bulkCreate(files, { transaction });
+    await this.filesService.markFilesAsUsed(files.map(file => file.fileId), transaction);
+  }
+
+  async dettachFiles(recommendation: Recommendation, transaction?: Transaction) {
+    await this.recommendationFileModel
+      .scope([
+        { method: ['byFileIdAndRecommendationId', recommendation.files.map(file => ({ fileId: file.id, recommendationId: recommendation.id }))] }
+      ])
+      .destroy({ transaction });
+
+    await this.filesService.markFilesAsUnused(recommendation.files.map(file => file.id), transaction);
   }
 }
