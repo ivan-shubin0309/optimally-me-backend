@@ -1,11 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsInt, IsNotEmpty, IsOptional, IsPositive } from 'class-validator';
+import { Xor } from 'apps/common/src/resources/common/xor.decorator';
+import { IsEmail, IsInt, IsOptional, IsPositive, IsString } from 'class-validator';
 
 export class RestorePasswordDto {
-    @ApiProperty({ type: () => String, required: true })
-    @IsNotEmpty()
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
     @IsEmail()
+    @Xor('token')
     readonly email: string;
+
+    @IsOptional()
+    @IsString()
+    readonly token: string;
 
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()

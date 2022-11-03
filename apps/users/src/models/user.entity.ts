@@ -8,6 +8,7 @@ import { UserWefitter } from '../../../wefitter/src/models/user-wefitter.entity'
         where: { role }
     }),
     byId: (id: number) => ({ where: { id } }),
+    byEmail: (email: string) => ({ where: { email } }),
     withWefitter: () => ({
         include: [
             {
