@@ -235,4 +235,22 @@ export class WefitterController {
         await this.wefitterService.saveDailySummaryData(user.userId, body.data);
         return {};
     }
+
+    @Public()
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Wefitter push heartrate summary data' })
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @Post('push/heartrate-summary')
+    async pushHeartrateSummary(@Body() body: WefitterUserHeartrateSummaryDto): Promise<void> {
+        const user = await this.wefitterService.getUserWefitterByPublicId(body.profile);
+        if (!user) {
+            throw new BadRequestException({
+                message: this.translator.translate('USER_NOT_FOUND'),
+                errorCode: 'USER_NOT_FOUND',
+                statusCode: HttpStatus.BAD_REQUEST
+            });
+        }
+
+        await this.wefitterService.saveHeartrateSummaryData(user.userId, body.data);
+    }
 }
