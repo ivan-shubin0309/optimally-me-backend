@@ -6,6 +6,7 @@ import { TokenTypes } from '../../common/src/resources/verificationTokens/token-
 import { VerificationToken } from './models/verification-token.entity';
 import { TranslatorService } from 'nestjs-translator';
 import { BaseService } from 'apps/common/src/base/base.service';
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class VerificationsService extends BaseService<VerificationToken> {
@@ -20,7 +21,11 @@ export class VerificationsService extends BaseService<VerificationToken> {
     return JWT.sign(
       { data },
       this.configService.get('JWT_SECRET'),
-      { expiresIn: tokenLifeTime || this.configService.get('JWT_EXPIRES_IN') }
+      {
+        expiresIn: tokenLifeTime
+          ? DateTime.fromMillis(tokenLifeTime).toSeconds()
+          : DateTime.fromMillis(this.configService.get('JWT_EXPIRES_IN')).toSeconds()
+      }
     );
   }
 

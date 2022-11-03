@@ -15,7 +15,7 @@ import { ConfigService } from '../../common/src/utils/config/config.service';
 import { SessionsService } from '../../sessions/src/sessions.service';
 import { UserSessionDto } from '../../users/src/models/user-session.dto';
 import { DateTime } from 'luxon';
-import { RESTORE_PASSWORD_HOURS_LIMIT, RESTORE_PASSWORD_LIMIT } from '../../common/src/resources/verificationTokens/constants';
+import { RESTORATION_TOKEN_EXPIRE, RESTORE_PASSWORD_HOURS_LIMIT, RESTORE_PASSWORD_LIMIT } from '../../common/src/resources/verificationTokens/constants';
 
 @ApiTags('verifications')
 @Controller('verifications')
@@ -82,7 +82,7 @@ export class VerificationsController {
             });
         }
 
-        const token = await this.verificationsService.generateToken({ userId: user.id }, body.tokenLifeTime);
+        const token = await this.verificationsService.generateToken({ userId: user.id }, body.tokenLifeTime || RESTORATION_TOKEN_EXPIRE);
         await this.verificationsService.saveToken(user.id, token, TokenTypes.userPassword, true);
 
         await this.mailerService.sendUserRestorePasswordEmail(user, `${this.configService.get('SWAGGER_BACKEND_URL')}/verifications/password/redirect?token=${token}`);

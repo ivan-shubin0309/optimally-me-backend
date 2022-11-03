@@ -14,6 +14,7 @@ import { SetPasswordDto } from './models/set-password.dto';
 import { SessionsService } from '../../sessions/src/sessions.service';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import { UserSessionDto } from '../../users/src/models/user-session.dto';
+import { RESTORATION_TOKEN_EXPIRE } from '../../common/src/resources/verificationTokens/constants';
 
 @ApiTags('admins/verifications')
 @Controller('admins/verifications')
@@ -42,7 +43,7 @@ export class AdminsVerificationsController {
       return;
     }
 
-    const token = await this.verificationsService.generateToken({ userId: user.id }, body.tokenLifeTime);
+    const token = await this.verificationsService.generateToken({ userId: user.id }, body.tokenLifeTime || RESTORATION_TOKEN_EXPIRE);
     await this.verificationsService.saveToken(user.id, token, TokenTypes.password, true);
 
     await this.mailerService.sendRestorePasswordEmail(user, token);
