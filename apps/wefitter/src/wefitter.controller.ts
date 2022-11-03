@@ -31,6 +31,7 @@ import { ConnectionRedirectDto } from './models/connection-redirect.dto';
 import { Public } from 'apps/common/src/resources/common/public.decorator';
 import { WefitterUserDailySummaryDto } from './models/wefitter-user-daily-summary.dto';
 import { nonWefitterFieldNames } from '../../common/src/resources/wefitter/non-wefitter-connection-slugs';
+import { WefitterUserHeartrateSummaryDto } from './models/wefitter-user-heartrate-summary.dto';
 
 @ApiTags('wefitter')
 @Controller('wefitter')

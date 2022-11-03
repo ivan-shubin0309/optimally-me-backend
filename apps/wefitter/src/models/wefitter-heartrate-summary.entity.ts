@@ -1,0 +1,53 @@
+import { Table, Column, Model, DataType, ForeignKey } from 'sequelize-typescript';
+import { User } from '../../../users/src/models';
+
+@Table({
+    tableName: 'userWefitterHeartrateSummary',
+    timestamps: true,
+    underscored: false
+})
+export class UserWefitterHeartrateSummary extends Model {
+    @ForeignKey(() => User)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+        primaryKey: true
+    })
+    userId: number;
+
+    @Column({
+        type: DataType.DATE,
+        allowNull: false,
+    })
+    timestamp: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: false
+    })
+    source: string;
+
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: true,
+    })
+    min: number;
+
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: true,
+    })
+    max: number;
+
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: true,
+    })
+    average: number;
+
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: true,
+    })
+    resting: number;
+}
