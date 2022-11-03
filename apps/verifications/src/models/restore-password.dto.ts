@@ -3,7 +3,7 @@ import { Xor } from 'apps/common/src/resources/common/xor.decorator';
 import { IsEmail, IsInt, IsOptional, IsPositive, IsString } from 'class-validator';
 
 export class RestorePasswordDto {
-    @ApiProperty({ type: () => String, required: true })
+    @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsEmail()
     @Xor('token')
