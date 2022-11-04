@@ -3,18 +3,21 @@
 module.exports = {
   async up(queryInterface) {
     return queryInterface.sequelize.query(`
-      CREATE TABLE IF NOT EXISTS userWefitterHeartrateSummary (
+      CREATE TABLE IF NOT EXISTS userWefitterSleepSummary (
         id INTEGER AUTO_INCREMENT,
          
         userId INTEGER NOT NULL,
         
         \`timestamp\` TIMESTAMP NULL,
-        source VARCHAR(255) NULL,
+        \`timestampEnd\` TIMESTAMP NULL,
         duration VARCHAR(255) NULL,
-        \`min\` INTEGER NULL,
-        \`max\` INTEGER NULL,
-        average INTEGER NULL,
-        resting INTEGER NULL,
+        source VARCHAR(255) NOT NULL,
+        awake VARCHAR(255) NULL,
+        light VARCHAR(255) NULL,
+        deep VARCHAR(255) NULL,
+        rem VARCHAR(255) NULL,
+        sleepScore INTEGER NULL,
+        totalTimeInSleep VARCHAR(255) NULL,
         
         createdAt TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
         updatedAt TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
@@ -25,6 +28,6 @@ module.exports = {
   },
 
   async down(sequelizeInterface) {
-    return sequelizeInterface.dropTable('userWefitterHeartrateSummary');
+    return sequelizeInterface.dropTable('userWefitterSleepSummary');
   }
 };

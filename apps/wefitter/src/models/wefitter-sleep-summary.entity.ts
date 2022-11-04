@@ -2,11 +2,11 @@ import { Table, Column, Model, DataType, ForeignKey } from 'sequelize-typescript
 import { User } from '../../../users/src/models';
 
 @Table({
-    tableName: 'userWefitterHeartrateSummary',
+    tableName: 'userWefitterSleepSummary',
     timestamps: true,
     underscored: false
 })
-export class UserWefitterHeartrateSummary extends Model {
+export class UserWefitterSleepSummary extends Model {
     @ForeignKey(() => User)
     @Column({
         type: DataType.INTEGER,
@@ -22,6 +22,12 @@ export class UserWefitterHeartrateSummary extends Model {
     timestamp: string;
 
     @Column({
+        type: DataType.DATE,
+        allowNull: true,
+    })
+    timestampEnd: string;
+
+    @Column({
         type: DataType.STRING,
         allowNull: true
     })
@@ -34,26 +40,38 @@ export class UserWefitterHeartrateSummary extends Model {
     duration: string;
 
     @Column({
-        type: DataType.INTEGER,
-        allowNull: true,
+        type: DataType.STRING,
+        allowNull: true
     })
-    min: number;
+    awake: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true
+    })
+    light: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true
+    })
+    deep: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true
+    })
+    rem: string;
 
     @Column({
         type: DataType.INTEGER,
-        allowNull: true,
+        allowNull: true
     })
-    max: number;
+    sleepScore: number;
 
     @Column({
-        type: DataType.INTEGER,
-        allowNull: true,
+        type: DataType.STRING,
+        allowNull: true
     })
-    average: number;
-
-    @Column({
-        type: DataType.INTEGER,
-        allowNull: true,
-    })
-    resting: number;
+    totalTimeInSleep: string;
 }

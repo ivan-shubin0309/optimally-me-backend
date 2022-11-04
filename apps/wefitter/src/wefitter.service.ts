@@ -12,6 +12,9 @@ import { ICreateProfile } from './models/create-profile.interface';
 import { GetUserConnectionsDto } from './models/get-user-connections.dto';
 import { UserWefitterDailySummary } from './models/wefitter-daily-summary.entity';
 import { WefitterDailySummaryDto } from './models/wefitter-daily-summary.dto';
+import { Repository } from 'sequelize-typescript';
+import { UserWefitterHeartrateSummary } from './models/wefitter-heartrate-summary.entity';
+import { WefitterHeartRateDto } from './models/wefitter-heart-rate.dto';
 
 
 @Injectable()
@@ -29,9 +32,10 @@ export class WefitterService {
         private readonly configService: ConfigService,
         private readonly translator: TranslatorService,
         private readonly redisService: RedisService,
-        @Inject('USER_MODEL') private userModel: typeof User,
-        @Inject('USER_WEFITTER_MODEL') private userWefitterModel: typeof UserWefitter,
-        @Inject('USER_WEFITTER_DAILY_SUMMARY_MODEL') private userWefitterDailySummary: typeof UserWefitterDailySummary,
+        @Inject('USER_MODEL') private userModel: Repository<User>,
+        @Inject('USER_WEFITTER_MODEL') private userWefitterModel: Repository<UserWefitter>,
+        @Inject('USER_WEFITTER_DAILY_SUMMARY_MODEL') private userWefitterDailySummary: Repository<UserWefitterDailySummary>,
+        @Inject('USER_WEFITTER_HEARTRATE_SUMMARY_MODEL') private userWefitterHeartrateSummary: Repository<UserWefitterHeartrateSummary>
     ) {
         this.redisClient = redisService.getClient();
         this.baseUrl = this.configService.get('WEFITTER_API_URL');
@@ -173,4 +177,19 @@ export class WefitterService {
             stressDuration: data.stress_summary && data.stress_summary.stress_duration,
         }, { transaction });
     }
+
+    async saveHeartrateSummaryData(userId: number, data: WefitterHeartRateDto, transaction?: Transaction): Promise<void> {
+        await this.userWefitterHeartrateSummary.create({
+            userId,
+            timestamp: data.timestamp,
+            source: data.source,
+            duration: data.duration,
+            min: data.min,
+            max: data.max,
+            average: data.average,
+            resting: data.resting,
+        }, { transaction });
+    }
+
+    //TO DO saveSleepSummaryData
 }

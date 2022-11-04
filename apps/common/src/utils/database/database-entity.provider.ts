@@ -18,6 +18,8 @@ import { File } from '../../../../files/src/models/file.entity';
 import { RecommendationFile } from '../../../../biomarkers/src/models/recommendations/recommendation-file.entity';
 import { RecommendationImpact } from '../../../../biomarkers/src/models/recommendationImpacts/recommendation-impact.entity';
 import { UserWefitterDailySummary } from '../../../../wefitter/src/models/wefitter-daily-summary.entity';
+import { UserWefitterHeartrateSummary } from '../../../../wefitter/src/models/wefitter-heartrate-summary.entity';
+import { UserWefitterSleepSummary } from '../../../../wefitter/src/models/wefitter-sleep-summary.entity';
 
 export const entities = [
     User,
@@ -40,4 +42,6 @@ export const entities = [
     File,
     RecommendationFile,
     RecommendationImpact,
+    UserWefitterHeartrateSummary,
+    UserWefitterSleepSummary,
 ];

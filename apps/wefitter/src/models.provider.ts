@@ -1,6 +1,7 @@
 import { User } from '../../users/src/models/user.entity';
 import { UserWefitter } from './models/user-wefitter.entity';
 import { UserWefitterDailySummary } from './models/wefitter-daily-summary.entity';
+import { UserWefitterHeartrateSummary } from './models/wefitter-heartrate-summary.entity';
 
 export const modelProviders = [
     {
@@ -14,5 +15,9 @@ export const modelProviders = [
     {
         provide: 'USER_WEFITTER_DAILY_SUMMARY_MODEL',
         useValue: UserWefitterDailySummary,
+    },
+    {
+        provide: 'USER_WEFITTER_HEARTRATE_SUMMARY_MODEL',
+        useValue: UserWefitterHeartrateSummary,
     }
 ];

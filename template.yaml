@@ -234,6 +234,11 @@ Resources:
           Properties:
             Path: /wefitter/push/daily-summary
             Method: POST
+        WefitterUserHeartrateSummary:
+          Type: Api
+          Properties:
+            Path: /wefitter/push/heartrate-summary
+            Method: POST
 
   VerificationsFunction:
     Type: AWS::Serverless::Function
