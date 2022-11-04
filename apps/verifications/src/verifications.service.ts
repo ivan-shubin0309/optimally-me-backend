@@ -23,8 +23,8 @@ export class VerificationsService extends BaseService<VerificationToken> {
       this.configService.get('JWT_SECRET'),
       {
         expiresIn: tokenLifeTime
-          ? DateTime.fromMillis(tokenLifeTime).toSeconds()
-          : DateTime.fromMillis(this.configService.get('JWT_EXPIRES_IN')).toSeconds()
+          ? Math.ceil(DateTime.fromMillis(tokenLifeTime).toSeconds())
+          : Math.ceil(DateTime.fromMillis(parseInt(this.configService.get('JWT_EXPIRES_IN'))).toSeconds())
       }
     );
   }
