@@ -395,8 +395,6 @@ export class BiomarkersController {
   @Roles(UserRoles.superAdmin)
   @Post('recommendations')
   async createRecommendation(@Body() body: CreateRecommendationDto, @Request() req: Request & { user: SessionDataDto }): Promise<RecommendationDto> {
-    const file = await this.filesService.checkCanUse(body.fileId, FileTypes.recommendation, null, false);
-
     if (body.impacts && body.impacts.length) {
       const biomarkerIdsMap = body.impacts.reduce(
         (idsMap, impact) => {
@@ -420,31 +418,7 @@ export class BiomarkersController {
       }
     }
 
-    let createdRecommendation = await this.dbConnection.transaction(async transaction => {
-      const recommendation = await this.recommendationsService.create(body, transaction);
-
-      if (body.fileId) {
-        let fileId = body.fileId;
-        if (file.isUsed) {
-          const [copiedFile] = await this.filesService.duplicateFiles([file.id], req.user, transaction);
-          fileId = copiedFile.id;
-        }
-        await this.recommendationFilesService.create({ recommendationId: recommendation.id, fileId }, transaction);
-        await this.filesService.markFilesAsUsed([fileId], transaction);
-      }
-
-      if (body.impacts && body.impacts.length) {
-        await this.recommendationImpactsService.bulkCreate(body.impacts, recommendation.id, transaction);
-      }
-
-      return recommendation;
-    });
-
-    createdRecommendation = await this.recommendationsService.getOne([
-      { method: ['byId', createdRecommendation.id] },
-      'withFiles',
-      'withImpacts'
-    ]);
+    const createdRecommendation = await this.recommendationsService.create(body, req.user);
 
     return new RecommendationDto(createdRecommendation);
   }
@@ -551,27 +525,34 @@ export class BiomarkersController {
       });
     }
 
-    await this.filesService.checkCanUse(body.fileId, FileTypes.recommendation, null, true);
+    if (
+      !recommendation.files.length
+      || (recommendation.files.length && recommendation.files[0].id !== body.fileId)
+    ) {
+      await this.filesService.checkCanUse(body.fileId, FileTypes.recommendation, null, true);
+    }
 
-    const biomarkerIdsMap = body.impacts.reduce(
-      (idsMap, impact) => {
-        idsMap[impact.biomarkerId] = true;
-        return idsMap;
-      },
-      {}
-    );
-    const biomarkerIdsCount = Object.keys(biomarkerIdsMap).length;
-    const biomarkersCount = await this.biomarkersService.getCount([
-      { method: ['byId', body.impacts.map(impact => impact.biomarkerId)] },
-      { method: ['byType', BiomarkerTypes.biomarker] },
-      { method: ['byIsDeleted', false] }
-    ]);
-    if (biomarkersCount !== biomarkerIdsCount) {
-      throw new NotFoundException({
-        message: this.translator.translate('BIOMARKER_NOT_FOUND'),
-        errorCode: 'BIOMARKER_NOT_FOUND',
-        statusCode: HttpStatus.NOT_FOUND
-      });
+    if (body.impacts && body.impacts.length) {
+      const biomarkerIdsMap = body.impacts.reduce(
+        (idsMap, impact) => {
+          idsMap[impact.biomarkerId] = true;
+          return idsMap;
+        },
+        {}
+      );
+      const biomarkerIdsCount = Object.keys(biomarkerIdsMap).length;
+      const biomarkersCount = await this.biomarkersService.getCount([
+        { method: ['byId', body.impacts.map(impact => impact.biomarkerId)] },
+        { method: ['byType', BiomarkerTypes.biomarker] },
+        { method: ['byIsDeleted', false] }
+      ]);
+      if (biomarkersCount !== biomarkerIdsCount) {
+        throw new NotFoundException({
+          message: this.translator.translate('BIOMARKER_NOT_FOUND'),
+          errorCode: 'BIOMARKER_NOT_FOUND',
+          statusCode: HttpStatus.NOT_FOUND
+        });
+      }
     }
 
     await this.recommendationsService.update(recommendation, body);
