@@ -8,6 +8,7 @@ export class RecommendationDataDto {
         this.productLink = data.productLink;
         this.title = data.title;
         this.type = data.type;
+        this.isAddToCartAllowed = data.isAddToCartAllowed;
     }
 
     category: number;
@@ -15,4 +16,5 @@ export class RecommendationDataDto {
     title: string;
     type: number;
     productLink: string;
+    isAddToCartAllowed: boolean;
 }
