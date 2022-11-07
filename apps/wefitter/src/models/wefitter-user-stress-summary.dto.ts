@@ -1,16 +1,16 @@
 import { IsNotEmpty, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { WefitterSleepDto } from './wefitter-sleep.dto';
+import { WefitterStressSummaryDto } from './wefitter-stress-summary.dto';
 
-export class WefitterUserSleepSummaryDto {
+export class WefitterUserStressSummaryDto {
     @ApiProperty({ type: () => String, required: true })
     @IsNotEmpty()
     readonly profile: string;
 
-    @ApiProperty({ type: () => WefitterSleepDto, required: true })
+    @ApiProperty({ type: () => WefitterStressSummaryDto, required: true })
     @IsNotEmpty()
     @ValidateNested()
-    @Type(() => WefitterSleepDto)
-    readonly data: WefitterSleepDto;
+    @Type(() => WefitterStressSummaryDto)
+    readonly data: WefitterStressSummaryDto;
 }

@@ -17,121 +17,49 @@ export class UserWefitterDailySummary extends Model {
 
     @Column({
         type: DataType.DATE,
-        allowNull: false,
+        allowNull: true,
     })
     date: string;
 
     @Column({
-        type: DataType.DOUBLE,
+        type: DataType.FLOAT,
         allowNull: true,
     })
     distance: number;
 
     @Column({
-        type: DataType.DOUBLE,
+        type: DataType.FLOAT,
         allowNull: true,
     })
     steps: number;
 
     @Column({
-        type: DataType.DOUBLE,
+        type: DataType.FLOAT,
         allowNull: true,
     })
     calories: number;
 
     @Column({
-        type: DataType.DOUBLE,
+        type: DataType.FLOAT,
         allowNull: true,
     })
     activeCalories: number;
 
     @Column({
-        type: DataType.DOUBLE,
+        type: DataType.FLOAT,
         allowNull: true,
     })
     bmrCalories: number;
 
     @Column({
-        type: DataType.DOUBLE,
+        type: DataType.FLOAT,
         allowNull: true,
     })
     points: number;
 
     @Column({
         type: DataType.STRING,
-        allowNull: false
+        allowNull: true
     })
     source: string;
-
-    @Column({
-        type: DataType.INTEGER,
-        allowNull: true,
-    })
-    heartRateSummaryMin: number;
-
-    @Column({
-        type: DataType.INTEGER,
-        allowNull: true,
-    })
-    heartRateSummaryMax: number;
-
-    @Column({
-        type: DataType.INTEGER,
-        allowNull: true,
-    })
-    heartRateSummaryAverage: number;
-
-    @Column({
-        type: DataType.INTEGER,
-        allowNull: true,
-    })
-    heartRateSummaryResting: number;
-
-    @Column({
-        type: DataType.STRING,
-        allowNull: true,
-    })
-    stressQualifier: string;
-
-    @Column({
-        type: DataType.INTEGER,
-        allowNull: true,
-    })
-    averageStressLevel: number;
-
-    @Column({
-        type: DataType.INTEGER,
-        allowNull: true,
-    })
-    maxStressLevel: number;
-
-    @Column({
-        type: DataType.STRING,
-        allowNull: true
-    })
-    restStressDuration: string;
-
-    @Column({
-        type: DataType.STRING,
-        allowNull: true
-    })
-    lowStressDuration: string;
-
-    @Column({
-        type: DataType.STRING,
-        allowNull: true
-    })
-    mediumStressDuration: string;
-
-    @Column({
-        type: DataType.STRING,
-        allowNull: true
-    })
-    highStressDuration: string;
-
-    @Column({
-        type: DataType.STRING,
-        allowNull: true
-    })
-    stressDuration: string;
 }

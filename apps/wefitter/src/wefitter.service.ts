@@ -15,6 +15,10 @@ import { WefitterDailySummaryDto } from './models/wefitter-daily-summary.dto';
 import { Repository } from 'sequelize-typescript';
 import { UserWefitterHeartrateSummary } from './models/wefitter-heartrate-summary.entity';
 import { WefitterHeartRateDto } from './models/wefitter-heart-rate.dto';
+import { WefitterSleepDto } from './models/wefitter-sleep.dto';
+import { UserWefitterSleepSummary } from './models/wefitter-sleep-summary.entity';
+import { WefitterStressSummaryDto } from './models/wefitter-stress-summary.dto';
+import { UserWefitterStressSummary } from './models/wefitter-stress-summary.entity';
 
 
 @Injectable()
@@ -35,7 +39,9 @@ export class WefitterService {
         @Inject('USER_MODEL') private userModel: Repository<User>,
         @Inject('USER_WEFITTER_MODEL') private userWefitterModel: Repository<UserWefitter>,
         @Inject('USER_WEFITTER_DAILY_SUMMARY_MODEL') private userWefitterDailySummary: Repository<UserWefitterDailySummary>,
-        @Inject('USER_WEFITTER_HEARTRATE_SUMMARY_MODEL') private userWefitterHeartrateSummary: Repository<UserWefitterHeartrateSummary>
+        @Inject('USER_WEFITTER_HEARTRATE_SUMMARY_MODEL') private userWefitterHeartrateSummary: Repository<UserWefitterHeartrateSummary>,
+        @Inject('USER_WEFITTER_SLEEP_SUMMARY_MODEL') private userWefitterSleepSummary: Repository<UserWefitterSleepSummary>,
+        @Inject('USER_WEFITTER_STRESS_SUMMARY_MODEL') private userWefitterStressSummary: Repository<UserWefitterStressSummary>,
     ) {
         this.redisClient = redisService.getClient();
         this.baseUrl = this.configService.get('WEFITTER_API_URL');
@@ -163,19 +169,37 @@ export class WefitterService {
             bmrCalories: data.bmr_calories,
             points: data.points,
             source: data.source,
-            heartRateSummaryMin: data.heart_rate_summary && data.heart_rate_summary.min,
-            heartRateSummaryMax: data.heart_rate_summary && data.heart_rate_summary.max,
-            heartRateSummaryAverage: data.heart_rate_summary && data.heart_rate_summary.average,
-            heartRateSummaryResting: data.heart_rate_summary && data.heart_rate_summary.resting,
-            stressQualifier: data.stress_summary && data.stress_summary.stress_qualifier,
-            averageStressLevel: data.stress_summary && data.stress_summary.average_stress_level,
-            maxStressLevel: data.stress_summary && data.stress_summary.max_stress_level,
-            restStressDuration: data.stress_summary && data.stress_summary.rest_stress_duration,
-            lowStressDuration: data.stress_summary && data.stress_summary.low_stress_duration,
-            mediumStressDuration: data.stress_summary && data.stress_summary.medium_stress_duration,
-            highStressDuration: data.stress_summary && data.stress_summary.high_stress_duration,
-            stressDuration: data.stress_summary && data.stress_summary.stress_duration,
         }, { transaction });
+
+        if (data.heart_rate_summary) {
+            await this.userWefitterHeartrateSummary.create({
+                userId,
+                timestamp: data.heart_rate_summary.timestamp,
+                source: data.source,
+                duration: data.heart_rate_summary.duration,
+                min: data.heart_rate_summary.min,
+                max: data.heart_rate_summary.max,
+                average: data.heart_rate_summary.average,
+                resting: data.heart_rate_summary.resting,
+            }, { transaction });
+        }
+
+        if (data.stress_summary) {
+            await this.userWefitterStressSummary.create({
+                userId,
+                timestamp: data.stress_summary.timestamp,
+                source: data.stress_summary.source,
+                duration: data.stress_summary.duration,
+                stressQualifier: data.stress_summary.stress_qualifier,
+                averageStressLevel: data.stress_summary.average_stress_level,
+                maxStressLevel: data.stress_summary.max_stress_level,
+                restStressDuration: data.stress_summary.rest_stress_duration,
+                lowStressDuration: data.stress_summary.low_stress_duration,
+                mediumStressDuration: data.stress_summary.medium_stress_duration,
+                highStressDuration: data.stress_summary.high_stress_duration,
+                stressDuration: data.stress_summary.stress_duration,
+            }, { transaction });
+        }
     }
 
     async saveHeartrateSummaryData(userId: number, data: WefitterHeartRateDto, transaction?: Transaction): Promise<void> {
@@ -191,5 +215,36 @@ export class WefitterService {
         }, { transaction });
     }
 
-    //TO DO saveSleepSummaryData
+    async saveSleepSummaryData(userId: number, data: WefitterSleepDto, transaction?: Transaction): Promise<void> {
+        await this.userWefitterSleepSummary.create({
+            userId,
+            timestamp: data.timestamp,
+            timestampEnd: data.timestamp_end,
+            source: data.source,
+            duration: data.duration,
+            awake: data.awake,
+            light: data.light,
+            deep: data.deep,
+            rem: data.rem,
+            sleepScore: data.sleep_score,
+            totalTimeInSleep: data.total_time_in_sleep
+        }, { transaction });
+    }
+
+    async saveStressSummaryData(userId: number, data: WefitterStressSummaryDto, transaction?: Transaction): Promise<void> {
+        await this.userWefitterStressSummary.create({
+            userId,
+            timestamp: data.timestamp,
+            source: data.source,
+            duration: data.duration,
+            stressQualifier: data.stress_qualifier,
+            averageStressLevel: data.average_stress_level,
+            maxStressLevel: data.max_stress_level,
+            restStressDuration: data.rest_stress_duration,
+            lowStressDuration: data.low_stress_duration,
+            mediumStressDuration: data.medium_stress_duration,
+            highStressDuration: data.high_stress_duration,
+            stressDuration: data.stress_duration,
+        }, { transaction });
+    }
 }

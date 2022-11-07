@@ -32,6 +32,8 @@ import { Public } from 'apps/common/src/resources/common/public.decorator';
 import { WefitterUserDailySummaryDto } from './models/wefitter-user-daily-summary.dto';
 import { nonWefitterFieldNames } from '../../common/src/resources/wefitter/non-wefitter-connection-slugs';
 import { WefitterUserHeartrateSummaryDto } from './models/wefitter-user-heartrate-summary.dto';
+import { WefitterUserSleepSummaryDto } from './models/wefitter-user-sleep-summary.dto';
+import { WefitterUserStressSummaryDto } from './models/wefitter-user-stress-summary.dto';
 
 @ApiTags('wefitter')
 @Controller('wefitter')
@@ -225,6 +227,7 @@ export class WefitterController {
     @Post('push/daily-summary')
     async pushDailySummary(@Body() body: WefitterUserDailySummaryDto): Promise<object> {
         const user = await this.wefitterService.getUserWefitterByPublicId(body.profile);
+        console.log(JSON.stringify(body));
         if (!user) {
             throw new BadRequestException({
                 message: this.translator.translate('USER_NOT_FOUND'),
@@ -238,9 +241,8 @@ export class WefitterController {
     }
 
     @Public()
-    @HttpCode(HttpStatus.OK)
-    @ApiOperation({ summary: 'Wefitter push heartrate summary data' })
     @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiOperation({ summary: 'Wefitter push heartrate summary data' })
     @Post('push/heartrate-summary')
     async pushHeartrateSummary(@Body() body: WefitterUserHeartrateSummaryDto): Promise<void> {
         const user = await this.wefitterService.getUserWefitterByPublicId(body.profile);
@@ -255,5 +257,37 @@ export class WefitterController {
         await this.wefitterService.saveHeartrateSummaryData(user.userId, body.data);
     }
 
-    //TO DO pushSleepSummary
+    @Public()
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiOperation({ summary: 'Wefitter push sleep summary data' })
+    @Post('push/sleep-summary')
+    async pushSleepSummary(@Body() body: WefitterUserSleepSummaryDto): Promise<void> {
+        const user = await this.wefitterService.getUserWefitterByPublicId(body.profile);
+        if (!user) {
+            throw new BadRequestException({
+                message: this.translator.translate('USER_NOT_FOUND'),
+                errorCode: 'USER_NOT_FOUND',
+                statusCode: HttpStatus.BAD_REQUEST
+            });
+        }
+
+        await this.wefitterService.saveSleepSummaryData(user.userId, body.data);
+    }
+
+    @Public()
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiOperation({ summary: 'Wefitter push stress summary data' })
+    @Post('push/stress-summary')
+    async pushStressSummary(@Body() body: WefitterUserStressSummaryDto): Promise<void> {
+        const user = await this.wefitterService.getUserWefitterByPublicId(body.profile);
+        if (!user) {
+            throw new BadRequestException({
+                message: this.translator.translate('USER_NOT_FOUND'),
+                errorCode: 'USER_NOT_FOUND',
+                statusCode: HttpStatus.BAD_REQUEST
+            });
+        }
+
+        await this.wefitterService.saveStressSummaryData(user.userId, body.data);
+    }
 }
