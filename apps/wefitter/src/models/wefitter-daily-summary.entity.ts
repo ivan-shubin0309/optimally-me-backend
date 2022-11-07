@@ -16,7 +16,7 @@ export class UserWefitterDailySummary extends Model {
     userId: number;
 
     @Column({
-        type: DataType.DATE,
+        type: DataType.DATEONLY,
         allowNull: true,
     })
     date: string;
