@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { RecommendationCategoryTypes } from '../../../../common/src/resources/recommendations/recommendation-category-types';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
-import { IsArray, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength, MinLength, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength, MinLength, ValidateNested } from 'class-validator';
 import { RecommendationActionTypes } from '../../../../common/src/resources/recommendations/recommendation-action-types';
 import { CreateRecommendationImpactDto } from '../recommendationImpacts/create-recommendation-impact.dto';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
@@ -42,6 +42,11 @@ export class CreateRecommendationDto {
     @MaxLength(recommendationValidationRules.productLinkMaxLength)
     @MinLength(recommendationValidationRules.productLinkMinLength)
     readonly productLink: string;
+
+    @ApiProperty({ type: () => Boolean, required: false, default: true })
+    @IsOptional()
+    @IsBoolean()
+    readonly isAddToCartAllowed: boolean = true;
 
     @ApiProperty({ type: () => Number, required: false })
     @IsNotEmpty()
