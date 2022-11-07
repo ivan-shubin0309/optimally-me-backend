@@ -91,6 +91,13 @@ export class Recommendation extends Model {
     })
     isArchived: boolean;
 
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    })
+    isAddToCartAllowed: boolean;
+
     @BelongsToMany(() => File, () => RecommendationFile, 'recommendationId', 'fileId')
     files: File[];
 
