@@ -61,11 +61,7 @@ export class VerificationsController {
         const user = await this.usersService.getOne(scopes);
 
         if (!user) {
-            throw new NotFoundException({
-                message: this.translator.translate('USER_NOT_FOUND'),
-                errorCode: 'USER_NOT_FOUND',
-                statusCode: HttpStatus.NOT_FOUND
-            });
+            return;
         }
 
         const restorationCount = await this.verificationsService.getCount([
