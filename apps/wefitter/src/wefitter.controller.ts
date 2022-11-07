@@ -109,15 +109,15 @@ export class WefitterController {
                 statusCode: HttpStatus.BAD_REQUEST
             });
         }
-        const { wefitter: { publicId, bearer } } = user;
-        if (!publicId || !bearer) {
+
+        if (!user.wefitter || !user.wefitter.publicId || !user.wefitter.bearer) {
             throw new BadRequestException({
                 message: this.translator.translate('WEFITTER_PROFILE_NOT_FOUND'),
                 errorCode: 'USER_NOT_FOUND',
                 statusCode: HttpStatus.BAD_REQUEST
             });
         }
-        const connections = await this.wefitterService.getConnections(publicId, bearer, query);
+        const connections = await this.wefitterService.getConnections(user.wefitter.publicId, user.wefitter.bearer, query);
         return new WefitterConnectionsDto(connections);
     }
 
