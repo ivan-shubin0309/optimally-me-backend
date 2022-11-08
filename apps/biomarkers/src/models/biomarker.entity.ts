@@ -82,6 +82,12 @@ export class Biomarker extends Model {
     name: string;
 
     @Column({
+        type: DataType.STRING,
+        allowNull: true,
+    })
+    label: string;
+
+    @Column({
         type: DataType.TINYINT,
         allowNull: false,
         defaultValue: BiomarkerTypes.biomarker
