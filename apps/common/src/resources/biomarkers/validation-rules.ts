@@ -3,6 +3,8 @@ export const biomarkerValidationRules = {
     nameMaxLength: 200,
     nameMinLength: 1,
     filtersMaxCount: 255,
+    labelMinLength: 1,
+    labelMaxLength: 4
 };
 
 export const ALTERNATIVE_NAMES_LIMIT_ERROR_MESSAGE = 'Max. 10 alternative names can be added';

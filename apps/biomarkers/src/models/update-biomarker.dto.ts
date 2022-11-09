@@ -6,10 +6,12 @@ export class UpdateBiomarkerDto {
         this.categoryId = body.categoryId;
         this.unitId = body.unitId;
         this.templateId = body.ruleId || null;
+        this.label = body.label;
     }
 
     name: string;
     categoryId: number;
     unitId: number;
     templateId: number;
+    label: string;
 }
