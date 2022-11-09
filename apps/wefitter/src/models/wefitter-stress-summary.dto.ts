@@ -2,6 +2,17 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
 
 export class WefitterStressSummaryDto {
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    readonly timestamp: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    readonly duration: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    readonly source: string;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
