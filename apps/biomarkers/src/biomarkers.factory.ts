@@ -65,7 +65,7 @@ export class BiomarkersFactory {
         const ruleToCreate = Object.assign(
             {},
             body,
-            { type: BiomarkerTypes.rule, name: body.ruleName, label: null }
+            { type: BiomarkerTypes.rule, name: body.ruleName, label: null, shortName: null }
         );
         return this.create(ruleToCreate, transaction);
     }

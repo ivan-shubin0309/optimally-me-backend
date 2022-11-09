@@ -19,6 +19,13 @@ export class CreateBiomarkerDto {
     @IsNotEmpty()
     readonly label: string;
 
+    @ApiProperty({ type: () => String, required: true })
+    @MaxLength(biomarkerValidationRules.shortNameMaxLength)
+    @MinLength(biomarkerValidationRules.shortNameMinLength)
+    @Transform(({ value }: TransformFnParams) => value?.trim())
+    @IsNotEmpty()
+    readonly shortName: string;
+
     @ApiProperty({ type: () => [String], required: false })
     @IsOptional()
     @ArrayMaxSize(biomarkerValidationRules.alternativeNamesMax)
