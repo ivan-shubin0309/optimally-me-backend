@@ -7,6 +7,7 @@ export class UpdateBiomarkerDto {
         this.unitId = body.unitId;
         this.templateId = body.ruleId || null;
         this.label = body.label;
+        this.shortName = body.shortName;
     }
 
     name: string;
@@ -14,4 +15,5 @@ export class UpdateBiomarkerDto {
     unitId: number;
     templateId: number;
     label: string;
+    shortName: string;
 }
