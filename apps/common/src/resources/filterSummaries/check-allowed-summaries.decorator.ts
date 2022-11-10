@@ -16,7 +16,7 @@ export function CheckAllowedSummaries(validationOptions?: ValidationOptions) {
                     const filter = args.object;
                     const recommendationTypesCollection = EnumHelper.toCollection(RecommendationTypes);
 
-                    const isValid = !!recommendationTypesCollection.find((recommendationType) => {
+                    const validations = recommendationTypesCollection.map((recommendationType) => {
                         if (
                             recommendationType.value === RecommendationTypes.criticalLow
                             || recommendationType.value === RecommendationTypes.criticalHigh
@@ -27,14 +27,14 @@ export function CheckAllowedSummaries(validationOptions?: ValidationOptions) {
                             return (
                                 (typeof filter[`${recommendationType.key}Min`] === 'number' && typeof filter[`${recommendationType.key}Max`] === 'number')
                                 && typeof summary[recommendationType.key] === 'string'
-                            ) && (
+                            ) || (
                                     (typeof filter[`${recommendationType.key}Min`] !== 'number' || typeof filter[`${recommendationType.key}Max`] !== 'number')
                                     && typeof summary[recommendationType.key] !== 'string'
                                 );
                         }
                     });
 
-                    return isValid;
+                    return validations.filter(value => value).length === validations.length;
                 },
                 defaultMessage(args: ValidationArguments): string {
                     return `${args.property} for every existing summary field, coresponding range fields must exist`;
