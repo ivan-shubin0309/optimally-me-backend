@@ -17,6 +17,8 @@ import { FilterOtherFeature } from './models/filterOtherFeatures/filter-other-fe
 import { AlternativeName } from './models/alternativeNames/alternative-name.entity';
 import { CreateFilterGroupDto } from './models/filterGroups/create-filter-group.dto';
 import { FilterGroup } from './models/filterGroups/filter-group.entity';
+import { CreateFilterSummaryDto } from './models/filterSummaries/create-filter-summary.dto';
+import { FilterSummary } from './models/filterSummaries/filter-summary.entity';
 
 @Injectable()
 export class BiomarkersFactory {
@@ -31,6 +33,7 @@ export class BiomarkersFactory {
         @Inject('FILTER_OTHER_FEATURE_MODEL') readonly filterOtherFeatureModel: Repository<FilterOtherFeature>,
         @Inject('ALTERNATIVE_NAME_MODEL') readonly alternativeNameModel: Repository<AlternativeName>,
         @Inject('FILTER_GROUP_MODEL') readonly filterGroupModel: Repository<FilterGroup>,
+        @Inject('FILTER_SUMMARY_MODEL') readonly filterSummaryModel: Repository<FilterSummary>,
     ) { }
 
     private async create(body: CreateBiomarkerDto & { templateId?: number, type: BiomarkerTypes }, transaction?: Transaction): Promise<Biomarker> {
@@ -89,6 +92,10 @@ export class BiomarkersFactory {
 
         if (filter.groups) {
             promises.push(this.attachGroupsToFilter(filter.groups, createdFilter.id, transaction));
+        }
+
+        if (filter.summary) {
+            promises.push(this.attachSummaryToFilter(filter.summary, createdFilter.id, transaction));
         }
 
         await Promise.all(promises);
@@ -150,5 +157,10 @@ export class BiomarkersFactory {
             });
         });
         await this.filterGroupModel.bulkCreate(groupsToCreate, { transaction });
+    }
+
+    async attachSummaryToFilter(summary: CreateFilterSummaryDto, filterId: number, transaction?: Transaction): Promise<void> {
+        const filterSummaryToCreate: any = Object.assign({ filterId }, summary);
+        await this.filterSummaryModel.create(filterSummaryToCreate, { transaction });
     }
 }

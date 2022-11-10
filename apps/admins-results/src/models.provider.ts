@@ -13,6 +13,7 @@ import { Recommendation } from '../../biomarkers/src/models/recommendations/reco
 import { Unit } from '../../biomarkers/src/models/units/unit.entity';
 import { User } from '../../users/src/models';
 import { UserResult } from './models/user-result.entity';
+import { FilterSummary } from '../../biomarkers/src/models/filterSummaries/filter-summary.entity';
 
 export const modelProviders = [
     {
@@ -74,5 +75,9 @@ export const modelProviders = [
     {
         provide: 'FILTER_GROUP_MODEL',
         useValue: FilterGroup
+    },
+    {
+        provide: 'FILTER_SUMMARY_MODEL',
+        useValue: FilterSummary
     }
 ];

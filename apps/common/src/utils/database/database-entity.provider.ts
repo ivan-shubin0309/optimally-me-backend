@@ -22,6 +22,7 @@ import { UserWefitterHeartrateSummary } from '../../../../wefitter/src/models/we
 import { UserWefitterSleepSummary } from '../../../../wefitter/src/models/wefitter-sleep-summary.entity';
 import { UserWefitterStressSummary } from '../../../../wefitter/src/models/wefitter-stress-summary.entity';
 import { FilterGroup } from '../../../../biomarkers/src/models/filterGroups/filter-group.entity';
+import { FilterSummary } from '../../../../biomarkers/src/models/filterSummaries/filter-summary.entity';
 
 export const entities = [
     User,
@@ -48,4 +49,5 @@ export const entities = [
     UserWefitterSleepSummary,
     UserWefitterStressSummary,
     FilterGroup,
+    FilterSummary,
 ];

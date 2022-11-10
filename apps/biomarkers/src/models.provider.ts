@@ -9,6 +9,7 @@ import { FilterOtherFeature } from './models/filterOtherFeatures/filter-other-fe
 import { Filter } from './models/filters/filter.entity';
 import { FilterAge } from './models/filtersAge/filter-age.entity';
 import { FilterSex } from './models/filtersSex/filter-sex.entity';
+import { FilterSummary } from './models/filterSummaries/filter-summary.entity';
 import { Interaction } from './models/interactions/interaction.entity';
 import { RecommendationImpact } from './models/recommendationImpacts/recommendation-impact.entity';
 import { FilterRecommendation } from './models/recommendations/filter-recommendation.entity';
@@ -84,6 +85,10 @@ export const modelProviders = [
     {
         provide: 'FILTER_GROUP_MODEL',
         useValue: FilterGroup
+    },
+    {
+        provide: 'FILTER_SUMMARY_MODEL',
+        useValue: FilterSummary
     }
 ];
 

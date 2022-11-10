@@ -7,23 +7,27 @@ import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
 import { ArrayMaxSize, ArrayMinSize, IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, Min, ValidateNested } from 'class-validator';
 import { CreateInteractionDto } from '../interactions/create-interaction.dto';
 import { AddRecommendationDto } from '../recommendations/add-recommendation.dto';
-import { Transform, TransformFnParams, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { MaxFieldValueRepeatCount } from '../../../../common/src/resources/common/max-field-value-repeat-count.decorator';
 import { FilterValidationRules } from '../../../../common/src/resources/filters/validation-rules';
 import { NumberMaxCharacters } from '../../../../common/src/resources/common/number-max-characters';
 import { CheckAllowedRecommendationTypes } from '../../../../common/src/resources/filters/check-allowed-recommendation-types.decorator';
 import { CreateFilterGroupDto } from '../filterGroups/create-filter-group.dto';
 import { ArrayDistinct } from '../../../../common/src/resources/common/array-distinct.decorator';
+import { CreateFilterSummaryDto } from '../filterSummaries/create-filter-summary.dto';
+import { CheckAllowedSummaries } from '../../../../common/src/resources/filterSummaries/check-allowed-summaries.decorator';
 
 export class CreateFilterDto {
     @ApiProperty({ type: () => String, required: true })
     @IsNotEmpty()
     readonly name: string;
 
-    @ApiProperty({ type: () => String, required: false })
-    @IsNotEmpty()
-    @Transform(({ value }: TransformFnParams) => value?.trim())
-    readonly summary: string;
+    @ApiProperty({ type: () => CreateFilterSummaryDto, required: false })
+    @IsOptional()
+    @CheckAllowedSummaries()
+    @ValidateNested()
+    @Type(() => CreateFilterSummaryDto)
+    readonly summary: CreateFilterSummaryDto;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
