@@ -25,6 +25,8 @@ import { S3Service } from '../../files/src/s3.service';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
 import { RecommendationImpactsService } from './services/recommendation-impacts/recommendation-impacts.service';
 import { CacheService } from '../../common/src/resources/cache/cache.service';
+import { Sequelize } from 'sequelize-typescript';
+import sequelize from 'sequelize';
 
 @Module({
   imports: [

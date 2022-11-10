@@ -4,6 +4,7 @@ import { AlternativeName } from './models/alternativeNames/alternative-name.enti
 import { Biomarker } from './models/biomarker.entity';
 import { Category } from './models/categories/category.entity';
 import { FilterEthnicity } from './models/filterEthnicity/filter-ethnicity.entity';
+import { FilterGroup } from './models/filterGroups/filter-group.entity';
 import { FilterOtherFeature } from './models/filterOtherFeatures/filter-other-feature.entity';
 import { Filter } from './models/filters/filter.entity';
 import { FilterAge } from './models/filtersAge/filter-age.entity';
@@ -79,6 +80,10 @@ export const modelProviders = [
     {
         provide: 'RECOMMENDATION_IMPACT_MODEL',
         useValue: RecommendationImpact
+    },
+    {
+        provide: 'FILTER_GROUP_MODEL',
+        useValue: FilterGroup
     }
 ];
 

@@ -15,6 +15,8 @@ import { FilterAge } from './models/filtersAge/filter-age.entity';
 import { FilterEthnicity } from './models/filterEthnicity/filter-ethnicity.entity';
 import { FilterOtherFeature } from './models/filterOtherFeatures/filter-other-feature.entity';
 import { AlternativeName } from './models/alternativeNames/alternative-name.entity';
+import { CreateFilterGroupDto } from './models/filterGroups/create-filter-group.dto';
+import { FilterGroup } from './models/filterGroups/filter-group.entity';
 
 @Injectable()
 export class BiomarkersFactory {
@@ -28,6 +30,7 @@ export class BiomarkersFactory {
         @Inject('FILTER_ETHNICITY_MODEL') readonly filterEthnicityModel: Repository<FilterEthnicity>,
         @Inject('FILTER_OTHER_FEATURE_MODEL') readonly filterOtherFeatureModel: Repository<FilterOtherFeature>,
         @Inject('ALTERNATIVE_NAME_MODEL') readonly alternativeNameModel: Repository<AlternativeName>,
+        @Inject('FILTER_GROUP_MODEL') readonly filterGroupModel: Repository<FilterGroup>,
     ) { }
 
     private async create(body: CreateBiomarkerDto & { templateId?: number, type: BiomarkerTypes }, transaction?: Transaction): Promise<Biomarker> {
@@ -84,6 +87,10 @@ export class BiomarkersFactory {
             promises.push(this.attachInteractionsToFilter(filter.interactions, createdFilter.id, transaction));
         }
 
+        if (filter.groups) {
+            promises.push(this.attachGroupsToFilter(filter.groups, createdFilter.id, transaction));
+        }
+
         await Promise.all(promises);
     }
 
@@ -133,5 +140,15 @@ export class BiomarkersFactory {
 
     async attachAlternativeNames(alternativeNames: string[], biomarkerId: number, transaction?: Transaction): Promise<void> {
         await this.alternativeNameModel.bulkCreate(alternativeNames.map(alternativeName => ({ biomarkerId, name: alternativeName })), { transaction });
+    }
+
+    async attachGroupsToFilter(groups: CreateFilterGroupDto[], filterId: number, transaction?: Transaction): Promise<void> {
+        const groupsToCreate = [];
+        groups.forEach(group => {
+            group.recommendationTypes.forEach(recommendationType => {
+                groupsToCreate.push({ filterId, recommendationType, type: group.type });
+            });
+        });
+        await this.filterGroupModel.bulkCreate(groupsToCreate, { transaction });
     }
 }

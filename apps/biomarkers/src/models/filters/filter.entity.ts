@@ -1,6 +1,7 @@
 import { Table, Column, Model, Scopes, DataType, ForeignKey, HasMany } from 'sequelize-typescript';
 import { Biomarker } from '../biomarker.entity';
 import { FilterEthnicity } from '../filterEthnicity/filter-ethnicity.entity';
+import { FilterGroup } from '../filterGroups/filter-group.entity';
 import { FilterOtherFeature } from '../filterOtherFeatures/filter-other-feature.entity';
 import { FilterAge } from '../filtersAge/filter-age.entity';
 import { FilterSex } from '../filtersSex/filter-sex.entity';
@@ -35,6 +36,11 @@ import { FilterRecommendation } from '../recommendations/filter-recommendation.e
                 as: 'otherFeatures',
                 required: false,
             },
+            {
+                model: FilterGroup,
+                as: 'groups',
+                required: false
+            }
         ]
     }),
     byBiomarkerId: (biomarkerId) => ({ where: { biomarkerId } }),
@@ -177,4 +183,7 @@ export class Filter extends Model {
 
     @HasMany(() => FilterOtherFeature, 'filterId')
     otherFeatures: FilterOtherFeature[];
+
+    @HasMany(() => FilterGroup, 'filterId')
+    groups: FilterGroup[];
 }

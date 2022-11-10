@@ -4,7 +4,7 @@ import { EthnicityTypes } from '../../../../common/src/resources/filters/ethnici
 import { OtherFeatureTypes } from '../../../../common/src/resources/filters/other-feature-types';
 import { SexTypes } from '../../../../common/src/resources/filters/sex-types';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
-import { ArrayMaxSize, ArrayMinSize, IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsPositive, Min, ValidateNested } from 'class-validator';
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, Min, ValidateNested } from 'class-validator';
 import { CreateInteractionDto } from '../interactions/create-interaction.dto';
 import { AddRecommendationDto } from '../recommendations/add-recommendation.dto';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
@@ -12,6 +12,8 @@ import { MaxFieldValueRepeatCount } from '../../../../common/src/resources/commo
 import { FilterValidationRules } from '../../../../common/src/resources/filters/validation-rules';
 import { NumberMaxCharacters } from '../../../../common/src/resources/common/number-max-characters';
 import { CheckAllowedRecommendationTypes } from '../../../../common/src/resources/filters/check-allowed-recommendation-types.decorator';
+import { CreateFilterGroupDto } from '../filterGroups/create-filter-group.dto';
+import { ArrayDistinct } from '../../../../common/src/resources/common/array-distinct.decorator';
 
 export class CreateFilterDto {
     @ApiProperty({ type: () => String, required: true })
@@ -162,4 +164,12 @@ export class CreateFilterDto {
     @IsArray()
     @IsEnum(OtherFeatureTypes, { each: true })
     readonly otherFeatures: number[];
+
+    @ApiProperty({ type: () => [CreateFilterGroupDto], required: false })
+    @IsArray()
+    @IsOptional()
+    @ArrayDistinct('type')
+    @ValidateNested()
+    @Type(() => CreateFilterGroupDto)
+    readonly groups: CreateFilterGroupDto[];
 }

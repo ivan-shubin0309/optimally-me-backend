@@ -1,3 +1,4 @@
+import { FilterGroup } from '../../biomarkers/src/models/filterGroups/filter-group.entity';
 import { AlternativeName } from '../../biomarkers/src/models/alternativeNames/alternative-name.entity';
 import { Biomarker } from '../../biomarkers/src/models/biomarker.entity';
 import { Category } from '../../biomarkers/src/models/categories/category.entity';
@@ -69,5 +70,9 @@ export const modelProviders = [
     {
         provide: 'ALTERNATIVE_NAME_MODEL',
         useValue: AlternativeName
+    },
+    {
+        provide: 'FILTER_GROUP_MODEL',
+        useValue: FilterGroup
     }
 ];
