@@ -15,8 +15,9 @@ export class FilterDto extends BaseDto<Filter> {
         super(entity);
         this.biomarkerId = entity.biomarkerId;
         this.name = entity.name;
-        this.summary = entity.summary
-            ? new FilterSummaryDto(entity.summary)
+        this.summary = entity.summary;
+        this.resultSummary = entity.resultSummary
+            ? new FilterSummaryDto(entity.resultSummary)
             : undefined;
         this.whatIsIt = entity.whatIsIt;
         this.whatAreTheCauses = entity.whatAreTheCauses;
@@ -63,8 +64,11 @@ export class FilterDto extends BaseDto<Filter> {
     @ApiProperty({ type: () => String, required: true })
     name: string;
 
+    @ApiProperty({ type: () => String, required: false })
+    summary: string;
+
     @ApiProperty({ type: () => FilterSummaryDto, required: false })
-    summary: FilterSummaryDto;
+    resultSummary: FilterSummaryDto;
 
     @ApiProperty({ type: () => String, required: false })
     whatIsIt: string;
