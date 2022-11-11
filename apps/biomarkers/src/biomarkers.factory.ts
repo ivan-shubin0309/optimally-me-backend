@@ -94,8 +94,8 @@ export class BiomarkersFactory {
             promises.push(this.attachGroupsToFilter(filter.groups, createdFilter.id, transaction));
         }
 
-        if (filter.summary) {
-            promises.push(this.attachSummaryToFilter(filter.summary, createdFilter.id, transaction));
+        if (filter.resultSummary) {
+            promises.push(this.attachSummaryToFilter(filter.resultSummary, createdFilter.id, transaction));
         }
 
         await Promise.all(promises);

@@ -44,7 +44,7 @@ import { FilterRecommendation } from '../recommendations/filter-recommendation.e
             },
             {
                 model: FilterSummary,
-                as: 'summary',
+                as: 'resultSummary',
                 required: false
             }
         ]
@@ -69,6 +69,12 @@ export class Filter extends Model {
         allowNull: true
     })
     name: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true
+    })
+    summary: string;
 
     @Column({
         type: DataType.STRING,
@@ -188,5 +194,5 @@ export class Filter extends Model {
     groups: FilterGroup[];
 
     @HasOne(() => FilterSummary, 'filterId')
-    summary: FilterSummary;
+    resultSummary: FilterSummary;
 }
