@@ -19,6 +19,8 @@ import { CreateFilterGroupDto } from './models/filterGroups/create-filter-group.
 import { FilterGroup } from './models/filterGroups/filter-group.entity';
 import { CreateFilterSummaryDto } from './models/filterSummaries/create-filter-summary.dto';
 import { FilterSummary } from './models/filterSummaries/filter-summary.entity';
+import { CreateFilterBulletListDto } from './models/filterBulletLists/create-filter-bullet-list.dto';
+import { FilterBulletList } from './models/filterBulletLists/filter-bullet-list.entity';
 
 @Injectable()
 export class BiomarkersFactory {
@@ -34,6 +36,7 @@ export class BiomarkersFactory {
         @Inject('ALTERNATIVE_NAME_MODEL') readonly alternativeNameModel: Repository<AlternativeName>,
         @Inject('FILTER_GROUP_MODEL') readonly filterGroupModel: Repository<FilterGroup>,
         @Inject('FILTER_SUMMARY_MODEL') readonly filterSummaryModel: Repository<FilterSummary>,
+        @Inject('FILTER_BULLET_LIST_MODEL') readonly filterBulletListModel: Repository<FilterBulletList>,
     ) { }
 
     private async create(body: CreateBiomarkerDto & { templateId?: number, type: BiomarkerTypes }, transaction?: Transaction): Promise<Biomarker> {
@@ -105,6 +108,10 @@ export class BiomarkersFactory {
             promises.push(this.attachSummaryToFilter(filter.resultSummary, createdFilter.id, transaction));
         }
 
+        if (filter.whatAreTheRisks && filter.whatAreTheRisks.bulletList) {
+            promises.push(this.attachBulletListToFilter(filter.whatAreTheRisks.bulletList, createdFilter.id, transaction));
+        }
+
         await Promise.all(promises);
     }
 
@@ -169,5 +176,9 @@ export class BiomarkersFactory {
     async attachSummaryToFilter(summary: CreateFilterSummaryDto, filterId: number, transaction?: Transaction): Promise<void> {
         const filterSummaryToCreate: any = Object.assign({ filterId }, summary);
         await this.filterSummaryModel.create(filterSummaryToCreate, { transaction });
+    }
+
+    async attachBulletListToFilter(bulletList: CreateFilterBulletListDto[], filterId: number, transaction?: Transaction): Promise<void> {
+        await this.filterBulletListModel.bulkCreate(bulletList.map(bullet => Object.assign({ filterId }, bullet) as any), { transaction });
     }
 }

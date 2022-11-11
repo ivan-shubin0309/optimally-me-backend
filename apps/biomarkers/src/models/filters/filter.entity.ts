@@ -1,6 +1,7 @@
 import { Table, Column, Model, Scopes, DataType, ForeignKey, HasMany, HasOne } from 'sequelize-typescript';
 import { Biomarker } from '../biomarker.entity';
 import { FilterEthnicity } from '../filterEthnicity/filter-ethnicity.entity';
+import { FilterBulletList } from '../filterBulletLists/filter-bullet-list.entity';
 import { FilterGroup } from '../filterGroups/filter-group.entity';
 import { FilterOtherFeature } from '../filterOtherFeatures/filter-other-feature.entity';
 import { FilterAge } from '../filtersAge/filter-age.entity';
@@ -45,6 +46,11 @@ import { FilterRecommendation } from '../recommendations/filter-recommendation.e
             {
                 model: FilterSummary,
                 as: 'resultSummary',
+                required: false
+            },
+            {
+                model: FilterBulletList,
+                as: 'bulletList',
                 required: false
             }
         ]
@@ -201,4 +207,7 @@ export class Filter extends Model {
 
     @HasOne(() => FilterSummary, 'filterId')
     resultSummary: FilterSummary;
+
+    @HasMany(() => FilterBulletList, 'filterId')
+    bulletList: FilterBulletList[];
 }

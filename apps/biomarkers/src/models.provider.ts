@@ -4,6 +4,7 @@ import { AlternativeName } from './models/alternativeNames/alternative-name.enti
 import { Biomarker } from './models/biomarker.entity';
 import { Category } from './models/categories/category.entity';
 import { FilterEthnicity } from './models/filterEthnicity/filter-ethnicity.entity';
+import { FilterBulletList } from './models/filterBulletLists/filter-bullet-list.entity';
 import { FilterGroup } from './models/filterGroups/filter-group.entity';
 import { FilterOtherFeature } from './models/filterOtherFeatures/filter-other-feature.entity';
 import { Filter } from './models/filters/filter.entity';
@@ -89,6 +90,10 @@ export const modelProviders = [
     {
         provide: 'FILTER_SUMMARY_MODEL',
         useValue: FilterSummary
+    },
+    {
+        provide: 'FILTER_BULLET_LIST_MODEL',
+        useValue: FilterBulletList
     }
 ];
 
