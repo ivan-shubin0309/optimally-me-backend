@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from 'apps/common/src/base/base.dto';
 import { FilterEthnicityDto } from '../filterEthnicity/filter-ethnicity.dto';
+import { FilterGroupDto } from '../filterGroups/filter-group.dto';
 import { FilterOtherFeatureDto } from '../filterOtherFeatures/filter-other-feature.dto';
 import { FilterAgeDto } from '../filtersAge/filter-age.dto';
 import { FilterSexDto } from '../filtersSex/filter-sex.dto';
@@ -47,6 +48,9 @@ export class FilterDto extends BaseDto<Filter> {
             : undefined;
         this.otherFeatures = entity.otherFeatures && entity.otherFeatures.length
             ? entity.otherFeatures.map(otherFeature => new FilterOtherFeatureDto(otherFeature))
+            : undefined;
+        this.groups = entity.groups && entity.groups.length
+            ? entity.groups.map(group => new FilterGroupDto(group))
             : undefined;
     }
 
@@ -124,4 +128,7 @@ export class FilterDto extends BaseDto<Filter> {
 
     @ApiProperty({ type: () => [FilterOtherFeatureDto], required: false })
     otherFeatures: FilterOtherFeatureDto[];
+
+    @ApiProperty({ type: () => [FilterGroupDto], required: false })
+    groups: FilterGroupDto[];
 }
