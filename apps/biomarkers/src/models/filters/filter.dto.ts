@@ -9,6 +9,7 @@ import { FilterSummaryDto } from '../filterSummaries/filter-summary.dto';
 import { InteractionDto } from '../interactions/interaction.dto';
 import { FilterRecommendationDto } from '../recommendations/filter-recommendation.dto';
 import { Filter } from './filter.entity';
+import { WhatAreTheRisksDto } from './what-are-the-risks.dto';
 
 export class FilterDto extends BaseDto<Filter> {
     constructor(entity: Filter) {
@@ -21,7 +22,7 @@ export class FilterDto extends BaseDto<Filter> {
             : undefined;
         this.whatIsIt = entity.whatIsIt;
         this.whatAreTheCauses = entity.whatAreTheCauses;
-        this.whatAreTheRisks = entity.whatAreTheRisks;
+        this.whatAreTheRisks = new WhatAreTheRisksDto(entity);
         this.whatCanYouDo = entity.whatCanYouDo;
         this.criticalLow = entity.criticalLow;
         this.lowMin = entity.lowMin;
@@ -76,8 +77,8 @@ export class FilterDto extends BaseDto<Filter> {
     @ApiProperty({ type: () => String, required: false })
     whatAreTheCauses: string;
 
-    @ApiProperty({ type: () => String, required: false })
-    whatAreTheRisks: string;
+    @ApiProperty({ type: () => WhatAreTheRisksDto, required: false })
+    whatAreTheRisks: WhatAreTheRisksDto;
 
     @ApiProperty({ type: () => String, required: false })
     whatCanYouDo: string;
