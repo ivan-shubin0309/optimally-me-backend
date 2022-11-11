@@ -14,6 +14,8 @@ import { NumberMaxCharacters } from '../../../../common/src/resources/common/num
 import { CheckAllowedRecommendationTypes } from '../../../../common/src/resources/filters/check-allowed-recommendation-types.decorator';
 import { CreateFilterGroupDto } from '../filterGroups/create-filter-group.dto';
 import { ArrayDistinct } from '../../../../common/src/resources/common/array-distinct.decorator';
+import { CreateFilterSummaryDto } from '../filterSummaries/create-filter-summary.dto';
+import { CheckAllowedSummaries } from '../../../../common/src/resources/filterSummaries/check-allowed-summaries.decorator';
 
 export class CreateFilterDto {
     @ApiProperty({ type: () => String, required: true })
@@ -24,6 +26,13 @@ export class CreateFilterDto {
     @IsNotEmpty()
     @Transform(({ value }: TransformFnParams) => value?.trim())
     readonly summary: string;
+
+    @ApiProperty({ type: () => CreateFilterSummaryDto, required: false })
+    @IsOptional()
+    @CheckAllowedSummaries()
+    @ValidateNested()
+    @Type(() => CreateFilterSummaryDto)
+    readonly resultSummary: CreateFilterSummaryDto;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()

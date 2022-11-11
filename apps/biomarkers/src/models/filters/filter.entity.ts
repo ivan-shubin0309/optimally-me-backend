@@ -1,10 +1,11 @@
-import { Table, Column, Model, Scopes, DataType, ForeignKey, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, Scopes, DataType, ForeignKey, HasMany, HasOne } from 'sequelize-typescript';
 import { Biomarker } from '../biomarker.entity';
 import { FilterEthnicity } from '../filterEthnicity/filter-ethnicity.entity';
 import { FilterGroup } from '../filterGroups/filter-group.entity';
 import { FilterOtherFeature } from '../filterOtherFeatures/filter-other-feature.entity';
 import { FilterAge } from '../filtersAge/filter-age.entity';
 import { FilterSex } from '../filtersSex/filter-sex.entity';
+import { FilterSummary } from '../filterSummaries/filter-summary.entity';
 import { Interaction } from '../interactions/interaction.entity';
 import { FilterRecommendation } from '../recommendations/filter-recommendation.entity';
 
@@ -39,6 +40,11 @@ import { FilterRecommendation } from '../recommendations/filter-recommendation.e
             {
                 model: FilterGroup,
                 as: 'groups',
+                required: false
+            },
+            {
+                model: FilterSummary,
+                as: 'resultSummary',
                 required: false
             }
         ]
@@ -186,4 +192,7 @@ export class Filter extends Model {
 
     @HasMany(() => FilterGroup, 'filterId')
     groups: FilterGroup[];
+
+    @HasOne(() => FilterSummary, 'filterId')
+    resultSummary: FilterSummary;
 }

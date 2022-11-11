@@ -5,4 +5,5 @@ export const FilterValidationRules = {
     recommendationTypesMaxCount: 10,
     rangeMaxCharactersCount: 10,
     rangeMinValue: 0,
+    summaryMaxLength: 10000,
 };

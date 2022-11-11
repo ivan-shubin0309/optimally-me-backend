@@ -5,6 +5,7 @@ import { FilterGroupDto } from '../filterGroups/filter-group.dto';
 import { FilterOtherFeatureDto } from '../filterOtherFeatures/filter-other-feature.dto';
 import { FilterAgeDto } from '../filtersAge/filter-age.dto';
 import { FilterSexDto } from '../filtersSex/filter-sex.dto';
+import { FilterSummaryDto } from '../filterSummaries/filter-summary.dto';
 import { InteractionDto } from '../interactions/interaction.dto';
 import { FilterRecommendationDto } from '../recommendations/filter-recommendation.dto';
 import { Filter } from './filter.entity';
@@ -15,6 +16,9 @@ export class FilterDto extends BaseDto<Filter> {
         this.biomarkerId = entity.biomarkerId;
         this.name = entity.name;
         this.summary = entity.summary;
+        this.resultSummary = entity.resultSummary
+            ? new FilterSummaryDto(entity.resultSummary)
+            : undefined;
         this.whatIsIt = entity.whatIsIt;
         this.whatAreTheCauses = entity.whatAreTheCauses;
         this.whatAreTheRisks = entity.whatAreTheRisks;
@@ -62,6 +66,9 @@ export class FilterDto extends BaseDto<Filter> {
 
     @ApiProperty({ type: () => String, required: false })
     summary: string;
+
+    @ApiProperty({ type: () => FilterSummaryDto, required: false })
+    resultSummary: FilterSummaryDto;
 
     @ApiProperty({ type: () => String, required: false })
     whatIsIt: string;
