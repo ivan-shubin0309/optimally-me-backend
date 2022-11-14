@@ -9,4 +9,7 @@ export const FilterValidationRules = {
     whatAreTheRisksMaxLength: 10000,
     bulletListMaxLength: 15,
     bulletListContentMaxLength: 200,
+    studyLinksMaxCount: 4,
+    studyLinkMaxLength: 200,
+    studyLinkMinLength: 1,
 };

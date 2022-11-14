@@ -1,8 +1,20 @@
 import { Filter } from '../filters/filter.entity';
-import { Table, Column, Model, DataType, Scopes, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, Scopes, ForeignKey, HasMany } from 'sequelize-typescript';
 import { BulletListTypes } from '../../../../common/src/resources/filterBulletLists/bullet-list-types';
+import { StudyLink } from './study-link.entity';
 
-@Scopes(() => ({}))
+@Scopes(() => ({
+    withStudyLinks: () => ({
+        include: [
+            {
+                model: StudyLink,
+                as: 'studyLinks',
+                required: false,
+            },
+        ]
+    }),
+    byFilterId: (filterId) => ({ where: { filterId } }),
+}))
 @Table({
     tableName: 'filterBulletLists',
     timestamps: true,
@@ -28,4 +40,7 @@ export class FilterBulletList extends Model {
         allowNull: false,
     })
     content: string;
+
+    @HasMany(() => StudyLink, 'filterBulletListId')
+    studyLinks: StudyLink[];
 }
