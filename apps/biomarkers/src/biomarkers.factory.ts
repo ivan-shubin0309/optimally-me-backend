@@ -87,7 +87,9 @@ export class BiomarkersFactory {
             filter,
             {
                 whatAreTheRisksLow: filter.whatAreTheRisks?.low,
-                whatAreTheRisksHigh: filter.whatAreTheRisks?.high
+                whatAreTheRisksHigh: filter.whatAreTheRisks?.high,
+                whatAreTheCausesLow: filter.whatAreTheCauses?.low,
+                whatAreTheCausesHigh: filter.whatAreTheCauses?.high,
             }
         );
         const createdFilter = await this.filterModel.create(filterToCreate, { transaction });

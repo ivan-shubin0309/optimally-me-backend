@@ -17,7 +17,8 @@ import { ArrayDistinct } from '../../../../common/src/resources/common/array-dis
 import { CreateFilterSummaryDto } from '../filterSummaries/create-filter-summary.dto';
 import { CheckAllowedSummaries } from '../../../../common/src/resources/filterSummaries/check-allowed-summaries.decorator';
 import { CreateWhatAreTheRisksDto } from './create-what-are-the-risks.dto';
-import { CheckAllowedRisks } from '../../../../common/src/resources/filters/check-allowed-risks.decorator';
+import { CheckIsAllowedTextField } from '../../../../common/src/resources/filters/check-allowed-risks.decorator';
+import { CreateWhatAreTheCausesDto } from './create-what-are-the-causes.dto';
 
 export class CreateFilterDto {
     @ApiProperty({ type: () => String, required: true })
@@ -40,13 +41,16 @@ export class CreateFilterDto {
     @IsOptional()
     readonly whatIsIt: string;
 
-    @ApiProperty({ type: () => String, required: false })
+    @ApiProperty({ type: () => CreateWhatAreTheCausesDto, required: false })
     @IsOptional()
-    readonly whatAreTheCauses: string;
+    @CheckIsAllowedTextField()
+    @ValidateNested()
+    @Type(() => CreateWhatAreTheCausesDto)
+    readonly whatAreTheCauses: CreateWhatAreTheCausesDto;
 
     @ApiProperty({ type: () => CreateWhatAreTheRisksDto, required: false })
     @IsOptional()
-    @CheckAllowedRisks()
+    @CheckIsAllowedTextField()
     @ValidateNested()
     @Type(() => CreateWhatAreTheRisksDto)
     readonly whatAreTheRisks: CreateWhatAreTheRisksDto;

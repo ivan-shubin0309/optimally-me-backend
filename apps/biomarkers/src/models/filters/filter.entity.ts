@@ -89,10 +89,16 @@ export class Filter extends Model {
     whatIsIt: string;
 
     @Column({
-        type: DataType.STRING,
+        type: DataType.TEXT,
         allowNull: true
     })
-    whatAreTheCauses: string;
+    whatAreTheCausesLow: string;
+
+    @Column({
+        type: DataType.TEXT,
+        allowNull: true
+    })
+    whatAreTheCausesHigh: string;
 
     @Column({
         type: DataType.TEXT,
