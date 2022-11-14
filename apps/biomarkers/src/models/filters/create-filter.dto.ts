@@ -16,6 +16,8 @@ import { CreateFilterGroupDto } from '../filterGroups/create-filter-group.dto';
 import { ArrayDistinct } from '../../../../common/src/resources/common/array-distinct.decorator';
 import { CreateFilterSummaryDto } from '../filterSummaries/create-filter-summary.dto';
 import { CheckAllowedSummaries } from '../../../../common/src/resources/filterSummaries/check-allowed-summaries.decorator';
+import { CreateWhatAreTheRisksDto } from './create-what-are-the-risks.dto';
+import { CheckAllowedRisks } from '../../../../common/src/resources/filters/check-allowed-risks.decorator';
 
 export class CreateFilterDto {
     @ApiProperty({ type: () => String, required: true })
@@ -42,9 +44,12 @@ export class CreateFilterDto {
     @IsOptional()
     readonly whatAreTheCauses: string;
 
-    @ApiProperty({ type: () => String, required: false })
+    @ApiProperty({ type: () => CreateWhatAreTheRisksDto, required: false })
     @IsOptional()
-    readonly whatAreTheRisks: string;
+    @CheckAllowedRisks()
+    @ValidateNested()
+    @Type(() => CreateWhatAreTheRisksDto)
+    readonly whatAreTheRisks: CreateWhatAreTheRisksDto;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()

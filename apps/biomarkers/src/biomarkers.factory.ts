@@ -77,7 +77,14 @@ export class BiomarkersFactory {
     }
 
     async attachFilter(filter: CreateFilterDto, biomarkerId: number, transaction?: Transaction): Promise<void> {
-        const filterToCreate: any = Object.assign({ biomarkerId }, filter);
+        const filterToCreate: any = Object.assign(
+            { biomarkerId },
+            filter,
+            {
+                whatAreTheRisksLow: filter.whatAreTheRisks?.low,
+                whatAreTheRisksHigh: filter.whatAreTheRisks?.high
+            }
+        );
         const createdFilter = await this.filterModel.create(filterToCreate, { transaction });
 
         const promises = [this.attachFilterCharacteristics(filter, createdFilter.id, transaction)];
