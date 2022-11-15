@@ -1,6 +1,6 @@
 import { Filter } from '../filters/filter.entity';
 import { Table, Column, Model, DataType, Scopes, ForeignKey, HasMany } from 'sequelize-typescript';
-import { BulletListTypes } from '../../../../common/src/resources/filterBulletLists/bullet-list-types';
+import { BulletListCategories, BulletListTypes } from '../../../../common/src/resources/filterBulletLists/bullet-list-types';
 import { StudyLink } from './study-link.entity';
 
 @Scopes(() => ({
@@ -40,6 +40,12 @@ export class FilterBulletList extends Model {
         allowNull: false,
     })
     content: string;
+
+    @Column({
+        type: DataType.TINYINT,
+        allowNull: true,
+    })
+    category: BulletListCategories;
 
     @HasMany(() => StudyLink, 'filterBulletListId')
     studyLinks: StudyLink[];

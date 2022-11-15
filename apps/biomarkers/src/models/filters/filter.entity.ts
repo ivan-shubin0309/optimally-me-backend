@@ -1,7 +1,7 @@
 import { Table, Column, Model, Scopes, DataType, ForeignKey, HasMany, HasOne } from 'sequelize-typescript';
 import { Biomarker } from '../biomarker.entity';
-import { FilterEthnicity } from '../filterEthnicity/filter-ethnicity.entity';
 import { FilterBulletList } from '../filterBulletLists/filter-bullet-list.entity';
+import { FilterEthnicity } from '../filterEthnicity/filter-ethnicity.entity';
 import { FilterGroup } from '../filterGroups/filter-group.entity';
 import { FilterOtherFeature } from '../filterOtherFeatures/filter-other-feature.entity';
 import { FilterAge } from '../filtersAge/filter-age.entity';

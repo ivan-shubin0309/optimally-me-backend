@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BulletListTypes } from 'apps/common/src/resources/filterBulletLists/bullet-list-types';
+import { BulletListCategories, BulletListTypes } from '../../../../common/src/resources/filterBulletLists/bullet-list-types';
 import { BaseDto } from '../../../../common/src/base/base.dto';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
 import { FilterBulletList } from './filter-bullet-list.entity';
@@ -11,6 +11,7 @@ export class FilterBulletListDto extends BaseDto<FilterBulletList> {
         this.filterId = entity.filterId;
         this.type = entity.type;
         this.content = entity.content;
+        this.category = entity.category;
         this.studyLinks = entity.studyLinks && entity.studyLinks.length
             ? entity.studyLinks.map(studyLink => new StudyLinkDto(studyLink))
             : undefined;
@@ -24,6 +25,9 @@ export class FilterBulletListDto extends BaseDto<FilterBulletList> {
 
     @ApiProperty({ type: () => String, required: true })
     content: string;
+
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(BulletListCategories) })
+    category: number;
 
     @ApiProperty({ type: () => [StudyLinkDto], required: false })
     studyLinks: StudyLinkDto[];

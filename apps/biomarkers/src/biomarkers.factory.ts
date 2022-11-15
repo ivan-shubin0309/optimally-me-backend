@@ -22,6 +22,7 @@ import { FilterSummary } from './models/filterSummaries/filter-summary.entity';
 import { CreateFilterBulletListDto } from './models/filterBulletLists/create-filter-bullet-list.dto';
 import { FilterBulletList } from './models/filterBulletLists/filter-bullet-list.entity';
 import { StudyLink } from './models/filterBulletLists/study-link.entity';
+import { BulletListCategories } from 'apps/common/src/resources/filterBulletLists/bullet-list-types';
 
 @Injectable()
 export class BiomarkersFactory {
@@ -113,7 +114,11 @@ export class BiomarkersFactory {
         }
 
         if (filter.whatAreTheRisks && filter.whatAreTheRisks.bulletList) {
-            promises.push(this.attachBulletListToFilter(filter.whatAreTheRisks.bulletList, createdFilter.id, transaction));
+            promises.push(this.attachBulletListToFilter(filter.whatAreTheRisks.bulletList, createdFilter.id, BulletListCategories.risks, transaction));
+        }
+
+        if (filter.whatAreTheCauses && filter.whatAreTheCauses.bulletList) {
+            promises.push(this.attachBulletListToFilter(filter.whatAreTheCauses.bulletList, createdFilter.id, BulletListCategories.causes, transaction));
         }
 
         await Promise.all(promises);
@@ -182,8 +187,8 @@ export class BiomarkersFactory {
         await this.filterSummaryModel.create(filterSummaryToCreate, { transaction });
     }
 
-    async attachBulletListToFilter(bulletList: CreateFilterBulletListDto[], filterId: number, transaction?: Transaction): Promise<void> {
-        const createdBulletList = await this.filterBulletListModel.bulkCreate(bulletList.map(bullet => Object.assign({ filterId }, bullet) as any), { transaction });
+    async attachBulletListToFilter(bulletList: CreateFilterBulletListDto[], filterId: number, category: BulletListCategories, transaction?: Transaction): Promise<void> {
+        const createdBulletList = await this.filterBulletListModel.bulkCreate(bulletList.map(bullet => Object.assign({ filterId, category }, bullet) as any), { transaction });
         const studyLinksToCreate = [];
 
         bulletList.forEach((bullet, index) => {
