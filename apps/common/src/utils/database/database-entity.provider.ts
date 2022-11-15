@@ -24,6 +24,7 @@ import { UserWefitterStressSummary } from '../../../../wefitter/src/models/wefit
 import { FilterGroup } from '../../../../biomarkers/src/models/filterGroups/filter-group.entity';
 import { FilterSummary } from '../../../../biomarkers/src/models/filterSummaries/filter-summary.entity';
 import { FilterBulletList } from '../../../../biomarkers/src/models/filterBulletLists/filter-bullet-list.entity';
+import { StudyLink } from '../../../../biomarkers/src/models/filterBulletLists/study-link.entity';
 
 export const entities = [
     User,
@@ -52,4 +53,5 @@ export const entities = [
     FilterGroup,
     FilterSummary,
     FilterBulletList,
+    StudyLink,
 ];

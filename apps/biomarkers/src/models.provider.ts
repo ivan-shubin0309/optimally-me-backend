@@ -17,6 +17,7 @@ import { FilterRecommendation } from './models/recommendations/filter-recommenda
 import { RecommendationFile } from './models/recommendations/recommendation-file.entity';
 import { Recommendation } from './models/recommendations/recommendation.entity';
 import { Unit } from './models/units/unit.entity';
+import { StudyLink } from './models/filterBulletLists/study-link.entity';
 
 export const modelProviders = [
     {
@@ -94,6 +95,10 @@ export const modelProviders = [
     {
         provide: 'FILTER_BULLET_LIST_MODEL',
         useValue: FilterBulletList
+    },
+    {
+        provide: 'STUDY_LINK_MODEL',
+        useValue: StudyLink
     }
 ];
 

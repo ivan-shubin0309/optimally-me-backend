@@ -15,6 +15,7 @@ import { User } from '../../users/src/models';
 import { UserResult } from './models/user-result.entity';
 import { FilterSummary } from '../../biomarkers/src/models/filterSummaries/filter-summary.entity';
 import { FilterBulletList } from '../../biomarkers/src/models/filterBulletLists/filter-bullet-list.entity';
+import { StudyLink } from '../../biomarkers/src/models/filterBulletLists/study-link.entity';
 
 export const modelProviders = [
     {
@@ -84,5 +85,9 @@ export const modelProviders = [
     {
         provide: 'FILTER_BULLET_LIST_MODEL',
         useValue: FilterBulletList
+    },
+    {
+        provide: 'STUDY_LINK_MODEL',
+        useValue: StudyLink
     }
 ];
