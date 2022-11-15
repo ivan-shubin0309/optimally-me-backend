@@ -7,4 +7,6 @@ export const FilterValidationRules = {
     rangeMinValue: 0,
     summaryMaxLength: 10000,
     whatAreTheRisksMaxLength: 10000,
+    bulletListMaxLength: 15,
+    bulletListContentMaxLength: 200,
 };
