@@ -4,13 +4,15 @@ import { ConfigService } from '../config/config.service';
 
 export const jwtModuleInstance = JwtModule.registerAsync({
   useFactory: (configService: ConfigService) => ({
-    secret: configService.get('JWT_SECRET'),
+    publicKey: configService.get('JWT_PUBLIC_KEY'),
+    privateKey: configService.get('JWT_SECRET'),
     signOptions: {
       expiresIn: Math.ceil(
         DateTime
           .fromMillis(parseInt(configService.get('JWT_EXPIRES_IN')))
           .toSeconds()
       ),
+      algorithm: 'RS256'
     }
   }),
   inject: [ConfigService]
