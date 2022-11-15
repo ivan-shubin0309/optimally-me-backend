@@ -51,9 +51,6 @@ export class SessionsService {
         const accessToken = this.jwtService.sign(
             {
                 data: tokenParams
-            },
-            {
-                secret: this.configService.get('JWT_SECRET')
             }
         );
 
@@ -67,9 +64,6 @@ export class SessionsService {
                     tokenType: 'refresh',
                     accessToken: accessToken
                 }
-            },
-            {
-                secret: this.configService.get('JWT_SECRET')
             }
         );
 
@@ -119,7 +113,7 @@ export class SessionsService {
 
     verifyToken(token: string, error = 'TOKEN_EXPIRED'): any {
         try {
-            return this.jwtService.verify(token, this.configService.get('JWT_SECRET'));
+            return this.jwtService.verify(token);
         } catch (e) {
             throw new UnprocessableEntityException({
                 message: this.translator.translate(error),
