@@ -1,12 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { FilterValidationRules } from '../../../../common/src/resources/filters/validation-rules';
-import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import { Transform, TransformFnParams } from 'class-transformer';
 
 export class CreateFilterSummaryDto {
     @ApiProperty({ type: () => String, required: false })
     @IsString()
     @MaxLength(FilterValidationRules.summaryMaxLength)
+    @MinLength(FilterValidationRules.summaryMinLength)
     @Transform(({ value }: TransformFnParams) => value?.trim())
     @IsOptional()
     readonly criticalLow: string;
@@ -14,6 +15,7 @@ export class CreateFilterSummaryDto {
     @ApiProperty({ type: () => String, required: false })
     @IsString()
     @MaxLength(FilterValidationRules.summaryMaxLength)
+    @MinLength(FilterValidationRules.summaryMinLength)
     @Transform(({ value }: TransformFnParams) => value?.trim())
     @IsOptional()
     readonly low: string;
@@ -21,6 +23,7 @@ export class CreateFilterSummaryDto {
     @ApiProperty({ type: () => String, required: false })
     @IsString()
     @MaxLength(FilterValidationRules.summaryMaxLength)
+    @MinLength(FilterValidationRules.summaryMinLength)
     @Transform(({ value }: TransformFnParams) => value?.trim())
     @IsOptional()
     readonly subOptimal: string;
@@ -28,6 +31,7 @@ export class CreateFilterSummaryDto {
     @ApiProperty({ type: () => String, required: false })
     @IsString()
     @MaxLength(FilterValidationRules.summaryMaxLength)
+    @MinLength(FilterValidationRules.summaryMinLength)
     @Transform(({ value }: TransformFnParams) => value?.trim())
     @IsOptional()
     readonly optimal: string;
@@ -35,6 +39,7 @@ export class CreateFilterSummaryDto {
     @ApiProperty({ type: () => String, required: false })
     @IsString()
     @MaxLength(FilterValidationRules.summaryMaxLength)
+    @MinLength(FilterValidationRules.summaryMinLength)
     @Transform(({ value }: TransformFnParams) => value?.trim())
     @IsOptional()
     readonly supraOptimal: string;
@@ -42,6 +47,7 @@ export class CreateFilterSummaryDto {
     @ApiProperty({ type: () => String, required: false })
     @IsString()
     @MaxLength(FilterValidationRules.summaryMaxLength)
+    @MinLength(FilterValidationRules.summaryMinLength)
     @Transform(({ value }: TransformFnParams) => value?.trim())
     @IsOptional()
     readonly high: string;
@@ -49,6 +55,7 @@ export class CreateFilterSummaryDto {
     @ApiProperty({ type: () => String, required: false })
     @IsString()
     @MaxLength(FilterValidationRules.summaryMaxLength)
+    @MinLength(FilterValidationRules.summaryMinLength)
     @Transform(({ value }: TransformFnParams) => value?.trim())
     @IsOptional()
     readonly criticalHigh: string;

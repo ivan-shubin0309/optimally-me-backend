@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { MaxFieldValueRepeatCount } from '../../../../common/src/resources/common/max-field-value-repeat-count.decorator';
 import { FilterValidationRules } from '../../../../common/src/resources/filters/validation-rules';
-import { Transform, TransformFnParams } from 'class-transformer';
-import { IsArray, IsOptional, IsString, MaxLength } from 'class-validator';
+import { Transform, TransformFnParams, Type } from 'class-transformer';
+import { IsArray, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
 import { CreateFilterBulletListDto } from '../filterBulletLists/create-filter-bullet-list.dto';
 import { CheckAllowedTypes } from '../../../../common/src/resources/filterBulletLists/check-allowed-types.decorator';
 
@@ -26,5 +26,7 @@ export class CreateWhatAreTheRisksDto {
     @MaxFieldValueRepeatCount('type', FilterValidationRules.bulletListMaxLength)
     @CheckAllowedTypes({ each: true })
     @IsOptional()
+    @ValidateNested()
+    @Type(() => CreateFilterBulletListDto)
     readonly bulletList: CreateFilterBulletListDto[];
 }
