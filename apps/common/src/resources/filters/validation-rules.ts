@@ -6,6 +6,7 @@ export const FilterValidationRules = {
     rangeMaxCharactersCount: 10,
     rangeMinValue: 0,
     summaryMaxLength: 10000,
+    summaryMinLength: 1,
     whatAreTheRisksMaxLength: 10000,
     whatAreTheCausesMaxLength: 10000,
     bulletListMaxLength: 15,
