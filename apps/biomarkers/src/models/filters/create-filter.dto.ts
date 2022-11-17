@@ -4,7 +4,7 @@ import { EthnicityTypes } from '../../../../common/src/resources/filters/ethnici
 import { OtherFeatureTypes } from '../../../../common/src/resources/filters/other-feature-types';
 import { SexTypes } from '../../../../common/src/resources/filters/sex-types';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
-import { ArrayMaxSize, ArrayMinSize, IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, Min, ValidateNested } from 'class-validator';
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min, ValidateNested } from 'class-validator';
 import { CreateInteractionDto } from '../interactions/create-interaction.dto';
 import { AddRecommendationDto } from '../recommendations/add-recommendation.dto';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
@@ -28,6 +28,8 @@ export class CreateFilterDto {
     @ApiProperty({ type: () => String, required: false })
     @IsNotEmpty()
     @Transform(({ value }: TransformFnParams) => value?.trim())
+    @IsString()
+    @MaxLength(FilterValidationRules.summaryMaxLength)
     readonly summary: string;
 
     @ApiProperty({ type: () => CreateFilterSummaryDto, required: false })
