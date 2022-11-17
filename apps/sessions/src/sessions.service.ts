@@ -43,6 +43,7 @@ export class SessionsService {
         const tokenParams: SessionDataDto = {
             userId,
             role: sessionOptions.role,
+            email: sessionOptions.email,
             sessionId: uniqueKey
         };
 
@@ -107,6 +108,7 @@ export class SessionsService {
         await this.destroy(sessionParams.data.userId, sessionParams.data.accessToken);
         const paramsForNewSession = {
             role: sessionParams.data.role,
+            email: sessionParams.data.email,
         };
         return this.create(sessionParams.data.userId, paramsForNewSession);
     }
