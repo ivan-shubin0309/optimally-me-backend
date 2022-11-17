@@ -19,6 +19,7 @@ import { CheckAllowedSummaries } from '../../../../common/src/resources/filterSu
 import { CreateWhatAreTheRisksDto } from './create-what-are-the-risks.dto';
 import { CheckIsAllowedTextField } from '../../../../common/src/resources/filters/check-allowed-risks.decorator';
 import { CreateWhatAreTheCausesDto } from './create-what-are-the-causes.dto';
+import { CheckAllowedGroupRecommendationTypes } from '../../../../common/src/resources/filterGroups/check-allowed-group-recommendation-types.decorator';
 
 export class CreateFilterDto {
     @ApiProperty({ type: () => String, required: true })
@@ -189,6 +190,7 @@ export class CreateFilterDto {
     @IsArray()
     @IsOptional()
     @ArrayDistinct('type')
+    @CheckAllowedGroupRecommendationTypes({ each: true })
     @ValidateNested()
     @Type(() => CreateFilterGroupDto)
     readonly groups: CreateFilterGroupDto[];
