@@ -42,6 +42,9 @@ export class CreateFilterDto {
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
+    @IsString()
+    @MaxLength(FilterValidationRules.whatIsItMaxLength)
     readonly whatIsIt: string;
 
     @ApiProperty({ type: () => CreateWhatAreTheCausesDto, required: false })
@@ -60,6 +63,9 @@ export class CreateFilterDto {
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
+    @Transform(({ value }: TransformFnParams) => value?.trim())
+    @IsString()
+    @MaxLength(FilterValidationRules.whatCanYouDoMaxLength)
     readonly whatCanYouDo: string;
 
     @ApiProperty({ type: () => Number, required: false })
