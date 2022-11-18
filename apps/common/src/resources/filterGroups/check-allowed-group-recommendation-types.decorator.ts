@@ -1,5 +1,4 @@
 import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
-import { EnumHelper } from '../../utils/helpers/enum.helper';
 import { RecommendationTypes } from '../recommendations/recommendation-types';
 import { CreateFilterGroupDto } from '../../../../biomarkers/src/models/filterGroups/create-filter-group.dto';
 
@@ -14,27 +13,30 @@ export function CheckAllowedGroupRecommendationTypes(validationOptions?: Validat
             validator: {
                 validate(group: CreateFilterGroupDto, args: ValidationArguments): boolean {
                     const filter = args.object;
-                    const recommendationTypesCollection = EnumHelper.toCollection(RecommendationTypes);
 
-                    const isValid = !!recommendationTypesCollection.find((recommendationType) => {
-                        if (!group.recommendationTypes.includes(recommendationType.value)) {
+                    const isValidArray = group.recommendationTypes.map((recommendationType) => {
+                        if (!RecommendationTypes[recommendationType]) {
                             return false;
                         }
 
                         if (
-                            recommendationType.value === RecommendationTypes.criticalLow
-                            || recommendationType.value === RecommendationTypes.criticalHigh
+                            recommendationType === RecommendationTypes.criticalLow
+                            || recommendationType === RecommendationTypes.criticalHigh
                         ) {
-                            return typeof filter[recommendationType.key] === 'number';
+                            console.log(typeof filter[RecommendationTypes[recommendationType]]);
+                            console.log(filter[RecommendationTypes[recommendationType]]);
+                            return typeof filter[RecommendationTypes[recommendationType]] === 'number';
                         } else {
-                            return typeof filter[`${recommendationType.key}Min`] === 'number' && typeof filter[`${recommendationType.key}Max`] === 'number';
+                            console.log(typeof filter[`${RecommendationTypes[recommendationType]}Min`]);
+                            console.log(filter[`${RecommendationTypes[recommendationType]}Min`]);
+                            return typeof filter[`${RecommendationTypes[recommendationType]}Min`] === 'number' && typeof filter[`${RecommendationTypes[recommendationType]}Max`] === 'number';
                         }
                     });
 
-                    return isValid;
+                    return isValidArray.filter(isValid => isValid).length === isValidArray.length;
                 },
                 defaultMessage(args: ValidationArguments): string {
-                    return `${args.property} both coresponding ranges must exist to add recommendation`;
+                    return `${args.property} both coresponding ranges must exist to group recommendation`;
                 },
             },
         });
