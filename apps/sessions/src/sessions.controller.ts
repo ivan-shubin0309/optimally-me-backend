@@ -57,6 +57,7 @@ export class SessionsController {
 
     const session = await this.sessionsService.create(user.id, {
       role: user.role,
+      email: user.email,
       lifeTime: body.lifeTime
     });
 

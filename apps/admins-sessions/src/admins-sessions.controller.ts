@@ -55,7 +55,7 @@ export class AdminsSessionsController {
       });
     }
 
-    const sessionOptions = { role: user.role, lifeTime: body.lifeTime };
+    const sessionOptions = { role: user.role, lifeTime: body.lifeTime, email: user.email };
     const sessionResult =  await this.sessionsService.create( user.id, sessionOptions);
 
     return new UserSessionDto(sessionResult, user);
