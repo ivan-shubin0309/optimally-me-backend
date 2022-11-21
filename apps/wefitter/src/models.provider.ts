@@ -1,3 +1,4 @@
+import { UserAdditionalField } from '../../users/src/models/user-additional-field.entity';
 import { User } from '../../users/src/models/user.entity';
 import { UserWefitter } from './models/user-wefitter.entity';
 import { UserWefitterDailySummary } from './models/wefitter-daily-summary.entity';
@@ -29,5 +30,9 @@ export const modelProviders = [
     {
         provide: 'USER_WEFITTER_STRESS_SUMMARY_MODEL',
         useValue: UserWefitterStressSummary,
+    },
+    {
+        provide: 'USER_ADDITIONAL_FIELD_MODEL',
+        useValue: UserAdditionalField,
     }
 ];

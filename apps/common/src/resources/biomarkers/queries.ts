@@ -4,9 +4,9 @@ import { EthnicityTypes } from '../filters/ethnicity-types';
 import { OtherFeatureTypes } from '../filters/other-feature-types';
 import { SexTypes } from '../filters/sex-types';
 
-interface IQueryOptions {
+export interface ISpecificFiltersQueryOptions {
     sexType: SexTypes,
-    ageType: AgeTypes,
+    ageTypes: AgeTypes[],
     ethnicityType: EthnicityTypes,
     otherFeature: OtherFeatureTypes
 }
@@ -18,26 +18,26 @@ const priorityOrder = [
     '`filterEthnicities`'
 ];
 
-export function filterSqlQuery(biomarkerIds: number[], options: IQueryOptions): string {
+const countSubQuery = (biomarkerIds: number[]): string => `
+    SELECT 
+        \`filters\`.\`id\` as \`id\`,
+        COUNT(\`filterSexes\`.\`id\`) as \`sexesCount\`,
+        COUNT(\`filterAges\`.\`id\`) as \`agesCount\`,
+        COUNT(\`filterEthnicities\`.\`id\`) as \`ethnicitiesCount\`,
+        COUNT(\`filterOtherFeatures\`.\`id\`) as \`otherFeaturesCount\`
+    FROM \`filters\`
+    LEFT JOIN \`filterSexes\` ON \`filters\`.\`id\`=\`filterSexes\`.\`filterId\`
+    LEFT JOIN \`filterAges\` ON \`filters\`.\`id\`=\`filterAges\`.\`filterId\`
+    LEFT JOIN \`filterEthnicities\` ON \`filters\`.\`id\`=\`filterEthnicities\`.\`filterId\`
+    LEFT JOIN \`filterOtherFeatures\` ON \`filters\`.\`id\`=\`filterOtherFeatures\`.\`filterId\`
+    WHERE biomarkerId IN (${biomarkerIds.join(', ')})
+    GROUP BY \`filters\`.\`id\`
+`;
+
+export function getSpecificFiltersQuery(biomarkerIds: number[], options: ISpecificFiltersQueryOptions): string {
     const otherFeaturesJoinWithAnd = `
         LEFT JOIN \`filterOtherFeatures\` ON \`filters\`.\`id\`=\`filterOtherFeatures\`.\`filterId\` 
             AND \`filterOtherFeatures\`.\`otherFeature\` ${options.otherFeature ? `= ${options.otherFeature}` : 'IS NULL'}
-    `;
-
-    const countSubQuery = `
-        SELECT 
-            \`filters\`.\`id\` as \`id\`,
-            COUNT(\`filterSexes\`.\`id\`) as \`sexesCount\`,
-            COUNT(\`filterAges\`.\`id\`) as \`agesCount\`,
-            COUNT(\`filterEthnicities\`.\`id\`) as \`ethnicitiesCount\`,
-            COUNT(\`filterOtherFeatures\`.\`id\`) as \`otherFeaturesCount\`
-        FROM \`filters\`
-        LEFT JOIN \`filterSexes\` ON \`filters\`.\`id\`=\`filterSexes\`.\`filterId\`
-        LEFT JOIN \`filterAges\` ON \`filters\`.\`id\`=\`filterAges\`.\`filterId\`
-        LEFT JOIN \`filterEthnicities\` ON \`filters\`.\`id\`=\`filterEthnicities\`.\`filterId\`
-        LEFT JOIN \`filterOtherFeatures\` ON \`filters\`.\`id\`=\`filterOtherFeatures\`.\`filterId\`
-        WHERE biomarkerId IN (${biomarkerIds.join(', ')})
-        GROUP BY \`filters\`.\`id\`
     `;
 
     const priorityQuery = priorityOrder
@@ -65,11 +65,11 @@ export function filterSqlQuery(biomarkerIds: number[], options: IQueryOptions): 
         LEFT JOIN \`filterSexes\` ON \`filters\`.\`id\`=\`filterSexes\`.\`filterId\` 
             AND \`filterSexes\`.\`sex\`=${options.sexType}
         LEFT JOIN \`filterAges\` ON \`filters\`.\`id\`=\`filterAges\`.\`filterId\`
-            AND \`filterAges\`.\`age\`=${options.ageType}
+            AND \`filterAges\`.\`age\` IN ${options.ageTypes.join(', ')}
         LEFT JOIN \`filterEthnicities\` ON \`filters\`.\`id\`=\`filterEthnicities\`.\`filterId\`
             AND \`filterEthnicities\`.\`ethnicity\`=${options.ethnicityType}
         ${otherFeaturesJoinWithAnd}
-        LEFT JOIN (${countSubQuery}) AS \`countedFilters\` ON \`filters\`.\`id\`= \`countedFilters\`.\`id\`
+        LEFT JOIN (${countSubQuery(biomarkerIds)}) AS \`countedFilters\` ON \`filters\`.\`id\`= \`countedFilters\`.\`id\`
         WHERE \`filters\`.\`biomarkerId\` IN (${biomarkerIds.join(', ')})
             AND (\`countedFilters\`.\`sexesCount\` != ${EnumHelper.toCollection(SexTypes).length} 
             OR \`countedFilters\`.\`agesCount\` != ${EnumHelper.toCollection(AgeTypes).length} 
@@ -91,3 +91,17 @@ export function filterSqlQuery(biomarkerIds: number[], options: IQueryOptions): 
         ) as \`biomarkerFilters\`
     `;
 } 
+
+export function getFiltersAllQuery(biomarkerIds: number[]): string {
+    return `
+        SELECT
+            \`filters\`.\`id\` as \`id\`
+        FROM \`filters\`
+        LEFT JOIN (${countSubQuery(biomarkerIds)}) AS \`countedFilters\` ON \`filters\`.\`id\`= \`countedFilters\`.\`id\`
+        WHERE \`filters\`.\`biomarkerId\` IN (${biomarkerIds.join(', ')})
+            AND \`countedFilters\`.\`sexesCount\` = ${EnumHelper.toCollection(SexTypes).length} 
+            AND \`countedFilters\`.\`agesCount\` = ${EnumHelper.toCollection(AgeTypes).length} 
+            AND \`countedFilters\`.\`ethnicitiesCount\` = ${EnumHelper.toCollection(EthnicityTypes).length}
+            AND \`countedFilters\`.\`otherFeaturesCount\` = ${EnumHelper.toCollection(OtherFeatureTypes).length}
+    `;
+}

@@ -18,6 +18,7 @@ import { RecommendationFile } from './models/recommendations/recommendation-file
 import { Recommendation } from './models/recommendations/recommendation.entity';
 import { Unit } from './models/units/unit.entity';
 import { StudyLink } from './models/filterBulletLists/study-link.entity';
+import { UserAdditionalField } from '../../users/src/models/user-additional-field.entity';
 
 export const modelProviders = [
     {
@@ -99,6 +100,10 @@ export const modelProviders = [
     {
         provide: 'STUDY_LINK_MODEL',
         useValue: StudyLink
+    },
+    {
+        provide: 'USER_ADDITIONAL_FIELD_MODEL',
+        useValue: UserAdditionalField,
     }
 ];
 
