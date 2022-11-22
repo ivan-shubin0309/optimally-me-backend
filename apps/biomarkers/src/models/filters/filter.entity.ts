@@ -59,9 +59,9 @@ import sequelize from 'sequelize';
     }),
     byBiomarkerId: (biomarkerId) => ({ where: { biomarkerId } }),
     byBiomarkerIdsAndCharacteristics: (biomarkerIds: number[], options: ISpecificFiltersQueryOptions) => ({
-        where: { id: sequelize.literal(getSpecificFiltersQuery(biomarkerIds, options)) }
+        where: { id: sequelize.literal(`id IN (${getSpecificFiltersQuery(biomarkerIds, options)})`) }
     }),
-    byBiomarkerIdAndAllFilter: (biomarkerIds: number[]) => ({ where: { id: sequelize.literal(getFiltersAllQuery(biomarkerIds)) } })
+    byBiomarkerIdAndAllFilter: (biomarkerIds: number[]) => ({ where: { id: sequelize.literal(`id IN (${getFiltersAllQuery(biomarkerIds)})`) } })
 }))
 @Table({
     tableName: 'filters',

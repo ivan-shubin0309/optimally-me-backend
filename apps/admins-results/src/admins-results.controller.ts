@@ -129,10 +129,13 @@ export class AdminsResultsController {
     });
 
     const userResultsToCreate = body.results.map(result => {
+      let filterId;
       if (specificUserFiltersMap[result.biomarkerId]) {
-        return Object.assign({ userId: param.id, filterId: specificUserFiltersMap[result.biomarkerId].id }, result);
+        filterId = specificUserFiltersMap[result.biomarkerId].id;
+      } else if (filtersAllMap[result.biomarkerId]) {
+        filterId = filtersAllMap[result.biomarkerId].id;
       }
-      return Object.assign({ userId: param.id, filterId: filtersAllMap[result.biomarkerId].id }, result);
+      return Object.assign({ userId: param.id, filterId }, result);
     });
 
     await this.adminsResultsService.bulkCreate(userResultsToCreate);
