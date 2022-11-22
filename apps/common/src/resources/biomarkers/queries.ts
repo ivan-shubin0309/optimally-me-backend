@@ -76,10 +76,10 @@ export function getSpecificFiltersQuery(biomarkerIds: number[], options: ISpecif
         ${otherFeaturesJoinWithAnd}
         ${countersJoinQuery(biomarkerIds)}
         WHERE \`filters\`.\`biomarkerId\` IN (${biomarkerIds.join(', ')})
-            AND \`filterSexesCount\`.\`counter\` != ${EnumHelper.toCollection(SexTypes).length} 
-            AND \`filterAgesCount\`.\`counter\` != ${EnumHelper.toCollection(AgeTypes).length} 
-            AND \`filterEthnicitiesCount\`.\`counter\` != ${EnumHelper.toCollection(EthnicityTypes).length}
-            AND \`filterOtherFeaturesCount\`.\`counter\` != ${EnumHelper.toCollection(OtherFeatureTypes).length}
+            AND (\`filterSexesCount\`.\`counter\` != ${EnumHelper.toCollection(SexTypes).length} 
+            OR \`filterAgesCount\`.\`counter\` != ${EnumHelper.toCollection(AgeTypes).length} 
+            OR \`filterEthnicitiesCount\`.\`counter\` != ${EnumHelper.toCollection(EthnicityTypes).length}
+            OR \`filterOtherFeaturesCount\`.\`counter\` != ${EnumHelper.toCollection(OtherFeatureTypes).length})
             AND ${orderValue} != 0
         ORDER BY \`orderValue\`, \`priority\` DESC
     `;
