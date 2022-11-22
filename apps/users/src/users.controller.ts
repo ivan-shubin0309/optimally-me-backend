@@ -56,7 +56,7 @@ export class UsersController {
         }
 
         await this.dbConnection.transaction(async transaction => {
-            const createdUser = await this.usersService.create(body, transaction);
+            const createdUser = await this.usersService.createWithAdditionalFields(body, transaction);
 
             await this.wefitterService.createProfile(createdUser, transaction);
         });

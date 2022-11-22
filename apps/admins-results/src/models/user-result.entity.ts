@@ -3,6 +3,7 @@ import { Table, Column, Model, Scopes, DataType, ForeignKey, BelongsTo } from 's
 import { Biomarker } from '../../../biomarkers/src/models/biomarker.entity';
 import { Op } from 'sequelize';
 import { Unit } from '../../../biomarkers/src/models/units/unit.entity';
+import { Filter } from '../../../biomarkers/src/models/filters/filter.entity';
 
 export interface IUserResult {
     readonly value: number,
@@ -75,6 +76,13 @@ export class UserResult extends Model {
         allowNull: true,
     })
     unitId: number;
+
+    @ForeignKey(() => Filter)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: true,
+    })
+    filterId: number;
 
     @BelongsTo(() => Unit)
     unit: Unit;

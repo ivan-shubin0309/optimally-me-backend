@@ -16,6 +16,7 @@ import { UserResult } from './models/user-result.entity';
 import { FilterSummary } from '../../biomarkers/src/models/filterSummaries/filter-summary.entity';
 import { FilterBulletList } from '../../biomarkers/src/models/filterBulletLists/filter-bullet-list.entity';
 import { StudyLink } from '../../biomarkers/src/models/filterBulletLists/study-link.entity';
+import { UserAdditionalField } from '../../users/src/models/user-additional-field.entity';
 
 export const modelProviders = [
     {
@@ -89,5 +90,9 @@ export const modelProviders = [
     {
         provide: 'STUDY_LINK_MODEL',
         useValue: StudyLink
+    },
+    {
+        provide: 'USER_ADDITIONAL_FIELD_MODEL',
+        useValue: UserAdditionalField,
     }
 ];

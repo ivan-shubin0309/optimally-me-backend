@@ -1,3 +1,4 @@
+import { getFiltersAllQuery, getSpecificFiltersQuery, ISpecificFiltersQueryOptions } from '../../../../common/src/resources/biomarkers/queries';
 import { Table, Column, Model, Scopes, DataType, ForeignKey, HasMany, HasOne } from 'sequelize-typescript';
 import { Biomarker } from '../biomarker.entity';
 import { FilterBulletList } from '../filterBulletLists/filter-bullet-list.entity';
@@ -9,6 +10,7 @@ import { FilterSex } from '../filtersSex/filter-sex.entity';
 import { FilterSummary } from '../filterSummaries/filter-summary.entity';
 import { Interaction } from '../interactions/interaction.entity';
 import { FilterRecommendation } from '../recommendations/filter-recommendation.entity';
+import sequelize from 'sequelize';
 
 @Scopes(() => ({
     includeAll: () => ({
@@ -56,6 +58,10 @@ import { FilterRecommendation } from '../recommendations/filter-recommendation.e
         ]
     }),
     byBiomarkerId: (biomarkerId) => ({ where: { biomarkerId } }),
+    byBiomarkerIdsAndCharacteristics: (biomarkerIds: number[], options: ISpecificFiltersQueryOptions) => ({
+        where: { id: sequelize.literal(`id IN (${getSpecificFiltersQuery(biomarkerIds, options)})`) }
+    }),
+    byBiomarkerIdAndAllFilter: (biomarkerIds: number[]) => ({ where: { id: sequelize.literal(`id IN (${getFiltersAllQuery(biomarkerIds)})`) } })
 }))
 @Table({
     tableName: 'filters',

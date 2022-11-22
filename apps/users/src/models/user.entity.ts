@@ -2,6 +2,7 @@ import { UserRoles } from '../../../common/src/resources/users';
 import { Table, Column, Model, Scopes, DataType, BeforeCreate, BeforeUpdate, HasOne } from 'sequelize-typescript';
 import { PasswordHelper } from '../../../common/src/utils/helpers/password.helper';
 import { UserWefitter } from '../../../wefitter/src/models/user-wefitter.entity';
+import { UserAdditionalField } from './user-additional-field.entity';
 
 @Scopes(() => ({
     byRoles: (role: number) => ({
@@ -19,6 +20,15 @@ import { UserWefitter } from '../../../wefitter/src/models/user-wefitter.entity'
         ]
     }),
     pagination: (query) => ({ limit: query.limit, offset: query.offset }),
+    withAdditionalField: () => ({
+        include: [
+            {
+                model: UserAdditionalField,
+                as: 'additionalField',
+                required: false,
+            }
+        ]
+    }),
 }))
 @Table({
     tableName: 'users',
@@ -65,6 +75,9 @@ export class User extends Model {
 
     @HasOne(() => UserWefitter, 'userId')
     wefitter: UserWefitter;
+
+    @HasOne(() => UserAdditionalField, 'userId')
+    additionalField: UserAdditionalField;
 
     @BeforeCreate
     static hashPasswordBeforeCreate(model) {

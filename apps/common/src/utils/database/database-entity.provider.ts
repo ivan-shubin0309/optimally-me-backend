@@ -25,6 +25,7 @@ import { FilterGroup } from '../../../../biomarkers/src/models/filterGroups/filt
 import { FilterSummary } from '../../../../biomarkers/src/models/filterSummaries/filter-summary.entity';
 import { FilterBulletList } from '../../../../biomarkers/src/models/filterBulletLists/filter-bullet-list.entity';
 import { StudyLink } from '../../../../biomarkers/src/models/filterBulletLists/study-link.entity';
+import { UserAdditionalField } from '../../../../users/src/models/user-additional-field.entity';
 
 export const entities = [
     User,
@@ -54,4 +55,5 @@ export const entities = [
     FilterSummary,
     FilterBulletList,
     StudyLink,
+    UserAdditionalField,
 ];

@@ -4,6 +4,7 @@ import { UserWefitterDailySummary } from '../../wefitter/src/models/wefitter-dai
 import { UserWefitterHeartrateSummary } from '../../wefitter/src/models/wefitter-heartrate-summary.entity';
 import { UserWefitterSleepSummary } from '../../wefitter/src/models/wefitter-sleep-summary.entity';
 import { UserWefitterStressSummary } from '../../wefitter/src/models/wefitter-stress-summary.entity';
+import { UserAdditionalField } from './models/user-additional-field.entity';
 
 export const modelProviders = [
     {
@@ -29,5 +30,9 @@ export const modelProviders = [
     {
         provide: 'USER_WEFITTER_STRESS_SUMMARY_MODEL',
         useValue: UserWefitterStressSummary,
+    },
+    {
+        provide: 'USER_ADDITIONAL_FIELD_MODEL',
+        useValue: UserAdditionalField,
     }
 ];

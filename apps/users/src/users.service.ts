@@ -1,14 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { User } from './models';
+import { CreateUserDto, User } from './models';
 import { Transaction } from 'sequelize/types';
 import { ICreateUser } from './models/create-user.interface';
 import { BaseService } from '../../common/src/base/base.service';
 import { Repository } from 'sequelize-typescript';
+import { UserAdditionalField } from './models/user-additional-field.entity';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
     constructor(
-        @Inject('USER_MODEL') protected model: Repository<User>
+        @Inject('USER_MODEL') protected model: Repository<User>,
+        @Inject('USER_ADDITIONAL_FIELD_MODEL') protected userAdditionalFieldModel: Repository<UserAdditionalField>
     ) { super(model); }
 
     getUserByEmail(email: string, scopes?: any[]): Promise<User> {
@@ -23,6 +25,16 @@ export class UsersService extends BaseService<User> {
 
     create(body: ICreateUser, transaction?: Transaction): Promise<User> {
         return this.model.create({ ...body }, { transaction });
+    }
+
+    async createWithAdditionalFields(body: CreateUserDto, transaction?: Transaction): Promise<User> {
+        const user = await this.create(body, transaction);
+
+        if (body.additionalFields) {
+            await this.userAdditionalFieldModel.create(Object.assign({ userId: user.id }, body.additionalFields) as any, { transaction });
+        }
+
+        return user;
     }
 
     getUser(userId: number, scopes?: any[], transaction?: Transaction): Promise<User> {

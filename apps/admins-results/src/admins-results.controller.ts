@@ -13,6 +13,8 @@ import { PaginationHelper } from '../../common/src/utils/helpers/pagination.help
 import { UserResultsDto } from './models/user-results.dto';
 import { CreateUserResultsDto } from './models/create-user-results.dto';
 import { UnitsService } from '../../biomarkers/src/services/units/units.service';
+import { FiltersService } from '../../biomarkers/src/services/filters/filters.service';
+import { AgeHelper } from '../../common/src/resources/filters/age.helper';
 
 @ApiBearerAuth()
 @ApiTags('admins/users/results')
@@ -24,6 +26,7 @@ export class AdminsResultsController {
     private readonly translator: TranslatorService,
     private readonly biomarkersService: BiomarkersService,
     private readonly unitsService: UnitsService,
+    private readonly filtersService: FiltersService,
   ) { }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -35,7 +38,8 @@ export class AdminsResultsController {
 
     const user = await this.usersService.getOne([
       { method: ['byId', param.id] },
-      { method: ['byRoles', UserRoles.user] }
+      { method: ['byRoles', UserRoles.user] },
+      'withAdditionalField'
     ]);
 
     if (!user) {
@@ -93,7 +97,46 @@ export class AdminsResultsController {
       });
     }
 
-    const userResultsToCreate = body.results.map(result => Object.assign({ userId: param.id }, result));
+    const biomarkerIds = body.results.map(result => result.biomarkerId);
+
+    const specificUserFiltersMap = {};
+
+    if (user.additionalField) {
+      const specificUserFilters = await this.filtersService.getList([
+        {
+          method: [
+            'byBiomarkerIdsAndCharacteristics',
+            biomarkerIds,
+            {
+              sexType: user.additionalField.sex,
+              ageTypes: AgeHelper.getAgeRanges(user.additionalField.age),
+              ethnicityType: user.additionalField.ethnicity,
+              otherFeature: user.additionalField.otherFeature
+            }
+          ]
+        }
+      ]);
+
+      specificUserFilters.forEach(filter => {
+        specificUserFiltersMap[filter.biomarkerId] = filter;
+      });
+    }
+
+    const filtersAllMap = {};
+    const filtersAll = await this.filtersService.getList([{ method: ['byBiomarkerIdAndAllFilter', biomarkerIds] }]);
+    filtersAll.forEach(filter => {
+      filtersAllMap[filter.biomarkerId] = filter;
+    });
+
+    const userResultsToCreate = body.results.map(result => {
+      let filterId;
+      if (specificUserFiltersMap[result.biomarkerId]) {
+        filterId = specificUserFiltersMap[result.biomarkerId].id;
+      } else if (filtersAllMap[result.biomarkerId]) {
+        filterId = filtersAllMap[result.biomarkerId].id;
+      }
+      return Object.assign({ userId: param.id, filterId }, result);
+    });
 
     await this.adminsResultsService.bulkCreate(userResultsToCreate);
   }
