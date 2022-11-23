@@ -49,11 +49,6 @@ import sequelize from 'sequelize';
                 model: FilterSummary,
                 as: 'resultSummary',
                 required: false
-            },
-            {
-                model: FilterBulletList,
-                as: 'bulletList',
-                required: false
             }
         ]
     }),
@@ -61,7 +56,8 @@ import sequelize from 'sequelize';
     byBiomarkerIdsAndCharacteristics: (biomarkerIds: number[], options: ISpecificFiltersQueryOptions) => ({
         where: { id: sequelize.literal(`id IN (${getSpecificFiltersQuery(biomarkerIds, options)})`) }
     }),
-    byBiomarkerIdAndAllFilter: (biomarkerIds: number[]) => ({ where: { id: sequelize.literal(`id IN (${getFiltersAllQuery(biomarkerIds)})`) } })
+    byBiomarkerIdAndAllFilter: (biomarkerIds: number[]) => ({ where: { id: sequelize.literal(`id IN (${getFiltersAllQuery(biomarkerIds)})`) } }),
+    withoutAttributes: () => ({ attributes: ['id'] })
 }))
 @Table({
     tableName: 'filters',
