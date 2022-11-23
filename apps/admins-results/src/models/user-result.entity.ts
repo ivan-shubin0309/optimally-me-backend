@@ -4,6 +4,7 @@ import { Biomarker } from '../../../biomarkers/src/models/biomarker.entity';
 import { Op } from 'sequelize';
 import { Unit } from '../../../biomarkers/src/models/units/unit.entity';
 import { Filter } from '../../../biomarkers/src/models/filters/filter.entity';
+import { RecommendationTypes } from 'apps/common/src/resources/recommendations/recommendation-types';
 
 export interface IUserResult {
     readonly value: number,
@@ -55,6 +56,12 @@ export class UserResult extends Model {
         allowNull: false,
     })
     date: string;
+
+    @Column({
+        type: DataType.TINYINT,
+        allowNull: true,
+    })
+    recommendationRange: RecommendationTypes;
 
     @ForeignKey(() => User)
     @Column({

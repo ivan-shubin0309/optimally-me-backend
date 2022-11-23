@@ -107,8 +107,7 @@ export class BiomarkersController {
   @Roles(UserRoles.superAdmin)
   @Get('categories')
   async getListCategories(@Query() query: GetListDto): Promise<CategoriesDto> {
-    const limit = parseInt(query.limit);
-    const offset = parseInt(query.offset);
+    const { limit, offset } = query;
 
     let categoriesList = [];
     const scopes: any[] = [];
@@ -128,8 +127,7 @@ export class BiomarkersController {
   @Roles(UserRoles.superAdmin)
   @Get('units')
   async getListUnits(@Query() query: GetListDto): Promise<UnitsDto> {
-    const limit = parseInt(query.limit);
-    const offset = parseInt(query.offset);
+    const { limit, offset } = query;
 
     let unitsList = [];
     const scopes: any[] = [];
@@ -149,8 +147,7 @@ export class BiomarkersController {
   @Roles(UserRoles.superAdmin)
   @Get('rules')
   async getListRules(@Query() query: GetListDto): Promise<BiomarkersDto> {
-    const limit = parseInt(query.limit);
-    const offset = parseInt(query.offset);
+    const { limit, offset } = query;
 
     let rulesList = [];
     const scopes: any[] = [

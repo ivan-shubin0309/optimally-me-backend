@@ -17,6 +17,7 @@ import { FilterSummary } from '../../biomarkers/src/models/filterSummaries/filte
 import { FilterBulletList } from '../../biomarkers/src/models/filterBulletLists/filter-bullet-list.entity';
 import { StudyLink } from '../../biomarkers/src/models/filterBulletLists/study-link.entity';
 import { UserAdditionalField } from '../../users/src/models/user-additional-field.entity';
+import { UserRecommendation } from '../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
 
 export const modelProviders = [
     {
@@ -94,5 +95,9 @@ export const modelProviders = [
     {
         provide: 'USER_ADDITIONAL_FIELD_MODEL',
         useValue: UserAdditionalField,
-    }
+    },
+    {
+        provide: 'USER_RECOMMENDATION_MODEL',
+        useValue: UserRecommendation,
+    },
 ];

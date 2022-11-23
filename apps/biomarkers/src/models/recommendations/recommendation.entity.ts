@@ -7,6 +7,9 @@ import { RecommendationFile } from './recommendation-file.entity';
 import { RecommendationImpact } from '../recommendationImpacts/recommendation-impact.entity';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
 import { CollectionDto } from '../../../../common/src/models/enum-collecction.dto';
+import { Filter } from '../filters/filter.entity';
+import { FilterRecommendation } from './filter-recommendation.entity';
+import { RecommendationTypes } from '../../../../common/src/resources/recommendations/recommendation-types';
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
@@ -45,6 +48,18 @@ import { CollectionDto } from '../../../../common/src/models/enum-collecction.dt
         ]
     }),
     byIsArchived: (isArchived: boolean) => ({ where: { isArchived } }),
+    byFilterIdAndType: (arrayOfWhere: [{ type: RecommendationTypes, filterId: number }]) => ({
+        include: [
+            {
+                model: FilterRecommendation,
+                as: 'filterRecommendations',
+                required: true,
+                where: {
+                    [Op.or]: arrayOfWhere
+                }
+            },
+        ],
+    })
 }))
 
 @Table({
@@ -103,4 +118,7 @@ export class Recommendation extends Model {
 
     @HasMany(() => RecommendationImpact)
     impacts: RecommendationImpact[];
+
+    @HasMany(() => FilterRecommendation, 'recommendationId')
+    filterRecommendations: FilterRecommendation[];
 }

@@ -24,8 +24,7 @@ export class AdminsUsersController {
   @Roles(UserRoles.superAdmin)
   @Get()
   async getUserList(@Query() query: GetListDto): Promise<UsersDto> {
-    const limit = parseInt(query.limit);
-    const offset = parseInt(query.offset);
+    const { limit, offset } = query;
 
     let userList = [];
     const scopes: any[] = [{ method: ['byRoles', UserRoles.user] }];
