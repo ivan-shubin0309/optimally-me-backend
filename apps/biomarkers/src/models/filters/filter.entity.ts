@@ -57,7 +57,6 @@ import sequelize from 'sequelize';
         where: { id: sequelize.literal(`id IN (${getSpecificFiltersQuery(biomarkerIds, options)})`) }
     }),
     byBiomarkerIdAndAllFilter: (biomarkerIds: number[]) => ({ where: { id: sequelize.literal(`id IN (${getFiltersAllQuery(biomarkerIds)})`) } }),
-    withoutAttributes: () => ({ attributes: ['id'] })
 }))
 @Table({
     tableName: 'filters',
