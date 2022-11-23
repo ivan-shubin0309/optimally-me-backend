@@ -291,6 +291,11 @@ Resources:
           Properties:
             Path: /admins/users/{id}/results
             Method: ANY
+        AdminsUsersRecommendationsApi:
+          Type: Api
+          Properties:
+            Path: /admins/users/{id}/recommendations
+            Method: ANY
 
   FilesFunction:
     Type: AWS::Serverless::Function

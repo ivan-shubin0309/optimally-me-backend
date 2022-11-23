@@ -14,8 +14,9 @@ import { AdminsResultsController } from './admins-results.controller';
 import { AdminsResultsService } from './admins-results.service';
 import { modelProviders } from './models.provider';
 import { UnitsService } from '../../biomarkers/src/services/units/units.service';
-import { BiomarkersFactory } from 'apps/biomarkers/src/biomarkers.factory';
-import { FiltersService } from 'apps/biomarkers/src/services/filters/filters.service';
+import { BiomarkersFactory } from '../../biomarkers/src/biomarkers.factory';
+import { FiltersService } from '../../biomarkers/src/services/filters/filters.service';
+import { UserRecommendationsService } from '../../biomarkers/src/services/userRecommendations/user-recommendations.service';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { FiltersService } from 'apps/biomarkers/src/services/filters/filters.ser
     SessionsService,
     UsersService,
     FiltersService,
+    UserRecommendationsService,
     JwtStrategy,
     ...guardProviders,
     sequelizeProvider(entities),

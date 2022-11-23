@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { RecommendationTypes } from '../../../common/src/resources/recommendations/recommendation-types';
+import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { UnitDto } from '../../../biomarkers/src/models/units/unit.dto';
 import { BaseDto } from '../../../common/src/base/base.dto';
 import { UserResultBiomarkerDto } from './user-result-biomarker.dto';
@@ -11,7 +13,9 @@ export class UserResultDto extends BaseDto<UserResult> {
         this.userId = data.userId;
         this.value = data.value;
         this.date = data.date;
+        this.recommendationRange = data.recommendationRange;
         this.unitId = data.unitId;
+        this.filterId = data.filterId;
         this.unit = data.unit && new UnitDto(data.unit);
         this.biomarker = data.biomarker && new UserResultBiomarkerDto(data.biomarker);
     }
@@ -28,8 +32,14 @@ export class UserResultDto extends BaseDto<UserResult> {
     @ApiProperty({ type: () => String, required: true })
     readonly date: string;
 
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(RecommendationTypes) })
+    readonly recommendationRange: number;
+
     @ApiProperty({ type: () => Number, required: true })
     readonly unitId: number;
+
+    @ApiProperty({ type: () => Number, required: false })
+    readonly filterId: number;
 
     @ApiProperty({ type: () => UnitDto, required: true })
     readonly unit: UnitDto;

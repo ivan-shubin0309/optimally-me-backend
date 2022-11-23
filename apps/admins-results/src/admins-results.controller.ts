@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Inject, NotFoundException, Param, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UsersService } from '../../users/src/users.service';
 import { EntityByIdDto } from '../../common/src/models/entity-by-id.dto';
@@ -15,6 +15,10 @@ import { CreateUserResultsDto } from './models/create-user-results.dto';
 import { UnitsService } from '../../biomarkers/src/services/units/units.service';
 import { FiltersService } from '../../biomarkers/src/services/filters/filters.service';
 import { AgeHelper } from '../../common/src/resources/filters/age.helper';
+import { FilterRangeHelper } from '../../common/src/resources/filters/filter-range.helper';
+import { Sequelize } from 'sequelize-typescript';
+import { UserRecommendationsService } from '../../biomarkers/src/services/userRecommendations/user-recommendations.service';
+import { UserRecommendationsDto } from 'apps/biomarkers/src/models/userRecommendations/user-recommendations.dto';
 
 @ApiBearerAuth()
 @ApiTags('admins/users/results')
@@ -27,6 +31,8 @@ export class AdminsResultsController {
     private readonly biomarkersService: BiomarkersService,
     private readonly unitsService: UnitsService,
     private readonly filtersService: FiltersService,
+    @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
+    private readonly userRecommendationsService: UserRecommendationsService,
   ) { }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -129,16 +135,22 @@ export class AdminsResultsController {
     });
 
     const userResultsToCreate = body.results.map(result => {
-      let filterId;
+      let filterId, recommendationRange;
       if (specificUserFiltersMap[result.biomarkerId]) {
         filterId = specificUserFiltersMap[result.biomarkerId].id;
+        recommendationRange = FilterRangeHelper.getRecommendationTypeByValue(specificUserFiltersMap[result.biomarkerId], result.value);
       } else if (filtersAllMap[result.biomarkerId]) {
         filterId = filtersAllMap[result.biomarkerId].id;
+        recommendationRange = FilterRangeHelper.getRecommendationTypeByValue(filtersAllMap[result.biomarkerId], result.value);
       }
-      return Object.assign({ userId: param.id, filterId }, result);
+      return Object.assign({ userId: param.id, filterId, recommendationRange }, result);
     });
 
-    await this.adminsResultsService.bulkCreate(userResultsToCreate);
+    await this.dbConnection.transaction(async transaction => {
+      const createdResults = await this.adminsResultsService.bulkCreate(userResultsToCreate, transaction);
+
+      await this.adminsResultsService.attachRecommendations(createdResults, user.id, transaction);
+    });
   }
 
   @ApiResponse({ type: () => UserResultsDto })
@@ -146,8 +158,7 @@ export class AdminsResultsController {
   @Roles(UserRoles.superAdmin)
   @Get('/:id/results')
   async getResultsList(@Param() param: EntityByIdDto, @Query() query: GetListDto): Promise<UserResultsDto> {
-    const limit = parseInt(query.limit);
-    const offset = parseInt(query.offset);
+    const { limit, offset } = query;
 
     let resultsList = [];
     const scopes: any[] = [{ method: ['byUserId', param.id] }];
@@ -177,5 +188,42 @@ export class AdminsResultsController {
     }
 
     return new UserResultsDto(resultsList, PaginationHelper.buildPagination({ limit, offset }, count));
+  }
+
+  @ApiResponse({ type: () => UserRecommendationsDto })
+  @ApiOperation({ summary: 'Get list of user recommendations' })
+  @Roles(UserRoles.superAdmin)
+  @Get('/:id/recommendations')
+  async getUserRecommendations(@Param() param: EntityByIdDto, @Query() query: GetListDto): Promise<UserRecommendationsDto> {
+    const { limit, offset } = query;
+
+    let userRecommendationsList = [];
+    const scopes: any[] = [{ method: ['byUserId', param.id] }];
+
+    const user = await this.usersService.getOne([
+      { method: ['byId', param.id] },
+      { method: ['byRoles', UserRoles.user] }
+    ]);
+
+    if (!user) {
+      throw new NotFoundException({
+        message: this.translator.translate('USER_NOT_FOUND'),
+        errorCode: 'USER_NOT_FOUND',
+        statusCode: HttpStatus.NOT_FOUND
+      });
+    }
+
+    const count = await this.userRecommendationsService.getCount(scopes);
+
+    if (count) {
+      scopes.push(
+        { method: ['pagination', { limit, offset }] },
+        'withUserResult',
+        'withRecommendation'
+      );
+      userRecommendationsList = await this.userRecommendationsService.getList(scopes);
+    }
+
+    return new UserRecommendationsDto(userRecommendationsList, PaginationHelper.buildPagination({ limit, offset }, count));
   }
 }
