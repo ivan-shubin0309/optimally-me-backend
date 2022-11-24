@@ -135,7 +135,7 @@ export class AdminsResultsController {
     });
 
     const userResultsToCreate = body.results.map(result => {
-      let filterId, recommendationRange;
+      let filterId = null, recommendationRange = null;
       if (specificUserFiltersMap[result.biomarkerId]) {
         filterId = specificUserFiltersMap[result.biomarkerId].id;
         recommendationRange = FilterRangeHelper.getRecommendationTypeByValue(specificUserFiltersMap[result.biomarkerId], result.value);
