@@ -24,15 +24,20 @@ export class AdminsResultsService extends BaseService<UserResult> {
 
   async attachRecommendations(userResults: UserResult[], userId: number, transaction?: Transaction): Promise<void> {
     const userRecommendationsToCreate = [];
+    const filteredUserResults = userResults.filter(userResult => userResult.filterId && userResult.recommendationRange);
+
+    if (!filteredUserResults.length) {
+      return;
+    }
 
     const recommendations = await this.recommendationModel
       .scope([
-        { method: ['byFilterIdAndType', userResults.map(userResult => ({ filterId: userResult.filterId, type: userResult.recommendationRange }))] }
+        { method: ['byFilterIdAndType', filteredUserResults.map(userResult => ({ filterId: userResult.filterId, type: userResult.recommendationRange }))] }
       ])
       .findAll({ transaction });
 
     const userResultsMap = {};
-    userResults.forEach(userResult => {
+    filteredUserResults.forEach(userResult => {
       userResultsMap[userResult.filterId] = userResult;
     });
 
