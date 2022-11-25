@@ -10,6 +10,7 @@
 .PHONY: build-AdminsUsersFunction
 .PHONY: build-AdminsResultsFunction
 .PHONY: build-FilesFunction
+.PHONY: build-UsersBiomarkersFunction
 
 
 build-RuntimeDependenciesLayer:
@@ -59,3 +60,7 @@ build-AdminsResultsFunction:
 
 build-FilesFunction:
 	$(MAKE) HANDLER=apps/files/src/main.ts ENTITY=files build-lambda-common
+
+build-UsersBiomarkersFunction:
+	$(MAKE) HANDLER=apps/users-biomarkers/src/main.ts ENTITY=users-biomarkers build-lambda-common
+	

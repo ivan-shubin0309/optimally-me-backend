@@ -1,0 +1,1 @@
+export const NUMBER_OF_LAST_USER_RESULTS = 5;

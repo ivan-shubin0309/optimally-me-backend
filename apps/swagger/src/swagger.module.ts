@@ -9,6 +9,7 @@ import { WefitterModule } from '../../wefitter/src/wefitter.module';
 import { AdminsUsersModule } from '../../admins-users/src/admins-users.module';
 import { AdminsResultsModule } from '../../admins-results/src/admins-results.module';
 import { FilesModule } from '../../files/src/files.module';
+import { UsersBiomarkersModule } from '../../users-biomarkers/src/users-biomarkers.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { FilesModule } from '../../files/src/files.module';
     AdminsUsersModule,
     AdminsResultsModule,
     FilesModule,
+    UsersBiomarkersModule,
   ]
 })
 export class SwaggerAppModule { }

@@ -3,8 +3,10 @@ import { Filter } from './filters/filter.entity';
 import { Category } from './categories/category.entity';
 import { Unit } from './units/unit.entity';
 import { AlternativeName } from './alternativeNames/alternative-name.entity';
-import { BiomarkerTypes } from 'apps/common/src/resources/biomarkers/biomarker-types';
-import { Op } from 'sequelize';
+import { BiomarkerTypes } from '../../../common/src/resources/biomarkers/biomarker-types';
+import { Op, literal, fn, col } from 'sequelize';
+import { UserResult } from '../../../admins-results/src/models/user-result.entity';
+import { getLastUserResultsForEachBiomarker } from '../../../common/src/resources/usersBiomarkers/queries';
 
 @Scopes(() => ({
     byId: (id) => ({ where: { id } }),
@@ -68,6 +70,28 @@ import { Op } from 'sequelize';
             },
         ]
     }),
+    withLastResults: (userId: number, numberOfLastResults: number, isWithAttributes = true, isRequired = false) => ({
+        include: [
+            {
+                model: UserResult,
+                as: 'userResults',
+                required: isRequired,
+                where: {
+                    id: literal(`\`userResults\`.\`id\` IN (${getLastUserResultsForEachBiomarker(userId, numberOfLastResults)})`)
+                },
+                attributes: isWithAttributes
+                    ? undefined
+                    : []
+            },
+        ]
+    }),
+    rangeCounters: () => ({
+        attributes: [
+            [literal('`userResults`.`recommendationRange`'), 'recommendationRange'],
+            [fn('COUNT', '*'), 'value']
+        ],
+        group: ['recommendationRange']
+    })
 }))
 @Table({
     tableName: 'biomarkers',
@@ -142,4 +166,9 @@ export class Biomarker extends Model {
 
     @BelongsTo(() => Biomarker, 'templateId')
     rule: Biomarker;
+
+    @HasMany(() => UserResult, 'biomarkerId')
+    userResults: UserResult[];
+
+    resultsCount?: number;
 }
