@@ -311,3 +311,17 @@ Resources:
             Path: /files
             Method: ANY
 
+  UsersBiomarkersFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/users-biomarkers/src/main.handler
+      Description: 
+      Events:
+        UsersBiomarkersApi:
+          Type: Api
+          Properties:
+            Path: /users/biomarkers
+            Method: ANY
+

@@ -116,6 +116,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/files/tsconfig.app.json"
       }
+    },
+    "users-biomarkers": {
+      "type": "application",
+      "root": "apps/users-biomarkers",
+      "entryFile": "main",
+      "sourceRoot": "apps/users-biomarkers/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/users-biomarkers/tsconfig.app.json"
+      }
     }
   }
 }
