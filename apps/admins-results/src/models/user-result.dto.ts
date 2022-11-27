@@ -14,6 +14,7 @@ export class UserResultDto extends BaseDto<UserResult> {
         this.value = data.value;
         this.date = data.date;
         this.recommendationRange = data.recommendationRange;
+        this.deviation = data.deviation;
         this.unitId = data.unitId;
         this.filterId = data.filterId;
         this.unit = data.unit && new UnitDto(data.unit);
@@ -34,6 +35,9 @@ export class UserResultDto extends BaseDto<UserResult> {
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(RecommendationTypes) })
     readonly recommendationRange: number;
+
+    @ApiProperty({ type: () => Number, required: false })
+    readonly deviation: number;
 
     @ApiProperty({ type: () => Number, required: true })
     readonly unitId: number;

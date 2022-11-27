@@ -30,18 +30,28 @@ export class UsersBiomarkersController {
 
     const scopes: any[] = [
       { method: ['byType', BiomarkerTypes.biomarker] },
+      { method: ['withCategory', true] },
     ];
 
     const count = await this.usersBiomarkersService.getCount(scopes);
 
     if (count) {
+      const scopesForOrdering = scopes.concat([
+        { method: ['withLastResults', req.user.userId, 1] },
+        { method: ['orderByDeviation'] },
+        { method: ['pagination', { limit, offset }] }
+      ]);
+
+      const orderedList = await this.usersBiomarkersService.getList(scopesForOrdering);
+      const biomarkerIds = orderedList.map(biomarker => biomarker.id);
+
       scopes.push(
         { method: ['withLastResults', req.user.userId, NUMBER_OF_LAST_USER_RESULTS] },
         'withUnit',
-        { method: ['withCategory', false] },
-        { method: ['pagination', { limit, offset }] },
-        { method: ['orderBy', [['createdAt', 'desc']]] }
+        { method: ['byId', biomarkerIds] },
+        { method: ['orderByLiteral', 'id', biomarkerIds, 'asc'] }
       );
+
       biomarkersList = await this.usersBiomarkersService.getList(scopes);
 
       rangeCounters = await this.usersBiomarkersService.getBiomarkerRangeCounters(req.user.userId);

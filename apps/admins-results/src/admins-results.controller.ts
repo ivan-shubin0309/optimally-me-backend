@@ -135,15 +135,24 @@ export class AdminsResultsController {
     });
 
     const userResultsToCreate = body.results.map(result => {
-      let filterId, recommendationRange;
+      let activeFilter, filterId, recommendationRange, deviation;
+
       if (specificUserFiltersMap[result.biomarkerId]) {
-        filterId = specificUserFiltersMap[result.biomarkerId].id;
-        recommendationRange = FilterRangeHelper.getRecommendationTypeByValue(specificUserFiltersMap[result.biomarkerId], result.value);
+        activeFilter = specificUserFiltersMap[result.biomarkerId];
       } else if (filtersAllMap[result.biomarkerId]) {
-        filterId = filtersAllMap[result.biomarkerId].id;
-        recommendationRange = FilterRangeHelper.getRecommendationTypeByValue(filtersAllMap[result.biomarkerId], result.value);
+        activeFilter = filtersAllMap[result.biomarkerId];
       }
-      return Object.assign({ userId: param.id, filterId, recommendationRange }, result);
+
+      if (activeFilter) {
+        filterId = activeFilter.id;
+        recommendationRange = FilterRangeHelper.getRecommendationTypeByValue(activeFilter, result.value);
+      }
+
+      if (recommendationRange) {
+        deviation = FilterRangeHelper.calculateDeviation(activeFilter, recommendationRange, result.value);
+      }
+
+      return Object.assign({ userId: param.id, filterId, recommendationRange, deviation }, result);
     });
 
     await this.dbConnection.transaction(async transaction => {

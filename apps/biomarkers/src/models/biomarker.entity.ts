@@ -91,7 +91,17 @@ import { getLastUserResultsForEachBiomarker } from '../../../common/src/resource
             [fn('COUNT', '*'), 'value']
         ],
         group: ['recommendationRange']
-    })
+    }),
+    orderByDeviation: () => ({
+        order: [
+            [literal('`userResults`.`deviation`'), 'desc'],
+            [literal('`category.name`'), 'asc'],
+            [literal('`Biomarker.label`'), 'asc']
+        ]
+    }),
+    orderByLiteral: (field: string, values: any[], order: string) => ({
+        order: [literal(`FIELD(${field}, ${values.join(',')}) ${order}`)]
+    }),
 }))
 @Table({
     tableName: 'biomarkers',
