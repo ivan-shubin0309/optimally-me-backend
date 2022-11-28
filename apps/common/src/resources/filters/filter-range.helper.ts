@@ -46,11 +46,13 @@ export class FilterRangeHelper {
         let deviation = baseDeviation[recommendationRange];
 
         if (recommendationRange === RecommendationTypes.criticalLow) {
-            deviation += (1 - (value / filter[`${RecommendationTypes[recommendationRange]}`])) * BASE_DEVIATION_STEP;
+            deviation += (filter[RecommendationTypes[recommendationRange]] - value) / 100;
+            return deviation;
         }
 
         if (recommendationRange === RecommendationTypes.criticalHigh) {
-            deviation += ((value / filter[`${RecommendationTypes[recommendationRange]}`]) - 1) * BASE_DEVIATION_STEP;
+            deviation += (value - filter[RecommendationTypes[recommendationRange]]) / 100;
+            return deviation;
         }
 
         if (recommendationRange > RecommendationTypes.optimal) {
@@ -62,7 +64,6 @@ export class FilterRangeHelper {
                 / (filter[`${RecommendationTypes[recommendationRange]}Max`] - filter[`${RecommendationTypes[recommendationRange]}Min`])
                 * BASE_DEVIATION_STEP;
         }
-
         return deviation;
     }
 }

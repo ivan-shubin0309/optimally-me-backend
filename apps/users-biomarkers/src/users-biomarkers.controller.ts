@@ -37,7 +37,7 @@ export class UsersBiomarkersController {
 
     if (count) {
       const scopesForOrdering = scopes.concat([
-        { method: ['withLastResults', req.user.userId, 1] },
+        { method: ['withLastResult', req.user.userId] },
         { method: ['orderByDeviation'] },
         { method: ['pagination', { limit, offset }] }
       ]);
@@ -49,7 +49,7 @@ export class UsersBiomarkersController {
         { method: ['withLastResults', req.user.userId, NUMBER_OF_LAST_USER_RESULTS] },
         'withUnit',
         { method: ['byId', biomarkerIds] },
-        { method: ['orderByLiteral', 'id', biomarkerIds, 'asc'] }
+        { method: ['orderByLiteral', '`Biomarker`.`id`', biomarkerIds] }
       );
 
       biomarkersList = await this.usersBiomarkersService.getList(scopes);
