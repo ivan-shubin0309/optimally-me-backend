@@ -6,7 +6,7 @@ import { AlternativeName } from './alternativeNames/alternative-name.entity';
 import { BiomarkerTypes } from '../../../common/src/resources/biomarkers/biomarker-types';
 import { Op, literal, fn, col } from 'sequelize';
 import { UserResult } from '../../../admins-results/src/models/user-result.entity';
-import { getLastUserResultsForEachBiomarker } from '../../../common/src/resources/usersBiomarkers/queries';
+import { getLastUserResultsForEachBiomarker, OrderValueQuery } from '../../../common/src/resources/usersBiomarkers/queries';
 
 @Scopes(() => ({
     byId: (id) => ({ where: { id } }),
@@ -105,7 +105,11 @@ import { getLastUserResultsForEachBiomarker } from '../../../common/src/resource
         group: ['recommendationRange']
     }),
     orderByDeviation: () => ({
+        attributes: {
+            include: [literal(OrderValueQuery)] as any,
+        },
         order: [
+            [literal('`orderValue`'), 'desc'],
             [literal('`lastResult`.`deviation`'), 'desc'],
             [literal('`category.name`'), 'asc'],
             [literal('`Biomarker`.`label`'), 'asc']

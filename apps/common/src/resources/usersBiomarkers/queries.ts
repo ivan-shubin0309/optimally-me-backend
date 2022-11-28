@@ -1,3 +1,5 @@
+import { RecommendationTypes } from '../recommendations/recommendation-types';
+
 export function getLastUserResultsForEachBiomarker(userId: number, numberOfLastRecords: number): string {
     return `
         SELECT
@@ -12,3 +14,15 @@ export function getLastUserResultsForEachBiomarker(userId: number, numberOfLastR
         WHERE \`orderedUserResults\`.\`orderValue\` <= ${numberOfLastRecords}
     `.replace(/\s+/ig, ' ').trim();
 }
+
+export const OrderValueQuery = `
+    IF(
+        \`lastResult\`.\`recommendationRange\` IN (${RecommendationTypes.criticalHigh}, ${RecommendationTypes.criticalLow}, ${RecommendationTypes.high}, ${RecommendationTypes.low}),
+        3,
+        IF(
+            \`lastResult\`.\`recommendationRange\` IN (${RecommendationTypes.subOptimal}, ${RecommendationTypes.supraOptimal}),
+            2,
+            IF(\`lastResult\`.\`recommendationRange\` = ${RecommendationTypes.optimal}, 1, 0)
+        )
+    ) as \`orderValue\`
+`.replace(/\s+/ig, ' ').trim();

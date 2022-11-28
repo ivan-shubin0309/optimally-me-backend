@@ -1,8 +1,6 @@
 import { Filter } from '../../../../biomarkers/src/models/filters/filter.entity';
 import { EnumHelper } from '../../utils/helpers/enum.helper';
 import { RecommendationTypes } from '../recommendations/recommendation-types';
-import { BASE_DEVIATION_STEP } from '../usersBiomarkers/constants';
-import { baseDeviation } from '../usersBiomarkers/user-biomarker-range-types';
 
 export class FilterRangeHelper {
     static getRecommendationTypeByValue(filter: Filter, value: number): RecommendationTypes {
@@ -40,30 +38,24 @@ export class FilterRangeHelper {
     }
 
     static calculateDeviation(filter: Filter, recommendationRange: RecommendationTypes, value: number): number {
+        let higherValue, lowerValue;
+
         if (recommendationRange === RecommendationTypes.optimal) {
-            return 0;
-        }
-        let deviation = baseDeviation[recommendationRange];
-
-        if (recommendationRange === RecommendationTypes.criticalLow) {
-            deviation += (filter[RecommendationTypes[recommendationRange]] - value) / 100;
-            return deviation;
-        }
-
-        if (recommendationRange === RecommendationTypes.criticalHigh) {
-            deviation += (value - filter[RecommendationTypes[recommendationRange]]) / 100;
-            return deviation;
-        }
-
-        if (recommendationRange > RecommendationTypes.optimal) {
-            deviation += (value - filter[`${RecommendationTypes[recommendationRange]}Min`])
-                / (filter[`${RecommendationTypes[recommendationRange]}Max`] - filter[`${RecommendationTypes[recommendationRange]}Min`])
-                * BASE_DEVIATION_STEP;
+            const avgOptimal = (filter.optimalMax + filter.optimalMin) / 2;
+            higherValue = avgOptimal > value
+                ? avgOptimal
+                : value;
+            lowerValue = avgOptimal < value
+                ? avgOptimal
+                : value;
+        } else if (recommendationRange > RecommendationTypes.optimal) {
+            higherValue = value;
+            lowerValue = filter.optimalMax;
         } else {
-            deviation += (filter[`${RecommendationTypes[recommendationRange]}Max`] - value)
-                / (filter[`${RecommendationTypes[recommendationRange]}Max`] - filter[`${RecommendationTypes[recommendationRange]}Min`])
-                * BASE_DEVIATION_STEP;
+            higherValue = filter.optimalMin;
+            lowerValue = value;
         }
-        return deviation;
+
+        return (higherValue - lowerValue) / higherValue * 100;
     }
 }
