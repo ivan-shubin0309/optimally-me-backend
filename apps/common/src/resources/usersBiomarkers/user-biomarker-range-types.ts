@@ -14,4 +14,5 @@ export const recommendationTypesToRangeTypes = {
     [RecommendationTypes.low]: UserBiomarkerRangeTypes.bad,
     [RecommendationTypes.subOptimal]: UserBiomarkerRangeTypes.borderline,
     [RecommendationTypes.supraOptimal]: UserBiomarkerRangeTypes.borderline,
+    [RecommendationTypes.optimal]: UserBiomarkerRangeTypes.optimal,
 };
