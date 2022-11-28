@@ -1,4 +1,4 @@
-import { Table, Column, Model, Scopes, DataType, ForeignKey, HasMany, BelongsTo } from 'sequelize-typescript';
+import { Table, Column, Model, Scopes, DataType, ForeignKey, HasMany, BelongsTo, HasOne } from 'sequelize-typescript';
 import { Filter } from './filters/filter.entity';
 import { Category } from './categories/category.entity';
 import { Unit } from './units/unit.entity';
@@ -85,13 +85,35 @@ import { getLastUserResultsForEachBiomarker } from '../../../common/src/resource
             },
         ]
     }),
+    withLastResult: (userId: number) => ({
+        include: [
+            {
+                model: UserResult,
+                as: 'lastResult',
+                required: false,
+                where: {
+                    id: literal(`\`lastResult\`.\`id\` IN (${getLastUserResultsForEachBiomarker(userId, 1)})`)
+                },
+            },
+        ]
+    }),
     rangeCounters: () => ({
         attributes: [
             [literal('`userResults`.`recommendationRange`'), 'recommendationRange'],
             [fn('COUNT', '*'), 'value']
         ],
         group: ['recommendationRange']
-    })
+    }),
+    orderByDeviation: () => ({
+        order: [
+            [literal('`lastResult`.`deviation`'), 'desc'],
+            [literal('`category.name`'), 'asc'],
+            [literal('`Biomarker`.`label`'), 'asc']
+        ]
+    }),
+    orderByLiteral: (field: string, values: any[]) => ({
+        order: [literal(`FIELD(${field}, ${values.join(',')}) ASC`), literal('`userResults`.`date` DESC')]
+    }),
 }))
 @Table({
     tableName: 'biomarkers',
@@ -169,6 +191,9 @@ export class Biomarker extends Model {
 
     @HasMany(() => UserResult, 'biomarkerId')
     userResults: UserResult[];
+
+    @HasOne(() => UserResult, 'biomarkerId')
+    lastResult: UserResult[];
 
     resultsCount?: number;
 }

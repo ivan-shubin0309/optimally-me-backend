@@ -72,6 +72,12 @@ export class UserResult extends Model {
     })
     recommendationRange: RecommendationTypes;
 
+    @Column({
+        type: DataType.FLOAT,
+        allowNull: true,
+    })
+    deviation: number;
+
     @ForeignKey(() => User)
     @Column({
         type: DataType.INTEGER,
