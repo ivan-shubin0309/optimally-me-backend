@@ -12,6 +12,7 @@ import { modelProviders } from './models.provider';
 import { UsersBiomarkersService } from './users-biomarkers.service';
 import { SessionsService } from '../../sessions/src/sessions.service';
 import { UsersService } from '../../users/src/users.service';
+import { UsersResultsService } from '../../users-results/src/users-results.service';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UsersService } from '../../users/src/users.service';
     UsersBiomarkersService,
     SessionsService,
     UsersService,
+    UsersResultsService,
     JwtStrategy,
     ...guardProviders,
     sequelizeProvider(entities),
