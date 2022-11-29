@@ -6,4 +6,7 @@ export const recommendationImpactsValidationRules = {
     qualityOfEvidenceMinValue: 1,
     strengthOfEvidenceMaxValue: 3,
     strengthOfEvidenceMinValue: 1,
+    studyLinksMaxCount: 4,
+    studyLinkMaxLength: 200,
+    studyLinkMinLength: 1,
 };
