@@ -47,30 +47,7 @@ export class RecommendationsService extends BaseService<Recommendation> {
 
         const createdImpacts = await this.recommendationImpactModel.bulkCreate(impactsToCreate, { transaction });
 
-        const studyLinksToCreate = [];
-
-        createdImpacts.forEach((impact, index) => {
-          if (body.impacts[index].lowStudyLinks && body.impacts[index].lowStudyLinks.length) {
-            body.impacts[index].lowStudyLinks.forEach(link => {
-              studyLinksToCreate.push({
-                content: link,
-                recommendationImpactId: impact.id,
-                type: ImpactStudyLinkTypes.low
-              });
-            });
-          }
-          if (body.impacts[index].highStudyLinks && body.impacts[index].highStudyLinks.length) {
-            body.impacts[index].highStudyLinks.forEach(link => {
-              studyLinksToCreate.push({
-                content: link,
-                recommendationImpactId: impact.id,
-                type: ImpactStudyLinkTypes.high
-              });
-            });
-          }
-        });
-
-        await this.impactStudyLinkModel.bulkCreate(studyLinksToCreate, { transaction });
+        await this.attachStudyLinksToImpacts(createdImpacts, body, transaction);
       }
 
       return recommendation;
@@ -114,30 +91,7 @@ export class RecommendationsService extends BaseService<Recommendation> {
 
         const createdImpacts = await this.recommendationImpactModel.bulkCreate(impactsToCreate, { transaction });
 
-        const studyLinksToCreate = [];
-
-        createdImpacts.forEach((impact, index) => {
-          if (body.impacts[index].lowStudyLinks && body.impacts[index].lowStudyLinks.length) {
-            body.impacts[index].lowStudyLinks.forEach(link => {
-              studyLinksToCreate.push({
-                content: link,
-                recommendationImpactId: impact.id,
-                type: ImpactStudyLinkTypes.low
-              });
-            });
-          }
-          if (body.impacts[index].highStudyLinks && body.impacts[index].highStudyLinks.length) {
-            body.impacts[index].highStudyLinks.forEach(link => {
-              studyLinksToCreate.push({
-                content: link,
-                recommendationImpactId: impact.id,
-                type: ImpactStudyLinkTypes.high
-              });
-            });
-          }
-        });
-
-        await this.impactStudyLinkModel.bulkCreate(studyLinksToCreate, { transaction });
+        await this.attachStudyLinksToImpacts(createdImpacts, body, transaction);
       }
     });
   }
@@ -194,5 +148,32 @@ export class RecommendationsService extends BaseService<Recommendation> {
       .destroy({ transaction });
 
     await this.filesService.markFilesAsUnused(recommendation.files.map(file => file.id), transaction);
+  }
+
+  async attachStudyLinksToImpacts(impacts: RecommendationImpact[], body: CreateRecommendationDto, transaction?: Transaction): Promise<void> {
+    const studyLinksToCreate = [];
+
+    impacts.forEach((impact, index) => {
+      if (body.impacts[index].lowStudyLinks && body.impacts[index].lowStudyLinks.length) {
+        body.impacts[index].lowStudyLinks.forEach(link => {
+          studyLinksToCreate.push({
+            content: link,
+            recommendationImpactId: impact.id,
+            type: ImpactStudyLinkTypes.low
+          });
+        });
+      }
+      if (body.impacts[index].highStudyLinks && body.impacts[index].highStudyLinks.length) {
+        body.impacts[index].highStudyLinks.forEach(link => {
+          studyLinksToCreate.push({
+            content: link,
+            recommendationImpactId: impact.id,
+            type: ImpactStudyLinkTypes.high
+          });
+        });
+      }
+    });
+
+    await this.impactStudyLinkModel.bulkCreate(studyLinksToCreate, { transaction });
   }
 }
