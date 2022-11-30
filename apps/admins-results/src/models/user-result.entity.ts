@@ -1,7 +1,7 @@
 import { User } from '../../../users/src/models';
 import { Table, Column, Model, Scopes, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { Biomarker } from '../../../biomarkers/src/models/biomarker.entity';
-import { Op, fn } from 'sequelize';
+import { Op, fn, col } from 'sequelize';
 import { Unit } from '../../../biomarkers/src/models/units/unit.entity';
 import { Filter } from '../../../biomarkers/src/models/filters/filter.entity';
 import { RecommendationTypes } from 'apps/common/src/resources/recommendations/recommendation-types';
@@ -46,6 +46,12 @@ export interface IUserResult {
             ]
         },
         group: ['biomarkerId']
+    }),
+    distinctDates: () => ({
+        attributes: [[fn('DISTINCT', col('date')), 'date']],
+    }),
+    distinctDatesCount: () => ({
+        attributes: [[fn('COUNT', fn('DISTINCT', col('date'))), 'counter']],
     })
 }))
 @Table({

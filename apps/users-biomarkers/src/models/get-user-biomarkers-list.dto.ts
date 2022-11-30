@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsInt, IsOptional, IsPositive, Max, Min } from 'class-validator';
+import { IsOnlyDate } from '../../../common/src/resources/common/is-only-date.decorator';
 
 export class GetUserBiomarkersListDto {
     @ApiProperty({ type: () => Number, required: true, default: 100 })
@@ -23,4 +24,9 @@ export class GetUserBiomarkersListDto {
     @Min(0)
     @Transform(({ value }) => Number(value))
     readonly categoryId: number;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    @IsOnlyDate()
+    readonly beforeDate: string;
 }

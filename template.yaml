@@ -324,4 +324,9 @@ Resources:
           Properties:
             Path: /users/biomarkers
             Method: ANY
+        UsersResultsDatesApi:
+          Type: Api
+          Properties:
+            Path: /users/biomarkers/result-dates
+            Method: ANY
 

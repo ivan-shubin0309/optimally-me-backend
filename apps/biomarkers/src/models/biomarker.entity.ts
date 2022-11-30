@@ -70,14 +70,14 @@ import { getLastUserResultsForEachBiomarker, OrderValueQuery } from '../../../co
             },
         ]
     }),
-    withLastResults: (userId: number, numberOfLastResults: number, isWithAttributes = true, isRequired = false) => ({
+    withLastResults: (userId: number, numberOfLastResults: number, isWithAttributes = true, isRequired = false, beforeDate?: string) => ({
         include: [
             {
                 model: UserResult,
                 as: 'userResults',
                 required: isRequired,
                 where: {
-                    id: literal(`\`userResults\`.\`id\` IN (${getLastUserResultsForEachBiomarker(userId, numberOfLastResults)})`)
+                    id: literal(`\`userResults\`.\`id\` IN (${getLastUserResultsForEachBiomarker(userId, numberOfLastResults, beforeDate)})`)
                 },
                 attributes: isWithAttributes
                     ? undefined
@@ -85,15 +85,13 @@ import { getLastUserResultsForEachBiomarker, OrderValueQuery } from '../../../co
             },
         ]
     }),
-    withLastResult: (userId: number) => ({
+    withLastResult: (userId: number, beforeDate?: string) => ({
         include: [
             {
                 model: UserResult,
                 as: 'lastResult',
                 required: false,
-                where: {
-                    id: literal(`\`lastResult\`.\`id\` IN (${getLastUserResultsForEachBiomarker(userId, 1)})`)
-                },
+                where: literal(`\`lastResult\`.\`id\` IN (${getLastUserResultsForEachBiomarker(userId, 1, beforeDate)})`),
             },
         ]
     }),
