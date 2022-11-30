@@ -25,6 +25,7 @@ import { S3Service } from '../../files/src/s3.service';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
 import { RecommendationImpactsService } from './services/recommendation-impacts/recommendation-impacts.service';
 import { CacheService } from '../../common/src/resources/cache/cache.service';
+import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { CacheService } from '../../common/src/resources/cache/cache.service';
     S3Service,
     FileHelper,
     RecommendationImpactsService,
+    AdminsResultsService,
     CacheService,
     ...guardProviders,
     sequelizeProvider(entities),

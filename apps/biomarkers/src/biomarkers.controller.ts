@@ -52,6 +52,7 @@ import { RecommendationImpactsService } from './services/recommendation-impacts/
 import { CacheService } from '../../common/src/resources/cache/cache.service';
 import { PatchRecommendationDto } from './models/recommendations/patch-recommendation.dto';
 import { SessionDataDto } from '../../sessions/src/models';
+import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
 
 const RULE_PREFIX = 'rule';
 
@@ -74,6 +75,7 @@ export class BiomarkersController {
     private readonly configService: ConfigService,
     private readonly recommendationImpactsService: RecommendationImpactsService,
     private readonly cacheService: CacheService,
+    private readonly adminsResultsService: AdminsResultsService,
   ) {}
 
   @ApiCreatedResponse({ type: () => BiomarkerDto })
@@ -174,7 +176,8 @@ export class BiomarkersController {
     const biomarker = await this.biomarkersService.getOne([
       { method: ['byId', param.id] },
       { method: ['byType', BiomarkerTypes.rule] },
-      { method: ['byIsDeleted', false] }
+      { method: ['byIsDeleted', false] },
+      'withFilters'
     ]);
 
     if (!biomarker) {
@@ -188,6 +191,9 @@ export class BiomarkersController {
     await this.cacheService.del(RULE_PREFIX, param.id);
 
     await this.dbConnection.transaction(async transaction => {
+      if (biomarker.filters && biomarker.filters.length) {
+        await this.adminsResultsService.dettachFilters(biomarker.filters.map(filter => filter.id), transaction)
+      }
       await Promise.all([
         this.alternativeNamesService.removeByBiomarkerId(biomarker.id, transaction),
         this.filtersService.removeByBiomarkerId(biomarker.id, transaction)
