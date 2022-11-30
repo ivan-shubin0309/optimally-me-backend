@@ -96,7 +96,7 @@ export class BiomarkersFactory {
             }
         }
 
-        return this.create(Object.assign({ type: BiomarkerTypes.biomarker, templateId }, body), transaction);
+        return this.create(Object.assign({ type: BiomarkerTypes.biomarker, templateId, sex }, body), transaction);
     }
 
     async createRule(body: CreateBiomarkerDto, transaction?: Transaction): Promise<Biomarker> {
