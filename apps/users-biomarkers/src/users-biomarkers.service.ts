@@ -13,12 +13,14 @@ export class UsersBiomarkersService extends BaseService<Biomarker> {
         @Inject('USER_RESULT_MODEL') protected userResultModel: Repository<UserResult>,
     ) { super(model); }
 
-    async getBiomarkerRangeCounters(userId: number): Promise<UserBiomarkerCounterDto> {
+    async getBiomarkerRangeCounters(userId: number, additionalScopes = []): Promise<UserBiomarkerCounterDto> {
+        const scopes: any[] = [
+            { method: ['withLastResults', userId, 1, false, true] },
+            'rangeCounters'
+        ];
+
         const results = await this.model
-            .scope([
-                { method: ['withLastResults', userId, 1, false, true] },
-                'rangeCounters'
-            ])
+            .scope(scopes.concat(additionalScopes))
             .findAll();
 
         const resultMap = {};
