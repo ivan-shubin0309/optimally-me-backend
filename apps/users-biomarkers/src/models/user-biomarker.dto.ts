@@ -4,6 +4,8 @@ import { UnitDto } from '../../../biomarkers/src/models/units/unit.dto';
 import { UserResultDto } from '../../../admins-results/src/models/user-result.dto';
 import { Biomarker } from '../../../biomarkers/src/models/biomarker.entity';
 import { BaseDto } from '../../../common/src/base/base.dto';
+import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
+import { BiomarkerSexTypes } from '../../../common/src/resources/biomarkers/biomarker-sex-types';
 
 export class UserBiomarkerDto extends BaseDto<Biomarker> {
     constructor(entity: Biomarker) {
@@ -14,6 +16,7 @@ export class UserBiomarkerDto extends BaseDto<Biomarker> {
         this.shortName = entity.shortName;
         this.categoryId = entity.categoryId;
         this.unitId = entity.unitId;
+        this.sex = entity.sex;
         this.resultsCount = entity.resultsCount;
         this.userResults = entity.userResults && entity.userResults.length
             ? entity.userResults.map(userResult => new UserResultDto(userResult))
@@ -40,6 +43,9 @@ export class UserBiomarkerDto extends BaseDto<Biomarker> {
 
     @ApiProperty({ type: () => Number, required: true })
     readonly unitId: number;
+
+    @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(BiomarkerSexTypes) })
+    readonly sex: number;
 
     @ApiProperty({ type: () => Number, required: false })
     readonly resultsCount: number;
