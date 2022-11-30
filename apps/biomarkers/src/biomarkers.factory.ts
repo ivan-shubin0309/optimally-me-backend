@@ -22,7 +22,9 @@ import { FilterSummary } from './models/filterSummaries/filter-summary.entity';
 import { CreateFilterBulletListDto } from './models/filterBulletLists/create-filter-bullet-list.dto';
 import { FilterBulletList } from './models/filterBulletLists/filter-bullet-list.entity';
 import { StudyLink } from './models/filterBulletLists/study-link.entity';
-import { BulletListCategories } from 'apps/common/src/resources/filterBulletLists/bullet-list-types';
+import { BulletListCategories } from '../../common/src/resources/filterBulletLists/bullet-list-types';
+import { BiomarkerSexTypes } from '../../common/src/resources/biomarkers/biomarker-sex-types';
+import { SexTypes } from '../../common/src/resources/filters/sex-types';
 
 @Injectable()
 export class BiomarkersFactory {
@@ -62,12 +64,36 @@ export class BiomarkersFactory {
     }
 
     async createBiomarker(body: CreateBiomarkerDto, transaction?: Transaction): Promise<Biomarker> {
-        let templateId;
+        let templateId, sex;
         if (body.ruleName) {
             const rule = await this.createRule(body, transaction);
             templateId = rule.id;
         } else {
             templateId = body.ruleId;
+        }
+
+        if (body.filters && body.filters.length) {
+            let isMale = false, isFemale = false;
+            for (let i = 0; i < body.filters.length; i++) {
+                body.filters[i].sexes.forEach(sexType => {
+                    if (!isMale && sexType === SexTypes.male) {
+                        isMale = true;
+                    }
+                    if (!isFemale && sexType === SexTypes.female) {
+                        isFemale = true;
+                    }
+                });
+                if (isMale && isFemale) {
+                    break;
+                }
+            }
+            if (isMale && isFemale) {
+                sex = BiomarkerSexTypes.all;
+            } else if (isMale) {
+                sex = BiomarkerSexTypes.male;
+            } else if (isFemale) {
+                sex = BiomarkerSexTypes.female;
+            }
         }
 
         return this.create(Object.assign({ type: BiomarkerTypes.biomarker, templateId }, body), transaction);

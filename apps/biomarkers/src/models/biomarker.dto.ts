@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BiomarkerSexTypes } from '../../../common/src/resources/biomarkers/biomarker-sex-types';
 import { BaseDto } from '../../../common/src/base/base.dto';
 import { BiomarkerTypes } from '../../../common/src/resources/biomarkers/biomarker-types';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
@@ -19,6 +20,7 @@ export class BiomarkerDto extends BaseDto<Biomarker> {
         this.categoryId = entity.categoryId;
         this.unitId = entity.unitId;
         this.isDeleted = entity.isDeleted;
+        this.sex = entity.sex;
         this.alternativeNames = entity.alternativeNames && entity.alternativeNames.length
             ? entity.alternativeNames.map(alternativeName => new AlternativeNameDto(alternativeName))
             : undefined;
@@ -58,6 +60,9 @@ export class BiomarkerDto extends BaseDto<Biomarker> {
 
     @ApiProperty({ type: () => Boolean, required: true })
     isDeleted: boolean;
+
+    @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(BiomarkerSexTypes) })
+    sex: number;
 
     @ApiProperty({ type: () => [AlternativeNameDto], required: false })
     alternativeNames: AlternativeNameDto[];

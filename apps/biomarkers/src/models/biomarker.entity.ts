@@ -4,9 +4,10 @@ import { Category } from './categories/category.entity';
 import { Unit } from './units/unit.entity';
 import { AlternativeName } from './alternativeNames/alternative-name.entity';
 import { BiomarkerTypes } from '../../../common/src/resources/biomarkers/biomarker-types';
-import { Op, literal, fn, col } from 'sequelize';
+import { Op, literal, fn } from 'sequelize';
 import { UserResult } from '../../../admins-results/src/models/user-result.entity';
 import { getLastUserResultsForEachBiomarker, OrderValueQuery } from '../../../common/src/resources/usersBiomarkers/queries';
+import { BiomarkerSexTypes } from '../../../common/src/resources/biomarkers/biomarker-sex-types';
 
 @Scopes(() => ({
     byId: (id) => ({ where: { id } }),
@@ -177,6 +178,12 @@ export class Biomarker extends Model {
         defaultValue: false
     })
     isDeleted: boolean;
+
+    @Column({
+        type: DataType.TINYINT,
+        allowNull: true,
+    })
+    sex: BiomarkerSexTypes;
 
     @HasMany(() => AlternativeName)
     alternativeNames: AlternativeName[];
