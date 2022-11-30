@@ -232,7 +232,7 @@ export class BiomarkersController {
       scopes.push(
         { method: ['pagination', { limit, offset }] },
         'withFiles',
-        'withImpacts'
+        { method: ['withImpacts', ['withBiomarker', 'withStudyLinks']] }
       );
       recommendationsList = await this.recommendationsService.getList(scopes);
     }
@@ -465,7 +465,7 @@ export class BiomarkersController {
     let recommendation = await this.recommendationsService.getOne([
       { method: ['byId', params.id] },
       'withFiles',
-      'withImpacts'
+      { method: ['withImpacts', ['withBiomarker', 'withStudyLinks']] }
     ]);
 
     if (!recommendation) {
@@ -489,7 +489,7 @@ export class BiomarkersController {
     const recommendation = await this.recommendationsService.getOne([
       { method: ['byId', params.id] },
       'withFiles',
-      'withImpacts'
+      { method: ['withImpacts', ['withBiomarker', 'withStudyLinks']] }
     ]);
 
     if (!recommendation) {
@@ -511,7 +511,7 @@ export class BiomarkersController {
     let recommendation = await this.recommendationsService.getOne([
       { method: ['byId', params.id] },
       'withFiles',
-      'withImpacts'
+      { method: ['withImpacts', ['withBiomarker', 'withStudyLinks']] }
     ]);
 
     if (!recommendation) {
@@ -567,7 +567,7 @@ export class BiomarkersController {
     const recommendation = await this.recommendationsService.getOne([
       { method: ['byId', params.id] },
       'withFiles',
-      'withImpacts'
+      { method: ['withImpacts', ['withBiomarker', 'withStudyLinks']] }
     ]);
 
     if (!recommendation) {
@@ -589,7 +589,7 @@ export class BiomarkersController {
     const recommendation = await this.recommendationsService.getOne([
       { method: ['byId', params.id] },
       'withFiles',
-      'withImpacts'
+      { method: ['withImpacts', ['withBiomarker', 'withStudyLinks']] }
     ]);
 
     if (!recommendation) {

@@ -13,6 +13,8 @@ import { FilesService } from '../../../../files/src/files.service';
 import { SessionDataDto } from '../../../../sessions/src/models';
 import { RecommendationImpactDto } from '../../models/recommendationImpacts/recommendation-impact.dto';
 import { FileTypes } from '../../../../common/src/resources/files/file-types';
+import { ImpactStudyLink } from '../../models/recommendationImpacts/impact-study-link.entity';
+import { ImpactStudyLinkTypes } from 'apps/common/src/resources/recommendation-impacts/impact-study-link-types';
 
 @Injectable()
 export class RecommendationsService extends BaseService<Recommendation> {
@@ -21,6 +23,7 @@ export class RecommendationsService extends BaseService<Recommendation> {
     @Inject('RECOMMENDATION_FILE_MODEL') readonly recommendationFileModel: Repository<RecommendationFile>,
     @Inject('RECOMMENDATION_IMPACT_MODEL') readonly recommendationImpactModel: Repository<RecommendationImpact>,
     @Inject('SEQUELIZE') readonly dbConnection: Sequelize,
+    @Inject('IMPACT_STUDY_LINK_MODEL') readonly impactStudyLinkModel: Repository<ImpactStudyLink>,
     readonly filesService: FilesService,
   ) { super(model); }
 
@@ -42,7 +45,9 @@ export class RecommendationsService extends BaseService<Recommendation> {
       if (body.impacts && body.impacts.length) {
         const impactsToCreate: any[] = body.impacts.map(impact => Object.assign({ recommendationId: recommendation.id }, impact));
 
-        await this.recommendationImpactModel.bulkCreate(impactsToCreate, { transaction });
+        const createdImpacts = await this.recommendationImpactModel.bulkCreate(impactsToCreate, { transaction });
+
+        await this.attachStudyLinksToImpacts(createdImpacts, body, transaction);
       }
 
       return recommendation;
@@ -51,7 +56,7 @@ export class RecommendationsService extends BaseService<Recommendation> {
     return this.getOne([
       { method: ['byId', createdRecommendation.id] },
       'withFiles',
-      'withImpacts'
+      { method: ['withImpacts', ['withBiomarker', 'withStudyLinks']] }
     ]);
   }
 
@@ -84,7 +89,9 @@ export class RecommendationsService extends BaseService<Recommendation> {
       if (body.impacts && body.impacts.length) {
         const impactsToCreate: any[] = body.impacts.map(impact => Object.assign({ recommendationId: recommendation.id }, impact));
 
-        await this.recommendationImpactModel.bulkCreate(impactsToCreate, { transaction });
+        const createdImpacts = await this.recommendationImpactModel.bulkCreate(impactsToCreate, { transaction });
+
+        await this.attachStudyLinksToImpacts(createdImpacts, body, transaction);
       }
     });
   }
@@ -141,5 +148,32 @@ export class RecommendationsService extends BaseService<Recommendation> {
       .destroy({ transaction });
 
     await this.filesService.markFilesAsUnused(recommendation.files.map(file => file.id), transaction);
+  }
+
+  async attachStudyLinksToImpacts(impacts: RecommendationImpact[], body: CreateRecommendationDto, transaction?: Transaction): Promise<void> {
+    const studyLinksToCreate = [];
+
+    impacts.forEach((impact, index) => {
+      if (body.impacts[index].lowStudyLinks && body.impacts[index].lowStudyLinks.length) {
+        body.impacts[index].lowStudyLinks.forEach(link => {
+          studyLinksToCreate.push({
+            content: link,
+            recommendationImpactId: impact.id,
+            type: ImpactStudyLinkTypes.low
+          });
+        });
+      }
+      if (body.impacts[index].highStudyLinks && body.impacts[index].highStudyLinks.length) {
+        body.impacts[index].highStudyLinks.forEach(link => {
+          studyLinksToCreate.push({
+            content: link,
+            recommendationImpactId: impact.id,
+            type: ImpactStudyLinkTypes.high
+          });
+        });
+      }
+    });
+
+    await this.impactStudyLinkModel.bulkCreate(studyLinksToCreate, { transaction });
   }
 }

@@ -38,10 +38,10 @@ import { RecommendationTypes } from '../../../../common/src/resources/recommenda
             },
         ]
     }),
-    withImpacts: () => ({
+    withImpacts: (additionalScopes?: any[]) => ({
         include: [
             {
-                model: RecommendationImpact.scope('withBiomarker'),
+                model: RecommendationImpact.scope(additionalScopes),
                 as: 'impacts',
                 required: false,
             },

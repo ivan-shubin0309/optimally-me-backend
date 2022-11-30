@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { recommendationImpactsValidationRules } from '../../../../common/src/resources/recommendation-impacts/recommendation-impacts-validation-rules';
-import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, Max, MaxLength, Min } from 'class-validator';
+import { ArrayMaxSize, IsArray, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
 
 export class CreateRecommendationImpactDto {
     @ApiProperty({ type: () => Number, required: true })
@@ -69,4 +69,22 @@ export class CreateRecommendationImpactDto {
     @Min(recommendationImpactsValidationRules.strengthOfEvidenceMinValue)
     @Max(recommendationImpactsValidationRules.strengthOfEvidenceMaxValue)
     readonly strengthOfEvidenceLow: number;
+
+    @ApiProperty({ type: () => [String], required: false })
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    @ArrayMaxSize(recommendationImpactsValidationRules.studyLinksMaxCount)
+    @MaxLength(recommendationImpactsValidationRules.studyLinkMaxLength, { each: true })
+    @MinLength(recommendationImpactsValidationRules.studyLinkMinLength, { each: true })
+    readonly highStudyLinks: string[];
+
+    @ApiProperty({ type: () => [String], required: false })
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    @ArrayMaxSize(recommendationImpactsValidationRules.studyLinksMaxCount)
+    @MaxLength(recommendationImpactsValidationRules.studyLinkMaxLength, { each: true })
+    @MinLength(recommendationImpactsValidationRules.studyLinkMinLength, { each: true })
+    readonly lowStudyLinks: string[];
 }

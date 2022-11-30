@@ -19,6 +19,7 @@ import { Recommendation } from './models/recommendations/recommendation.entity';
 import { Unit } from './models/units/unit.entity';
 import { StudyLink } from './models/filterBulletLists/study-link.entity';
 import { UserAdditionalField } from '../../users/src/models/user-additional-field.entity';
+import { ImpactStudyLink } from './models/recommendationImpacts/impact-study-link.entity';
 
 export const modelProviders = [
     {
@@ -104,6 +105,10 @@ export const modelProviders = [
     {
         provide: 'USER_ADDITIONAL_FIELD_MODEL',
         useValue: UserAdditionalField,
+    },
+    {
+        provide: 'IMPACT_STUDY_LINK_MODEL',
+        useValue: ImpactStudyLink,
     }
 ];
 

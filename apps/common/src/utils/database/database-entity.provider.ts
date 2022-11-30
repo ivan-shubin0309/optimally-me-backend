@@ -27,6 +27,7 @@ import { FilterBulletList } from '../../../../biomarkers/src/models/filterBullet
 import { StudyLink } from '../../../../biomarkers/src/models/filterBulletLists/study-link.entity';
 import { UserAdditionalField } from '../../../../users/src/models/user-additional-field.entity';
 import { UserRecommendation } from '../../../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
+import { ImpactStudyLink } from '../../../../biomarkers/src/models/recommendationImpacts/impact-study-link.entity';
 
 export const entities = [
     User,
@@ -58,4 +59,5 @@ export const entities = [
     StudyLink,
     UserAdditionalField,
     UserRecommendation,
+    ImpactStudyLink,
 ];
