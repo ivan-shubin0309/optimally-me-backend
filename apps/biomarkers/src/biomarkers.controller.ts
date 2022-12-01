@@ -175,8 +175,7 @@ export class BiomarkersController {
     const biomarker = await this.biomarkersService.getOne([
       { method: ['byId', param.id] },
       { method: ['byType', BiomarkerTypes.rule] },
-      { method: ['byIsDeleted', false] },
-      'withFilters'
+      { method: ['byIsDeleted', false] }
     ]);
 
     if (!biomarker) {
@@ -258,7 +257,8 @@ export class BiomarkersController {
     let biomarker = await this.biomarkersService.getOne(
       [
         { method: ['byId', param.id] },
-        { method: ['byType', BiomarkerTypes.biomarker] }
+        { method: ['byType', BiomarkerTypes.biomarker] },
+        'withFilters'
       ],
       null,
       { filters: { isIncludeAll: true } }
