@@ -12,6 +12,8 @@ import { GetUserBiomarkersListDto } from './models/get-user-biomarkers-list.dto'
 import { GetListDto } from '../../common/src/models/get-list.dto';
 import { UsersResultsService } from '../../users-results/src/users-results.service';
 import { DatesListDto } from './models/dates-list.dto';
+import { UsersService } from '../../users/src/users.service';
+import { BiomarkerSexTypes } from 'apps/common/src/resources/biomarkers/biomarker-sex-types';
 
 @ApiBearerAuth()
 @ApiTags('users/biomarkers')
@@ -21,6 +23,7 @@ export class UsersBiomarkersController {
   constructor(
     private readonly usersBiomarkersService: UsersBiomarkersService,
     private readonly userResultsService: UsersResultsService,
+    private readonly usersService: UsersService,
   ) { }
 
   @ApiResponse({ type: () => UserBiomarkersDto })
@@ -34,6 +37,16 @@ export class UsersBiomarkersController {
     const scopes: any[] = [
       { method: ['byType', BiomarkerTypes.biomarker] },
     ];
+
+    const user = await this.usersService.getOne([
+      { method: ['byId', req.user.userId] },
+      { method: ['byRoles', UserRoles.user] },
+      'withAdditionalField'
+    ]);
+
+    if (user.additionalField) {
+      scopes.push({ method: ['bySex', [BiomarkerSexTypes.all, user.additionalField.sex]] });
+    }
 
     if (query.categoryId) {
       scopes.push({ method: ['byCategoryId', query.categoryId] });

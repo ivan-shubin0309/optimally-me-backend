@@ -117,6 +117,7 @@ import { BiomarkerSexTypes } from '../../../common/src/resources/biomarkers/biom
     orderByLiteral: (field: string, values: any[]) => ({
         order: [literal(`FIELD(${field}, ${values.join(',')}) ASC`), literal('`userResults`.`date` DESC')]
     }),
+    bySex: (sex: BiomarkerSexTypes) => ({ where: { sex } }),
 }))
 @Table({
     tableName: 'biomarkers',
