@@ -52,7 +52,8 @@ export interface IUserResult {
     }),
     distinctDatesCount: () => ({
         attributes: [[fn('COUNT', fn('DISTINCT', col('date'))), 'counter']],
-    })
+    }),
+    byFilterId: (userId) => ({ where: { userId } }),
 }))
 @Table({
     tableName: 'userResults',
