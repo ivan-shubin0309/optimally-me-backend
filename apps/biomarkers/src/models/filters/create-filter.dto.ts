@@ -104,14 +104,14 @@ export class CreateFilterDto {
     readonly subOptimalMax: number = null;
 
     @ApiProperty({ type: () => Number, required: false })
-    @IsOptional()
+    @IsNotEmpty()
     @IsNumber()
     @Min(FilterValidationRules.rangeMinValue)
     @NumberMaxCharacters(FilterValidationRules.rangeMaxCharactersCount)
     readonly optimalMin: number = null;
 
     @ApiProperty({ type: () => Number, required: false })
-    @IsOptional()
+    @IsNotEmpty()
     @IsNumber()
     @Min(FilterValidationRules.rangeMinValue)
     @NumberMaxCharacters(FilterValidationRules.rangeMaxCharactersCount)
