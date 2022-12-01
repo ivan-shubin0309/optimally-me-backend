@@ -75,7 +75,6 @@ export class BiomarkersController {
     private readonly configService: ConfigService,
     private readonly recommendationImpactsService: RecommendationImpactsService,
     private readonly cacheService: CacheService,
-    private readonly adminsResultsService: AdminsResultsService,
   ) {}
 
   @ApiCreatedResponse({ type: () => BiomarkerDto })
@@ -191,9 +190,6 @@ export class BiomarkersController {
     await this.cacheService.del(RULE_PREFIX, param.id);
 
     await this.dbConnection.transaction(async transaction => {
-      if (biomarker.filters && biomarker.filters.length) {
-        await this.adminsResultsService.dettachFilters(biomarker.filters.map(filter => filter.id), transaction)
-      }
       await Promise.all([
         this.alternativeNamesService.removeByBiomarkerId(biomarker.id, transaction),
         this.filtersService.removeByBiomarkerId(biomarker.id, transaction)

@@ -1,3 +1,4 @@
+import { BiomarkerSexTypes } from '../../../common/src/resources/biomarkers/biomarker-sex-types';
 import { CreateBiomarkerDto } from './create-biomarker.dto';
 
 export class UpdateBiomarkerDto {
@@ -16,4 +17,5 @@ export class UpdateBiomarkerDto {
     templateId: number;
     label: string;
     shortName: string;
+    sex: BiomarkerSexTypes;
 }
