@@ -14,6 +14,8 @@ import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-
 import { Transaction } from 'sequelize/types';
 import { FiltersService } from './services/filters/filters.service';
 import { UpdateBiomarkerDto } from './models/update-biomarker.dto';
+import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
+import { BiomarkerHelper } from '../../common/src/resources/biomarkers/biomarker-helper';
 
 interface IBiomarkerGetOneOptions {
     readonly filters?: { isIncludeAll: boolean }
@@ -31,6 +33,7 @@ export class BiomarkersService extends BaseService<Biomarker> {
         @Inject('UNIT_MODEL') readonly unitModel: Repository<Unit>,
         @Inject('CATEGORY_MODEL') readonly categoryModel: Repository<Category>,
         @Inject('RECOMMENDATION_MODEL') readonly recommendationModel: Repository<Recommendation>,
+        private readonly adminsResultsService: AdminsResultsService,
         private readonly filtersService: FiltersService,
     ) { super(model); }
 
@@ -57,6 +60,12 @@ export class BiomarkersService extends BaseService<Biomarker> {
             const scopes: any[] = [{ method: ['byBiomarkerId', biomarker.id] }];
 
             const biomarkerUpdateBody = new UpdateBiomarkerDto(body);
+
+            biomarkerUpdateBody.sex = BiomarkerHelper.getBiomarkerSex(body);
+
+            if (biomarker.filters && biomarker.filters.length) {
+                await this.adminsResultsService.dettachFilters(biomarker.filters.map(filter => filter.id), transaction);
+            }
 
             await Promise.all([
                 this.alternativeNameModel.scope(scopes).destroy({ transaction }),
