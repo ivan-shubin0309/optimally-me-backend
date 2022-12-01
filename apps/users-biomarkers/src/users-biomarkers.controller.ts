@@ -52,7 +52,7 @@ export class UsersBiomarkersController {
       const orderedList = await this.usersBiomarkersService.getList(scopesForOrdering);
       const biomarkerIds = orderedList.map(biomarker => biomarker.get('id'));
 
-      rangeCounters = await this.usersBiomarkersService.getBiomarkerRangeCounters(req.user.userId, scopes);
+      rangeCounters = await this.usersBiomarkersService.getBiomarkerRangeCounters(req.user.userId, query.beforeDate, scopes);
 
       scopes.push(
         { method: ['withLastResults', req.user.userId, NUMBER_OF_LAST_USER_RESULTS, true, false, query.beforeDate] },

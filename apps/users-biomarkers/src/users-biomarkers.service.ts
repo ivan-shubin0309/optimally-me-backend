@@ -13,9 +13,9 @@ export class UsersBiomarkersService extends BaseService<Biomarker> {
         @Inject('USER_RESULT_MODEL') protected userResultModel: Repository<UserResult>,
     ) { super(model); }
 
-    async getBiomarkerRangeCounters(userId: number, additionalScopes = []): Promise<UserBiomarkerCounterDto> {
+    async getBiomarkerRangeCounters(userId: number, beforeDate: string, additionalScopes = []): Promise<UserBiomarkerCounterDto> {
         const scopes: any[] = [
-            { method: ['withLastResults', userId, 1, false, true] },
+            { method: ['withLastResults', userId, 1, false, true, beforeDate] },
             'rangeCounters'
         ];
 
