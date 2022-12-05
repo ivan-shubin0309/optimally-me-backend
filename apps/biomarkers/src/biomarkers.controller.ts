@@ -125,7 +125,7 @@ export class BiomarkersController {
 
   @ApiCreatedResponse({ type: () => UnitsDto })
   @ApiOperation({ summary: 'Get list units' })
-  @Roles(UserRoles.superAdmin)
+  @Roles(UserRoles.superAdmin, UserRoles.admin, UserRoles.user)
   @Get('units')
   async getListUnits(@Query() query: GetListDto): Promise<UnitsDto> {
     const { limit, offset } = query;
