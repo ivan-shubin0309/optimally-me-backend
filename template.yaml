@@ -86,6 +86,11 @@ Resources:
           Properties:
             Path: /sessions
             Method: ANY
+        ShopifyApi:
+          Type: Api
+          Properties:
+            Path: /sessions/shopify
+            Method: GET
 
   UsersFunction:
     Type: AWS::Serverless::Function
