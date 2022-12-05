@@ -44,4 +44,10 @@ export class UserAdditionalField extends Model {
         allowNull: true
     })
     otherFeature: OtherFeatureTypes;
+
+    @Column({
+        type: DataType.DATEONLY,
+        allowNull: true
+    })
+    dateOfBirth: string;
 }
