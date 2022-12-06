@@ -11,6 +11,7 @@
 .PHONY: build-AdminsResultsFunction
 .PHONY: build-FilesFunction
 .PHONY: build-UsersBiomarkersFunction
+.PHONY: build-ShopifyFunction
 
 
 build-RuntimeDependenciesLayer:
@@ -63,4 +64,7 @@ build-FilesFunction:
 
 build-UsersBiomarkersFunction:
 	$(MAKE) HANDLER=apps/users-biomarkers/src/main.ts ENTITY=users-biomarkers build-lambda-common
+	
+build-ShopifyFunction:
+	$(MAKE) HANDLER=apps/shopify/src/main.ts ENTITY=shopify build-lambda-common
 	
