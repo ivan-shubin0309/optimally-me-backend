@@ -33,9 +33,6 @@ export class ShopifyService {
       .update(rawBody)
       .digest('base64');
 
-    console.log(hash);
-    console.log(hmac);
-
     return hash === hmac;
   }
 
