@@ -18,6 +18,12 @@ import { UserDto, CreateUserDto } from './models';
 import { UserRoles } from '../../common/src/resources/users';
 import { TranslatorService } from 'nestjs-translator';
 import { Sequelize } from 'sequelize-typescript';
+import { VerificationsService } from '../../verifications/src/verifications.service';
+import { MailerService } from '../../common/src/resources/mailer/mailer.service';
+import { TokenTypes } from '../../common/src/resources/verificationTokens/token-types';
+import { EMAIL_TOKEN_EXPIRE } from '../../common/src/resources/verificationTokens/constants';
+import { ConfigService } from '../../common/src/utils/config/config.service';
+import { NotRequiredEmailVerification } from '../../common/src/resources/common/not-required-email-verification.decorator';
 
 @ApiTags('users')
 @Controller('users')
@@ -27,15 +33,23 @@ export class UsersController {
         private readonly wefitterService: WefitterService,
         private readonly translator: TranslatorService,
         @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
+        private readonly verificationsService: VerificationsService,
+        private readonly mailerService: MailerService,
+        private readonly configService: ConfigService,
     ) {}
 
     @Roles(UserRoles.user)
+    @NotRequiredEmailVerification()
     @ApiBearerAuth()
     @ApiResponse({ type: () => UserDto })
     @ApiOperation({ summary: 'Get current user\'s profile' })
     @Get('me')
     async getMyProfile(@Request() req): Promise<UserDto> {
-        const user = await this.usersService.getUser(req.user.userId);
+        const user = await this.usersService.getOne([
+            { method: ['byId', req.user.userId] },
+            { method: ['byRoles', UserRoles.user] },
+            'withAdditionalField'
+        ]);
 
         return new UserDto(user);
     }
@@ -45,6 +59,8 @@ export class UsersController {
     @ApiOperation({ summary: 'Register user' })
     @Post('signup')
     async create(@Body() body: CreateUserDto): Promise<object> {
+        let createdUser;
+
         const user = await this.usersService.getUserByEmail(body.email);
 
         if (user) {
@@ -56,10 +72,16 @@ export class UsersController {
         }
 
         await this.dbConnection.transaction(async transaction => {
-            const createdUser = await this.usersService.createWithAdditionalFields(body, transaction);
+            createdUser = await this.usersService.createWithAdditionalFields(body, transaction);
 
             await this.wefitterService.createProfile(createdUser, transaction);
         });
+
+        const token = await this.verificationsService.generateToken({ userId: createdUser.id }, EMAIL_TOKEN_EXPIRE);
+        await this.verificationsService.saveToken(createdUser.id, token, TokenTypes.email, true);
+
+        await this.mailerService.sendUserVerificationEmail(createdUser, token);
+
         return {};
     }
 }

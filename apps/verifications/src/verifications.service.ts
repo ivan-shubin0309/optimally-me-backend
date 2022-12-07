@@ -5,8 +5,11 @@ import { Sequelize, Repository } from 'sequelize-typescript';
 import { TokenTypes } from '../../common/src/resources/verificationTokens/token-types';
 import { VerificationToken } from './models/verification-token.entity';
 import { TranslatorService } from 'nestjs-translator';
-import { BaseService } from 'apps/common/src/base/base.service';
+import { BaseService } from '../../common/src/base/base.service';
 import { DateTime } from 'luxon';
+import { User } from '../../users/src/models';
+import { UserAdditionalField } from '../../users/src/models/user-additional-field.entity';
+import { RegistrationSteps } from 'apps/common/src/resources/users/registration-steps';
 
 @Injectable()
 export class VerificationsService extends BaseService<VerificationToken> {
@@ -14,10 +17,11 @@ export class VerificationsService extends BaseService<VerificationToken> {
     private readonly configService: ConfigService,
     @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
     @Inject('VERIFICATION_TOKEN_MODEL') protected readonly model: Repository<VerificationToken>,
+    @Inject('USER_ADDITIONAL_FIELD_MODEL') private readonly userAdditionalFieldModel: Repository<UserAdditionalField>,
     private readonly translatorService: TranslatorService,
   ) { super(model); }
 
-  generateToken(data: any, tokenLifeTime: number): string {
+  generateToken(data: any, tokenLifeTime?: number): string {
     return JWT.sign(
       { data },
       this.configService.get('JWT_SECRET'),
@@ -85,5 +89,22 @@ export class VerificationsService extends BaseService<VerificationToken> {
       });
     }
     return verificationToken;
+  }
+
+  async verifyUser(user: User, verificationToken: VerificationToken): Promise<void> {
+    const additionalFieldBody: any = { isEmailVerified: true };
+
+    if (user?.additionalField?.registrationStep === RegistrationSteps.emailVerification) {
+      additionalFieldBody.registrationStep = RegistrationSteps.profileSetup;
+    }
+
+    await this.dbConnection.transaction(async transaction => {
+      await Promise.all([
+        this.userAdditionalFieldModel
+          .scope([{ method: ['byUserId', user.id] }])
+          .update(additionalFieldBody, { transaction } as any),
+        verificationToken.update({ isUsed: true }, { transaction })
+      ]);
+    });
   }
 }

@@ -24,5 +24,7 @@
     "FILE_IS_USED": "File already in use",
     "WRONG_CONNECTION_SLUG": "Wron connection slug",
     "RULE_ALREADY_EXIST": "Rule with that name already exist",
-    "FILE_NOT_FOUND_ON_S3": "File not found on s3"
+    "FILE_NOT_FOUND_ON_S3": "File not found on s3",
+    "USER_EMAIL_VERIFICATION_TEXT": "${firstName} ${lastName} welcome to OptimallyMe.<br><br>Please follow the <a href=\"${link}\">LINK</a> to verify your email. The link can be used only once.",
+    "USER_EMAIL_VERIFICATION_SUBJECT": "Email verification"
 }

@@ -44,6 +44,7 @@ export class SessionsService {
             userId,
             role: sessionOptions.role,
             email: sessionOptions.email,
+            registrationStep: sessionOptions.registrationStep,
             sessionId: uniqueKey
         };
 
@@ -109,6 +110,7 @@ export class SessionsService {
         const paramsForNewSession = {
             role: sessionParams.data.role,
             email: sessionParams.data.email,
+            registrationStep: sessionParams.data.registrationStep
         };
         return this.create(sessionParams.data.userId, paramsForNewSession);
     }

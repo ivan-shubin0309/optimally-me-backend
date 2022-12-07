@@ -263,6 +263,11 @@ Resources:
           Properties:
             Path: /verifications/password/redirect
             Method: ANY
+        VerificationsEmailApi:
+          Type: Api
+          Properties:
+            Path: /verifications/email
+            Method: ANY
 
   AdminsUsersFunction:
     Type: AWS::Serverless::Function

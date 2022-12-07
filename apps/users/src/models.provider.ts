@@ -5,6 +5,7 @@ import { UserWefitterHeartrateSummary } from '../../wefitter/src/models/wefitter
 import { UserWefitterSleepSummary } from '../../wefitter/src/models/wefitter-sleep-summary.entity';
 import { UserWefitterStressSummary } from '../../wefitter/src/models/wefitter-stress-summary.entity';
 import { UserAdditionalField } from './models/user-additional-field.entity';
+import { VerificationToken } from '../../verifications/src/models/verification-token.entity';
 
 export const modelProviders = [
     {
@@ -34,5 +35,9 @@ export const modelProviders = [
     {
         provide: 'USER_ADDITIONAL_FIELD_MODEL',
         useValue: UserAdditionalField,
+    },
+    {
+        provide: 'VERIFICATION_TOKEN_MODEL',
+        useValue: VerificationToken
     }
 ];
