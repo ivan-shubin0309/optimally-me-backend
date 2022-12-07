@@ -47,6 +47,12 @@ export class UserAdditionalField extends Model {
     otherFeature: OtherFeatureTypes;
 
     @Column({
+        type: DataType.DATEONLY,
+        allowNull: true
+    })
+    dateOfBirth: string;
+
+    @Column({
         type: DataType.TINYINT,
         allowNull: true,
         defaultValue: RegistrationSteps.emailVerification

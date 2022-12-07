@@ -10,6 +10,7 @@ import { AdminsUsersModule } from '../../admins-users/src/admins-users.module';
 import { AdminsResultsModule } from '../../admins-results/src/admins-results.module';
 import { FilesModule } from '../../files/src/files.module';
 import { UsersBiomarkersModule } from '../../users-biomarkers/src/users-biomarkers.module';
+import { ShopifyModule } from '../../shopify/src/shopify.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UsersBiomarkersModule } from '../../users-biomarkers/src/users-biomarke
     AdminsResultsModule,
     FilesModule,
     UsersBiomarkersModule,
+    ShopifyModule,
   ]
 })
 export class SwaggerAppModule { }

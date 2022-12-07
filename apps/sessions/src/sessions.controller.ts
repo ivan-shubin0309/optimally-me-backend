@@ -122,6 +122,7 @@ export class SessionsController {
     return new UserSessionDto(session, user);
   }
 
+  @ApiBearerAuth()
   @ApiCreatedResponse({ type: () => ShopifyUrlDto })
   @ApiOperation({ summary: 'Get shopify sign in url' })
   @Roles(UserRoles.user)
