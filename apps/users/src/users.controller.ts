@@ -8,6 +8,7 @@ import {
     HttpStatus,
     BadRequestException,
     Inject,
+    Headers,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
@@ -24,6 +25,11 @@ import { TokenTypes } from '../../common/src/resources/verificationTokens/token-
 import { EMAIL_TOKEN_EXPIRE } from '../../common/src/resources/verificationTokens/constants';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import { NotRequiredEmailVerification } from '../../common/src/resources/common/not-required-email-verification.decorator';
+import { RegistrationSteps } from '../../common/src/resources/users/registration-steps';
+import { AllowedRegistrationSteps } from '../../common/src/resources/common/registration-step.decorator';
+import { UserSessionDto } from './models/user-session.dto';
+import { CreateUserAdditionalFieldDto } from './models/create-user-additional-field.dto';
+import { SessionsService } from '../../sessions/src/sessions.service';
 
 @ApiTags('users')
 @Controller('users')
@@ -36,6 +42,7 @@ export class UsersController {
         private readonly verificationsService: VerificationsService,
         private readonly mailerService: MailerService,
         private readonly configService: ConfigService,
+        private readonly sessionsService: SessionsService,
     ) {}
 
     @Roles(UserRoles.user)
@@ -83,5 +90,46 @@ export class UsersController {
         await this.mailerService.sendUserVerificationEmail(createdUser, token);
 
         return {};
+    }
+
+    @Roles(UserRoles.user)
+    @AllowedRegistrationSteps(RegistrationSteps.profileSetup)
+    @ApiBearerAuth()
+    @ApiResponse({ type: () => UserSessionDto })
+    @ApiOperation({ summary: 'Finish user registration' })
+    @Post('profile')
+    async finishRegistration(@Request() req, @Body() body: CreateUserAdditionalFieldDto, @Headers('Authorization') bearer): Promise<UserSessionDto> {
+        let user = await this.usersService.getOne([
+            { method: ['byId', req.user.userId] },
+            { method: ['byRoles', UserRoles.user] },
+            'withAdditionalField'
+        ]);
+
+        await this.dbConnection.transaction(async transaction => {
+            await user.update({ firstName: body.firstName, lastName: body.lastName }, { transaction });
+            await user.additionalField.update(
+                {
+                    registrationStep: RegistrationSteps.finished,
+                    dateOfBirth: body.dateOfBirth,
+                    sex: body.sex
+                },
+                { transaction }
+            );
+        });
+
+        user = await user.reload();
+
+        const accessToken = bearer.split(' ')[1];
+
+        await this.sessionsService.destroy(user.id, accessToken);
+
+        const session = await this.sessionsService.create(user.id, {
+            role: user.role,
+            email: user.email,
+            registrationStep: user.additionalField.registrationStep,
+            isEmailVerified: user.additionalField.isEmailVerified,
+        });
+
+        return new UserSessionDto(session, user);
     }
 }

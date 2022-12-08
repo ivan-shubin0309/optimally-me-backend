@@ -30,9 +30,7 @@ export class UsersService extends BaseService<User> {
     async createWithAdditionalFields(body: CreateUserDto, transaction?: Transaction): Promise<User> {
         const user = await this.create(body, transaction);
 
-        if (body.additionalFields) {
-            await this.userAdditionalFieldModel.create(Object.assign({ userId: user.id }, body.additionalFields) as any, { transaction });
-        }
+        await this.userAdditionalFieldModel.create({ userId: user.id }, { transaction });
 
         return user;
     }

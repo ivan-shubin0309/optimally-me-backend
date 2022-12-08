@@ -11,20 +11,21 @@ export class UserAdditionalFieldDto {
     constructor(additionalField: UserAdditionalField) {
         this.userId = additionalField.userId;
         this.sex = additionalField.sex;
-        this.age = additionalField.age;
+        this.dateOfBirth = additionalField.dateOfBirth;
         this.ethnicity = additionalField.ethnicity;
         this.otherFeature = additionalField.otherFeature;
         this.registrationStep = additionalField.registrationStep;
+        this.isEmailVerified = additionalField.isEmailVerified;
     }
 
     @ApiProperty({ type: () => Number, required: true })
     readonly userId: number;
 
-    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(SexTypes) })
+    @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(SexTypes) })
     readonly sex: number;
 
-    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(AgeTypes) })
-    readonly age: number;
+    @ApiProperty({ type: () => String, required: true })
+    readonly dateOfBirth: string;
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(EthnicityTypes) })
     readonly ethnicity: number;

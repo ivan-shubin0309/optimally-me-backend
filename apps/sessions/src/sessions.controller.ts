@@ -72,6 +72,7 @@ export class SessionsController {
       role: user.role,
       email: user.email,
       registrationStep: user?.additionalField?.registrationStep || RegistrationSteps.emailVerification,
+      isEmailVerified: !!user?.additionalField?.isEmailVerified,
       lifeTime: body.lifeTime
     });
 

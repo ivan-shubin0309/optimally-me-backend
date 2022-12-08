@@ -115,7 +115,7 @@ export class AdminsResultsController {
             biomarkerIds,
             {
               sexType: user.additionalField.sex,
-              ageTypes: AgeHelper.getAgeRanges(user.additionalField.age),
+              ageTypes: user.additionalField.dateOfBirth && AgeHelper.getAgeRanges(user.additionalField.dateOfBirth),
               ethnicityType: user.additionalField.ethnicity,
               otherFeature: user.additionalField.otherFeature
             }

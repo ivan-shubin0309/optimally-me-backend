@@ -18,6 +18,6 @@ export class EmailVerifiedGuard implements CanActivate {
         if (isNotRequired) {
             return true;
         }
-        return !!user.isEmailVerified;
+        return typeof user.isEmailVerified === 'undefined' || user.isEmailVerified;
     }
 }

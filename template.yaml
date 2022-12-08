@@ -110,6 +110,11 @@ Resources:
           Properties:
             Path: /users/signup
             Method: ANY
+        UsersProfileApi:
+          Type: Api
+          Properties:
+            Path: /users/profile
+            Method: ANY
 
 
   AdminsSessionsFunction:

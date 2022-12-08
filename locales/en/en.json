@@ -27,5 +27,8 @@
     "FILE_NOT_FOUND_ON_S3": "File not found on s3",
     "USER_EMAIL_VERIFICATION_TEXT": "${firstName} ${lastName} welcome to OptimallyMe.<br><br>Please follow the <a href=\"${link}\">LINK</a> to verify your email. The link can be used only once.",
     "USER_EMAIL_VERIFICATION_SUBJECT": "Email verification",
-    "SHOPIFY_EVENT_NOT_VERIFIED": "Shopify webhook integrity is not verified"
+    "SHOPIFY_EVENT_NOT_VERIFIED": "Shopify webhook integrity is not verified",
+    "EMAIL_ALREADY_VERIFIED": "Email already verified",
+    "EMAIL_VERIFICATION_LIMIT": "Email verification limit reached",
+    "EMAIL_VERIFICATION_LINK_EXPIRED": "Email verification link is expired"
 }

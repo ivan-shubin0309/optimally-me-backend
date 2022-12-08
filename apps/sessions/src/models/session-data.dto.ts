@@ -7,6 +7,7 @@ export class SessionDataDto {
         this.sessionId = data.sessionId;
         this.email = data.email;
         this.registrationStep = data.registrationStep;
+        this.isEmailVerified = data.isEmailVerified;
     }
 
     readonly userId: number;
@@ -14,4 +15,5 @@ export class SessionDataDto {
     readonly sessionId: string;
     readonly email: string;
     readonly registrationStep: number;
+    readonly isEmailVerified: boolean;
 }
