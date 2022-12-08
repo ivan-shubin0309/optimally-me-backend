@@ -41,7 +41,6 @@ export class UsersController {
         @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
         private readonly verificationsService: VerificationsService,
         private readonly mailerService: MailerService,
-        private readonly configService: ConfigService,
         private readonly sessionsService: SessionsService,
     ) {}
 
