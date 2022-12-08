@@ -98,6 +98,10 @@ export class VerificationsService extends BaseService<VerificationToken> {
       additionalFieldBody.registrationStep = RegistrationSteps.profileSetup;
     }
 
+    if (!user.additionalField) {
+      await this.userAdditionalFieldModel.create({ userId: user.id });
+    }
+
     await this.dbConnection.transaction(async transaction => {
       await Promise.all([
         this.userAdditionalFieldModel

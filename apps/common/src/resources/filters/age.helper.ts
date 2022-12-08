@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { EnumHelper } from '../../utils/helpers/enum.helper';
 import { AgeTypes } from './age-types';
 
@@ -18,7 +19,9 @@ const ageRangeValidators = {
 };
 
 export class AgeHelper {
-    static getAgeRanges(age: number): AgeTypes[] {
+    static getAgeRanges(dateOfBirth: string): AgeTypes[] {
+        const age = DateTime.fromFormat(dateOfBirth, 'yyyy-MM-dd').diffNow().years;
+
         return EnumHelper
             .toCollection(AgeTypes)
             .filter(ageType => ageRangeValidators[ageType.value](age))
