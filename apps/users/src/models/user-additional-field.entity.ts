@@ -4,6 +4,7 @@ import { SexTypes } from '../../../common/src/resources/filters/sex-types';
 import { AgeTypes } from '../../../common/src/resources/filters/age-types';
 import { EthnicityTypes } from '../../../common/src/resources/filters/ethnicity-types';
 import { OtherFeatureTypes } from '../../../common/src/resources/filters/other-feature-types';
+import { RegistrationSteps } from '../../../common/src/resources/users/registration-steps';
 
 @Scopes(() => ({
     byUserId: (userId: number) => ({ where: { userId } }),
@@ -50,4 +51,18 @@ export class UserAdditionalField extends Model {
         allowNull: true
     })
     dateOfBirth: string;
+
+    @Column({
+        type: DataType.TINYINT,
+        allowNull: true,
+        defaultValue: RegistrationSteps.emailVerification
+    })
+    registrationStep: RegistrationSteps;
+
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: true,
+        defaultValue: false
+    })
+    isEmailVerified: boolean;
 }

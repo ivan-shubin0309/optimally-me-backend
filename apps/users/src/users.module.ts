@@ -12,6 +12,8 @@ import { redisModuleInstance } from '../../common/src/utils/database/redis.provi
 import { translatorInstance } from '../../common/src/utils/translator/translator.provider';
 import { entities } from '../../common/src/utils/database/database-entity.provider';
 import { WefitterService } from '../../wefitter/src/wefitter.service';
+import { VerificationsService } from '../../verifications/src/verifications.service';
+import { MailerService } from '../../common/src/resources/mailer/mailer.service';
 
 @Module({
     imports: [
@@ -24,6 +26,8 @@ import { WefitterService } from '../../wefitter/src/wefitter.service';
         UsersService,
         WefitterService,
         SessionsService,
+        VerificationsService,
+        MailerService,
         JwtStrategy,
         ...guardProviders,
         sequelizeProvider(entities),

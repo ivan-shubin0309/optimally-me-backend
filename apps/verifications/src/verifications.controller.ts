@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, NotFoundException, Patch, Post, Inject, Get, Query, Response, ForbiddenException, BadRequestException } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, NotFoundException, Patch, Post, Inject, Get, Query, Response, ForbiddenException, BadRequestException, UnprocessableEntityException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MailerService } from '../../common/src/resources/mailer/mailer.service';
 import { UserRoles } from '../../common/src/resources/users';
@@ -15,7 +15,8 @@ import { ConfigService } from '../../common/src/utils/config/config.service';
 import { SessionsService } from '../../sessions/src/sessions.service';
 import { UserSessionDto } from '../../users/src/models/user-session.dto';
 import { DateTime } from 'luxon';
-import { RESTORATION_TOKEN_EXPIRE, RESTORE_PASSWORD_HOURS_LIMIT, RESTORE_PASSWORD_LIMIT } from '../../common/src/resources/verificationTokens/constants';
+import { EMAIL_VERIFICATION_HOURS_LIMIT, EMAIL_VERIFICATION_LIMIT, RESTORATION_TOKEN_EXPIRE, RESTORE_PASSWORD_HOURS_LIMIT, RESTORE_PASSWORD_LIMIT } from '../../common/src/resources/verificationTokens/constants';
+import { ResendEmailVerificationDto } from './models/resend-email-verification.dto';
 
 @ApiTags('verifications')
 @Controller('verifications')
@@ -158,5 +159,162 @@ export class VerificationsController {
     async redirectToRestorePassword(@Query() query: VerificationTokenDto, @Response() response): Promise<void> {
         response.set('Content-Type', 'text/html');
         response.send(Buffer.from(`<!DOCTYPE html><html><head><title></title><meta charset="UTF-8" /><meta http-equiv="refresh" content="3; URL=${this.configService.get('MOBILE_FRONTEND_BASE_URL')}restore-password?code=${query.token}" /></head><body></body></html>`));
+    }
+
+    @Public()
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiOperation({ summary: 'Verify user email' })
+    @Post('email')
+    async verifyEmail(@Body() body: VerificationTokenDto): Promise<void> {
+        const verificationToken = await this.verificationsService.getOne([
+            { method: ['byType', TokenTypes.email] },
+            { method: ['byToken', body.token] }
+        ]);
+
+        if (!verificationToken) {
+            throw new BadRequestException({
+                message: this.translator.translate('LINK_INVALID'),
+                errorCode: 'LINK_INVALID',
+                statusCode: HttpStatus.BAD_REQUEST
+            });
+        }
+
+        if (verificationToken.isUsed) {
+            throw new BadRequestException({
+                message: this.translator.translate('LINK_IS_USED'),
+                errorCode: 'LINK_IS_USED',
+                statusCode: HttpStatus.BAD_REQUEST
+            });
+        }
+
+        const decoded = await this.verificationsService.decodeToken(body.token, 'EMAIL_VERIFICATION_LINK_EXPIRED');
+
+        const user = await this.usersService.getOne([
+            { method: ['byId', decoded.data.userId] },
+            'withAdditionalField'
+        ]);
+
+        if (!user) {
+            throw new UnprocessableEntityException({
+                message: this.translator.translate('USER_NOT_FOUND'),
+                errorCode: 'USER_NOT_FOUND',
+                statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+            });
+        }
+
+        if (user?.additionalField?.isEmailVerified) {
+            throw new UnprocessableEntityException({
+                message: this.translator.translate('EMAIL_ALREADY_VERIFIED'),
+                errorCode: 'EMAIL_ALREADY_VERIFIED',
+                statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+            });
+        }
+
+        await this.verificationsService.verifyUser(user, verificationToken);
+    }
+
+    @Public()
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiOperation({ summary: 'Resend email verification link' })
+    @Patch('email')
+    async resendEmailVerification(@Body() body: ResendEmailVerificationDto): Promise<void> {
+        let user;
+
+        if (body.token) {
+            const verificationToken = await this.verificationsService.getOne([
+                { method: ['byType', TokenTypes.email] },
+                { method: ['byToken', body.token] }
+            ]);
+
+            if (!verificationToken) {
+                throw new BadRequestException({
+                    message: this.translator.translate('LINK_INVALID'),
+                    errorCode: 'LINK_INVALID',
+                    statusCode: HttpStatus.BAD_REQUEST
+                });
+            }
+
+            if (verificationToken.isUsed) {
+                throw new BadRequestException({
+                    message: this.translator.translate('LINK_IS_USED'),
+                    errorCode: 'LINK_IS_USED',
+                    statusCode: HttpStatus.BAD_REQUEST
+                });
+            }
+
+            user = await this.usersService.getOne([
+                { method: ['byId', verificationToken.userId] },
+                { method: ['byRoles', UserRoles.user] },
+                'withAdditionalField'
+            ]);
+
+            await verificationToken.update({ isUsed: true });
+        }
+
+        if (body.email) {
+            user = await this.usersService.getOne([
+                { method: ['byEmail', body.email] },
+                { method: ['byRoles', UserRoles.user] },
+                'withAdditionalField'
+            ]);
+        }
+
+        if (!user) {
+            throw new UnprocessableEntityException({
+                message: this.translator.translate('USER_NOT_FOUND'),
+                errorCode: 'USER_NOT_FOUND',
+                statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+            });
+        }
+
+        if (user?.additionalField?.isEmailVerified) {
+            throw new UnprocessableEntityException({
+                message: this.translator.translate('EMAIL_ALREADY_VERIFIED'),
+                errorCode: 'EMAIL_ALREADY_VERIFIED',
+                statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+            });
+        }
+
+        const restorationCount = await this.verificationsService.getCount([
+            { method: ['byType', TokenTypes.email] },
+            { method: ['byUserId', user.id] },
+            { method: ['byAfterDate', DateTime.utc().minus({ hours: EMAIL_VERIFICATION_HOURS_LIMIT }).toISO()] }
+        ]);
+
+        if (restorationCount >= EMAIL_VERIFICATION_LIMIT) {
+            throw new ForbiddenException({
+                message: this.translator.translate('EMAIL_VERIFICATION_LIMIT'),
+                errorCode: 'EMAIL_VERIFICATION_LIMIT',
+                statusCode: HttpStatus.FORBIDDEN
+            });
+        }
+
+        const token = await this.verificationsService.generateToken({ userId: user.id }, body.tokenLifeTime);
+        await this.verificationsService.saveToken(user.id, token, TokenTypes.email, false);
+
+        await this.mailerService.sendUserVerificationEmail(user, token);
+    }
+
+    @Public()
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiOperation({ summary: 'Verify email verification token' })
+    @Get('email')
+    async verifyEmailToken(@Query() query: VerificationTokenDto): Promise<void> {
+        await this.verificationsService.verifyToken(TokenTypes.email, query.token);
+
+        const decoded = await this.verificationsService.decodeToken(query.token, 'VERIFICATION_LINK_EXPIRED');
+
+        const user = await this.usersService.getOne([
+            { method: ['byId', decoded.data.userId] },
+            { method: ['byRoles', [UserRoles.user]] }
+        ]);
+
+        if (!user) {
+            throw new NotFoundException({
+                message: this.translator.translate('USER_NOT_FOUND'),
+                errorCode: 'USER_NOT_FOUND',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
     }
 }
