@@ -13,7 +13,8 @@ import { GetListDto } from '../../common/src/models/get-list.dto';
 import { UsersResultsService } from '../../users-results/src/users-results.service';
 import { DatesListDto } from './models/dates-list.dto';
 import { UsersService } from '../../users/src/users.service';
-import { BiomarkerSexTypes } from 'apps/common/src/resources/biomarkers/biomarker-sex-types';
+import { BiomarkerSexTypes } from '../../common/src/resources/biomarkers/biomarker-sex-types';
+import { userBiomarkerOrderScope } from '../../common/src/resources/usersBiomarkers/order-types';
 
 @ApiBearerAuth()
 @ApiTags('users/biomarkers')
@@ -58,9 +59,9 @@ export class UsersBiomarkersController {
       const scopesForOrdering = scopes.concat([
         { method: ['withCategory', true] },
         { method: ['withLastResult', req.user.userId, query.beforeDate] },
-        { method: ['orderByDeviation'] },
         { method: ['pagination', { limit, offset }] }
       ]);
+      scopesForOrdering.push(userBiomarkerOrderScope[query.orderBy]);
 
       const orderedList = await this.usersBiomarkersService.getList(scopesForOrdering);
       const biomarkerIds = orderedList.map(biomarker => biomarker.get('id'));
