@@ -53,6 +53,10 @@ export class UsersBiomarkersController {
       scopes.push({ method: ['byCategoryId', query.categoryId] });
     }
 
+    if (query.search) {
+      scopes.push({ method: ['searchByNames', query.search] });
+    }
+
     const count = await this.usersBiomarkersService.getCount(scopes);
 
     if (count) {
