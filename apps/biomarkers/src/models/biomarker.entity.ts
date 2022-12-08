@@ -118,6 +118,15 @@ import { BiomarkerSexTypes } from '../../../common/src/resources/biomarkers/biom
         order: [literal(`FIELD(${field}, ${values.join(',')}) ASC`), literal('`userResults`.`date` DESC')]
     }),
     bySex: (sex: BiomarkerSexTypes) => ({ where: { sex } }),
+    searchByNames: (searchString) => ({
+        where: {
+            [Op.or]: [
+                { name: { [Op.like]: `%${searchString}%` } },
+                { label: { [Op.like]: `%${searchString}%` } },
+                { shortName: { [Op.like]: `%${searchString}%` } }
+            ]
+        }
+    }),
 }))
 @Table({
     tableName: 'biomarkers',
