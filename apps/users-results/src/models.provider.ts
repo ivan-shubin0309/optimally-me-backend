@@ -6,6 +6,7 @@ import { Filter } from '../../biomarkers/src/models/filters/filter.entity';
 import { FilterRecommendation } from '../../biomarkers/src/models/recommendations/filter-recommendation.entity';
 import { FilterBulletList } from '../../biomarkers/src/models/filterBulletLists/filter-bullet-list.entity';
 import { Recommendation } from '../../biomarkers/src/models/recommendations/recommendation.entity';
+import { RecommendationReaction } from '../../biomarkers/src/models/recommendationReactions/recommendation-reaction.entity';
 
 export const modelProviders = [
     {
@@ -39,5 +40,9 @@ export const modelProviders = [
     {
         provide: 'RECOMMENDATION_MODEL',
         useValue: Recommendation
+    },
+    {
+        provide: 'RECOMMENDATION_REACTION_MODEL',
+        useValue: RecommendationReaction
     }
 ];
