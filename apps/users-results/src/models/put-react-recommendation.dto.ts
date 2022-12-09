@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { recommendationReactionValidationRules } from '../../../common/src/resources/recommendation-reactions/validation-rules';
-import { IsEnum, IsNotEmpty, IsNumber, IsString, MaxLength, MinLength, ValidateIf } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import { RecommendationReactionTypes } from '../../../common/src/resources/recommendation-reactions/reaction-types';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
+import { DescriptionRequired } from '../../../common/src/resources/recommendation-reactions/description-required.decorator';
 
 export class PutReactRecommendationDto {
     @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(RecommendationReactionTypes) })
@@ -12,8 +13,8 @@ export class PutReactRecommendationDto {
     readonly reactionType: number;
 
     @ApiProperty({ type: () => String, required: false })
-    @ValidateIf((obj) => obj.reactionType === RecommendationReactionTypes.dislike)
-    @IsNotEmpty()
+    @DescriptionRequired()
+    @IsOptional()
     @IsString()
     @MinLength(recommendationReactionValidationRules.descriptionMinLength)
     @MaxLength(recommendationReactionValidationRules.descriptionMaxLength)
