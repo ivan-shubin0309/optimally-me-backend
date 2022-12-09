@@ -359,3 +359,26 @@ Resources:
             Path: /shopify/events/customer-creation
             Method: ANY
 
+  UsersBiomarkersResultsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/users-results/src/main.handler
+      Description: 
+      Events:
+        UsersBiomarkersIdResultsApi:
+          Type: Api
+          Properties:
+            Path: /users/biomarkers/{id}/results
+            Method: ANY
+        UsersBiomarkersResultsIdFiltersApi:
+          Type: Api
+          Properties:
+            Path: /users/biomarkers/results/{id}/filters
+            Method: ANY
+        UsersBiomarkersResultsIdRecommendationsApi:
+          Type: Api
+          Properties:
+            Path: /users/biomarkers/results/{id}/recommendations
+            Method: ANY
