@@ -9,12 +9,12 @@ import { UsersBiomarkersService } from './users-biomarkers.service';
 import { NUMBER_OF_LAST_USER_RESULTS } from '../../common/src/resources/usersBiomarkers/constants';
 import { UserBiomarkersDto } from './models/user-biomarkers.dto';
 import { GetUserBiomarkersListDto } from './models/get-user-biomarkers-list.dto';
-import { GetListDto } from '../../common/src/models/get-list.dto';
 import { UsersResultsService } from '../../users-results/src/users-results.service';
 import { DatesListDto } from './models/dates-list.dto';
 import { UsersService } from '../../users/src/users.service';
 import { BiomarkerSexTypes } from '../../common/src/resources/biomarkers/biomarker-sex-types';
 import { userBiomarkerOrderScope } from '../../common/src/resources/usersBiomarkers/order-types';
+import { GetDatesListDto } from './models/get-dates-list.dto';
 
 @ApiBearerAuth()
 @ApiTags('users/biomarkers')
@@ -91,13 +91,17 @@ export class UsersBiomarkersController {
   @ApiOperation({ summary: 'Get list of user result dates' })
   @Roles(UserRoles.user)
   @Get('/result-dates')
-  async getResultDates(@Query() query: GetListDto, @Request() req: Request & { user: SessionDataDto }): Promise<DatesListDto> {
+  async getResultDates(@Query() query: GetDatesListDto, @Request() req: Request & { user: SessionDataDto }): Promise<DatesListDto> {
     const { limit, offset } = query;
     let datesList = [];
 
     const scopes: any[] = [
       { method: ['byUserId', req.user.userId] },
     ];
+
+    if (query.biomarkerId) {
+      scopes.push({ method: ['byBiomarkerId', query.biomarkerId] });
+    }
 
     const result = await this.userResultsService.getOne(scopes.concat(['distinctDatesCount']));
     const count = result ? result.get('counter') as number : 0;
