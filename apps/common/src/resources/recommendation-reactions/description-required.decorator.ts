@@ -16,11 +16,13 @@ export function DescriptionRequired(validationOptions?: ValidationOptions) {
                     if (obj.reactionType === RecommendationReactionTypes.dislike) {
                         return !!value;
                     }
-
+                    if (obj.reactionType === RecommendationReactionTypes.like) {
+                        return !value;
+                    }
                     return true;
                 },
                 defaultMessage(args: ValidationArguments): string {
-                    return `${args.property} is required`;
+                    return `${args.property} is only required when reactionType is ${RecommendationReactionTypes.dislike}`;
                 },
             },
         });
