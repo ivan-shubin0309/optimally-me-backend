@@ -14,6 +14,7 @@ import { UsersResultsService } from './users-results.service';
 import { modelProviders } from './models.provider';
 import { FiltersService } from '../../biomarkers/src/services/filters/filters.service';
 import { UserRecommendationsService } from '../../biomarkers/src/services/userRecommendations/user-recommendations.service';
+import { FileHelper } from '../../common/src/utils/helpers/file.helper';
 
 @Module({
     imports: [
@@ -30,6 +31,7 @@ import { UserRecommendationsService } from '../../biomarkers/src/services/userRe
         UserRecommendationsService,
         FiltersService,
         JwtStrategy,
+        FileHelper,
         ...guardProviders,
         sequelizeProvider(entities),
         ...modelProviders
