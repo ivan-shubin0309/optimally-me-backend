@@ -18,6 +18,7 @@ import { FilterBulletList } from '../../biomarkers/src/models/filterBulletLists/
 import { StudyLink } from '../../biomarkers/src/models/filterBulletLists/study-link.entity';
 import { UserAdditionalField } from '../../users/src/models/user-additional-field.entity';
 import { UserRecommendation } from '../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
+import { RecommendationReaction } from '../../biomarkers/src/models/recommendationReactions/recommendation-reaction.entity';
 
 export const modelProviders = [
     {
@@ -100,4 +101,8 @@ export const modelProviders = [
         provide: 'USER_RECOMMENDATION_MODEL',
         useValue: UserRecommendation,
     },
+    {
+        provide: 'RECOMMENDATION_REACTION_MODEL',
+        useValue: RecommendationReaction
+    }
 ];

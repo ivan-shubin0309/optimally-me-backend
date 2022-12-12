@@ -30,5 +30,9 @@
     "SHOPIFY_EVENT_NOT_VERIFIED": "Shopify webhook integrity is not verified",
     "EMAIL_ALREADY_VERIFIED": "Email already verified",
     "EMAIL_VERIFICATION_LIMIT": "Email verification limit reached",
-    "EMAIL_VERIFICATION_LINK_EXPIRED": "Email verification link is expired"
+    "EMAIL_VERIFICATION_LINK_EXPIRED": "Email verification link is expired",
+    "USER_RESULT_NOT_FOUND": "User result with specified id is not found",
+    "FILTER_NOT_FOUND": "Filter not found",
+    "USER_RECOMMENDATION_NOT_FOUND": "User recommendation is not found",
+    "RECOMMENDATION_REACTION_NOT_FOUND": "Reaction to specified recommendation is not found"
 }

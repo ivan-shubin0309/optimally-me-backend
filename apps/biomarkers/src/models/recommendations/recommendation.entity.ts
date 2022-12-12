@@ -1,5 +1,5 @@
 import { RecommendationCategoryTypes } from '../../../../common/src/resources/recommendations/recommendation-category-types';
-import { Table, Column, Model, DataType, Scopes, BelongsToMany, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, Scopes, BelongsToMany, HasMany, HasOne } from 'sequelize-typescript';
 import { Op } from 'sequelize';
 import { RecommendationActionTypes } from '../../../../common/src/resources/recommendations/recommendation-action-types';
 import { File } from '../../../../files/src/models/file.entity';
@@ -10,6 +10,7 @@ import { CollectionDto } from '../../../../common/src/models/enum-collecction.dt
 import { Filter } from '../filters/filter.entity';
 import { FilterRecommendation } from './filter-recommendation.entity';
 import { RecommendationTypes } from '../../../../common/src/resources/recommendations/recommendation-types';
+import { RecommendationReaction } from '../recommendationReactions/recommendation-reaction.entity';
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
@@ -57,6 +58,16 @@ import { RecommendationTypes } from '../../../../common/src/resources/recommenda
                 where: {
                     [Op.or]: arrayOfWhere
                 }
+            },
+        ],
+    }),
+    withUserReaction: (userId) => ({
+        include: [
+            {
+                model: RecommendationReaction,
+                as: 'userReaction',
+                required: false,
+                where: { userId }
             },
         ],
     })
@@ -121,4 +132,7 @@ export class Recommendation extends Model {
 
     @HasMany(() => FilterRecommendation, 'recommendationId')
     filterRecommendations: FilterRecommendation[];
+
+    @HasOne(() => RecommendationReaction, 'recommendationId')
+    userReaction: RecommendationReaction;
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus, NotFoundException, Param, Query, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Put, Query, Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserResultsDto } from '../../admins-results/src/models/user-results.dto';
 import { FilterDto } from '../../biomarkers/src/models/filters/filter.dto';
@@ -13,6 +13,8 @@ import { TranslatorService } from 'nestjs-translator';
 import { UserRecommendationsService } from '../../biomarkers/src/services/userRecommendations/user-recommendations.service';
 import { RecommendationsWithoutPaginationDto } from './models/user-recommendations-without-pagination.dto';
 import { GetUserResultsDto } from './models/get-user-results-list.dto';
+import { ReactRecommendationParamsDto } from './models/react-recommendation-params.dto';
+import { PutReactRecommendationDto } from './models/put-react-recommendation.dto';
 
 @ApiBearerAuth()
 @ApiTags('users/biomarkers/results')
@@ -112,5 +114,56 @@ export class UsersResultsController {
         const recommendations = await this.userRecommendationsService.getRecommendationList(userResult);
 
         return new RecommendationsWithoutPaginationDto(recommendations);
+    }
+
+    @ApiOperation({ summary: 'Like or dislike recommendation' })
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @Roles(UserRoles.user)
+    @Put('/results/:userResultId/recommendations/:recommendationId/reactions')
+    async reactToRecommendation(
+        @Param() params: ReactRecommendationParamsDto,
+        @Request() req: Request & { user: SessionDataDto },
+        @Body() body: PutReactRecommendationDto
+    ): Promise<void> {
+        const userRecommendation = await this.userRecommendationsService.getOne([
+            { method: ['byUserId', req.user.userId] },
+            { method: ['byUserResultId', params.userResultId] },
+            { method: ['byRecommendationId', params.recommendationId] }
+        ]);
+
+        if (!userRecommendation) {
+            throw new NotFoundException({
+                message: this.translator.translate('USER_RECOMMENDATION_NOT_FOUND'),
+                errorCode: 'USER_RECOMMENDATION_NOT_FOUND',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        await this.userRecommendationsService.reactToRecommendation(body, req.user.userId, params.recommendationId);
+    }
+
+    @ApiOperation({ summary: 'Remove reaction from recommendation' })
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @Roles(UserRoles.user)
+    @Delete('/results/:userResultId/recommendations/:recommendationId/reactions')
+    async removeReactionFromRecommendation(
+        @Param() params: ReactRecommendationParamsDto,
+        @Request() req: Request & { user: SessionDataDto }
+    ): Promise<void> {
+        const userRecommendation = await this.userRecommendationsService.getOne([
+            { method: ['byUserId', req.user.userId] },
+            { method: ['byUserResultId', params.userResultId] },
+            { method: ['byRecommendationId', params.recommendationId] }
+        ]);
+
+        if (!userRecommendation) {
+            throw new NotFoundException({
+                message: this.translator.translate('USER_RECOMMENDATION_NOT_FOUND'),
+                errorCode: 'USER_RECOMMENDATION_NOT_FOUND',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        await this.userRecommendationsService.removeReaction(req.user.userId, params.recommendationId);
     }
 }
