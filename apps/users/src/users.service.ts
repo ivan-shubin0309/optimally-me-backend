@@ -5,6 +5,7 @@ import { ICreateUser } from './models/create-user.interface';
 import { BaseService } from '../../common/src/base/base.service';
 import { Repository } from 'sequelize-typescript';
 import { UserAdditionalField } from './models/user-additional-field.entity';
+import { RegistrationSteps } from '../../common/src/resources/users/registration-steps';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
@@ -30,7 +31,7 @@ export class UsersService extends BaseService<User> {
     async createWithAdditionalFields(body: CreateUserDto, transaction?: Transaction): Promise<User> {
         const user = await this.create(body, transaction);
 
-        await this.userAdditionalFieldModel.create({ userId: user.id }, { transaction });
+        await this.userAdditionalFieldModel.create({ userId: user.id, registrationStep: RegistrationSteps.profileSetup }, { transaction });
 
         return user;
     }

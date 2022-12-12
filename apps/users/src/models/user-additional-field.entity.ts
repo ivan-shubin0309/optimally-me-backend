@@ -48,7 +48,7 @@ export class UserAdditionalField extends Model {
     @Column({
         type: DataType.TINYINT,
         allowNull: true,
-        defaultValue: RegistrationSteps.emailVerification
+        defaultValue: RegistrationSteps.profileSetup
     })
     registrationStep: RegistrationSteps;
 

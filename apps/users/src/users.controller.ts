@@ -23,12 +23,12 @@ import { VerificationsService } from '../../verifications/src/verifications.serv
 import { MailerService } from '../../common/src/resources/mailer/mailer.service';
 import { TokenTypes } from '../../common/src/resources/verificationTokens/token-types';
 import { EMAIL_TOKEN_EXPIRE } from '../../common/src/resources/verificationTokens/constants';
-import { NotRequiredEmailVerification } from '../../common/src/resources/common/not-required-email-verification.decorator';
 import { RegistrationSteps } from '../../common/src/resources/users/registration-steps';
 import { AllowedRegistrationSteps } from '../../common/src/resources/common/registration-step.decorator';
 import { UserSessionDto } from './models/user-session.dto';
 import { CreateUserAdditionalFieldDto } from './models/create-user-additional-field.dto';
 import { SessionsService } from '../../sessions/src/sessions.service';
+import { EnumHelper } from '../../common/src/utils/helpers/enum.helper';
 
 @ApiTags('users')
 @Controller('users')
@@ -44,8 +44,12 @@ export class UsersController {
     ) {}
 
     @Roles(UserRoles.user)
-    @NotRequiredEmailVerification()
     @ApiBearerAuth()
+    @AllowedRegistrationSteps(
+        ...EnumHelper
+            .toCollection(RegistrationSteps)
+            .map(registrationStep => registrationStep.value) as any
+    )
     @ApiResponse({ type: () => UserDto })
     @ApiOperation({ summary: 'Get current user\'s profile' })
     @Get('me')

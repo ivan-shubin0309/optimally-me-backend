@@ -30,7 +30,6 @@ import { Roles } from '../../common/src/resources/common/role.decorator';
 import { RegistrationSteps } from '../../common/src/resources/users/registration-steps';
 import { AllowedRegistrationSteps } from '../../common/src/resources/common/registration-step.decorator';
 import { EnumHelper } from '../../common/src/utils/helpers/enum.helper';
-import { NotRequiredEmailVerification } from '../../common/src/resources/common/not-required-email-verification.decorator';
 
 @ApiTags('sessions')
 @Controller('sessions')
@@ -71,7 +70,7 @@ export class SessionsController {
     const session = await this.sessionsService.create(user.id, {
       role: user.role,
       email: user.email,
-      registrationStep: user?.additionalField?.registrationStep || RegistrationSteps.emailVerification,
+      registrationStep: user?.additionalField?.registrationStep || RegistrationSteps.profileSetup,
       isEmailVerified: !!user?.additionalField?.isEmailVerified,
       lifeTime: body.lifeTime
     });
@@ -96,8 +95,7 @@ export class SessionsController {
     EnumHelper
       .toCollection(RegistrationSteps)
       .map(registrationStep => registrationStep.value) as any
-  )
-  @NotRequiredEmailVerification()
+    )
   @ApiCreatedResponse({ type: () => UserSessionDto })
   @ApiOperation({ summary: 'Refresh session' })
   @Put('')

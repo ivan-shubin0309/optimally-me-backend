@@ -16,9 +16,5 @@ export const guardProviders = [
     {
         provide: APP_GUARD,
         useClass: RegistrationStepGuard
-    },
-    {
-        provide: APP_GUARD,
-        useClass: EmailVerifiedGuard
     }
 ];
