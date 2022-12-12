@@ -142,7 +142,7 @@ export class UsersResultsController {
         await this.userRecommendationsService.reactToRecommendation(body, req.user.userId, params.recommendationId);
     }
 
-    @ApiOperation({ summary: 'Like or dislike recommendation' })
+    @ApiOperation({ summary: 'Remove reaction from recommendation' })
     @HttpCode(HttpStatus.NO_CONTENT)
     @Roles(UserRoles.user)
     @Delete('/results/:userResultId/recommendations/:recommendationId/reactions')
