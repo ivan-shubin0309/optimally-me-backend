@@ -4,7 +4,9 @@ import { Repository } from 'sequelize-typescript';
 import { Transaction } from 'sequelize/types';
 import { FilterBulletList } from '../../models/filterBulletLists/filter-bullet-list.entity';
 import { Filter } from '../../models/filters/filter.entity';
+import { UpdateFilterDto } from '../../models/filters/update-filter.dto';
 import { FilterRecommendation } from '../../models/recommendations/filter-recommendation.entity';
+import { BiomarkersFactory } from '../../biomarkers.factory';
 
 interface IFilterGetListOptions {
     readonly isIncludeAll: boolean,
@@ -16,6 +18,7 @@ export class FiltersService extends BaseService<Filter> {
         @Inject('FILTER_MODEL') protected model: Repository<Filter>,
         @Inject('FILTER_RECOMMENDATION_MODEL') protected filterRecommendationModel: Repository<FilterRecommendation>,
         @Inject('FILTER_BULLET_LIST_MODEL') readonly filterBulletListModel: Repository<FilterBulletList>,
+        private readonly biomarkersFactory: BiomarkersFactory,
     ) { super(model); }
 
     async removeByBiomarkerId(biomarkerId: number, transaction?: Transaction): Promise<void> {
@@ -110,5 +113,27 @@ export class FiltersService extends BaseService<Filter> {
 
         filter.setDataValue('bulletList', bulletLists);
         filter.bulletList = bulletLists;
+    }
+
+    async update(filters: UpdateFilterDto[], biomarkerId: number, transaction?: Transaction): Promise<void> {
+        const filtersToCreate = [], filtersToUpdate = [];
+
+        filters.forEach(filter => {
+            if (filter.id) {
+                filtersToUpdate.push(filter);
+            } else {
+                filtersToCreate.push(filter);
+            }
+        });
+
+        await this.model
+            .scope([{ method: ['byBiomarkerId', biomarkerId] }])
+            .update({ biomarkerId: null, removedFromBiomarkerId: biomarkerId }, { transaction } as any);
+
+        const promises = filtersToCreate.map(filter => this.biomarkersFactory.attachFilter(filter, biomarkerId, transaction));
+
+        filtersToUpdate.forEach;// TO DO
+
+        await Promise.all(promises);
     }
 }

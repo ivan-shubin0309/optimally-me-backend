@@ -98,30 +98,34 @@ export class BiomarkersFactory {
         );
         const createdFilter = await this.filterModel.create(filterToCreate, { transaction });
 
-        const promises = [this.attachFilterCharacteristics(filter, createdFilter.id, transaction)];
+        await this.attachToFilterAll(filter, createdFilter.id, transaction);
+    }
+
+    async attachToFilterAll(filter: CreateFilterDto, filterId: number, transaction?: Transaction) {
+        const promises = [this.attachFilterCharacteristics(filter, filterId, transaction)];
 
         if (filter.recommendations) {
-            promises.push(this.attachRecommendationsToFilter(filter.recommendations, createdFilter.id, transaction));
+            promises.push(this.attachRecommendationsToFilter(filter.recommendations, filterId, transaction));
         }
 
         if (filter.interactions) {
-            promises.push(this.attachInteractionsToFilter(filter.interactions, createdFilter.id, transaction));
+            promises.push(this.attachInteractionsToFilter(filter.interactions, filterId, transaction));
         }
 
         if (filter.groups) {
-            promises.push(this.attachGroupsToFilter(filter.groups, createdFilter.id, transaction));
+            promises.push(this.attachGroupsToFilter(filter.groups, filterId, transaction));
         }
 
         if (filter.resultSummary) {
-            promises.push(this.attachSummaryToFilter(filter.resultSummary, createdFilter.id, transaction));
+            promises.push(this.attachSummaryToFilter(filter.resultSummary, filterId, transaction));
         }
 
         if (filter.whatAreTheRisks && filter.whatAreTheRisks.bulletList) {
-            promises.push(this.attachBulletListToFilter(filter.whatAreTheRisks.bulletList, createdFilter.id, BulletListCategories.risks, transaction));
+            promises.push(this.attachBulletListToFilter(filter.whatAreTheRisks.bulletList, filterId, BulletListCategories.risks, transaction));
         }
 
         if (filter.whatAreTheCauses && filter.whatAreTheCauses.bulletList) {
-            promises.push(this.attachBulletListToFilter(filter.whatAreTheCauses.bulletList, createdFilter.id, BulletListCategories.causes, transaction));
+            promises.push(this.attachBulletListToFilter(filter.whatAreTheCauses.bulletList, filterId, BulletListCategories.causes, transaction));
         }
 
         await Promise.all(promises);
