@@ -9,7 +9,6 @@ import { BaseService } from '../../common/src/base/base.service';
 import { DateTime } from 'luxon';
 import { User } from '../../users/src/models';
 import { UserAdditionalField } from '../../users/src/models/user-additional-field.entity';
-import { RegistrationSteps } from 'apps/common/src/resources/users/registration-steps';
 
 @Injectable()
 export class VerificationsService extends BaseService<VerificationToken> {
@@ -93,10 +92,6 @@ export class VerificationsService extends BaseService<VerificationToken> {
 
   async verifyUser(user: User, verificationToken: VerificationToken): Promise<void> {
     const additionalFieldBody: any = { isEmailVerified: true };
-
-    if (user?.additionalField?.registrationStep === RegistrationSteps.emailVerification) {
-      additionalFieldBody.registrationStep = RegistrationSteps.profileSetup;
-    }
 
     if (!user.additionalField) {
       await this.userAdditionalFieldModel.create({ userId: user.id });

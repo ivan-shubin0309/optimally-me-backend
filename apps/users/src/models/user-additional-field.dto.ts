@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { AgeTypes } from '../../../common/src/resources/filters/age-types';
 import { EthnicityTypes } from '../../../common/src/resources/filters/ethnicity-types';
 import { OtherFeatureTypes } from '../../../common/src/resources/filters/other-feature-types';
 import { RegistrationSteps } from '../../../common/src/resources/users/registration-steps';
