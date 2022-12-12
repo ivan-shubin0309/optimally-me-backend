@@ -21,10 +21,10 @@ export class PutReactRecommendationDto {
     @IsNotEmpty()
     @IsNumber()
     @IsEnum(RecommendationReactionTypes)
+    @DescriptionRequired()
     readonly reactionType: number;
 
     @ApiProperty({ type: () => String, required: false })
-    @DescriptionRequired()
     @IsOptional()
     @IsString()
     @MinLength(recommendationReactionValidationRules.descriptionMinLength)

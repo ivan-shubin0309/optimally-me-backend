@@ -13,16 +13,16 @@ export function DescriptionRequired(validationOptions?: ValidationOptions) {
             validator: {
                 validate(value: any, args: ValidationArguments): boolean {
                     const obj = args.object as PutReactRecommendationDto;
-                    if (obj.reactionType === RecommendationReactionTypes.dislike) {
-                        return !!value;
+                    if (value === RecommendationReactionTypes.dislike) {
+                        return !!obj.description;
                     }
-                    if (obj.reactionType === RecommendationReactionTypes.like) {
-                        return !value;
+                    if (value === RecommendationReactionTypes.like) {
+                        return !obj.description;
                     }
                     return true;
                 },
                 defaultMessage(args: ValidationArguments): string {
-                    return `${args.property} is only required when reactionType is ${RecommendationReactionTypes.dislike}`;
+                    return `description is only required when reactionType is ${RecommendationReactionTypes.dislike}`;
                 },
             },
         });
