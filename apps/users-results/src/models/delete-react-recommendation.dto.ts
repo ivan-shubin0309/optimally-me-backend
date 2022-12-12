@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 import { IsInt, IsNotEmpty } from 'class-validator';
 
 
-export class ReactRecommendationParamsDto {
+export class DeleteReactRecommendationDto {
     @ApiProperty({ type: () => Number, required: true })
     @IsNotEmpty()
     @IsInt()

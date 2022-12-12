@@ -48,7 +48,12 @@ export class UserRecommendationsService extends BaseService<UserRecommendation> 
             return await reaction.update(body);
         }
 
-        return await this.recommendationReactionModel.create(Object.assign({ userId, recommendationId }, body) as any);
+        return await this.recommendationReactionModel.create({
+            userId,
+            recommendationId,
+            description: body.description,
+            reactionType: body.reactionType
+        });
     }
 
     async removeReaction(userId: number, recommendationId: number): Promise<void> {
