@@ -19,7 +19,6 @@ import { userBiomarkerOrderScope } from '../../common/src/resources/usersBiomark
 @ApiBearerAuth()
 @ApiTags('users/biomarkers')
 @Controller('users/biomarkers')
-@Controller()
 export class UsersBiomarkersController {
   constructor(
     private readonly usersBiomarkersService: UsersBiomarkersService,

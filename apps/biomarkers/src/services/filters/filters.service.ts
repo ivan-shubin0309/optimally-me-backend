@@ -72,4 +72,43 @@ export class FiltersService extends BaseService<Filter> {
 
         return filters;
     }
+
+    async getOne(scopes?: any[], transaction?: Transaction, options: IFilterGetListOptions = { isIncludeAll: false }): Promise<Filter> {
+        const filterScopes = [...scopes];
+
+        if (options.isIncludeAll) {
+            filterScopes.push('includeAll');
+        }
+
+        const filter = await super.getOne(filterScopes, transaction);
+
+        if (filter && options.isIncludeAll) {
+            const [recommendationsList, bulletLists] = await Promise.all([
+                this.filterRecommendationModel
+                    .scope([{ method: ['byFilterId', filter.id] }, 'includeAll'])
+                    .findAll({ transaction }),
+                this.filterBulletListModel
+                    .scope([{ method: ['byFilterId', filter.id] }, 'withStudyLinks'])
+                    .findAll({ transaction }),
+            ]);
+
+            filter.setDataValue('filterRecommendations', recommendationsList);
+            filter.filterRecommendations = recommendationsList;
+
+            filter.setDataValue('bulletList', bulletLists);
+            filter.bulletList = bulletLists;
+        }
+
+        return filter;
+    }
+
+    async joinBulletList(filter: Filter, transaction?: Transaction): Promise<void> {
+        const bulletLists = await this.filterBulletListModel
+            .scope([{ method: ['byFilterId', filter.id] }, 'withStudyLinks'])
+            .findAll({ transaction });
+
+
+        filter.setDataValue('bulletList', bulletLists);
+        filter.bulletList = bulletLists;
+    }
 }

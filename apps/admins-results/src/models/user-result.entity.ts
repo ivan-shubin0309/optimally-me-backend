@@ -1,10 +1,11 @@
 import { User } from '../../../users/src/models';
-import { Table, Column, Model, Scopes, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Table, Column, Model, Scopes, DataType, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
 import { Biomarker } from '../../../biomarkers/src/models/biomarker.entity';
 import { Op, fn, col } from 'sequelize';
 import { Unit } from '../../../biomarkers/src/models/units/unit.entity';
 import { Filter } from '../../../biomarkers/src/models/filters/filter.entity';
 import { RecommendationTypes } from 'apps/common/src/resources/recommendations/recommendation-types';
+import { UserRecommendation } from 'apps/biomarkers/src/models/userRecommendations/user-recommendation.entity';
 
 export interface IUserResult {
     readonly value: number,
@@ -118,4 +119,7 @@ export class UserResult extends Model {
 
     @BelongsTo(() => Biomarker)
     biomarker: Biomarker;
+
+    @HasMany(() => UserRecommendation, 'userResultId')
+    userRecommendations: UserRecommendation[];
 }

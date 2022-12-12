@@ -11,6 +11,7 @@ import { AdminsResultsModule } from '../../admins-results/src/admins-results.mod
 import { FilesModule } from '../../files/src/files.module';
 import { UsersBiomarkersModule } from '../../users-biomarkers/src/users-biomarkers.module';
 import { ShopifyModule } from '../../shopify/src/shopify.module';
+import { UsersResultsModule } from '../../users-results/src/users-results.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ShopifyModule } from '../../shopify/src/shopify.module';
     FilesModule,
     UsersBiomarkersModule,
     ShopifyModule,
+    UsersResultsModule,
   ]
 })
 export class SwaggerAppModule { }
