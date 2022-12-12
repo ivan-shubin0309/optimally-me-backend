@@ -13,8 +13,8 @@ import { TranslatorService } from 'nestjs-translator';
 import { UserRecommendationsService } from '../../biomarkers/src/services/userRecommendations/user-recommendations.service';
 import { RecommendationsWithoutPaginationDto } from './models/user-recommendations-without-pagination.dto';
 import { GetUserResultsDto } from './models/get-user-results-list.dto';
-import { ReactRecommendationParamsDto } from './models/react-recommendation-params.dto';
 import { PutReactRecommendationDto } from './models/put-react-recommendation.dto';
+import { DeleteReactRecommendationDto } from './models/delete-react-recommendation.dto';
 
 @ApiBearerAuth()
 @ApiTags('users/biomarkers/results')
@@ -119,16 +119,15 @@ export class UsersResultsController {
     @ApiOperation({ summary: 'Like or dislike recommendation' })
     @HttpCode(HttpStatus.NO_CONTENT)
     @Roles(UserRoles.user)
-    @Put('/results/:userResultId/recommendations/:recommendationId/reactions')
+    @Put('/results/recommendations/reactions')
     async reactToRecommendation(
-        @Param() params: ReactRecommendationParamsDto,
         @Request() req: Request & { user: SessionDataDto },
         @Body() body: PutReactRecommendationDto
     ): Promise<void> {
         const userRecommendation = await this.userRecommendationsService.getOne([
             { method: ['byUserId', req.user.userId] },
-            { method: ['byUserResultId', params.userResultId] },
-            { method: ['byRecommendationId', params.recommendationId] }
+            { method: ['byUserResultId', body.userResultId] },
+            { method: ['byRecommendationId', body.recommendationId] }
         ]);
 
         if (!userRecommendation) {
@@ -139,21 +138,21 @@ export class UsersResultsController {
             });
         }
 
-        await this.userRecommendationsService.reactToRecommendation(body, req.user.userId, params.recommendationId);
+        await this.userRecommendationsService.reactToRecommendation(body, req.user.userId, body.recommendationId);
     }
 
     @ApiOperation({ summary: 'Remove reaction from recommendation' })
     @HttpCode(HttpStatus.NO_CONTENT)
     @Roles(UserRoles.user)
-    @Delete('/results/:userResultId/recommendations/:recommendationId/reactions')
+    @Delete('/results/recommendations/reactions')
     async removeReactionFromRecommendation(
-        @Param() params: ReactRecommendationParamsDto,
+        @Body() body: DeleteReactRecommendationDto,
         @Request() req: Request & { user: SessionDataDto }
     ): Promise<void> {
         const userRecommendation = await this.userRecommendationsService.getOne([
             { method: ['byUserId', req.user.userId] },
-            { method: ['byUserResultId', params.userResultId] },
-            { method: ['byRecommendationId', params.recommendationId] }
+            { method: ['byUserResultId', body.userResultId] },
+            { method: ['byRecommendationId', body.recommendationId] }
         ]);
 
         if (!userRecommendation) {
@@ -164,6 +163,6 @@ export class UsersResultsController {
             });
         }
 
-        await this.userRecommendationsService.removeReaction(req.user.userId, params.recommendationId);
+        await this.userRecommendationsService.removeReaction(req.user.userId, body.recommendationId);
     }
 }

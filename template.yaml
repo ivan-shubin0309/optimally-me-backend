@@ -382,8 +382,8 @@ Resources:
           Properties:
             Path: /users/biomarkers/results/{id}/recommendations
             Method: ANY
-        UsersBiomarkersResultsIdRecommendationsIdReactionsApi:
+        UsersBiomarkersResultsRecommendationsReactionsApi:
           Type: Api
           Properties:
-            Path: /users/biomarkers/results/{userResultId}/recommendations/{recommendationId}/reactions
+            Path: /users/biomarkers/results/recommendations/reactions
             Method: ANY
