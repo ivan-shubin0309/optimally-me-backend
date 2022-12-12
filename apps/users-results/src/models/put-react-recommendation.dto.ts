@@ -4,6 +4,7 @@ import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, M
 import { RecommendationReactionTypes } from '../../../common/src/resources/recommendation-reactions/reaction-types';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { DescriptionRequired } from '../../../common/src/resources/recommendation-reactions/description-required.decorator';
+import { Transform, TransformFnParams } from 'class-transformer';
 
 export class PutReactRecommendationDto {
     @ApiProperty({ type: () => Number, required: true })
@@ -28,5 +29,6 @@ export class PutReactRecommendationDto {
     @IsString()
     @MinLength(recommendationReactionValidationRules.descriptionMinLength)
     @MaxLength(recommendationReactionValidationRules.descriptionMaxLength)
+    @Transform(({ value }: TransformFnParams) => value?.trim())
     readonly description: string;
 }
