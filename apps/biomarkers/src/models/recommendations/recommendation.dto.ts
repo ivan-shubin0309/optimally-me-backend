@@ -5,6 +5,7 @@ import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
 import { Recommendation } from './recommendation.entity';
 import { FileDto } from '../../../../files/src/models/file.dto';
 import { RecommendationImpactDto } from '../recommendationImpacts/recommendation-impact.dto';
+import { RecommendationReactionTypes } from 'apps/common/src/resources/recommendation-reactions/reaction-types';
 
 
 export class RecommendationDto extends BaseDto<Recommendation> {
@@ -22,6 +23,9 @@ export class RecommendationDto extends BaseDto<Recommendation> {
             : undefined;
         this.impacts = entity.impacts && entity.impacts.length
             ? entity.impacts.map(impact => new RecommendationImpactDto(impact))
+            : undefined;
+        this.userReactionType = entity.userReaction
+            ? entity.userReaction.reactionType
             : undefined;
     }
 
@@ -51,4 +55,7 @@ export class RecommendationDto extends BaseDto<Recommendation> {
 
     @ApiProperty({ type: () => [RecommendationImpactDto], required: false })
     readonly impacts: RecommendationImpactDto[];
+
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(RecommendationReactionTypes) })
+    readonly userReactionType: number;
 }

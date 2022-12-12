@@ -11,6 +11,7 @@ import { Filter } from '../filters/filter.entity';
 import { FilterRecommendation } from './filter-recommendation.entity';
 import { RecommendationTypes } from '../../../../common/src/resources/recommendations/recommendation-types';
 import { RecommendationReaction } from '../recommendationReactions/recommendation-reaction.entity';
+import { UserRecommendation } from '../userRecommendations/user-recommendation.entity';
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
@@ -68,6 +69,16 @@ import { RecommendationReaction } from '../recommendationReactions/recommendatio
                 as: 'userReaction',
                 required: false,
                 where: { userId }
+            },
+        ],
+    }),
+    withFilterRecommendation: (filterId) => ({
+        include: [
+            {
+                model: FilterRecommendation,
+                as: 'filterRecommendation',
+                required: false,
+                where: { filterId }
             },
         ],
     })
@@ -135,4 +146,7 @@ export class Recommendation extends Model {
 
     @HasOne(() => RecommendationReaction, 'recommendationId')
     userReaction: RecommendationReaction;
+
+    @HasOne(() => FilterRecommendation, 'recommendationId')
+    filterRecommendation: FilterRecommendation;
 }

@@ -7,6 +7,7 @@ import { Recommendation } from '../../models/recommendations/recommendation.enti
 import { PutReactRecommendationDto } from '../../../../users-results/src/models/put-react-recommendation.dto';
 import { RecommendationReaction } from '../../models/recommendationReactions/recommendation-reaction.entity';
 import { TranslatorService } from 'nestjs-translator';
+import sequelize from 'sequelize';
 
 @Injectable()
 export class UserRecommendationsService extends BaseService<UserRecommendation> {
@@ -30,6 +31,8 @@ export class UserRecommendationsService extends BaseService<UserRecommendation> 
                 { method: ['withImpacts', ['withStudyLinks']] },
                 { method: ['withFiles'] },
                 { method: ['withUserReaction', userResult.userId] },
+                { method: ['withFilterRecommendation', userResult.filterId] },
+                { method: ['orderBy', [[sequelize.literal('`filterRecommendation.order`'), 'asc']]] }
             ])
             .findAll();
 
