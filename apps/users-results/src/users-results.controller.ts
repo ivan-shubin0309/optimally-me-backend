@@ -5,7 +5,6 @@ import { FilterDto } from '../../biomarkers/src/models/filters/filter.dto';
 import { FiltersService } from '../../biomarkers/src/services/filters/filters.service';
 import { EntityByIdDto } from '../../common/src/models/entity-by-id.dto';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
-import { GetListDto } from '../../common/src/models/get-list.dto';
 import { Roles } from '../../common/src/resources/common/role.decorator';
 import { UserRoles } from '../../common/src/resources/users';
 import { UsersResultsService } from './users-results.service';
@@ -13,6 +12,7 @@ import { SessionDataDto } from '../../sessions/src/models';
 import { TranslatorService } from 'nestjs-translator';
 import { UserRecommendationsService } from '../../biomarkers/src/services/userRecommendations/user-recommendations.service';
 import { RecommendationsWithoutPaginationDto } from './models/user-recommendations-without-pagination.dto';
+import { GetUserResultsDto } from './models/get-user-results-list.dto';
 
 @ApiBearerAuth()
 @ApiTags('users/biomarkers/results')
@@ -29,7 +29,7 @@ export class UsersResultsController {
     @ApiOperation({ summary: 'Get user results by biomarker id' })
     @Roles(UserRoles.user)
     @Get('/:id/results')
-    async getResultsList(@Query() query: GetListDto, @Param() param: EntityByIdDto, @Request() req: Request & { user: SessionDataDto }): Promise<UserResultsDto> {
+    async getResultsList(@Query() query: GetUserResultsDto, @Param() param: EntityByIdDto, @Request() req: Request & { user: SessionDataDto }): Promise<UserResultsDto> {
         const { limit, offset } = query;
 
         let userResultsList = [];
@@ -37,6 +37,10 @@ export class UsersResultsController {
             { method: ['byBiomarkerId', param.id] },
             { method: ['byUserId', req.user.userId] }
         ];
+
+        if (query.startDate || query.endDate) {
+            scopes.push({ method: ['byDate', query.startDate, query.endDate] });
+        }
 
         const count = await this.usersResultsService.getCount(scopes);
 
