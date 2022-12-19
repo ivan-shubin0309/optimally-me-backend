@@ -3,6 +3,7 @@ import { Table, Column, Model, DataType, Scopes, ForeignKey } from 'sequelize-ty
 import { Filter } from '../filters/filter.entity';
 
 @Scopes(() => ({
+    byFilterId: (filterId) => ({ where: { filterId } }),
 }))
 
 @Table({

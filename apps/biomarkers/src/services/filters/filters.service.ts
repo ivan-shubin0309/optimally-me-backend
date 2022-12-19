@@ -7,6 +7,7 @@ import { Filter } from '../../models/filters/filter.entity';
 import { UpdateFilterDto } from '../../models/filters/update-filter.dto';
 import { FilterRecommendation } from '../../models/recommendations/filter-recommendation.entity';
 import { BiomarkersFactory } from '../../biomarkers.factory';
+import { UpdateFilterDataDto } from '../../models/filters/update-filter-data.dto';
 
 interface IFilterGetListOptions {
     readonly isIncludeAll: boolean,
@@ -132,7 +133,18 @@ export class FiltersService extends BaseService<Filter> {
 
         const promises = filtersToCreate.map(filter => this.biomarkersFactory.attachFilter(filter, biomarkerId, transaction));
 
-        filtersToUpdate.forEach;// TO DO
+        promises.push(
+            ...filtersToUpdate.map(async (filterToUpdate) => {
+                await this.biomarkersFactory.dettachAllFromFilter(filterToUpdate.id, transaction);
+
+                await Promise.all([
+                    this.model
+                        .scope([{ method: ['byId', filterToUpdate.id] }])
+                        .update(new UpdateFilterDataDto(filterToUpdate, biomarkerId), { transaction } as any),
+                    this.biomarkersFactory.attachAllToFilter(filterToUpdate, filterToUpdate.id, transaction),
+                ]);
+            })
+        );
 
         await Promise.all(promises);
     }

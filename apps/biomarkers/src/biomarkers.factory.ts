@@ -98,10 +98,10 @@ export class BiomarkersFactory {
         );
         const createdFilter = await this.filterModel.create(filterToCreate, { transaction });
 
-        await this.attachToFilterAll(filter, createdFilter.id, transaction);
+        await this.attachAllToFilter(filter, createdFilter.id, transaction);
     }
 
-    async attachToFilterAll(filter: CreateFilterDto, filterId: number, transaction?: Transaction) {
+    async attachAllToFilter(filter: CreateFilterDto, filterId: number, transaction?: Transaction) {
         const promises = [this.attachFilterCharacteristics(filter, filterId, transaction)];
 
         if (filter.recommendations) {
@@ -206,5 +206,39 @@ export class BiomarkersFactory {
         });
 
         await this.studyLinkModel.bulkCreate(studyLinksToCreate, { transaction });
+    }
+
+    async dettachAllFromFilter(filterId: number, transaction?: Transaction): Promise<void> {
+        const promises = [
+            this.filterRecommendationModel
+                .scope([{ method: ['byFilterId', filterId] }])
+                .destroy({ transaction }),
+            this.interactionModel
+                .scope([{ method: ['byFilterId', filterId] }])
+                .destroy({ transaction }),
+            this.filterAgeModel
+                .scope([{ method: ['byFilterId', filterId] }])
+                .destroy({ transaction }),
+            this.filterSexModel
+                .scope([{ method: ['byFilterId', filterId] }])
+                .destroy({ transaction }),
+            this.filterEthnicityModel
+                .scope([{ method: ['byFilterId', filterId] }])
+                .destroy({ transaction }),
+            this.filterOtherFeatureModel
+                .scope([{ method: ['byFilterId', filterId] }])
+                .destroy({ transaction }),
+            this.filterGroupModel
+                .scope([{ method: ['byFilterId', filterId] }])
+                .destroy({ transaction }),
+            this.filterSummaryModel
+                .scope([{ method: ['byFilterId', filterId] }])
+                .destroy({ transaction }),
+            this.filterBulletListModel
+                .scope([{ method: ['byFilterId', filterId] }])
+                .destroy({ transaction }),
+        ];
+
+        await Promise.all(promises);
     }
 }
