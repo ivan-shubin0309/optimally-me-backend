@@ -41,13 +41,19 @@ export class UsersBiomarkersService extends BaseService<Biomarker> {
         return new UserBiomarkerCounterDto(resultMap);
     }
 
-    async includeUserBiomarkerCounters(biomarkers: Biomarker[], userId: number): Promise<void> {
+    async includeUserBiomarkerCounters(biomarkers: Biomarker[], userId: number, beforeDate?: string): Promise<void> {
+        const scopes: any[] = [
+            { method: ['byUserId', userId] },
+            { method: ['byBiomarkerId', biomarkers.map(biomarker => biomarker.id)] },
+            'resultCounters'
+        ];
+
+        if (beforeDate) {
+            scopes.push({ method: ['beforeDate', null, beforeDate] });
+        }
+
         const results = await this.userResultModel
-            .scope([
-                { method: ['byUserId', userId] },
-                { method: ['byBiomarkerId', biomarkers.map(biomarker => biomarker.id)] },
-                'resultCounters'
-            ])
+            .scope(scopes)
             .findAll();
         const resultsMap = {};
         results.forEach(result => {
