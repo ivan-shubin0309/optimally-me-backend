@@ -49,7 +49,7 @@ export class UsersBiomarkersService extends BaseService<Biomarker> {
         ];
 
         if (beforeDate) {
-            scopes.push({ method: ['beforeDate', null, beforeDate] });
+            scopes.push({ method: ['byDate', null, beforeDate] });
         }
 
         const results = await this.userResultModel
