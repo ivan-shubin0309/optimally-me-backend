@@ -234,14 +234,6 @@ export class VerificationsController {
                 });
             }
 
-            if (verificationToken.isUsed) {
-                throw new BadRequestException({
-                    message: this.translator.translate('LINK_IS_USED'),
-                    errorCode: 'LINK_IS_USED',
-                    statusCode: HttpStatus.BAD_REQUEST
-                });
-            }
-
             user = await this.usersService.getOne([
                 { method: ['byId', verificationToken.userId] },
                 { method: ['byRoles', UserRoles.user] },
