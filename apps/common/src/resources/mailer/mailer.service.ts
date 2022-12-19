@@ -85,9 +85,7 @@ export class MailerService {
         return this.sendEmail(
             this.translatorService.translate('USER_EMAIL_VERIFICATION_TEXT', {
                 replace: {
-                    link: `${this.configService.get('FRONTEND_BASE_URL')}/verify-email?token=${token}`,
-                    firstName: user.firstName,
-                    lastName: user.lastName
+                    link: `${this.configService.get('FRONTEND_BASE_URL')}/verify-email?token=${token}`
                 }
             }),
             this.translatorService.translate('USER_EMAIL_VERIFICATION_SUBJECT'),
