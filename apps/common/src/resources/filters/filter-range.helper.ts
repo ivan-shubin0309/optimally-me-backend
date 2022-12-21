@@ -33,7 +33,7 @@ export class FilterRangeHelper {
                 return RecommendationTypes.high;
             }
 
-            if (typeof filter.subOptimalMin === 'number' && filter.supraOptimalMin <= value) {
+            if (typeof filter.supraOptimalMin === 'number' && filter.supraOptimalMin <= value) {
                 return RecommendationTypes.supraOptimal;
             }
         }
