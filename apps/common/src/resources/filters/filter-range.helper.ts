@@ -42,24 +42,21 @@ export class FilterRangeHelper {
     }
 
     static calculateDeviation(filter: Filter, recommendationRange: RecommendationTypes, value: number): number {
-        let higherValue, lowerValue;
-
         if (recommendationRange === RecommendationTypes.optimal) {
-            const avgOptimal = (filter.optimalMax + filter.optimalMin) / 2;
-            higherValue = avgOptimal > value
-                ? avgOptimal
-                : value;
-            lowerValue = avgOptimal < value
-                ? avgOptimal
-                : value;
-        } else if (recommendationRange > RecommendationTypes.optimal) {
-            higherValue = value;
-            lowerValue = filter.optimalMax;
-        } else {
-            higherValue = filter.optimalMin;
-            lowerValue = value;
+            return 0;
         }
 
-        return (higherValue - lowerValue) / higherValue * 100;
+        if (recommendationRange === RecommendationTypes.subOptimal || recommendationRange === RecommendationTypes.supraOptimal) {
+            const optimalAvg = (filter.optimalMin + filter.optimalMax) / 2;
+            return value > optimalAvg
+                ? (value - optimalAvg) / optimalAvg * 100
+                : (optimalAvg - value) / optimalAvg * 100;
+        }
+
+        if (recommendationRange > RecommendationTypes.optimal) {
+            return (value - filter.optimalMax) / filter.optimalMax * 100;
+        } else {
+            return (filter.optimalMin - value) / filter.optimalMin * 100;
+        }
     }
 }
