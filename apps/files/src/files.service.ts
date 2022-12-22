@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, HttpStatus, Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { ForbiddenException, HttpStatus, Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { FileStatuses } from '../../common/src/resources/files/file-statuses';
 import { Repository } from 'sequelize-typescript';
 import { BaseService } from '../../common/src/base/base.service';
