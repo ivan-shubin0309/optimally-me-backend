@@ -5,6 +5,7 @@ import { ItemDatasetInDto } from './models/item-dataset-in.dto';
 import { ItemDatasetGetDto } from './models/item-dataset-get.dto';
 import { SubjectInDto } from './models/subject-in.dto';
 import { ItemImageAuxOutListDto } from './models/item-image-aux-out-list.dto';
+import { client as WebsocketClient, Message } from 'websocket';
 
 const FACE_SKIN_METRICS_APPLICATION_ID_V2 = '8b5b3acc-480b-4412-8d2c-ebe6ab4384d7';
 
@@ -17,10 +18,12 @@ interface UploadImageOptions {
 @Injectable()
 export class HautAiService {
     private readonly baseUrl: string;
+    private readonly websocketBaseUrl: string;
     constructor(
         private readonly configService: ConfigService,
     ) {
         this.baseUrl = 'https://saas.haut.ai';
+        this.websocketBaseUrl = 'wss://saas.haut.ai';
     }
 
     private getHeaders(accessToken?: string): Record<string, string | number | boolean> {
@@ -177,5 +180,39 @@ export class HautAiService {
                 statusCode: HttpStatus.UNPROCESSABLE_ENTITY
             });
         }
+    }
+
+    subscribeToNotifications(accessToken: string, userId: string, callback: (data: Message) => void): WebsocketClient {
+        const url = `${this.websocketBaseUrl}/notifications/?user_id=${userId}`;
+        const websocketClient = new WebsocketClient();
+
+        websocketClient.on('connectFailed', (error) => {
+            console.log('Connect Error: ' + error.toString());
+            throw new UnprocessableEntityException({
+                message: error.message,
+                errorCode: 'HAUT_AI_WEBSOCKET_ERROR',
+                statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+            });
+        });
+
+        websocketClient.on('connect', (connection) => {
+            console.log('WebSocket Client Connected');
+            connection.on('error', (error) => {
+                console.log('Connection Error: ' + error.toString());
+                throw new UnprocessableEntityException({
+                    message: error.message,
+                    errorCode: 'HAUT_AI_WEBSOCKET_ERROR',
+                    statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+                });
+            });
+            connection.on('close', () => {
+                console.log('Connection Closed');
+            });
+            connection.on('message', callback);
+        });
+
+        websocketClient.connect(url, null, null, { Cookie: `authorization=${accessToken}` });
+
+        return websocketClient;
     }
 }
