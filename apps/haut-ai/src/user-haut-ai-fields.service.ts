@@ -10,7 +10,6 @@ import { File } from '../../files/src/models/file.entity';
 import axios from 'axios';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
 import { connection, IUtf8Message } from 'websocket';
-import { ItemImageAuxOutListDto } from './models/item-image-aux-out-list.dto';
 
 @Injectable()
 export class UserHautAiFieldsService extends BaseService<UserHautAiField> {
@@ -33,8 +32,8 @@ export class UserHautAiFieldsService extends BaseService<UserHautAiField> {
         return subjectId;
     }
 
-    getHautAiAccessToken(): Promise<{ accessToken: string, userId: number }> {
-        return this.hautAiService.getAccessToken();
+    getHautAiUser(): Promise<{ accessToken: string, userId: number }> {
+        return this.hautAiService.getHautAiUser();
     }
 
     async uploadPhotoToHautAi(file: File, subjectId: string, hautAiUser: { accessToken: string, userId: number }): Promise<any> {
@@ -64,7 +63,7 @@ export class UserHautAiFieldsService extends BaseService<UserHautAiField> {
                     console.log(data);
                     const body = JSON.parse(data.utf8Data);
                     if (body.meta.batch_id === batchId) {
-                        connection.close();
+                        //connection.close();
                         resolve(body);
                     }
                 }

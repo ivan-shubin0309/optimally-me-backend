@@ -4,8 +4,8 @@ import axios from 'axios';
 import { ItemDatasetInDto } from './models/item-dataset-in.dto';
 import { ItemDatasetGetDto } from './models/item-dataset-get.dto';
 import { SubjectInDto } from './models/subject-in.dto';
-import { ItemImageAuxOutListDto } from './models/item-image-aux-out-list.dto';
 import { client as WebsocketClient, Message, connection } from 'websocket';
+import { config } from 'dotenv';
 
 const FACE_SKIN_METRICS_APPLICATION_ID_V2 = '8b5b3acc-480b-4412-8d2c-ebe6ab4384d7';
 
@@ -26,30 +26,26 @@ export class HautAiService {
         this.websocketBaseUrl = 'wss://saas.haut.ai';
     }
 
-    private getHeaders(accessToken?: string): Record<string, string | number | boolean> {
+    private getHeaders(accessToken: string): Record<string, string | number | boolean> {
         const headers = {
             'Content-Type': 'application/json'
         };
 
         if (accessToken) {
-            headers['Authentication'] = `Bearer ${accessToken}`;
+            headers['Authorization'] = `Bearer ${accessToken}`;
         }
 
         return headers;
     }
 
-    async getAccessToken(): Promise<{ accessToken: string, userId: number }> {
-        const url = `${this.baseUrl}/api/v1/login/`;
-        const data = {
-            username: this.configService.get('HAUT_AI_USERNAME'),
-            password: this.configService.get('HAUT_AI_PASSWORD')
-        };
+    async getHautAiUser(): Promise<{ accessToken: string, userId: number }> {
+        const url = `${this.baseUrl}/api/v1/auth/profile/`;
 
         try {
-            const response = await axios.post(url, data, { headers: this.getHeaders() });
+            const response = await axios.get(url, { headers: this.getHeaders(this.configService.get('HAUT_AI_ACCESS_TOKEN')) });
             return {
-                accessToken: response.data.token_access,
-                userId: response.data.id
+                accessToken: this.configService.get('HAUT_AI_ACCESS_TOKEN'),
+                userId: response.data.user.id
             };
         } catch (err) {
             console.log(err.message);

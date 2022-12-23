@@ -15,6 +15,7 @@ import { modelProviders } from './models.provider';
 import { UserHautAiFieldsService } from './user-haut-ai-fields.service';
 import { FilesService } from '../../files/src/files.service';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
+import { S3Service } from '../../files/src/s3.service';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { FileHelper } from '../../common/src/utils/helpers/file.helper';
     UsersService,
     FilesService,
     FileHelper,
+    S3Service,
     SessionsService,
     JwtStrategy,
     ...guardProviders,

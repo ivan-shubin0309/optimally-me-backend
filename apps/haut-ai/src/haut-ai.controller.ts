@@ -5,7 +5,6 @@ import { FilesService } from '../../files/src/files.service';
 import { SessionDataDto } from '../../sessions/src/models';
 import { Roles } from '../../common/src/resources/common/role.decorator';
 import { UserRoles } from '../../common/src/resources/users';
-import { ItemImageAuxOutListDto } from './models/item-image-aux-out-list.dto';
 import { PostImageToHautAiDto } from './models/post-image-to-haut-ai.dto';
 import { UserHautAiFieldsService } from './user-haut-ai-fields.service';
 import { UsersService } from '../../users/src/users.service';
@@ -46,7 +45,7 @@ export class HautAiController {
             user.hautAiField = hautAiField;
         }
 
-        const hautAiUser: { accessToken: string, userId: number } = await this.userHautAiFieldsService.getHautAiAccessToken();
+        const hautAiUser: { accessToken: string, userId: number } = await this.userHautAiFieldsService.getHautAiUser();
 
         if (!user.hautAiField.hautAiSubjectId) {
             const subjectData: SubjectInDto = {
