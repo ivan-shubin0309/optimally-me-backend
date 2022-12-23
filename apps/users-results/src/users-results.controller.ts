@@ -49,7 +49,9 @@ export class UsersResultsController {
         if (count) {
             scopes.push(
                 { method: ['pagination', { limit, offset }] },
-                { method: ['orderBy', [['date', 'desc']]] }
+                { method: ['orderBy', [['date', 'desc']]] },
+                'withUnit',
+                'withBiomarker'
             );
             userResultsList = await this.usersResultsService.getList(scopes);
         }
