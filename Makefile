@@ -13,6 +13,7 @@
 .PHONY: build-UsersBiomarkersFunction
 .PHONY: build-ShopifyFunction
 .PHONY: build-UsersBiomarkersResultsFunction
+.PHONY: build-HautAiFunction
 
 
 build-RuntimeDependenciesLayer:
@@ -72,3 +73,5 @@ build-ShopifyFunction:
 build-UsersBiomarkersResultsFunction:
 	$(MAKE) HANDLER=apps/users-results/src/main.ts ENTITY=users-results build-lambda-common
 	
+build-HautAiFunction:
+	$(MAKE) HANDLER=apps/haut-ai/src/main.ts ENTITY=haut-ai build-lambda-common

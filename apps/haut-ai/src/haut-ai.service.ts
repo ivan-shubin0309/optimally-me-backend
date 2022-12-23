@@ -5,7 +5,7 @@ import { ItemDatasetInDto } from './models/item-dataset-in.dto';
 import { ItemDatasetGetDto } from './models/item-dataset-get.dto';
 import { SubjectInDto } from './models/subject-in.dto';
 import { ItemImageAuxOutListDto } from './models/item-image-aux-out-list.dto';
-import { client as WebsocketClient, Message } from 'websocket';
+import { client as WebsocketClient, Message, connection } from 'websocket';
 
 const FACE_SKIN_METRICS_APPLICATION_ID_V2 = '8b5b3acc-480b-4412-8d2c-ebe6ab4384d7';
 
@@ -147,7 +147,7 @@ export class HautAiService {
     async uploadPhotoToBatch(accessToken: string, datasetId: string, subjectId: string, batchId: string, photo: Buffer, options: UploadImageOptions = {}): Promise<string> {
         const url = `${this.baseUrl}/api/v1/companies/${this.configService.get('HAUT_AI_COMPANY_ID')}/datasets/${datasetId}/subjects/${subjectId}/batches/${batchId}/images`;
         const data = {
-            b64data: photo,
+            b64data: photo.toString('base64'),
             name: options.name,
             side_id: options.side_id,
             light_id: options.light_id
@@ -166,12 +166,12 @@ export class HautAiService {
         }
     }
 
-    async getImageAux(accessToken: string, datasetId: string, subjectId: string, batchId: string, imageId: string): Promise<ItemImageAuxOutListDto> {
-        const url = `${this.baseUrl}/api/v1/companies/${this.configService.get('HAUT_AI_COMPANY_ID')}/datasets/${datasetId}/subjects/${subjectId}/batches/${batchId}/images/${imageId}/aux/`;
+    async getImageResults(accessToken: string, datasetId: string, subjectId: string, batchId: string, imageId: string): Promise<any> {
+        const url = `${this.baseUrl}/api/v1/companies/${this.configService.get('HAUT_AI_COMPANY_ID')}/datasets/${datasetId}/subjects/${subjectId}/batches/${batchId}/images/${imageId}/results/`;
 
         try {
             const response = await axios.get(url, { headers: this.getHeaders(accessToken) });
-            return new ItemImageAuxOutListDto(response.data);
+            return response.data;
         } catch (err) {
             console.log(err.message);
             throw new UnprocessableEntityException({
@@ -182,7 +182,7 @@ export class HautAiService {
         }
     }
 
-    subscribeToNotifications(accessToken: string, userId: string, callback: (data: Message) => void): WebsocketClient {
+    subscribeToNotifications(accessToken: string, userId: number, callback: (data: Message, connection: connection) => void): WebsocketClient {
         const url = `${this.websocketBaseUrl}/notifications/?user_id=${userId}`;
         const websocketClient = new WebsocketClient();
 
@@ -208,7 +208,9 @@ export class HautAiService {
             connection.on('close', () => {
                 console.log('Connection Closed');
             });
-            connection.on('message', callback);
+            connection.on('message', (data: Message) => {
+                callback(data, connection);
+            });
         });
 
         websocketClient.connect(url, null, null, { Cookie: `authorization=${accessToken}` });

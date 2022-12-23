@@ -14,6 +14,7 @@ import { entities } from '../../common/src/utils/database/database-entity.provid
 import { modelProviders } from './models.provider';
 import { UserHautAiFieldsService } from './user-haut-ai-fields.service';
 import { FilesService } from '../../files/src/files.service';
+import { FileHelper } from '../../common/src/utils/helpers/file.helper';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { FilesService } from '../../files/src/files.service';
     UserHautAiFieldsService,
     UsersService,
     FilesService,
+    FileHelper,
     SessionsService,
     JwtStrategy,
     ...guardProviders,

@@ -3,6 +3,7 @@ import { Table, Column, Model, Scopes, DataType, BeforeCreate, BeforeUpdate, Has
 import { PasswordHelper } from '../../../common/src/utils/helpers/password.helper';
 import { UserWefitter } from '../../../wefitter/src/models/user-wefitter.entity';
 import { UserAdditionalField } from './user-additional-field.entity';
+import { UserHautAiField } from '../../../haut-ai/src/models/user-haut-ai-field.entity';
 
 @Scopes(() => ({
     byRoles: (role: number) => ({
@@ -25,6 +26,15 @@ import { UserAdditionalField } from './user-additional-field.entity';
             {
                 model: UserAdditionalField,
                 as: 'additionalField',
+                required: false,
+            }
+        ]
+    }),
+    withHautAiField: () => ({
+        include: [
+            {
+                model: UserHautAiField,
+                as: 'hautAiField',
                 required: false,
             }
         ]
@@ -78,6 +88,9 @@ export class User extends Model {
 
     @HasOne(() => UserAdditionalField, 'userId')
     additionalField: UserAdditionalField;
+
+    @HasOne(() => UserHautAiField, 'userId')
+    hautAiField: UserHautAiField;
 
     @BeforeCreate
     static hashPasswordBeforeCreate(model) {

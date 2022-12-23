@@ -387,3 +387,17 @@ Resources:
           Properties:
             Path: /users/biomarkers/results/recommendations/reactions
             Method: ANY
+
+  HautAiFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/haut-ai/src/main.handler
+      Description: 
+      Events:
+        HautAiFaceSkinMetricsImagesApi:
+          Type: Api
+          Properties:
+            Path: /haut-ai/face-skin-metrics/images
+            Method: ANY
