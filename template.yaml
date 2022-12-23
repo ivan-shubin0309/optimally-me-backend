@@ -387,3 +387,8 @@ Resources:
           Properties:
             Path: /users/biomarkers/results/recommendations/reactions
             Method: ANY
+        UsersBiomarkersIdFiltersApi:
+          Type: Api
+          Properties:
+            Path: /users/biomarkers/{id}/filters
+            Method: ANY
