@@ -1,5 +1,5 @@
 import { getFiltersAllQuery, getSpecificFiltersQuery, ISpecificFiltersQueryOptions } from '../../../../common/src/resources/biomarkers/queries';
-import { Table, Column, Model, Scopes, DataType, ForeignKey, HasMany, HasOne } from 'sequelize-typescript';
+import { Table, Column, Model, Scopes, DataType, ForeignKey, HasMany, HasOne, BelongsTo } from 'sequelize-typescript';
 import { Biomarker } from '../biomarker.entity';
 import { FilterBulletList } from '../filterBulletLists/filter-bullet-list.entity';
 import { FilterEthnicity } from '../filterEthnicity/filter-ethnicity.entity';
@@ -58,6 +58,15 @@ import sequelize from 'sequelize';
     }),
     byBiomarkerIdAndAllFilter: (biomarkerIds: number[]) => ({ where: { id: sequelize.literal(`id IN (${getFiltersAllQuery(biomarkerIds)})`) } }),
     byId: (id) => ({ where: { id } }),
+    withBiomarker: () => ({
+        include: [
+            {
+                model: Biomarker,
+                as: 'biomarker',
+                required: false,
+            },
+        ]
+    }),
 }))
 @Table({
     tableName: 'filters',
@@ -225,4 +234,7 @@ export class Filter extends Model {
 
     @HasMany(() => FilterBulletList, 'filterId')
     bulletList: FilterBulletList[];
+
+    @BelongsTo(() => Biomarker, 'biomarkerId')
+    biomarker: Biomarker;
 }
