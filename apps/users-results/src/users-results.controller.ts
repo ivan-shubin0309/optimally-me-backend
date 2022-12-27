@@ -15,6 +15,7 @@ import { RecommendationsWithoutPaginationDto } from './models/user-recommendatio
 import { GetUserResultsDto } from './models/get-user-results-list.dto';
 import { PutReactRecommendationDto } from './models/put-react-recommendation.dto';
 import { DeleteReactRecommendationDto } from './models/delete-react-recommendation.dto';
+import { FilterWithBiomarkerDto } from '../../biomarkers/src/models/filters/filter-with-biomarker.dto';
 
 @ApiBearerAuth()
 @ApiTags('users/biomarkers/results')
@@ -168,11 +169,11 @@ export class UsersResultsController {
         await this.userRecommendationsService.removeReaction(req.user.userId, body.recommendationId);
     }
 
-    @ApiResponse({ type: () => FilterDto })
+    @ApiResponse({ type: () => FilterWithBiomarkerDto })
     @ApiOperation({ summary: 'Get filter all by biomarker id' })
     @Roles(UserRoles.user)
     @Get('/:id/filters')
-    async getFilterByBiomarkerId(@Param() param: EntityByIdDto): Promise<FilterDto> {
+    async getFilterByBiomarkerId(@Param() param: EntityByIdDto): Promise<FilterWithBiomarkerDto> {
         let filter = await this.filtersService.getOne([
             { method: ['byBiomarkerIdAndAllFilter', [param.id]] }
         ]);
@@ -191,6 +192,11 @@ export class UsersResultsController {
             });
         }
 
-        return new FilterDto(filter);
+        filter = await this.filtersService.getOne([
+            { method: ['byId', param.id] },
+            'withBiomarker'
+        ]);
+
+        return new FilterWithBiomarkerDto(filter);
     }
 }
