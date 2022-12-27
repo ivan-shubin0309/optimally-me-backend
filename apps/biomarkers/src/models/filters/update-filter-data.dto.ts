@@ -25,14 +25,14 @@ export class UpdateFilterDataDto {
         this.biomarkerId = biomarkerId;
     }
 
-    readonly name: string;
-    readonly summary: string;
-    readonly whatIsIt: string;
-    readonly whatAreTheRisksLow: string;
-    readonly whatAreTheRisksHigh: string;
-    readonly whatAreTheCausesLow: string;
-    readonly whatAreTheCausesHigh: string;
-    readonly whatCanYouDo: string;
+    readonly name: string = null;
+    readonly summary: string = null;
+    readonly whatIsIt: string = null;
+    readonly whatAreTheRisksLow: string = null;
+    readonly whatAreTheRisksHigh: string = null;
+    readonly whatAreTheCausesLow: string = null;
+    readonly whatAreTheCausesHigh: string = null;
+    readonly whatCanYouDo: string = null;
     readonly criticalLow: number = null;
     readonly lowMin: number = null;
     readonly lowMax: number = null;
