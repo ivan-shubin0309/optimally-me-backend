@@ -14,7 +14,7 @@ module.exports = {
     return queryInterface.sequelize.query(`
       ALTER TABLE filters
         MODIFY COLUMN biomarkerId INTEGER NOT NULL,
-        DROP CONSTRAINT removedFromBiomarker_fk,
+        DROP FOREIGN KEY removedFromBiomarker_fk,
         DROP COLUMN removedFromBiomarkerId;
     `);
   }
