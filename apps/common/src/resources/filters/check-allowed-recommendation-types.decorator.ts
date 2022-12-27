@@ -27,7 +27,7 @@ export function CheckAllowedRecommendationTypes(validationOptions?: ValidationOp
                         ) {
                             return typeof filter[recommendationType.key] === 'number';
                         } else {
-                            return typeof filter[`${recommendationType.key}Min`] === 'number' && typeof filter[`${recommendationType.key}Max`] === 'number';
+                            return typeof filter[`${recommendationType.key}Min`] === 'number' || typeof filter[`${recommendationType.key}Max`] === 'number';
                         }
                     });
 

@@ -25,10 +25,10 @@ export function CheckAllowedSummaries(validationOptions?: ValidationOptions) {
                                 || (typeof filter[recommendationType.key] !== 'number' && typeof summary[recommendationType.key] !== 'string');
                         } else {
                             return (
-                                (typeof filter[`${recommendationType.key}Min`] === 'number' && typeof filter[`${recommendationType.key}Max`] === 'number')
+                                (typeof filter[`${recommendationType.key}Min`] === 'number' || typeof filter[`${recommendationType.key}Max`] === 'number')
                                 && typeof summary[recommendationType.key] === 'string'
                             ) || (
-                                    (typeof filter[`${recommendationType.key}Min`] !== 'number' || typeof filter[`${recommendationType.key}Max`] !== 'number')
+                                (typeof filter[`${recommendationType.key}Min`] !== 'number' && typeof filter[`${recommendationType.key}Max`] !== 'number')
                                     && typeof summary[recommendationType.key] !== 'string'
                                 );
                         }
