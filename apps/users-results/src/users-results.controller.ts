@@ -193,7 +193,7 @@ export class UsersResultsController {
         }
 
         filter = await this.filtersService.getOne([
-            { method: ['byId', param.id] },
+            { method: ['byId', filter.id] },
             'withBiomarker'
         ]);
 
