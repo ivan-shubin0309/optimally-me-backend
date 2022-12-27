@@ -20,7 +20,6 @@ import { Unit } from './models/units/unit.entity';
 import { StudyLink } from './models/filterBulletLists/study-link.entity';
 import { UserAdditionalField } from '../../users/src/models/user-additional-field.entity';
 import { ImpactStudyLink } from './models/recommendationImpacts/impact-study-link.entity';
-import { UserResult } from '../../admins-results/src/models/user-result.entity';
 import { UserRecommendation } from './models/userRecommendations/user-recommendation.entity';
 
 export const modelProviders = [
@@ -111,10 +110,6 @@ export const modelProviders = [
     {
         provide: 'IMPACT_STUDY_LINK_MODEL',
         useValue: ImpactStudyLink,
-    },
-    {
-        provide: 'USER_RESULT_MODEL',
-        useValue: UserResult,
     },
     {
         provide: 'USER_RECOMMENDATION_MODEL',

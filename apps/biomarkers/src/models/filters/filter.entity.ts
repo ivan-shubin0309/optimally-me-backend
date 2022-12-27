@@ -72,6 +72,13 @@ export class Filter extends Model {
     })
     biomarkerId: number;
 
+    @ForeignKey(() => Biomarker)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: true
+    })
+    removedFromBiomarkerId: number;
+
     @Column({
         type: DataType.STRING,
         allowNull: true
