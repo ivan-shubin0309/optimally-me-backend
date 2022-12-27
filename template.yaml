@@ -401,3 +401,8 @@ Resources:
           Properties:
             Path: /haut-ai/face-skin-metrics/images
             Method: ANY
+        HautAiFaceSkinMetricsResultsApi:
+          Type: Api
+          Properties:
+            Path: /haut-ai/face-skin-metrics/results
+            Method: ANY

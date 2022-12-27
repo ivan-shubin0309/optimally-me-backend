@@ -9,7 +9,7 @@ import { SubjectInDto } from './models/subject-in.dto';
 import { File } from '../../files/src/models/file.entity';
 import axios from 'axios';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
-import { connection, IUtf8Message } from 'websocket';
+import { HautAiUploadedPhotoDto } from './models/haut-ai-uploaded-photo.dto';
 
 @Injectable()
 export class UserHautAiFieldsService extends BaseService<UserHautAiField> {
@@ -32,13 +32,16 @@ export class UserHautAiFieldsService extends BaseService<UserHautAiField> {
         return subjectId;
     }
 
-    getHautAiUser(): Promise<{ accessToken: string, userId: number }> {
-        return this.hautAiService.getHautAiUser();
+    getAccessToken(): string {
+        return this.hautAiService.getAccessToken();
     }
 
-    async uploadPhotoToHautAi(file: File, subjectId: string, hautAiUser: { accessToken: string, userId: number }): Promise<any> {
-        const batchId = await this.hautAiService.createBatch(hautAiUser.accessToken, this.configService.get('HAUT_AI_DATASET_ID'), subjectId);
+    async uploadPhotoToHautAi(file: File, subjectId: string, accessToken: string): Promise<HautAiUploadedPhotoDto> {
+        console.log('Creating batch');
+        const batchId = await this.hautAiService.createBatch(accessToken, this.configService.get('HAUT_AI_DATASET_ID'), subjectId);
+        console.log(`Batch created id ${batchId}`);
 
+        console.log('Getting file from S3');
         const response = await axios
             .get(
                 FileHelper
@@ -53,31 +56,19 @@ export class UserHautAiFieldsService extends BaseService<UserHautAiField> {
                     statusCode: HttpStatus.UNPROCESSABLE_ENTITY
                 });
             });
-        const fileBuffer = Buffer.from(response.data, 'utf-8');
 
-        await new Promise((resolve, reject) => {
-            this.hautAiService.subscribeToNotifications(
-                hautAiUser.accessToken,
-                hautAiUser.userId,
-                (data: IUtf8Message, connection: connection) => {
-                    console.log(data);
-                    const body = JSON.parse(data.utf8Data);
-                    if (body.meta.batch_id === batchId) {
-                        //connection.close();
-                        resolve(body);
-                    }
-                }
-            );
-        }).catch(error => {
-            throw new UnprocessableEntityException({
-                message: error.message,
-                errorCode: 'HAUT_AI_WEBSOCKET_ERROR',
-                statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-            });
-        });
+        console.log('Uploading file to haut ai');
+        const uploadedFileId = await this.hautAiService.uploadPhotoToBatch(accessToken, this.configService.get('HAUT_AI_DATASET_ID'), subjectId, batchId, response.data, { name: file.name });
+        console.log('File uploaded');
 
-        const uploadedFileId = await this.hautAiService.uploadPhotoToBatch(hautAiUser.accessToken, this.configService.get('HAUT_AI_DATASET_ID'), subjectId, batchId, fileBuffer, { name: file.name });
+        return {
+            subjectId,
+            batchId,
+            uploadedFileId
+        };
+    }
 
-        return this.hautAiService.getImageResults(hautAiUser.accessToken, this.configService.get('HAUT_AI_DATASET_ID'), subjectId, batchId, uploadedFileId);
+    async getImageResults(accessToken: string, subjectId: string, batchId: string, imageId: string) {
+        return this.hautAiService.getImageResults(accessToken, this.configService.get('HAUT_AI_DATASET_ID'), subjectId, batchId, imageId);
     }
 }
