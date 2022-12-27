@@ -14,8 +14,8 @@ import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-
 import { Transaction } from 'sequelize/types';
 import { FiltersService } from './services/filters/filters.service';
 import { UpdateBiomarkerDto } from './models/update-biomarker.dto';
-import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
 import { BiomarkerHelper } from '../../common/src/resources/biomarkers/biomarker-helper';
+import { UpdateBiomarkerDataDto } from './models/update-biomarker-data.dto';
 
 interface IBiomarkerGetOneOptions {
     readonly filters?: { isIncludeAll: boolean }
@@ -33,7 +33,6 @@ export class BiomarkersService extends BaseService<Biomarker> {
         @Inject('UNIT_MODEL') readonly unitModel: Repository<Unit>,
         @Inject('CATEGORY_MODEL') readonly categoryModel: Repository<Category>,
         @Inject('RECOMMENDATION_MODEL') readonly recommendationModel: Repository<Recommendation>,
-        private readonly adminsResultsService: AdminsResultsService,
         private readonly filtersService: FiltersService,
     ) { super(model); }
 
@@ -55,7 +54,7 @@ export class BiomarkersService extends BaseService<Biomarker> {
         );
     }
 
-    async update(biomarker: Biomarker, body: CreateBiomarkerDto): Promise<Biomarker> {
+    async update(biomarker: Biomarker, body: UpdateBiomarkerDataDto): Promise<Biomarker> {
         const biomarkerId = await this.dbConnection.transaction(async transaction => {
             const scopes: any[] = [{ method: ['byBiomarkerId', biomarker.id] }];
 
@@ -63,14 +62,7 @@ export class BiomarkersService extends BaseService<Biomarker> {
 
             biomarkerUpdateBody.sex = BiomarkerHelper.getBiomarkerSex(body);
 
-            if (biomarker.filters && biomarker.filters.length) {
-                await this.adminsResultsService.dettachFilters(biomarker.filters.map(filter => filter.id), transaction);
-            }
-
-            await Promise.all([
-                this.alternativeNameModel.scope(scopes).destroy({ transaction }),
-                this.filterModel.scope(scopes).destroy({ transaction }),
-            ]);
+            await this.alternativeNameModel.scope(scopes).destroy({ transaction });
 
             if (body.ruleName) {
                 const rule = await this.biomarkersFactory.createRule(body, transaction);
@@ -79,13 +71,11 @@ export class BiomarkersService extends BaseService<Biomarker> {
 
             await biomarker.update(biomarkerUpdateBody, { transaction });
 
-            const promises = body.filters.map(filter => this.biomarkersFactory.attachFilter(filter, biomarker.id, transaction));
-
             if (body.alternativeNames && body.alternativeNames.length) {
-                promises.push(this.biomarkersFactory.attachAlternativeNames(body.alternativeNames, biomarker.id, transaction));
+                await this.biomarkersFactory.attachAlternativeNames(body.alternativeNames, biomarker.id, transaction);
             }
 
-            await Promise.all(promises);
+            await this.filtersService.update(body.filters, biomarker.id, transaction);
 
             return biomarker.id;
         });

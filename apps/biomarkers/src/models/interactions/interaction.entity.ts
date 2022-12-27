@@ -2,7 +2,9 @@ import { InteractionTypes } from '../../../../common/src/resources/interactions/
 import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
 import { Filter } from '../filters/filter.entity';
 
-@Scopes(() => ({}))
+@Scopes(() => ({
+    byFilterId: (filterId) => ({ where: { filterId } }),
+}))
 @Table({
     tableName: 'interactions',
     timestamps: true,

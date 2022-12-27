@@ -49,7 +49,9 @@ export class UsersResultsController {
         if (count) {
             scopes.push(
                 { method: ['pagination', { limit, offset }] },
-                { method: ['orderBy', [['date', 'desc']]] }
+                { method: ['orderBy', [['date', 'desc']]] },
+                'withUnit',
+                'withBiomarker'
             );
             userResultsList = await this.usersResultsService.getList(scopes);
         }
@@ -164,5 +166,31 @@ export class UsersResultsController {
         }
 
         await this.userRecommendationsService.removeReaction(req.user.userId, body.recommendationId);
+    }
+
+    @ApiResponse({ type: () => FilterDto })
+    @ApiOperation({ summary: 'Get filter all by biomarker id' })
+    @Roles(UserRoles.user)
+    @Get('/:id/filters')
+    async getFilterByBiomarkerId(@Param() param: EntityByIdDto): Promise<FilterDto> {
+        let filter = await this.filtersService.getOne([
+            { method: ['byBiomarkerIdAndAllFilter', [param.id]] }
+        ]);
+
+        if (!filter) {
+            filter = await this.filtersService.getOne([
+                { method: ['byBiomarkerId', param.id] }
+            ]);
+        }
+
+        if (!filter) {
+            throw new NotFoundException({
+                message: this.translator.translate('FILTER_NOT_FOUND'),
+                errorCode: 'FILTER_NOT_FOUND',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        return new FilterDto(filter);
     }
 }

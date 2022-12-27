@@ -52,7 +52,7 @@ import { RecommendationImpactsService } from './services/recommendation-impacts/
 import { CacheService } from '../../common/src/resources/cache/cache.service';
 import { PatchRecommendationDto } from './models/recommendations/patch-recommendation.dto';
 import { SessionDataDto } from '../../sessions/src/models';
-import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
+import { UpdateBiomarkerDataDto } from './models/update-biomarker-data.dto';
 
 const RULE_PREFIX = 'rule';
 
@@ -249,11 +249,11 @@ export class BiomarkersController {
     return this.filterCharacteristicsService.getFilterCharacteristics();
   }
 
-  @ApiResponse({ type: () => BiomarkerDto })
+  @ApiResponse({ type: () => UpdateBiomarkerDataDto })
   @ApiOperation({ summary: 'Update biomarker' })
   @Roles(UserRoles.superAdmin)
   @Put('/:id')
-  async updateBiomarker(@Param() param: EntityByIdDto, @Body() body: CreateBiomarkerDto): Promise<BiomarkerDto> {
+  async updateBiomarker(@Param() param: EntityByIdDto, @Body() body: UpdateBiomarkerDataDto): Promise<BiomarkerDto> {
     let biomarker = await this.biomarkersService.getOne(
       [
         { method: ['byId', param.id] },

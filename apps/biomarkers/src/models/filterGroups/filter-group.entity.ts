@@ -3,7 +3,9 @@ import { Table, Column, Model, DataType, Scopes, ForeignKey } from 'sequelize-ty
 import { Filter } from '../filters/filter.entity';
 import { RecommendationTypes } from '../../../../common/src/resources/recommendations/recommendation-types';
 
-@Scopes(() => ({}))
+@Scopes(() => ({
+    byFilterId: (filterId) => ({ where: { filterId } }),
+}))
 @Table({
     tableName: 'filterGroups',
     timestamps: true,
