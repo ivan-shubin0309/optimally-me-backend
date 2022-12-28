@@ -1,4 +1,4 @@
-import { CreateFilterDto } from '../../../../biomarkers/src/models/filters/create-filter.dto';
+import { CreateBloodFilterDto } from '../../../../biomarkers/src/models/filters/create-blood-filter.dto';
 import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
 import { CreateWhatAreTheRisksDto } from '../../../../biomarkers/src/models/filters/create-what-are-the-risks.dto';
 import { CreateWhatAreTheCausesDto } from '../../../../biomarkers/src/models/filters/create-what-are-the-causes.dto';
@@ -13,7 +13,7 @@ export function CheckIsAllowedTextField(validationOptions?: ValidationOptions) {
             options: validationOptions,
             validator: {
                 validate(entity: CreateWhatAreTheRisksDto | CreateWhatAreTheCausesDto, args: ValidationArguments): boolean {
-                    const filter: CreateFilterDto = args.object as CreateFilterDto;
+                    const filter: CreateBloodFilterDto = args.object as CreateBloodFilterDto;
                     let isValidLow = true, isValidHigh = true;
 
                     if (typeof entity.low === 'string') {

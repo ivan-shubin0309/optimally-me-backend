@@ -2,8 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { FilterValidationRules } from '../../../../common/src/resources/filters/validation-rules';
 import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import { Transform, TransformFnParams } from 'class-transformer';
+import { ICreateResultSummary } from '../create-biomarker.interface';
 
-export class CreateFilterSummaryDto {
+export class CreateFilterSummaryDto implements ICreateResultSummary {
     @ApiProperty({ type: () => String, required: false })
     @IsString()
     @MaxLength(FilterValidationRules.summaryMaxLength)

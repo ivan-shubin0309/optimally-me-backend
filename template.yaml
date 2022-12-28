@@ -155,15 +155,15 @@ Resources:
       Handler: dist/apps/biomarkers/src/main.handler
       Description:
       Events:
-        BiomarkersApi:
+        BloodBiomarkersApi:
           Type: Api
           Properties:
-            Path: /biomarkers
+            Path: /biomarkers/blood
             Method: ANY
-        BiomarkersByIdApi:
+        BloodBiomarkersByIdApi:
           Type: Api
           Properties:
-            Path: /biomarkers/{id}
+            Path: /biomarkers/blood/{id}
             Method: ANY
         CategoriesApi:
           Type: Api
@@ -204,6 +204,16 @@ Resources:
           Type: Api
           Properties:
             Path: /biomarkers/filters/characteristics
+            Method: ANY
+        SkinBiomarkersApi:
+          Type: Api
+          Properties:
+            Path: biomarkers/skin
+            Method: ANY
+        SkinBiomarkersByIdApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/skin/{id}
             Method: ANY
 
   WefitterFunction:

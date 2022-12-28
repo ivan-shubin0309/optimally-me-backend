@@ -4,8 +4,9 @@ import { ArrayNotEmpty, ArrayUnique, IsEnum, IsNotEmpty, IsNumber } from 'class-
 import { FilterGroupTypes } from '../../../../common/src/resources/filterGroups/filter-group-types';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
 import { ValidateGroupRecommendationTypes } from '../../../../common/src/resources/filterGroups/validate-group-recommendation-types.decorator';
+import { ICreateFilterGroup } from '../create-biomarker.interface';
 
-export class CreateFilterGroupDto {
+export class CreateFilterGroupDto implements ICreateFilterGroup {
     @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(FilterGroupTypes) })
     @IsNumber()
     @IsEnum(FilterGroupTypes)

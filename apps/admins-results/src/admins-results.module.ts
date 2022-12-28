@@ -14,9 +14,10 @@ import { AdminsResultsController } from './admins-results.controller';
 import { AdminsResultsService } from './admins-results.service';
 import { modelProviders } from './models.provider';
 import { UnitsService } from '../../biomarkers/src/services/units/units.service';
-import { BiomarkersFactory } from '../../biomarkers/src/biomarkers.factory';
+import { BloodBiomarkersFactory } from '../../biomarkers/src/blood-biomarkers.factory';
 import { FiltersService } from '../../biomarkers/src/services/filters/filters.service';
 import { UserRecommendationsService } from '../../biomarkers/src/services/userRecommendations/user-recommendations.service';
+import { SkinBiomarkersFactory } from '../../biomarkers/src/skin-biomarkers.factory';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { UserRecommendationsService } from '../../biomarkers/src/services/userRe
   providers: [
     AdminsResultsService,
     BiomarkersService,
-    BiomarkersFactory,
+    BloodBiomarkersFactory,
+    SkinBiomarkersFactory,
     UnitsService,
     SessionsService,
     UsersService,

@@ -15,7 +15,6 @@ import { modelProviders } from './models.provider';
 import { FiltersService } from '../../biomarkers/src/services/filters/filters.service';
 import { UserRecommendationsService } from '../../biomarkers/src/services/userRecommendations/user-recommendations.service';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
-import { BiomarkersFactory } from '../../biomarkers/src/biomarkers.factory';
 
 @Module({
     imports: [
@@ -33,7 +32,6 @@ import { BiomarkersFactory } from '../../biomarkers/src/biomarkers.factory';
         FiltersService,
         JwtStrategy,
         FileHelper,
-        BiomarkersFactory,
         ...guardProviders,
         sequelizeProvider(entities),
         ...modelProviders

@@ -28,7 +28,7 @@ import { GetListDto } from '../../common/src/models/get-list.dto';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
 import { RecommendationsService } from './services/recommendations/recommendations.service';
 import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-types';
-import { CreateBiomarkerDto } from './models/create-biomarker.dto';
+import { CreateBloodBiomarkerDto } from './models/create-blood-biomarker.dto';
 import { CategoriesDto } from './models/categories/categories.dto';
 import { UnitsDto } from './models/units/units.dto';
 import { FilterCharacteristicsDto } from './models/filters/filter-characteristics.dto';
@@ -52,7 +52,9 @@ import { RecommendationImpactsService } from './services/recommendation-impacts/
 import { CacheService } from '../../common/src/resources/cache/cache.service';
 import { PatchRecommendationDto } from './models/recommendations/patch-recommendation.dto';
 import { SessionDataDto } from '../../sessions/src/models';
-import { UpdateBiomarkerDataDto } from './models/update-biomarker-data.dto';
+import { UpdateBloodBiomarkerDto } from './models/update-blood-biomarker.dto';
+import { CreateSkinBiomarkerDto } from './models/create-skin-biomarker.dto';
+import { UpdateSkinBiomarkerDto } from './models/update-skin-biomarker.dto';
 
 const RULE_PREFIX = 'rule';
 
@@ -81,11 +83,11 @@ export class BiomarkersController {
   @ApiOperation({ summary: 'Create biomarker' })
   @HttpCode(HttpStatus.CREATED)
   @Roles(UserRoles.superAdmin)
-  @Post('')
-  async createBiomarker(@Body() body: CreateBiomarkerDto): Promise<BiomarkerDto> {
+  @Post('/blood')
+  async createBiomarker(@Body() body: CreateBloodBiomarkerDto): Promise<BiomarkerDto> {
     let biomarker = await this.biomarkersService.getOne([
       { method: ['byName', body.name] },
-      { method: ['byType', BiomarkerTypes.biomarker] }
+      { method: ['byType', BiomarkerTypes.blood] }
     ]);
 
     if (biomarker) {
@@ -96,9 +98,9 @@ export class BiomarkersController {
       });
     }
 
-    await this.biomarkersService.validateBody(body);
+    await this.biomarkersService.validateBody(body, BiomarkerTypes.bloodRule);
 
-    biomarker = await this.biomarkersService.create(body);
+    biomarker = await this.biomarkersService.createBloodBiomarker(body);
 
     return new BiomarkerDto(biomarker);
   }
@@ -152,7 +154,7 @@ export class BiomarkersController {
 
     let rulesList = [];
     const scopes: any[] = [
-      { method: ['byType', BiomarkerTypes.rule] },
+      { method: ['byType', BiomarkerTypes.bloodRule] },
       { method: ['byIsDeleted', false] },
     ];
 
@@ -174,7 +176,7 @@ export class BiomarkersController {
   async deleteRule(@Param() param: EntityByIdDto): Promise<void> {
     const biomarker = await this.biomarkersService.getOne([
       { method: ['byId', param.id] },
-      { method: ['byType', BiomarkerTypes.rule] },
+      { method: ['byType', BiomarkerTypes.bloodRule] },
       { method: ['byIsDeleted', false] }
     ]);
 
@@ -249,15 +251,15 @@ export class BiomarkersController {
     return this.filterCharacteristicsService.getFilterCharacteristics();
   }
 
-  @ApiResponse({ type: () => UpdateBiomarkerDataDto })
+  @ApiResponse({ type: () => UpdateBloodBiomarkerDto })
   @ApiOperation({ summary: 'Update biomarker' })
   @Roles(UserRoles.superAdmin)
-  @Put('/:id')
-  async updateBiomarker(@Param() param: EntityByIdDto, @Body() body: UpdateBiomarkerDataDto): Promise<BiomarkerDto> {
+  @Put('/blood/:id')
+  async updateBiomarker(@Param() param: EntityByIdDto, @Body() body: UpdateBloodBiomarkerDto): Promise<BiomarkerDto> {
     let biomarker = await this.biomarkersService.getOne(
       [
         { method: ['byId', param.id] },
-        { method: ['byType', BiomarkerTypes.biomarker] },
+        { method: ['byType', BiomarkerTypes.blood] },
         'withFilters'
       ],
       null,
@@ -274,7 +276,7 @@ export class BiomarkersController {
 
     const biomarkerWithName = await this.biomarkersService.getOne([
       { method: ['byName', body.name] },
-      { method: ['byType', BiomarkerTypes.biomarker] },
+      { method: ['byType', BiomarkerTypes.blood] },
     ]);
 
     if (biomarkerWithName && biomarkerWithName.id !== biomarker.id) {
@@ -285,9 +287,9 @@ export class BiomarkersController {
       });
     }
 
-    await this.biomarkersService.validateBody(body);
+    await this.biomarkersService.validateBody(body, BiomarkerTypes.bloodRule);
 
-    biomarker = await this.biomarkersService.update(biomarker, body);
+    biomarker = await this.biomarkersService.updateBloodBiomarker(biomarker, body);
 
     return new BiomarkerDto(biomarker);
   }
@@ -303,7 +305,7 @@ export class BiomarkersController {
 
     let biomarkersList = [];
     const scopes: any[] = [
-      { method: ['byType', BiomarkerTypes.biomarker] },
+      { method: ['byType', BiomarkerTypes.blood] },
       { method: ['withCategory', true] },
       'withUnit'
     ];
@@ -345,7 +347,7 @@ export class BiomarkersController {
     const biomarker = await this.biomarkersService.getOne(
       [
         { method: ['byId', id] },
-        { method: ['byType', BiomarkerTypes.biomarker] },
+        { method: ['byType', BiomarkerTypes.blood] },
         'withCategory',
         'withUnit',
         'withAlternativeNames',
@@ -374,7 +376,7 @@ export class BiomarkersController {
   async removeBiomarker(@Param() param: EntityByIdDto): Promise<void> {
     const biomarker = await this.biomarkersService.getOne([
       { method: ['byId', param.id] },
-      { method: ['byType', BiomarkerTypes.biomarker] }
+      { method: ['byType', BiomarkerTypes.blood] }
     ]);
 
     if (!biomarker) {
@@ -405,7 +407,7 @@ export class BiomarkersController {
       const biomarkerIdsCount = Object.keys(biomarkerIdsMap).length;
       const biomarkersCount = await this.biomarkersService.getCount([
         { method: ['byId', body.impacts.map(impact => impact.biomarkerId)] },
-        { method: ['byType', BiomarkerTypes.biomarker] },
+        { method: ['byType', BiomarkerTypes.blood] },
         { method: ['byIsDeleted', false] }
       ]);
       if (biomarkersCount !== biomarkerIdsCount) {
@@ -437,7 +439,7 @@ export class BiomarkersController {
     const biomarker = await this.biomarkersService.getOne(
       [
         { method: ['byId', param.id] },
-        { method: ['byType', BiomarkerTypes.rule] },
+        { method: ['byType', BiomarkerTypes.bloodRule] },
         { method: ['byIsDeleted', false] },
       ],
       null,
@@ -542,7 +544,7 @@ export class BiomarkersController {
       const biomarkerIdsCount = Object.keys(biomarkerIdsMap).length;
       const biomarkersCount = await this.biomarkersService.getCount([
         { method: ['byId', body.impacts.map(impact => impact.biomarkerId)] },
-        { method: ['byType', BiomarkerTypes.biomarker] },
+        { method: ['byType', BiomarkerTypes.blood] },
         { method: ['byIsDeleted', false] }
       ]);
       if (biomarkersCount !== biomarkerIdsCount) {
@@ -603,5 +605,75 @@ export class BiomarkersController {
     }
 
     await this.recommendationsService.copy(recommendation, req.user);
+  }
+
+  @ApiCreatedResponse({ type: () => BiomarkerDto })
+  @ApiOperation({ summary: 'Create skin biomarker' })
+  @HttpCode(HttpStatus.CREATED)
+  @Roles(UserRoles.superAdmin)
+  @Post('/skin')
+  async createSkinBiomarker(@Body() body: CreateSkinBiomarkerDto): Promise<BiomarkerDto> {
+    let biomarker = await this.biomarkersService.getOne([
+      { method: ['byName', body.name] },
+      { method: ['byType', BiomarkerTypes.skin] }
+    ]);
+
+    if (biomarker) {
+      throw new BadRequestException({
+        message: this.translator.translate('BIOMARKER_ALREADY_EXIST'),
+        errorCode: 'BIOMARKER_ALREADY_EXIST',
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+    }
+
+    await this.biomarkersService.validateBody(body, BiomarkerTypes.skinRule);
+
+    biomarker = await this.biomarkersService.createSkinBiomarker(body);
+
+    return new BiomarkerDto(biomarker);
+  }
+
+  @ApiResponse({ type: () => BiomarkerDto })
+  @ApiOperation({ summary: 'Update skin biomarker' })
+  @HttpCode(HttpStatus.OK)
+  @Roles(UserRoles.superAdmin)
+  @Post('/skin/:id')
+  async updateSkinBiomarker(@Param() param: EntityByIdDto, @Body() body: UpdateSkinBiomarkerDto): Promise<BiomarkerDto> {
+    let biomarker = await this.biomarkersService.getOne(
+      [
+        { method: ['byId', param.id] },
+        { method: ['byType', BiomarkerTypes.skin] },
+        'withFilters'
+      ],
+      null,
+      { filters: { isIncludeAll: true } }
+    );
+
+    if (!biomarker) {
+      throw new NotFoundException({
+        message: this.translator.translate('BIOMARKER_NOT_FOUND'),
+        errorCode: 'BIOMARKER_NOT_FOUND',
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+    }
+
+    const biomarkerWithName = await this.biomarkersService.getOne([
+      { method: ['byName', body.name] },
+      { method: ['byType', BiomarkerTypes.skin] },
+    ]);
+
+    if (biomarkerWithName && biomarkerWithName.id !== biomarker.id) {
+      throw new BadRequestException({
+        message: this.translator.translate('BIOMARKER_ALREADY_EXIST'),
+        errorCode: 'BIOMARKER_ALREADY_EXIST',
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+    }
+
+    await this.biomarkersService.validateBody(body, BiomarkerTypes.skinRule);
+
+    biomarker = await this.biomarkersService.updateSkinBiomarker(biomarker, body);
+
+    return new BiomarkerDto(biomarker);
   }
 }

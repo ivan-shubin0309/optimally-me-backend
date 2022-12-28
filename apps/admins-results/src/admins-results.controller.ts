@@ -66,7 +66,7 @@ export class AdminsResultsController {
     const biomarkerIdsCount = Object.keys(biomarkerIdsMap).length;
     const biomarkersCount = await this.biomarkersService.getCount([
       { method: ['byId', body.results.map(result => result.biomarkerId)] },
-      { method: ['byType', BiomarkerTypes.biomarker] }
+      { method: ['byType', BiomarkerTypes.blood] }
     ]);
     if (biomarkersCount !== biomarkerIdsCount) {
       throw new NotFoundException({

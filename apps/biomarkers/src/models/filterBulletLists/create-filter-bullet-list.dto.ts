@@ -4,8 +4,9 @@ import { FilterValidationRules } from '../../../../common/src/resources/filters/
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { ArrayMaxSize, IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { ICreateFilterBulletList } from '../create-biomarker.interface';
 
-export class CreateFilterBulletListDto {
+export class CreateFilterBulletListDto implements ICreateFilterBulletList {
     @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(BulletListTypes) })
     @IsNumber()
     @IsEnum(BulletListTypes)

@@ -1,4 +1,6 @@
 export enum BiomarkerTypes {
-    biomarker = 1,
-    rule = 2
+    blood = 1,
+    bloodRule = 2,
+    skin = 3,
+    skinRule = 4,
 }

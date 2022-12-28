@@ -5,8 +5,9 @@ import { IsArray, IsOptional, IsString, MaxLength, ValidateNested } from 'class-
 import { CreateFilterBulletListDto } from '../filterBulletLists/create-filter-bullet-list.dto';
 import { MaxFieldValueRepeatCount } from '../../../../common/src/resources/common/max-field-value-repeat-count.decorator';
 import { CheckAllowedTypes } from '../../../../common/src/resources/filterBulletLists/check-allowed-types.decorator';
+import { ICreateWhatAreTheCauses } from '../create-biomarker.interface';
 
-export class CreateWhatAreTheCausesDto {
+export class CreateWhatAreTheCausesDto implements ICreateWhatAreTheCauses {
     @ApiProperty({ type: () => String, required: false })
     @IsString()
     @MaxLength(FilterValidationRules.whatAreTheCausesMaxLength)

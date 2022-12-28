@@ -11,7 +11,7 @@ import { sequelizeProvider } from '../../common/src/utils/database/database.prov
 import { redisModuleInstance } from 'apps/common/src/utils/database/redis.provider';
 import { modelProviders } from './models.provider';
 import { translatorInstance } from '../../common/src/utils/translator/translator.provider';
-import { BiomarkersFactory } from './biomarkers.factory';
+import { BloodBiomarkersFactory } from './blood-biomarkers.factory';
 import { entities } from '../../common/src/utils/database/database-entity.provider';
 import { UnitsService } from './services/units/units.service';
 import { CategoriesService } from './services/categories/categories.service';
@@ -25,6 +25,7 @@ import { S3Service } from '../../files/src/s3.service';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
 import { RecommendationImpactsService } from './services/recommendation-impacts/recommendation-impacts.service';
 import { CacheService } from '../../common/src/resources/cache/cache.service';
+import { SkinBiomarkersFactory } from './skin-biomarkers.factory';
 
 @Module({
   imports: [
@@ -43,7 +44,8 @@ import { CacheService } from '../../common/src/resources/cache/cache.service';
     CategoriesService,
     FilterCharacteristicsService,
     JwtStrategy,
-    BiomarkersFactory,
+    BloodBiomarkersFactory,
+    SkinBiomarkersFactory,
     AlternativeNamesService,
     FiltersService,
     FilesService,

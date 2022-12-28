@@ -47,6 +47,10 @@ module.exports = {
         id: 11,
         name: 'Minerals',
       },
+      {
+        id: 12,
+        name: 'Skin',
+      },
     ], {});
   },
   down: async (queryInterface) => {

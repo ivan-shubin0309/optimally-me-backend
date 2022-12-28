@@ -35,7 +35,7 @@ export class UsersBiomarkersController {
     let biomarkersList = [], rangeCounters;
 
     const scopes: any[] = [
-      { method: ['byType', BiomarkerTypes.biomarker] },
+      { method: ['byType', BiomarkerTypes.blood] },
     ];
 
     const user = await this.usersService.getOne([

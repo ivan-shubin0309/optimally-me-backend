@@ -1,11 +1,11 @@
 import { BiomarkerSexTypes } from '../../../common/src/resources/biomarkers/biomarker-sex-types';
-import { CreateBiomarkerDto } from './create-biomarker.dto';
+import { ICreateBiomarker } from './create-biomarker.interface';
 
 export class UpdateBiomarkerDto {
-    constructor(body: CreateBiomarkerDto) {
+    constructor(body: ICreateBiomarker) {
         this.name = body.name;
         this.categoryId = body.categoryId;
-        this.unitId = body.unitId;
+        this.unitId = body.unitId || null;
         this.templateId = body.ruleId || null;
         this.label = body.label;
         this.shortName = body.shortName;
