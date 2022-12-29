@@ -8,6 +8,7 @@ import { UpdateBloodFilterDto } from '../../models/filters/update-blood-filter.d
 import { FilterRecommendation } from '../../models/recommendations/filter-recommendation.entity';
 import { UpdateFilterDataDto } from '../../models/filters/update-filter-data.dto';
 import { BiomarkersFactory } from '../../biomarkers.factory';
+import { IUpdateFilter } from '../../models/create-biomarker.interface';
 
 interface IFilterGetListOptions {
     readonly isIncludeAll: boolean,
@@ -115,7 +116,7 @@ export class FiltersService extends BaseService<Filter> {
         filter.bulletList = bulletLists;
     }
 
-    async update(filters: UpdateBloodFilterDto[], biomarkerId: number, biomarkerFactory: BiomarkersFactory, transaction?: Transaction): Promise<void> {
+    async update(filters: IUpdateFilter[], biomarkerId: number, biomarkerFactory: BiomarkersFactory, transaction?: Transaction): Promise<void> {
         const filtersToCreate = [], filtersToUpdate = [];
 
         filters.forEach(filter => {

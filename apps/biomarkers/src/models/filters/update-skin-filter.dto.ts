@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsNumber, IsOptional, IsPositive } from 'class-validator';
-import { CreateBloodFilterDto } from './create-blood-filter.dto';
+import { CreateSkinFilterDto } from './create-skin-filter.dto';
 
-export class UpdateSkinFilterDto extends CreateBloodFilterDto {
+export class UpdateSkinFilterDto extends CreateSkinFilterDto {
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
     @IsNumber()

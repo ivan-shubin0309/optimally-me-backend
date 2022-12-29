@@ -208,7 +208,7 @@ Resources:
         SkinBiomarkersApi:
           Type: Api
           Properties:
-            Path: biomarkers/skin
+            Path: /biomarkers/skin
             Method: ANY
         SkinBiomarkersByIdApi:
           Type: Api

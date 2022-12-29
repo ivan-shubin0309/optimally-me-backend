@@ -637,7 +637,7 @@ export class BiomarkersController {
   @ApiOperation({ summary: 'Update skin biomarker' })
   @HttpCode(HttpStatus.OK)
   @Roles(UserRoles.superAdmin)
-  @Post('/skin/:id')
+  @Put('/skin/:id')
   async updateSkinBiomarker(@Param() param: EntityByIdDto, @Body() body: UpdateSkinBiomarkerDto): Promise<BiomarkerDto> {
     let biomarker = await this.biomarkersService.getOne(
       [

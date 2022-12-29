@@ -16,6 +16,7 @@ import { FilterBulletList } from './models/filterBulletLists/filter-bullet-list.
 import { StudyLink } from './models/filterBulletLists/study-link.entity';
 import { BulletListCategories } from '../../common/src/resources/filterBulletLists/bullet-list-types';
 import { IAddRecommendation, ICreateBiomarker, ICreateFilter, ICreateFilterBulletList, ICreateFilterGroup, ICreateInteraction, ICreateResultSummary } from './models/create-biomarker.interface';
+import { UpdateFilterDataDto } from './models/filters/update-filter-data.dto';
 
 export abstract class BiomarkersFactory {
     constructor(
@@ -58,16 +59,8 @@ export abstract class BiomarkersFactory {
     abstract createRule(body: ICreateBiomarker, transaction?: Transaction): Promise<Biomarker>;
 
     async attachFilter(filter: ICreateFilter, biomarkerId: number, transaction?: Transaction): Promise<void> {
-        const filterToCreate: any = Object.assign(
-            { biomarkerId },
-            filter,
-            {
-                whatAreTheRisksLow: filter.whatAreTheRisks?.low,
-                whatAreTheRisksHigh: filter.whatAreTheRisks?.high,
-                whatAreTheCausesLow: filter.whatAreTheCauses?.low,
-                whatAreTheCausesHigh: filter.whatAreTheCauses?.high,
-            }
-        );
+        const filterToCreate: any = new UpdateFilterDataDto(filter, biomarkerId);
+
         const createdFilter = await this.filterModel.create(filterToCreate, { transaction });
 
         await this.attachAllToFilter(filter, createdFilter.id, transaction);
