@@ -143,6 +143,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/shopify/tsconfig.app.json"
       }
+    },
+    "haut-ai": {
+      "type": "application",
+      "root": "apps/haut-ai",
+      "entryFile": "main",
+      "sourceRoot": "apps/haut-ai/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/haut-ai/tsconfig.app.json"
+      }
     }
   }
 }

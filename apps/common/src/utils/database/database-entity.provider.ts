@@ -29,6 +29,7 @@ import { UserAdditionalField } from '../../../../users/src/models/user-additiona
 import { UserRecommendation } from '../../../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
 import { ImpactStudyLink } from '../../../../biomarkers/src/models/recommendationImpacts/impact-study-link.entity';
 import { RecommendationReaction } from '../../../../biomarkers/src/models/recommendationReactions/recommendation-reaction.entity';
+import { UserHautAiField } from '../../../../haut-ai/src/models/user-haut-ai-field.entity';
 
 export const entities = [
     User,
@@ -62,4 +63,5 @@ export const entities = [
     UserRecommendation,
     ImpactStudyLink,
     RecommendationReaction,
+    UserHautAiField,
 ];

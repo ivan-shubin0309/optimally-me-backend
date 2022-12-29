@@ -31,12 +31,11 @@ export class FilesController {
     private readonly filesService: FilesService,
     private readonly translator: TranslatorService,
     private readonly s3Service: S3Service,
-    private readonly configService: ConfigService,
   ) { }
 
   @ApiCreatedResponse({ type: () => FilesAwsMetaDto })
   @ApiOperation({ summary: 'Request for save files.', description: ApiDescriptions.postFile })
-  @Roles(UserRoles.superAdmin)
+  @Roles(UserRoles.superAdmin, UserRoles.user)
   @Post('')
   async prepareLoadUrls(@Body() body: FilesContentTypesDto, @Request() req: Request & { user: SessionDataDto }): Promise<FilesAwsMetaDto> {
     const filesRequests = this.filesService.prepareFiles(body, req.user);
@@ -55,7 +54,7 @@ export class FilesController {
   @ApiOperation({ summary: 'Patch file statuses to be loaded' })
   @ApiResponse({ type: () => FilesDto })
   @HttpCode(HttpStatus.OK)
-  @Roles(UserRoles.superAdmin)
+  @Roles(UserRoles.superAdmin, UserRoles.user)
   @Patch('')
   async patchFileStatuses(@Body() body: PatchFilesDto): Promise<FilesDto> {
     const scopes = [{ method: ['byId', body.fileIds] }];

@@ -20,6 +20,7 @@ export const rules = {
     },
     supportedTypes: {
         [FileTypes.recommendation]: FILE_TYPES,
+        [FileTypes.mirrorMirror]: FILE_TYPES,
     },
     maxUploadFiles: 16
 };

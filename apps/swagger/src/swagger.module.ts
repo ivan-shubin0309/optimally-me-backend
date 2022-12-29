@@ -12,6 +12,7 @@ import { FilesModule } from '../../files/src/files.module';
 import { UsersBiomarkersModule } from '../../users-biomarkers/src/users-biomarkers.module';
 import { ShopifyModule } from '../../shopify/src/shopify.module';
 import { UsersResultsModule } from '../../users-results/src/users-results.module';
+import { HautAiModule } from '../../haut-ai/src/haut-ai.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { UsersResultsModule } from '../../users-results/src/users-results.module
     UsersBiomarkersModule,
     ShopifyModule,
     UsersResultsModule,
+    HautAiModule,
   ]
 })
 export class SwaggerAppModule { }
