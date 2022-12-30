@@ -19,6 +19,8 @@ import { StudyLink } from '../../biomarkers/src/models/filterBulletLists/study-l
 import { UserAdditionalField } from '../../users/src/models/user-additional-field.entity';
 import { UserRecommendation } from '../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
 import { RecommendationReaction } from '../../biomarkers/src/models/recommendationReactions/recommendation-reaction.entity';
+import { FilterSkinType } from '../../biomarkers/src/models/filterSkinTypes/filter-skin-type.entity';
+import { FilterContradiction } from '../../biomarkers/src/models/filterContradictions/filter-contradiction.entity';
 
 export const modelProviders = [
     {
@@ -104,5 +106,13 @@ export const modelProviders = [
     {
         provide: 'RECOMMENDATION_REACTION_MODEL',
         useValue: RecommendationReaction
-    }
+    },
+    {
+        provide: 'FILTER_SKIN_TYPE_MODEL',
+        useValue: FilterSkinType,
+    },
+    {
+        provide: 'FILTER_CONTRADICTION_MODEL',
+        useValue: FilterContradiction
+    },
 ];

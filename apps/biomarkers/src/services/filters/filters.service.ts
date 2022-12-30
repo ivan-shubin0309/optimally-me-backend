@@ -4,11 +4,12 @@ import { Repository } from 'sequelize-typescript';
 import { Transaction } from 'sequelize/types';
 import { FilterBulletList } from '../../models/filterBulletLists/filter-bullet-list.entity';
 import { Filter } from '../../models/filters/filter.entity';
-import { UpdateBloodFilterDto } from '../../models/filters/update-blood-filter.dto';
 import { FilterRecommendation } from '../../models/recommendations/filter-recommendation.entity';
 import { UpdateFilterDataDto } from '../../models/filters/update-filter-data.dto';
 import { BiomarkersFactory } from '../../biomarkers.factory';
 import { IUpdateFilter } from '../../models/create-biomarker.interface';
+import { FilterSkinType } from '../../models/filterSkinTypes/filter-skin-type.entity';
+import { FilterContradiction } from '../../models/filterContradictions/filter-contradiction.entity';
 
 interface IFilterGetListOptions {
     readonly isIncludeAll: boolean,
@@ -20,6 +21,8 @@ export class FiltersService extends BaseService<Filter> {
         @Inject('FILTER_MODEL') protected model: Repository<Filter>,
         @Inject('FILTER_RECOMMENDATION_MODEL') protected filterRecommendationModel: Repository<FilterRecommendation>,
         @Inject('FILTER_BULLET_LIST_MODEL') readonly filterBulletListModel: Repository<FilterBulletList>,
+        @Inject('FILTER_SKIN_TYPE_MODEL') readonly filterSkinTypeModel: Repository<FilterSkinType>,
+        @Inject('FILTER_CONTRADICTION_MODEL') readonly filterContradictionModel: Repository<FilterContradiction>,
     ) { super(model); }
 
     async removeByBiomarkerId(biomarkerId: number, transaction?: Transaction): Promise<void> {
@@ -30,7 +33,7 @@ export class FiltersService extends BaseService<Filter> {
 
     async getList(scopes: any[], transaction?: Transaction, options: IFilterGetListOptions = { isIncludeAll: false }): Promise<Filter[]> {
         const filterScopes = [...scopes];
-        const recommendationsMap = {}, bulletListsMap = {};
+        const recommendationsMap = {}, bulletListsMap = {}, skinTypesMap = {}, contradictionsMap = {};
 
         if (options.isIncludeAll) {
             filterScopes.push('includeAll');
@@ -40,12 +43,19 @@ export class FiltersService extends BaseService<Filter> {
 
         if (filters.length && options.isIncludeAll) {
             const filterIds = filters.map(filter => filter.id);
-            const [recommendationsList, bulletLists] = await Promise.all([
+
+            const [recommendationsList, bulletLists, skinTypes, contradictionsList] = await Promise.all([
                 this.filterRecommendationModel
                     .scope([{ method: ['byFilterId', filterIds] }, 'includeAll'])
                     .findAll({ transaction }),
                 this.filterBulletListModel
                     .scope([{ method: ['byFilterId', filterIds] }, 'withStudyLinks'])
+                    .findAll({ transaction }),
+                this.filterSkinTypeModel
+                    .scope([{ method: ['byFilterId', filterIds] }])
+                    .findAll({ transaction }),
+                this.filterContradictionModel
+                    .scope([{ method: ['byFilterId', filterIds] }])
                     .findAll({ transaction }),
             ]);
 
@@ -65,12 +75,34 @@ export class FiltersService extends BaseService<Filter> {
                 bulletListsMap[bulletList.filterId].push(bulletList);
             });
 
+            skinTypes.forEach(skinType => {
+                if (!skinTypesMap[skinType.filterId]) {
+                    skinTypesMap[skinType.filterId] = [];
+                }
+
+                skinTypesMap[skinType.filterId].push(skinType);
+            });
+
+            contradictionsList.forEach(contradiction => {
+                if (!contradictionsMap[contradiction.filterId]) {
+                    contradictionsMap[contradiction.filterId] = [];
+                }
+
+                contradictionsMap[contradiction.filterId].push(contradiction);
+            });
+
             filters.forEach(filter => {
                 filter.setDataValue('filterRecommendations', recommendationsMap[filter.id]);
                 filter.filterRecommendations = recommendationsMap[filter.id];
 
                 filter.setDataValue('bulletList', bulletListsMap[filter.id]);
                 filter.bulletList = bulletListsMap[filter.id];
+
+                filter.setDataValue('skinTypes', skinTypesMap[filter.id]);
+                filter.skinTypes = skinTypesMap[filter.id];
+
+                filter.setDataValue('contradictions', contradictionsMap[filter.id]);
+                filter.contradictions = contradictionsMap[filter.id];
             });
         }
 

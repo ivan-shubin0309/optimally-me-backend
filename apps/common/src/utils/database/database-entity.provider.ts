@@ -29,6 +29,8 @@ import { UserAdditionalField } from '../../../../users/src/models/user-additiona
 import { UserRecommendation } from '../../../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
 import { ImpactStudyLink } from '../../../../biomarkers/src/models/recommendationImpacts/impact-study-link.entity';
 import { RecommendationReaction } from '../../../../biomarkers/src/models/recommendationReactions/recommendation-reaction.entity';
+import { FilterSkinType } from '../../../../biomarkers/src/models/filterSkinTypes/filter-skin-type.entity';
+import { FilterContradiction } from '../../../../biomarkers/src/models/filterContradictions/filter-contradiction.entity';
 
 export const entities = [
     User,
@@ -62,4 +64,6 @@ export const entities = [
     UserRecommendation,
     ImpactStudyLink,
     RecommendationReaction,
+    FilterSkinType,
+    FilterContradiction,
 ];
