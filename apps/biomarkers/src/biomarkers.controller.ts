@@ -177,7 +177,7 @@ export class BiomarkersController {
   async deleteRule(@Param() param: EntityByIdDto): Promise<void> {
     const biomarker = await this.biomarkersService.getOne([
       { method: ['byId', param.id] },
-      { method: ['byType', BiomarkerTypes.bloodRule] },
+      { method: ['byType', ruleTypes] },
       { method: ['byIsDeleted', false] }
     ]);
 
