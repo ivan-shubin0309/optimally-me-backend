@@ -27,7 +27,7 @@ import { UnitsService } from './services/units/units.service';
 import { GetListDto } from '../../common/src/models/get-list.dto';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
 import { RecommendationsService } from './services/recommendations/recommendations.service';
-import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-types';
+import { BiomarkerTypes, ruleTypes } from '../../common/src/resources/biomarkers/biomarker-types';
 import { CreateBloodBiomarkerDto } from './models/create-blood-biomarker.dto';
 import { CategoriesDto } from './models/categories/categories.dto';
 import { UnitsDto } from './models/units/units.dto';
@@ -55,6 +55,7 @@ import { SessionDataDto } from '../../sessions/src/models';
 import { UpdateBloodBiomarkerDto } from './models/update-blood-biomarker.dto';
 import { CreateSkinBiomarkerDto } from './models/create-skin-biomarker.dto';
 import { UpdateSkinBiomarkerDto } from './models/update-skin-biomarker.dto';
+import { GetRulesListDto } from './models/get-rules-list.dto';
 
 const RULE_PREFIX = 'rule';
 
@@ -149,12 +150,12 @@ export class BiomarkersController {
   @ApiOperation({ summary: 'Get list rules' })
   @Roles(UserRoles.superAdmin)
   @Get('rules')
-  async getListRules(@Query() query: GetListDto): Promise<BiomarkersDto> {
+  async getListRules(@Query() query: GetRulesListDto): Promise<BiomarkersDto> {
     const { limit, offset } = query;
 
     let rulesList = [];
     const scopes: any[] = [
-      { method: ['byType', BiomarkerTypes.bloodRule] },
+      { method: ['byType', query.ruleType] },
       { method: ['byIsDeleted', false] },
     ];
 
@@ -439,7 +440,7 @@ export class BiomarkersController {
     const biomarker = await this.biomarkersService.getOne(
       [
         { method: ['byId', param.id] },
-        { method: ['byType', BiomarkerTypes.bloodRule] },
+        { method: ['byType', ruleTypes] },
         { method: ['byIsDeleted', false] },
       ],
       null,
