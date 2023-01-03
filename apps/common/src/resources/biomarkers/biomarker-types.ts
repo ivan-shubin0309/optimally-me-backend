@@ -4,3 +4,8 @@ export enum BiomarkerTypes {
     skin = 3,
     skinRule = 4,
 }
+
+export const ruleTypes = [
+    BiomarkerTypes.bloodRule,
+    BiomarkerTypes.skinRule,
+];
