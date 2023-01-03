@@ -5,8 +5,9 @@ import { Transform, TransformFnParams, Type } from 'class-transformer';
 import { IsArray, IsOptional, IsString, MaxLength, ValidateNested } from 'class-validator';
 import { CreateFilterBulletListDto } from '../filterBulletLists/create-filter-bullet-list.dto';
 import { CheckAllowedTypes } from '../../../../common/src/resources/filterBulletLists/check-allowed-types.decorator';
+import { ICreateWhatAreTheRisks } from '../create-biomarker.interface';
 
-export class CreateWhatAreTheRisksDto {
+export class CreateWhatAreTheRisksDto implements ICreateWhatAreTheRisks {
     @ApiProperty({ type: () => String, required: false })
     @IsString()
     @MaxLength(FilterValidationRules.whatAreTheRisksMaxLength)

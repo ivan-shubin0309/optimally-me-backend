@@ -1,49 +1,41 @@
-import { Inject, Injectable } from '@nestjs/common';
 import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-types';
 import { Repository } from 'sequelize-typescript';
 import { Transaction } from 'sequelize/types';
 import { Biomarker } from './models/biomarker.entity';
-import { CreateBiomarkerDto } from './models/create-biomarker.dto';
-import { CreateFilterDto } from './models/filters/create-filter.dto';
 import { Filter } from './models/filters/filter.entity';
-import { CreateInteractionDto } from './models/interactions/create-interaction.dto';
 import { Interaction } from './models/interactions/interaction.entity';
-import { AddRecommendationDto } from './models/recommendations/add-recommendation.dto';
 import { FilterRecommendation } from './models/recommendations/filter-recommendation.entity';
 import { FilterSex } from './models/filtersSex/filter-sex.entity';
 import { FilterAge } from './models/filtersAge/filter-age.entity';
 import { FilterEthnicity } from './models/filterEthnicity/filter-ethnicity.entity';
 import { FilterOtherFeature } from './models/filterOtherFeatures/filter-other-feature.entity';
 import { AlternativeName } from './models/alternativeNames/alternative-name.entity';
-import { CreateFilterGroupDto } from './models/filterGroups/create-filter-group.dto';
 import { FilterGroup } from './models/filterGroups/filter-group.entity';
-import { CreateFilterSummaryDto } from './models/filterSummaries/create-filter-summary.dto';
 import { FilterSummary } from './models/filterSummaries/filter-summary.entity';
-import { CreateFilterBulletListDto } from './models/filterBulletLists/create-filter-bullet-list.dto';
 import { FilterBulletList } from './models/filterBulletLists/filter-bullet-list.entity';
 import { StudyLink } from './models/filterBulletLists/study-link.entity';
 import { BulletListCategories } from '../../common/src/resources/filterBulletLists/bullet-list-types';
-import { BiomarkerHelper } from '../../common/src/resources/biomarkers/biomarker-helper';
+import { IAddRecommendation, ICreateBiomarker, ICreateFilter, ICreateFilterBulletList, ICreateFilterGroup, ICreateInteraction, ICreateResultSummary } from './models/create-biomarker.interface';
+import { UpdateFilterDataDto } from './models/filters/update-filter-data.dto';
 
-@Injectable()
-export class BiomarkersFactory {
+export abstract class BiomarkersFactory {
     constructor(
-        @Inject('BIOMARKER_MODEL') readonly biomarkerModel: Repository<Biomarker>,
-        @Inject('FILTER_MODEL') readonly filterModel: Repository<Filter>,
-        @Inject('FILTER_RECOMMENDATION_MODEL') readonly filterRecommendationModel: Repository<FilterRecommendation>,
-        @Inject('INTERACTION_MODEL') readonly interactionModel: Repository<Interaction>,
-        @Inject('FILTER_SEX_MODEL') readonly filterSexModel: Repository<FilterSex>,
-        @Inject('FILTER_AGE_MODEL') readonly filterAgeModel: Repository<FilterAge>,
-        @Inject('FILTER_ETHNICITY_MODEL') readonly filterEthnicityModel: Repository<FilterEthnicity>,
-        @Inject('FILTER_OTHER_FEATURE_MODEL') readonly filterOtherFeatureModel: Repository<FilterOtherFeature>,
-        @Inject('ALTERNATIVE_NAME_MODEL') readonly alternativeNameModel: Repository<AlternativeName>,
-        @Inject('FILTER_GROUP_MODEL') readonly filterGroupModel: Repository<FilterGroup>,
-        @Inject('FILTER_SUMMARY_MODEL') readonly filterSummaryModel: Repository<FilterSummary>,
-        @Inject('FILTER_BULLET_LIST_MODEL') readonly filterBulletListModel: Repository<FilterBulletList>,
-        @Inject('STUDY_LINK_MODEL') readonly studyLinkModel: Repository<StudyLink>,
+        readonly biomarkerModel: Repository<Biomarker>,
+        readonly filterModel: Repository<Filter>,
+        readonly filterRecommendationModel: Repository<FilterRecommendation>,
+        readonly interactionModel: Repository<Interaction>,
+        readonly filterSexModel: Repository<FilterSex>,
+        readonly filterAgeModel: Repository<FilterAge>,
+        readonly filterEthnicityModel: Repository<FilterEthnicity>,
+        readonly filterOtherFeatureModel: Repository<FilterOtherFeature>,
+        readonly alternativeNameModel: Repository<AlternativeName>,
+        readonly filterGroupModel: Repository<FilterGroup>,
+        readonly filterSummaryModel: Repository<FilterSummary>,
+        readonly filterBulletListModel: Repository<FilterBulletList>,
+        readonly studyLinkModel: Repository<StudyLink>,
     ) { }
 
-    private async create(body: CreateBiomarkerDto & { templateId?: number, type: BiomarkerTypes }, transaction?: Transaction): Promise<Biomarker> {
+    protected async create(body: ICreateBiomarker & { templateId?: number, type: BiomarkerTypes }, transaction?: Transaction): Promise<Biomarker> {
         const biomarkerToCreate: any = body;
         const createdBiomarker = await this.biomarkerModel.create(biomarkerToCreate, { transaction });
 
@@ -62,46 +54,19 @@ export class BiomarkersFactory {
         return createdBiomarker;
     }
 
-    async createBiomarker(body: CreateBiomarkerDto, transaction?: Transaction): Promise<Biomarker> {
-        let templateId;
-        if (body.ruleName) {
-            const rule = await this.createRule(body, transaction);
-            templateId = rule.id;
-        } else {
-            templateId = body.ruleId;
-        }
+    abstract createBiomarker(body: ICreateBiomarker, transaction?: Transaction): Promise<Biomarker>;
 
-        const sex = BiomarkerHelper.getBiomarkerSex(body);
+    abstract createRule(body: ICreateBiomarker, transaction?: Transaction): Promise<Biomarker>;
 
-        return this.create(Object.assign({ type: BiomarkerTypes.biomarker, templateId, sex }, body), transaction);
-    }
+    async attachFilter(filter: ICreateFilter, biomarkerId: number, transaction?: Transaction): Promise<void> {
+        const filterToCreate: any = new UpdateFilterDataDto(filter, biomarkerId);
 
-    async createRule(body: CreateBiomarkerDto, transaction?: Transaction): Promise<Biomarker> {
-        const ruleToCreate = Object.assign(
-            {},
-            body,
-            { type: BiomarkerTypes.rule, name: body.ruleName, label: null, shortName: null }
-        );
-        return this.create(ruleToCreate, transaction);
-    }
-
-    async attachFilter(filter: CreateFilterDto, biomarkerId: number, transaction?: Transaction): Promise<void> {
-        const filterToCreate: any = Object.assign(
-            { biomarkerId },
-            filter,
-            {
-                whatAreTheRisksLow: filter.whatAreTheRisks?.low,
-                whatAreTheRisksHigh: filter.whatAreTheRisks?.high,
-                whatAreTheCausesLow: filter.whatAreTheCauses?.low,
-                whatAreTheCausesHigh: filter.whatAreTheCauses?.high,
-            }
-        );
         const createdFilter = await this.filterModel.create(filterToCreate, { transaction });
 
         await this.attachAllToFilter(filter, createdFilter.id, transaction);
     }
 
-    async attachAllToFilter(filter: CreateFilterDto, filterId: number, transaction?: Transaction) {
+    async attachAllToFilter(filter: ICreateFilter, filterId: number, transaction?: Transaction) {
         const promises = [this.attachFilterCharacteristics(filter, filterId, transaction)];
 
         if (filter.recommendations) {
@@ -131,17 +96,17 @@ export class BiomarkersFactory {
         await Promise.all(promises);
     }
 
-    private async attachRecommendationsToFilter(recommendations: AddRecommendationDto[], filterId: number, transaction?: Transaction): Promise<void> {
+    protected async attachRecommendationsToFilter(recommendations: IAddRecommendation[], filterId: number, transaction?: Transaction): Promise<void> {
         const recommendationsToCreate: any[] = recommendations.map(recommendation => Object.assign({ filterId }, recommendation));
         await this.filterRecommendationModel.bulkCreate(recommendationsToCreate, { transaction });
     }
 
-    private async attachInteractionsToFilter(interactions: CreateInteractionDto[], filterId: number, transaction?: Transaction): Promise<void> {
+    protected async attachInteractionsToFilter(interactions: ICreateInteraction[], filterId: number, transaction?: Transaction): Promise<void> {
         const interactionsToCreate: any[] = interactions.map(interaction => Object.assign({ filterId }, interaction));
         await this.interactionModel.bulkCreate(interactionsToCreate, { transaction });
     }
 
-    private async attachFilterCharacteristics(filter: CreateFilterDto, filterId: number, transaction?: Transaction): Promise<void> {
+    protected async attachFilterCharacteristics(filter: ICreateFilter, filterId: number, transaction?: Transaction): Promise<void> {
         const promises = [];
         if (filter.ages && filter.ages.length) {
             const agesToCreate: any[] = filter.ages.map(age => ({ filterId, age }));
@@ -179,7 +144,7 @@ export class BiomarkersFactory {
         await this.alternativeNameModel.bulkCreate(alternativeNames.map(alternativeName => ({ biomarkerId, name: alternativeName })), { transaction });
     }
 
-    async attachGroupsToFilter(groups: CreateFilterGroupDto[], filterId: number, transaction?: Transaction): Promise<void> {
+    async attachGroupsToFilter(groups: ICreateFilterGroup[], filterId: number, transaction?: Transaction): Promise<void> {
         const groupsToCreate = [];
         groups.forEach(group => {
             group.recommendationTypes.forEach(recommendationType => {
@@ -189,12 +154,12 @@ export class BiomarkersFactory {
         await this.filterGroupModel.bulkCreate(groupsToCreate, { transaction });
     }
 
-    async attachSummaryToFilter(summary: CreateFilterSummaryDto, filterId: number, transaction?: Transaction): Promise<void> {
+    async attachSummaryToFilter(summary: ICreateResultSummary, filterId: number, transaction?: Transaction): Promise<void> {
         const filterSummaryToCreate: any = Object.assign({ filterId }, summary);
         await this.filterSummaryModel.create(filterSummaryToCreate, { transaction });
     }
 
-    async attachBulletListToFilter(bulletList: CreateFilterBulletListDto[], filterId: number, category: BulletListCategories, transaction?: Transaction): Promise<void> {
+    async attachBulletListToFilter(bulletList: ICreateFilterBulletList[], filterId: number, category: BulletListCategories, transaction?: Transaction): Promise<void> {
         const createdBulletList = await this.filterBulletListModel.bulkCreate(bulletList.map(bullet => Object.assign({ filterId, category }, bullet) as any), { transaction });
         const studyLinksToCreate = [];
 

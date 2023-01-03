@@ -1,10 +1,11 @@
-import { IsNotEmpty, MaxLength, MinLength, IsArray, ArrayMaxSize, IsPositive, IsInt, IsString, ValidateNested, IsOptional, ArrayNotEmpty, ArrayUnique } from 'class-validator';
+import { ICreateBiomarker } from './create-biomarker.interface';
+import { IsNotEmpty, MaxLength, MinLength, ArrayMaxSize, IsPositive, IsInt, ValidateNested, IsOptional, ArrayNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
-import { biomarkerValidationRules } from '../../../common/src/resources/biomarkers/validation-rules';
-import { UpdateFilterDto } from './filters/update-filter.dto';
+import { biomarkerValidationRules, skinBiomarkerValidationRules } from '../../../common/src/resources/biomarkers/validation-rules';
+import { CreateSkinFilterDto } from './filters/create-skin-filter.dto';
 
-export class UpdateBiomarkerDataDto {
+export class CreateSkinBiomarkerDto implements ICreateBiomarker {
     @ApiProperty({ type: () => String, required: true })
     @MaxLength(biomarkerValidationRules.nameMaxLength)
     @MinLength(biomarkerValidationRules.nameMinLength)
@@ -26,14 +27,6 @@ export class UpdateBiomarkerDataDto {
     @IsNotEmpty()
     readonly shortName: string;
 
-    @ApiProperty({ type: () => [String], required: false })
-    @IsOptional()
-    @ArrayMaxSize(biomarkerValidationRules.alternativeNamesMax)
-    @IsArray()
-    @IsString({ each: true })
-    @ArrayUnique()
-    readonly alternativeNames: string[];
-
     @ApiProperty({ type: () => String, required: false })
     @MaxLength(biomarkerValidationRules.nameMaxLength)
     @Transform(({ value }: TransformFnParams) => value?.trim())
@@ -52,16 +45,10 @@ export class UpdateBiomarkerDataDto {
     @IsPositive()
     readonly categoryId: number;
 
-    @ApiProperty({ type: () => Number, required: true })
-    @IsNotEmpty()
-    @IsInt()
-    @IsPositive()
-    readonly unitId: number;
-
-    @ApiProperty({ type: () => [UpdateFilterDto], required: true })
+    @ApiProperty({ type: () => [CreateSkinFilterDto], required: true })
     @ArrayNotEmpty()
-    @ArrayMaxSize(biomarkerValidationRules.filtersMaxCount)
+    @ArrayMaxSize(skinBiomarkerValidationRules.filtersMaxCount)
     @ValidateNested()
-    @Type(() => UpdateFilterDto)
-    readonly filters: UpdateFilterDto[];
+    @Type(() => CreateSkinFilterDto)
+    readonly filters: CreateSkinFilterDto[];
 }

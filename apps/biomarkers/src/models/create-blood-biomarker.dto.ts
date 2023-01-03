@@ -2,9 +2,10 @@ import { IsNotEmpty, MaxLength, MinLength, IsArray, ArrayMaxSize, IsPositive, Is
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
 import { biomarkerValidationRules } from '../../../common/src/resources/biomarkers/validation-rules';
-import { CreateFilterDto } from './filters/create-filter.dto';
+import { CreateBloodFilterDto } from './filters/create-blood-filter.dto';
+import { ICreateBiomarker } from './create-biomarker.interface';
 
-export class CreateBiomarkerDto {
+export class CreateBloodBiomarkerDto implements ICreateBiomarker {
     @ApiProperty({ type: () => String, required: true })
     @MaxLength(biomarkerValidationRules.nameMaxLength)
     @MinLength(biomarkerValidationRules.nameMinLength)
@@ -58,10 +59,10 @@ export class CreateBiomarkerDto {
     @IsPositive()
     readonly unitId: number;
 
-    @ApiProperty({ type: () => [CreateFilterDto], required: true })
+    @ApiProperty({ type: () => [CreateBloodFilterDto], required: true })
     @ArrayNotEmpty()
     @ArrayMaxSize(biomarkerValidationRules.filtersMaxCount)
     @ValidateNested()
-    @Type(() => CreateFilterDto)
-    readonly filters: CreateFilterDto[];
+    @Type(() => CreateBloodFilterDto)
+    readonly filters: CreateBloodFilterDto[];
 }

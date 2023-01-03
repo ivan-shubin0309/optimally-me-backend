@@ -34,5 +34,6 @@
     "USER_RESULT_NOT_FOUND": "User result with specified id is not found",
     "FILTER_NOT_FOUND": "Filter not found",
     "USER_RECOMMENDATION_NOT_FOUND": "User recommendation is not found",
-    "RECOMMENDATION_REACTION_NOT_FOUND": "Reaction to specified recommendation is not found"
+    "RECOMMENDATION_REACTION_NOT_FOUND": "Reaction to specified recommendation is not found",
+    "CATEGORY_NOT_ALLOWED": "Specified category is not allowed for chosen biomarker type"
 }

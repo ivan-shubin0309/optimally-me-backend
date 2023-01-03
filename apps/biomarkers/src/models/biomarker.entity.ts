@@ -155,7 +155,7 @@ export class Biomarker extends Model {
     @Column({
         type: DataType.TINYINT,
         allowNull: false,
-        defaultValue: BiomarkerTypes.biomarker
+        defaultValue: BiomarkerTypes.blood
     })
     type: number;
 

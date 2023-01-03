@@ -1,7 +1,7 @@
-import { UpdateFilterDto } from './update-filter.dto';
+import { IUpdateFilter } from '../create-biomarker.interface';
 
 export class UpdateFilterDataDto {
-    constructor(body: UpdateFilterDto, biomarkerId: number) {
+    constructor(body: IUpdateFilter, biomarkerId: number) {
         this.name = body.name;
         this.summary = body.summary;
         this.whatIsIt = body.whatIsIt;

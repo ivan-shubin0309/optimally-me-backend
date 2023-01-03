@@ -2,8 +2,8 @@ import { BadRequestException, HttpStatus, Inject, Injectable } from '@nestjs/com
 import { Repository, Sequelize } from 'sequelize-typescript';
 import { BaseService } from '../../common/src/base/base.service';
 import { Biomarker } from './models/biomarker.entity';
-import { BiomarkersFactory } from './biomarkers.factory';
-import { CreateBiomarkerDto } from './models/create-biomarker.dto';
+import { BloodBiomarkersFactory } from './blood-biomarkers.factory';
+import { CreateBloodBiomarkerDto } from './models/create-blood-biomarker.dto';
 import { Filter } from './models/filters/filter.entity';
 import { AlternativeName } from './models/alternativeNames/alternative-name.entity';
 import { TranslatorService } from 'nestjs-translator';
@@ -15,7 +15,11 @@ import { Transaction } from 'sequelize/types';
 import { FiltersService } from './services/filters/filters.service';
 import { UpdateBiomarkerDto } from './models/update-biomarker.dto';
 import { BiomarkerHelper } from '../../common/src/resources/biomarkers/biomarker-helper';
-import { UpdateBiomarkerDataDto } from './models/update-biomarker-data.dto';
+import { UpdateBloodBiomarkerDto } from './models/update-blood-biomarker.dto';
+import { CreateSkinBiomarkerDto } from './models/create-skin-biomarker.dto';
+import { SkinBiomarkersFactory } from './skin-biomarkers.factory';
+import { ICreateBiomarker } from './models/create-biomarker.interface';
+import { UpdateSkinBiomarkerDto } from './models/update-skin-biomarker.dto';
 
 interface IBiomarkerGetOneOptions {
     readonly filters?: { isIncludeAll: boolean }
@@ -25,7 +29,7 @@ interface IBiomarkerGetOneOptions {
 export class BiomarkersService extends BaseService<Biomarker> {
     constructor(
         @Inject('BIOMARKER_MODEL') protected model: Repository<Biomarker>,
-        readonly biomarkersFactory: BiomarkersFactory,
+        readonly bloodBiomarkersFactory: BloodBiomarkersFactory,
         @Inject('SEQUELIZE') readonly dbConnection: Sequelize,
         @Inject('FILTER_MODEL') readonly filterModel: Repository<Filter>,
         @Inject('ALTERNATIVE_NAME_MODEL') readonly alternativeNameModel: Repository<AlternativeName>,
@@ -34,11 +38,12 @@ export class BiomarkersService extends BaseService<Biomarker> {
         @Inject('CATEGORY_MODEL') readonly categoryModel: Repository<Category>,
         @Inject('RECOMMENDATION_MODEL') readonly recommendationModel: Repository<Recommendation>,
         private readonly filtersService: FiltersService,
+        private readonly skinBiomarkersFactory: SkinBiomarkersFactory,
     ) { super(model); }
 
-    async create(body: CreateBiomarkerDto): Promise<Biomarker> {
+    async createBloodBiomarker(body: CreateBloodBiomarkerDto): Promise<Biomarker> {
         const createdBiomarker = await this.dbConnection.transaction(transaction => {
-            return this.biomarkersFactory.createBiomarker(body, transaction);
+            return this.bloodBiomarkersFactory.createBiomarker(body, transaction);
         });
 
         return this.getOne(
@@ -54,7 +59,7 @@ export class BiomarkersService extends BaseService<Biomarker> {
         );
     }
 
-    async update(biomarker: Biomarker, body: UpdateBiomarkerDataDto): Promise<Biomarker> {
+    async updateBloodBiomarker(biomarker: Biomarker, body: UpdateBloodBiomarkerDto): Promise<Biomarker> {
         const biomarkerId = await this.dbConnection.transaction(async transaction => {
             const scopes: any[] = [{ method: ['byBiomarkerId', biomarker.id] }];
 
@@ -65,17 +70,17 @@ export class BiomarkersService extends BaseService<Biomarker> {
             await this.alternativeNameModel.scope(scopes).destroy({ transaction });
 
             if (body.ruleName) {
-                const rule = await this.biomarkersFactory.createRule(body, transaction);
+                const rule = await this.bloodBiomarkersFactory.createRule(body, transaction);
                 biomarkerUpdateBody.templateId = rule.id;
             }
 
             await biomarker.update(biomarkerUpdateBody, { transaction });
 
             if (body.alternativeNames && body.alternativeNames.length) {
-                await this.biomarkersFactory.attachAlternativeNames(body.alternativeNames, biomarker.id, transaction);
+                await this.bloodBiomarkersFactory.attachAlternativeNames(body.alternativeNames, biomarker.id, transaction);
             }
 
-            await this.filtersService.update(body.filters, biomarker.id, transaction);
+            await this.filtersService.update(body.filters, biomarker.id, this.bloodBiomarkersFactory, transaction);
 
             return biomarker.id;
         });
@@ -93,11 +98,11 @@ export class BiomarkersService extends BaseService<Biomarker> {
         );
     }
 
-    async validateBody(body: CreateBiomarkerDto): Promise<void> {
+    async validateBody(body: ICreateBiomarker, ruleType: BiomarkerTypes): Promise<void> {
         if (body.ruleId) {
             const templateBiomarker = await this.getOne([
                 { method: ['byId', body.ruleId] },
-                { method: ['byType', BiomarkerTypes.rule] },
+                { method: ['byType', ruleType] },
                 { method: ['byIsDeleted', false] }
             ]);
             if (!templateBiomarker) {
@@ -112,7 +117,7 @@ export class BiomarkersService extends BaseService<Biomarker> {
         if (body.ruleName) {
             const templateBiomarker = await this.getOne([
                 { method: ['byName', body.ruleName] },
-                { method: ['byType', BiomarkerTypes.rule] },
+                { method: ['byType', ruleType] },
                 { method: ['byIsDeleted', false] }
             ]);
             if (templateBiomarker) {
@@ -124,15 +129,17 @@ export class BiomarkersService extends BaseService<Biomarker> {
             }
         }
 
-        const unitInstance = await this.unitModel
-            .scope([{ method: ['byId', body.unitId] }])
-            .findOne();
-        if (!unitInstance) {
-            throw new BadRequestException({
-                message: this.translator.translate('UNIT_NOT_FOUND'),
-                errorCode: 'UNIT_NOT_FOUND',
-                statusCode: HttpStatus.BAD_REQUEST
-            });
+        if (body.unitId) {
+            const unitInstance = await this.unitModel
+                .scope([{ method: ['byId', body.unitId] }])
+                .findOne();
+            if (!unitInstance) {
+                throw new BadRequestException({
+                    message: this.translator.translate('UNIT_NOT_FOUND'),
+                    errorCode: 'UNIT_NOT_FOUND',
+                    statusCode: HttpStatus.BAD_REQUEST
+                });
+            }
         }
 
         const categoryInstance = await this.categoryModel
@@ -142,6 +149,22 @@ export class BiomarkersService extends BaseService<Biomarker> {
             throw new BadRequestException({
                 message: this.translator.translate('CATEGORY_NOT_FOUND'),
                 errorCode: 'CATEGORY_NOT_FOUND',
+                statusCode: HttpStatus.BAD_REQUEST
+            });
+        }
+
+        if (ruleType === BiomarkerTypes.bloodRule && categoryInstance.name === 'Skin') {
+            throw new BadRequestException({
+                message: this.translator.translate('CATEGORY_NOT_ALLOWED'),
+                errorCode: 'CATEGORY_NOT_ALLOWED',
+                statusCode: HttpStatus.BAD_REQUEST
+            });
+        }
+
+        if (ruleType === BiomarkerTypes.skinRule && categoryInstance.name !== 'Skin') {
+            throw new BadRequestException({
+                message: this.translator.translate('CATEGORY_NOT_ALLOWED'),
+                errorCode: 'CATEGORY_NOT_ALLOWED',
                 statusCode: HttpStatus.BAD_REQUEST
             });
         }
@@ -186,6 +209,55 @@ export class BiomarkersService extends BaseService<Biomarker> {
         }
 
         return biomarker;
+    }
+
+    async createSkinBiomarker(body: CreateSkinBiomarkerDto): Promise<Biomarker> {
+        const createdBiomarker = await this.dbConnection.transaction(transaction => {
+            return this.skinBiomarkersFactory.createBiomarker(body, transaction);
+        });
+
+        return this.getOne(
+            [
+                { method: ['byId', createdBiomarker.id] },
+                'withCategory',
+                'withUnit',
+                'withAlternativeNames',
+                'withRule',
+            ],
+            null,
+            { filters: { isIncludeAll: true } }
+        );
+    }
+
+    async updateSkinBiomarker(biomarker: Biomarker, body: UpdateSkinBiomarkerDto): Promise<Biomarker> {
+        const biomarkerId = await this.dbConnection.transaction(async transaction => {
+            const scopes: any[] = [{ method: ['byBiomarkerId', biomarker.id] }];
+
+            const biomarkerUpdateBody = new UpdateBiomarkerDto(body);
+
+            await this.alternativeNameModel.scope(scopes).destroy({ transaction });
+
+            if (body.ruleName) {
+                const rule = await this.skinBiomarkersFactory.createRule(body, transaction);
+                biomarkerUpdateBody.templateId = rule.id;
+            }
+
+            await biomarker.update(biomarkerUpdateBody, { transaction });
+
+            await this.filtersService.update(body.filters, biomarker.id, this.skinBiomarkersFactory, transaction);
+
+            return biomarker.id;
+        });
+
+        return this.getOne(
+            [
+                { method: ['byId', biomarkerId] },
+                'withCategory',
+                'withRule',
+            ],
+            null,
+            { filters: { isIncludeAll: true } }
+        );
     }
 }
 

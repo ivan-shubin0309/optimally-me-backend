@@ -4,10 +4,11 @@ import { Repository } from 'sequelize-typescript';
 import { Transaction } from 'sequelize/types';
 import { FilterBulletList } from '../../models/filterBulletLists/filter-bullet-list.entity';
 import { Filter } from '../../models/filters/filter.entity';
-import { UpdateFilterDto } from '../../models/filters/update-filter.dto';
+import { UpdateBloodFilterDto } from '../../models/filters/update-blood-filter.dto';
 import { FilterRecommendation } from '../../models/recommendations/filter-recommendation.entity';
-import { BiomarkersFactory } from '../../biomarkers.factory';
 import { UpdateFilterDataDto } from '../../models/filters/update-filter-data.dto';
+import { BiomarkersFactory } from '../../biomarkers.factory';
+import { IUpdateFilter } from '../../models/create-biomarker.interface';
 
 interface IFilterGetListOptions {
     readonly isIncludeAll: boolean,
@@ -19,7 +20,6 @@ export class FiltersService extends BaseService<Filter> {
         @Inject('FILTER_MODEL') protected model: Repository<Filter>,
         @Inject('FILTER_RECOMMENDATION_MODEL') protected filterRecommendationModel: Repository<FilterRecommendation>,
         @Inject('FILTER_BULLET_LIST_MODEL') readonly filterBulletListModel: Repository<FilterBulletList>,
-        private readonly biomarkersFactory: BiomarkersFactory,
     ) { super(model); }
 
     async removeByBiomarkerId(biomarkerId: number, transaction?: Transaction): Promise<void> {
@@ -116,7 +116,7 @@ export class FiltersService extends BaseService<Filter> {
         filter.bulletList = bulletLists;
     }
 
-    async update(filters: UpdateFilterDto[], biomarkerId: number, transaction?: Transaction): Promise<void> {
+    async update(filters: IUpdateFilter[], biomarkerId: number, biomarkerFactory: BiomarkersFactory, transaction?: Transaction): Promise<void> {
         const filtersToCreate = [], filtersToUpdate = [];
 
         filters.forEach(filter => {
@@ -131,17 +131,17 @@ export class FiltersService extends BaseService<Filter> {
             .scope([{ method: ['byBiomarkerId', biomarkerId] }])
             .update({ biomarkerId: null, removedFromBiomarkerId: biomarkerId }, { transaction } as any);
 
-        const promises = filtersToCreate.map(filter => this.biomarkersFactory.attachFilter(filter, biomarkerId, transaction));
+        const promises = filtersToCreate.map(filter => biomarkerFactory.attachFilter(filter, biomarkerId, transaction));
 
         promises.push(
             ...filtersToUpdate.map(async (filterToUpdate) => {
-                await this.biomarkersFactory.dettachAllFromFilter(filterToUpdate.id, transaction);
+                await biomarkerFactory.dettachAllFromFilter(filterToUpdate.id, transaction);
 
                 await Promise.all([
                     this.model
                         .scope([{ method: ['byId', filterToUpdate.id] }])
                         .update(new UpdateFilterDataDto(filterToUpdate, biomarkerId), { transaction } as any),
-                    this.biomarkersFactory.attachAllToFilter(filterToUpdate, filterToUpdate.id, transaction),
+                    biomarkerFactory.attachAllToFilter(filterToUpdate, filterToUpdate.id, transaction),
                 ]);
             })
         );

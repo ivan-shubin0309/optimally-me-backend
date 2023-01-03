@@ -2,8 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
 import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsPositive } from 'class-validator';
 import { RecommendationTypes } from '../../../../common/src/resources/recommendations/recommendation-types';
+import { IAddRecommendation } from '../create-biomarker.interface';
 
-export class AddRecommendationDto {
+export class AddRecommendationDto implements IAddRecommendation {
     @ApiProperty({ type: () => Number, required: true })
     @IsNotEmpty()
     @IsPositive()

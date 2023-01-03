@@ -3,22 +3,23 @@ import { InteractionTypes } from '../../../../common/src/resources/interactions/
 import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, Length, Max, Min } from 'class-validator';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
 import { InteractionValidationRules } from '../../../../common/src/resources/interactions/validation-rules';
+import { ICreateInteraction } from '../create-biomarker.interface';
 
-export class CreateInteractionDto {
+export class CreateInteractionDto implements ICreateInteraction {
     @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(InteractionTypes) })
     @IsNotEmpty()
     @IsEnum(InteractionTypes)
     @IsNumber()
-    type: number;
+    readonly type: number;
 
     @ApiProperty({ type: () => String, required: true })
     @IsNotEmpty()
     @Length(InteractionValidationRules.nameMinLength, InteractionValidationRules.nameMaxLength)
-    name: string;
+    readonly name: string;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
-    alsoKnowAs: string;
+    readonly alsoKnowAs: string;
 
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
@@ -26,9 +27,9 @@ export class CreateInteractionDto {
     @IsInt()
     @Min(InteractionValidationRules.impactMin)
     @Max(InteractionValidationRules.impactMax)
-    impact: number;
+    readonly impact: number;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
-    effects: string;
+    readonly effects: string;
 }

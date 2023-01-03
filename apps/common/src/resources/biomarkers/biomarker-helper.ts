@@ -1,9 +1,9 @@
-import { CreateBiomarkerDto } from '../../../../biomarkers/src/models/create-biomarker.dto';
+import { ICreateBiomarker } from 'apps/biomarkers/src/models/create-biomarker.interface';
 import { SexTypes } from '../filters/sex-types';
 import { BiomarkerSexTypes } from './biomarker-sex-types';
 
 export class BiomarkerHelper {
-    static getBiomarkerSex(body: CreateBiomarkerDto): BiomarkerSexTypes {
+    static getBiomarkerSex(body: ICreateBiomarker): BiomarkerSexTypes {
         let sex = BiomarkerSexTypes.all;
 
         if (body.filters && body.filters.length) {
