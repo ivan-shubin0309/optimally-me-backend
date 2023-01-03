@@ -7,11 +7,11 @@ import { RecommendationFile } from './recommendation-file.entity';
 import { RecommendationImpact } from '../recommendationImpacts/recommendation-impact.entity';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
 import { CollectionDto } from '../../../../common/src/models/enum-collecction.dto';
-import { Filter } from '../filters/filter.entity';
 import { FilterRecommendation } from './filter-recommendation.entity';
 import { RecommendationTypes } from '../../../../common/src/resources/recommendations/recommendation-types';
 import { RecommendationReaction } from '../recommendationReactions/recommendation-reaction.entity';
-import { UserRecommendation } from '../userRecommendations/user-recommendation.entity';
+import { RecommendationSkinType } from '../recommendationSkinTypes/recommendation-skin-type.entity';
+import { RecommendationContradiction } from '../recommendationContradictions/recommendation-contradiction.entity';
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
@@ -81,7 +81,25 @@ import { UserRecommendation } from '../userRecommendations/user-recommendation.e
                 where: { filterId }
             },
         ],
-    })
+    }),
+    withSkinTypes: () => ({
+        include: [
+            {
+                model: RecommendationSkinType,
+                as: 'skinTypes',
+                required: false,
+            },
+        ]
+    }),
+    withContradictions: () => ({
+        include: [
+            {
+                model: RecommendationContradiction,
+                as: 'contradictions',
+                required: false,
+            },
+        ]
+    }),
 }))
 
 @Table({
@@ -149,4 +167,10 @@ export class Recommendation extends Model {
 
     @HasOne(() => FilterRecommendation, 'recommendationId')
     filterRecommendation: FilterRecommendation;
+
+    @HasMany(() => RecommendationSkinType, 'recommendationId')
+    skinTypes: RecommendationSkinType[];
+
+    @HasMany(() => RecommendationContradiction, 'recommendationId')
+    contradictions: RecommendationContradiction[];
 }

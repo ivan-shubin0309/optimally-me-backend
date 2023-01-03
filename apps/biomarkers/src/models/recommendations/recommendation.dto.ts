@@ -5,7 +5,9 @@ import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
 import { Recommendation } from './recommendation.entity';
 import { FileDto } from '../../../../files/src/models/file.dto';
 import { RecommendationImpactDto } from '../recommendationImpacts/recommendation-impact.dto';
-import { RecommendationReactionTypes } from 'apps/common/src/resources/recommendation-reactions/reaction-types';
+import { RecommendationReactionTypes } from '../../../../common/src/resources/recommendation-reactions/reaction-types';
+import { RecommendationSkinTypeDto } from '../recommendationSkinTypes/recommendation-skin-type.dto';
+import { RecommendationContradictionDto } from '../recommendationContradictions/recommendation-contradiction.dto';
 
 
 export class RecommendationDto extends BaseDto<Recommendation> {
@@ -26,6 +28,12 @@ export class RecommendationDto extends BaseDto<Recommendation> {
             : undefined;
         this.userReactionType = entity.userReaction
             ? entity.userReaction.reactionType
+            : undefined;
+        this.skinTypes = entity.skinTypes && entity.skinTypes.length
+            ? entity.skinTypes.map(skinType => new RecommendationSkinTypeDto(skinType))
+            : undefined;
+        this.contradictions = entity.contradictions && entity.contradictions.length
+            ? entity.contradictions.map(contradiction => new RecommendationContradictionDto(contradiction))
             : undefined;
     }
 
@@ -58,4 +66,10 @@ export class RecommendationDto extends BaseDto<Recommendation> {
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(RecommendationReactionTypes) })
     readonly userReactionType: number;
+
+    @ApiProperty({ type: () => [RecommendationSkinTypeDto], required: false })
+    readonly skinTypes: RecommendationSkinTypeDto[];
+
+    @ApiProperty({ type: () => [RecommendationContradictionDto], required: false })
+    readonly contradictions: RecommendationContradictionDto[];
 }
