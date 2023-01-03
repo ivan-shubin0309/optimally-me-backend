@@ -1,4 +1,4 @@
-import { RecommendationCategoryTypes } from '../../../../common/src/resources/recommendations/recommendation-category-types';
+import { recommendationCategoryToString, RecommendationCategoryTypes } from '../../../../common/src/resources/recommendations/recommendation-category-types';
 import { Table, Column, Model, DataType, Scopes, BelongsToMany, HasMany, HasOne } from 'sequelize-typescript';
 import { Op } from 'sequelize';
 import { RecommendationActionTypes } from '../../../../common/src/resources/recommendations/recommendation-action-types';
@@ -7,11 +7,9 @@ import { RecommendationFile } from './recommendation-file.entity';
 import { RecommendationImpact } from '../recommendationImpacts/recommendation-impact.entity';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
 import { CollectionDto } from '../../../../common/src/models/enum-collecction.dto';
-import { Filter } from '../filters/filter.entity';
 import { FilterRecommendation } from './filter-recommendation.entity';
 import { RecommendationTypes } from '../../../../common/src/resources/recommendations/recommendation-types';
 import { RecommendationReaction } from '../recommendationReactions/recommendation-reaction.entity';
-import { UserRecommendation } from '../userRecommendations/user-recommendation.entity';
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
@@ -22,7 +20,7 @@ import { UserRecommendation } from '../userRecommendations/user-recommendation.e
                 {
                     category: EnumHelper
                         .toCollection(RecommendationCategoryTypes)
-                        .filter((categoryType: CollectionDto) => categoryType.key.includes(searchString))
+                        .filter((categoryType: CollectionDto) => recommendationCategoryToString[categoryType.key].includes(searchString))
                         .map((categoryType: CollectionDto) => categoryType.value)
                 }
             ]
