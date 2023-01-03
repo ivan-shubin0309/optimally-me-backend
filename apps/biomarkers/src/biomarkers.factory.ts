@@ -17,6 +17,8 @@ import { StudyLink } from './models/filterBulletLists/study-link.entity';
 import { BulletListCategories } from '../../common/src/resources/filterBulletLists/bullet-list-types';
 import { IAddRecommendation, ICreateBiomarker, ICreateFilter, ICreateFilterBulletList, ICreateFilterGroup, ICreateInteraction, ICreateResultSummary } from './models/create-biomarker.interface';
 import { UpdateFilterDataDto } from './models/filters/update-filter-data.dto';
+import { FilterSkinType } from './models/filterSkinTypes/filter-skin-type.entity';
+import { FilterContradiction } from './models/filterContradictions/filter-contradiction.entity';
 
 export abstract class BiomarkersFactory {
     constructor(
@@ -33,6 +35,8 @@ export abstract class BiomarkersFactory {
         readonly filterSummaryModel: Repository<FilterSummary>,
         readonly filterBulletListModel: Repository<FilterBulletList>,
         readonly studyLinkModel: Repository<StudyLink>,
+        readonly filterSkinTypeModel: Repository<FilterSkinType>,
+        readonly filterContradiction: Repository<FilterContradiction>,
     ) { }
 
     protected async create(body: ICreateBiomarker & { templateId?: number, type: BiomarkerTypes }, transaction?: Transaction): Promise<Biomarker> {
@@ -91,6 +95,14 @@ export abstract class BiomarkersFactory {
 
         if (filter.whatAreTheCauses && filter.whatAreTheCauses.bulletList) {
             promises.push(this.attachBulletListToFilter(filter.whatAreTheCauses.bulletList, filterId, BulletListCategories.causes, transaction));
+        }
+
+        if (filter.whatAreTheCauses && filter.whatAreTheCauses.bulletList) {
+            promises.push(this.attachSkinTypesToFilter(filter, filterId, transaction));
+        }
+
+        if (filter.contradictions && filter.contradictions.length) {
+            promises.push(this.attachContradictionsToFilter(filter.contradictions, filterId, transaction));
         }
 
         await Promise.all(promises);
@@ -202,8 +214,32 @@ export abstract class BiomarkersFactory {
             this.filterBulletListModel
                 .scope([{ method: ['byFilterId', filterId] }])
                 .destroy({ transaction }),
+            this.filterSkinTypeModel
+                .scope([{ method: ['byFilterId', filterId] }])
+                .destroy({ transaction }),
+            this.filterContradiction
+                .scope([{ method: ['byFilterId', filterId] }])
+                .destroy({ transaction }),
         ];
 
         await Promise.all(promises);
+    }
+
+    async attachSkinTypesToFilter(filter: ICreateFilter, filterId: number, transaction?: Transaction): Promise<void> {
+        const skinTypesToCreate = [];
+
+        if (filter.idealSkinTypes && filter.idealSkinTypes.length) {
+            filter.idealSkinTypes.forEach(idealSkinType => skinTypesToCreate.push({ filterId, skinType: idealSkinType, isIdealSkinType: true }));
+        }
+
+        if (filter.notMeantForSkinTypes && filter.notMeantForSkinTypes.length) {
+            filter.notMeantForSkinTypes.forEach(notMeantForSkinType => skinTypesToCreate.push({ filterId, skinType: notMeantForSkinType, isIdealSkinType: false }));
+        }
+
+        await this.filterSkinTypeModel.bulkCreate(skinTypesToCreate, { transaction });
+    }
+
+    async attachContradictionsToFilter(contradictions: number[], filterId: number, transaction?: Transaction): Promise<void> {
+        await this.filterContradiction.bulkCreate(contradictions.map(contradiction => ({ filterId, contradictionType: contradiction })), { transaction });
     }
 }

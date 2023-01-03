@@ -21,6 +21,8 @@ import { StudyLink } from './models/filterBulletLists/study-link.entity';
 import { UserAdditionalField } from '../../users/src/models/user-additional-field.entity';
 import { ImpactStudyLink } from './models/recommendationImpacts/impact-study-link.entity';
 import { UserRecommendation } from './models/userRecommendations/user-recommendation.entity';
+import { FilterSkinType } from './models/filterSkinTypes/filter-skin-type.entity';
+import { FilterContradiction } from './models/filterContradictions/filter-contradiction.entity';
 
 export const modelProviders = [
     {
@@ -114,6 +116,14 @@ export const modelProviders = [
     {
         provide: 'USER_RECOMMENDATION_MODEL',
         useValue: UserRecommendation,
-    }
+    },
+    {
+        provide: 'FILTER_SKIN_TYPE_MODEL',
+        useValue: FilterSkinType,
+    },
+    {
+        provide: 'FILTER_CONTRADICTION_MODEL',
+        useValue: FilterContradiction
+    },
 ];
 

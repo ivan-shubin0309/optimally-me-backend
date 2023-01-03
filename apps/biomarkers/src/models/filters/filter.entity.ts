@@ -11,6 +11,8 @@ import { FilterSummary } from '../filterSummaries/filter-summary.entity';
 import { Interaction } from '../interactions/interaction.entity';
 import { FilterRecommendation } from '../recommendations/filter-recommendation.entity';
 import sequelize from 'sequelize';
+import { FilterSkinType } from '../filterSkinTypes/filter-skin-type.entity';
+import { FilterContradiction } from '../filterContradictions/filter-contradiction.entity';
 
 @Scopes(() => ({
     includeAll: () => ({
@@ -237,4 +239,10 @@ export class Filter extends Model {
 
     @BelongsTo(() => Biomarker, 'biomarkerId')
     biomarker: Biomarker;
+
+    @HasMany(() => FilterSkinType, 'filterId')
+    skinTypes: FilterSkinType[];
+
+    @HasMany(() => FilterContradiction, 'filterId')
+    contradictions: FilterContradiction[];
 }
