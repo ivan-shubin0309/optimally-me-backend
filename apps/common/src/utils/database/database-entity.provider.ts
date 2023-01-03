@@ -31,6 +31,7 @@ import { ImpactStudyLink } from '../../../../biomarkers/src/models/recommendatio
 import { RecommendationReaction } from '../../../../biomarkers/src/models/recommendationReactions/recommendation-reaction.entity';
 import { FilterSkinType } from '../../../../biomarkers/src/models/filterSkinTypes/filter-skin-type.entity';
 import { FilterContradiction } from '../../../../biomarkers/src/models/filterContradictions/filter-contradiction.entity';
+import { UserHautAiField } from '../../../../haut-ai/src/models/user-haut-ai-field.entity';
 
 export const entities = [
     User,
@@ -66,4 +67,5 @@ export const entities = [
     RecommendationReaction,
     FilterSkinType,
     FilterContradiction,
+    UserHautAiField,
 ];
