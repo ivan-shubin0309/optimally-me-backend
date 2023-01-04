@@ -1,4 +1,4 @@
-import { RecommendationCategoryTypes } from '../../../../common/src/resources/recommendations/recommendation-category-types';
+import { recommendationCategoryToString, RecommendationCategoryTypes } from '../../../../common/src/resources/recommendations/recommendation-category-types';
 import { Table, Column, Model, DataType, Scopes, BelongsToMany, HasMany, HasOne } from 'sequelize-typescript';
 import { Op } from 'sequelize';
 import { RecommendationActionTypes } from '../../../../common/src/resources/recommendations/recommendation-action-types';
@@ -22,7 +22,7 @@ import { RecommendationContradiction } from '../recommendationContradictions/rec
                 {
                     category: EnumHelper
                         .toCollection(RecommendationCategoryTypes)
-                        .filter((categoryType: CollectionDto) => categoryType.key.includes(searchString))
+                        .filter((categoryType: CollectionDto) => recommendationCategoryToString[categoryType.key].includes(searchString))
                         .map((categoryType: CollectionDto) => categoryType.value)
                 }
             ]
