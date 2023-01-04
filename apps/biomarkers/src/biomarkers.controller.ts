@@ -377,7 +377,7 @@ export class BiomarkersController {
   async removeBiomarker(@Param() param: EntityByIdDto): Promise<void> {
     const biomarker = await this.biomarkersService.getOne([
       { method: ['byId', param.id] },
-      { method: ['byType', BiomarkerTypes.blood] }
+      { method: ['byType', [BiomarkerTypes.blood, BiomarkerTypes.skin]] }
     ]);
 
     if (!biomarker) {
