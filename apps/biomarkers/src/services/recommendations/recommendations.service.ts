@@ -210,7 +210,7 @@ export class RecommendationsService extends BaseService<Recommendation> {
       recommendation.impacts = impacts;
       recommendation.setDataValue('skinTypes', skinTypes);
       recommendation.skinTypes = skinTypes;
-      recommendation.setDataValue('impacts', contradictions);
+      recommendation.setDataValue('contradictions', contradictions);
       recommendation.contradictions = contradictions;
     }
 
@@ -243,5 +243,60 @@ export class RecommendationsService extends BaseService<Recommendation> {
 
       await this.recommendationContradictionModel.bulkCreate(contradictionsToCreate, { transaction });
     }
+  }
+
+  async getList(scopes: any[], transaction?: Transaction, options?: { isIncludeAll: boolean }): Promise<Recommendation[]> {
+    const recommendationList = await super.getList(scopes, transaction);
+
+    if (!recommendationList.length) {
+      return recommendationList;
+    }
+
+    if (options?.isIncludeAll) {
+      const impactsMap = {}, skinTypesMap = {}, contradictionsMap = {};
+      const recommendationIds = recommendationList.map(recommendation => recommendation.id);
+
+      const [impacts, skinTypes, contradictions] = await Promise.all([
+        this.recommendationImpactModel
+          .scope([{ method: ['byRecommendationId', recommendationIds] }, 'withBiomarker', 'withStudyLinks'])
+          .findAll({ transaction }),
+        this.recommendationSkinTypeModel
+          .scope([{ method: ['byRecommendationId', recommendationIds] }])
+          .findAll({ transaction }),
+        this.recommendationContradictionModel
+          .scope([{ method: ['byRecommendationId', recommendationIds] }])
+          .findAll({ transaction }),
+      ]);
+
+      impacts.forEach(impact => {
+        if (!impactsMap[impact.recommendationId]) {
+          impactsMap[impact.recommendationId] = [];
+        }
+        impactsMap[impact.recommendationId].push(impact);
+      });
+      skinTypes.forEach(skinType => {
+        if (!skinTypesMap[skinType.recommendationId]) {
+          skinTypesMap[skinType.recommendationId] = [];
+        }
+        skinTypesMap[skinType.recommendationId].push(skinType);
+      });
+      contradictions.forEach(contradiction => {
+        if (!contradictionsMap[contradiction.recommendationId]) {
+          contradictionsMap[contradiction.recommendationId] = [];
+        }
+        contradictionsMap[contradiction.recommendationId].push(contradiction);
+      });
+
+      recommendationList.forEach(recommendation => {
+        recommendation.setDataValue('impacts', impactsMap[recommendation.id]);
+        recommendation.impacts = impactsMap[recommendation.id];
+        recommendation.setDataValue('skinTypes', skinTypesMap[recommendation.id]);
+        recommendation.skinTypes = skinTypesMap[recommendation.id];
+        recommendation.setDataValue('contradictions', contradictionsMap[recommendation.id]);
+        recommendation.contradictions = contradictionsMap[recommendation.id];
+      });
+    }
+
+    return recommendationList;
   }
 }

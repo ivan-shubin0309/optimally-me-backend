@@ -15,7 +15,7 @@ import { Recommendation } from '../recommendations/recommendation.entity';
 export class RecommendationSkinType extends Model {
     @ForeignKey(() => Recommendation)
     @Column({
-        type: DataType.NUMBER,
+        type: DataType.INTEGER,
         allowNull: false,
     })
     recommendationId: number;
