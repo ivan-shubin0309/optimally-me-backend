@@ -348,7 +348,7 @@ export class BiomarkersController {
     const biomarker = await this.biomarkersService.getOne(
       [
         { method: ['byId', id] },
-        { method: ['byType', BiomarkerTypes.blood, BiomarkerTypes.skin] },
+        { method: ['byType', [BiomarkerTypes.blood, BiomarkerTypes.skin]] },
         'withCategory',
         'withUnit',
         'withAlternativeNames',
