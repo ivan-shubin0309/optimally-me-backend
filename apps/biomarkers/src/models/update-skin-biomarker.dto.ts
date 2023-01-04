@@ -1,4 +1,4 @@
-import { IsNotEmpty, MaxLength, MinLength, ArrayMaxSize, IsPositive, IsInt, ValidateNested, IsOptional, ArrayNotEmpty } from 'class-validator';
+import { IsNotEmpty, MaxLength, MinLength, ArrayMaxSize, IsPositive, IsInt, ValidateNested, IsOptional, ArrayNotEmpty, IsArray, IsString, ArrayUnique } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
 import { biomarkerValidationRules, skinBiomarkerValidationRules } from '../../../common/src/resources/biomarkers/validation-rules';
@@ -26,6 +26,14 @@ export class UpdateSkinBiomarkerDto implements ICreateBiomarker {
     @Transform(({ value }: TransformFnParams) => value?.trim())
     @IsNotEmpty()
     readonly shortName: string;
+
+    @ApiProperty({ type: () => [String], required: false })
+    @IsOptional()
+    @ArrayMaxSize(biomarkerValidationRules.alternativeNamesMax)
+    @IsArray()
+    @IsString({ each: true })
+    @ArrayUnique()
+    readonly alternativeNames: string[];
 
     @ApiProperty({ type: () => String, required: false })
     @MaxLength(biomarkerValidationRules.nameMaxLength)
