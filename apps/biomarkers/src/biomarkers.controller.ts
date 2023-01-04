@@ -306,7 +306,7 @@ export class BiomarkersController {
 
     let biomarkersList = [];
     const scopes: any[] = [
-      { method: ['byType', BiomarkerTypes.blood, BiomarkerTypes.skin] },
+      { method: ['byType', [BiomarkerTypes.blood, BiomarkerTypes.skin]] },
       { method: ['withCategory', true] },
       'withUnit'
     ];
