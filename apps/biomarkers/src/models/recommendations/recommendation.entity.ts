@@ -10,6 +10,8 @@ import { CollectionDto } from '../../../../common/src/models/enum-collecction.dt
 import { FilterRecommendation } from './filter-recommendation.entity';
 import { RecommendationTypes } from '../../../../common/src/resources/recommendations/recommendation-types';
 import { RecommendationReaction } from '../recommendationReactions/recommendation-reaction.entity';
+import { RecommendationSkinType } from '../recommendationSkinTypes/recommendation-skin-type.entity';
+import { RecommendationContradiction } from '../recommendationContradictions/recommendation-contradiction.entity';
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
@@ -79,7 +81,25 @@ import { RecommendationReaction } from '../recommendationReactions/recommendatio
                 where: { filterId }
             },
         ],
-    })
+    }),
+    withSkinTypes: () => ({
+        include: [
+            {
+                model: RecommendationSkinType,
+                as: 'skinTypes',
+                required: false,
+            },
+        ]
+    }),
+    withContradictions: () => ({
+        include: [
+            {
+                model: RecommendationContradiction,
+                as: 'contradictions',
+                required: false,
+            },
+        ]
+    }),
 }))
 
 @Table({
@@ -147,4 +167,10 @@ export class Recommendation extends Model {
 
     @HasOne(() => FilterRecommendation, 'recommendationId')
     filterRecommendation: FilterRecommendation;
+
+    @HasMany(() => RecommendationSkinType, 'recommendationId')
+    skinTypes: RecommendationSkinType[];
+
+    @HasMany(() => RecommendationContradiction, 'recommendationId')
+    contradictions: RecommendationContradiction[];
 }

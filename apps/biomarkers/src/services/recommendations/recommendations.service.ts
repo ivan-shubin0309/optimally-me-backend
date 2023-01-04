@@ -14,7 +14,9 @@ import { SessionDataDto } from '../../../../sessions/src/models';
 import { RecommendationImpactDto } from '../../models/recommendationImpacts/recommendation-impact.dto';
 import { FileTypes } from '../../../../common/src/resources/files/file-types';
 import { ImpactStudyLink } from '../../models/recommendationImpacts/impact-study-link.entity';
-import { ImpactStudyLinkTypes } from 'apps/common/src/resources/recommendation-impacts/impact-study-link-types';
+import { ImpactStudyLinkTypes } from '../../../../common/src/resources/recommendation-impacts/impact-study-link-types';
+import { RecommendationSkinType } from '../../models/recommendationSkinTypes/recommendation-skin-type.entity';
+import { RecommendationContradiction } from '../../models/recommendationContradictions/recommendation-contradiction.entity';
 
 @Injectable()
 export class RecommendationsService extends BaseService<Recommendation> {
@@ -24,6 +26,8 @@ export class RecommendationsService extends BaseService<Recommendation> {
     @Inject('RECOMMENDATION_IMPACT_MODEL') readonly recommendationImpactModel: Repository<RecommendationImpact>,
     @Inject('SEQUELIZE') readonly dbConnection: Sequelize,
     @Inject('IMPACT_STUDY_LINK_MODEL') readonly impactStudyLinkModel: Repository<ImpactStudyLink>,
+    @Inject('RECOMMENDATION_SKIN_TYPE_MODEL') readonly recommendationSkinTypeModel: Repository<RecommendationSkinType>,
+    @Inject('RECOMMENDATION_CONTRADICTION_MODEL') readonly recommendationContradictionModel: Repository<RecommendationContradiction>,
     readonly filesService: FilesService,
   ) { super(model); }
 
@@ -42,22 +46,19 @@ export class RecommendationsService extends BaseService<Recommendation> {
         await this.attachFiles([{ recommendationId: recommendation.id, fileId }], transaction);
       }
 
-      if (body.impacts && body.impacts.length) {
-        const impactsToCreate: any[] = body.impacts.map(impact => Object.assign({ recommendationId: recommendation.id }, impact));
-
-        const createdImpacts = await this.recommendationImpactModel.bulkCreate(impactsToCreate, { transaction });
-
-        await this.attachStudyLinksToImpacts(createdImpacts, body, transaction);
-      }
+      await this.attachAll(body, recommendation.id, transaction);
 
       return recommendation;
     });
 
-    return this.getOne([
-      { method: ['byId', createdRecommendation.id] },
-      'withFiles',
-      { method: ['withImpacts', ['withBiomarker', 'withStudyLinks']] }
-    ]);
+    return this.getOne(
+      [
+        { method: ['byId', createdRecommendation.id] },
+        'withFiles'
+      ],
+      null,
+      { isIncludeAll: true }
+    );
   }
 
   async update(recommendation: Recommendation, body: CreateRecommendationDto): Promise<void> {
@@ -71,8 +72,24 @@ export class RecommendationsService extends BaseService<Recommendation> {
       if (recommendation.impacts && recommendation.impacts.length) {
         deletePromises.push(
           this.recommendationImpactModel
-            .scope([{ method: ['byId', recommendation.impacts.map(impact => impact.id)] }])
-            .destroy({ transaction })
+            .scope([{ method: ['byRecommendationId', recommendation.id] }])
+            .destroy({ transaction }),
+        );
+      }
+
+      if (recommendation.skinTypes && recommendation.skinTypes.length) {
+        deletePromises.push(
+          this.recommendationSkinTypeModel
+            .scope([{ method: ['byRecommendationId', recommendation.id] }])
+            .destroy({ transaction }),
+        );
+      }
+
+      if (recommendation.contradictions && recommendation.contradictions.length) {
+        deletePromises.push(
+          this.recommendationContradictionModel
+            .scope([{ method: ['byRecommendationId', recommendation.id] }])
+            .destroy({ transaction }),
         );
       }
 
@@ -86,13 +103,7 @@ export class RecommendationsService extends BaseService<Recommendation> {
         await this.attachFiles([{ recommendationId: recommendation.id, fileId: body.fileId }], transaction);
       }
 
-      if (body.impacts && body.impacts.length) {
-        const impactsToCreate: any[] = body.impacts.map(impact => Object.assign({ recommendationId: recommendation.id }, impact));
-
-        const createdImpacts = await this.recommendationImpactModel.bulkCreate(impactsToCreate, { transaction });
-
-        await this.attachStudyLinksToImpacts(createdImpacts, body, transaction);
-      }
+      await this.attachAll(body, recommendation.id, transaction);
     });
   }
 
@@ -175,5 +186,117 @@ export class RecommendationsService extends BaseService<Recommendation> {
     });
 
     await this.impactStudyLinkModel.bulkCreate(studyLinksToCreate, { transaction });
+  }
+
+  async getOne(scopes = [], transaction?: Transaction, options?: { isIncludeAll: boolean }): Promise<Recommendation> {
+    const recommendation = await this.model
+      .scope(scopes)
+      .findOne({ transaction });
+
+    if (options?.isIncludeAll && recommendation) {
+      const [impacts, skinTypes, contradictions] = await Promise.all([
+        this.recommendationImpactModel
+          .scope([{ method: ['byRecommendationId', recommendation.id] }, 'withBiomarker', 'withStudyLinks'])
+          .findAll({ transaction }),
+        this.recommendationSkinTypeModel
+          .scope([{ method: ['byRecommendationId', recommendation.id] }])
+          .findAll({ transaction }),
+        this.recommendationContradictionModel
+          .scope([{ method: ['byRecommendationId', recommendation.id] }])
+          .findAll({ transaction }),
+      ]);
+
+      recommendation.setDataValue('impacts', impacts);
+      recommendation.impacts = impacts;
+      recommendation.setDataValue('skinTypes', skinTypes);
+      recommendation.skinTypes = skinTypes;
+      recommendation.setDataValue('contradictions', contradictions);
+      recommendation.contradictions = contradictions;
+    }
+
+    return recommendation;
+  }
+
+  async attachAll(body: CreateRecommendationDto, recommendationId: number, transaction?: Transaction): Promise<void> {
+    if (body.impacts && body.impacts.length) {
+      const impactsToCreate: any[] = body.impacts.map(impact => Object.assign({ recommendationId }, impact));
+
+      const createdImpacts = await this.recommendationImpactModel.bulkCreate(impactsToCreate, { transaction });
+
+      await this.attachStudyLinksToImpacts(createdImpacts, body, transaction);
+    }
+
+    if (body.idealSkinTypes && body.idealSkinTypes.length) {
+      const skinTypesToCreate: any[] = body.idealSkinTypes.map(idealSkinType => ({ recommendationId, skinType: idealSkinType, isIdealSkinType: true }));
+
+      await this.recommendationSkinTypeModel.bulkCreate(skinTypesToCreate, { transaction });
+    }
+
+    if (body.notMeantForSkinTypes && body.notMeantForSkinTypes.length) {
+      const skinTypesToCreate: any[] = body.notMeantForSkinTypes.map(notMeantForSkinType => ({ recommendationId, skinType: notMeantForSkinType, isIdealSkinType: false }));
+
+      await this.recommendationSkinTypeModel.bulkCreate(skinTypesToCreate, { transaction });
+    }
+
+    if (body.contradictions && body.contradictions.length) {
+      const contradictionsToCreate: any[] = body.contradictions.map(contradiction => ({ recommendationId, contradictionType: contradiction }));
+
+      await this.recommendationContradictionModel.bulkCreate(contradictionsToCreate, { transaction });
+    }
+  }
+
+  async getList(scopes: any[], transaction?: Transaction, options?: { isIncludeAll: boolean }): Promise<Recommendation[]> {
+    const recommendationList = await super.getList(scopes, transaction);
+
+    if (!recommendationList.length) {
+      return recommendationList;
+    }
+
+    if (options?.isIncludeAll) {
+      const impactsMap = {}, skinTypesMap = {}, contradictionsMap = {};
+      const recommendationIds = recommendationList.map(recommendation => recommendation.id);
+
+      const [impacts, skinTypes, contradictions] = await Promise.all([
+        this.recommendationImpactModel
+          .scope([{ method: ['byRecommendationId', recommendationIds] }, 'withBiomarker', 'withStudyLinks'])
+          .findAll({ transaction }),
+        this.recommendationSkinTypeModel
+          .scope([{ method: ['byRecommendationId', recommendationIds] }])
+          .findAll({ transaction }),
+        this.recommendationContradictionModel
+          .scope([{ method: ['byRecommendationId', recommendationIds] }])
+          .findAll({ transaction }),
+      ]);
+
+      impacts.forEach(impact => {
+        if (!impactsMap[impact.recommendationId]) {
+          impactsMap[impact.recommendationId] = [];
+        }
+        impactsMap[impact.recommendationId].push(impact);
+      });
+      skinTypes.forEach(skinType => {
+        if (!skinTypesMap[skinType.recommendationId]) {
+          skinTypesMap[skinType.recommendationId] = [];
+        }
+        skinTypesMap[skinType.recommendationId].push(skinType);
+      });
+      contradictions.forEach(contradiction => {
+        if (!contradictionsMap[contradiction.recommendationId]) {
+          contradictionsMap[contradiction.recommendationId] = [];
+        }
+        contradictionsMap[contradiction.recommendationId].push(contradiction);
+      });
+
+      recommendationList.forEach(recommendation => {
+        recommendation.setDataValue('impacts', impactsMap[recommendation.id]);
+        recommendation.impacts = impactsMap[recommendation.id];
+        recommendation.setDataValue('skinTypes', skinTypesMap[recommendation.id]);
+        recommendation.skinTypes = skinTypesMap[recommendation.id];
+        recommendation.setDataValue('contradictions', contradictionsMap[recommendation.id]);
+        recommendation.contradictions = contradictionsMap[recommendation.id];
+      });
+    }
+
+    return recommendationList;
   }
 }
