@@ -23,6 +23,8 @@ import { ImpactStudyLink } from './models/recommendationImpacts/impact-study-lin
 import { UserRecommendation } from './models/userRecommendations/user-recommendation.entity';
 import { FilterSkinType } from './models/filterSkinTypes/filter-skin-type.entity';
 import { FilterContradiction } from './models/filterContradictions/filter-contradiction.entity';
+import { RecommendationSkinType } from './models/recommendationSkinTypes/recommendation-skin-type.entity';
+import { RecommendationContradiction } from './models/recommendationContradictions/recommendation-contradiction.entity';
 
 export const modelProviders = [
     {
@@ -124,6 +126,14 @@ export const modelProviders = [
     {
         provide: 'FILTER_CONTRADICTION_MODEL',
         useValue: FilterContradiction
+    },
+    {
+        provide: 'RECOMMENDATION_SKIN_TYPE_MODEL',
+        useValue: RecommendationSkinType
+    },
+    {
+        provide: 'RECOMMENDATION_CONTRADICTION_MODEL',
+        useValue: RecommendationContradiction
     },
 ];
 

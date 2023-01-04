@@ -1,13 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { RecommendationCategoryTypes } from '../../../../common/src/resources/recommendations/recommendation-category-types';
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
-import { IsArray, IsBoolean, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength, MinLength, ValidateNested } from 'class-validator';
+import { ArrayUnique, IsArray, IsBoolean, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength, MinLength, ValidateNested } from 'class-validator';
 import { RecommendationActionTypes } from '../../../../common/src/resources/recommendations/recommendation-action-types';
 import { CreateRecommendationImpactDto } from '../recommendationImpacts/create-recommendation-impact.dto';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
 import { ArrayDistinct } from '../../../../common/src/resources/common/array-distinct.decorator';
-import { recommendationValidationRules } from 'apps/common/src/resources/recommendations/recommendation-validation-rules';
+import { recommendationValidationRules } from '../../../../common/src/resources/recommendations/recommendation-validation-rules';
 import { OneOf } from '../../../../common/src/resources/common/one-of.decorator';
+import { RecommendationSkinTypes } from '../../../../common/src/resources/recommendations/skin-types';
+import { RecommendationContradictionTypes } from '../../../../common/src/resources/recommendations/contradiction-types';
+import { ValidateIdealSkinType } from '../../../../common/src/resources/recommendations/validate-ideal-skin-type';
 
 export class CreateRecommendationDto {
     @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(RecommendationCategoryTypes) })
@@ -63,4 +66,30 @@ export class CreateRecommendationDto {
     @ValidateNested()
     @Type(() => CreateRecommendationImpactDto)
     readonly impacts: CreateRecommendationImpactDto[];
+
+
+    @ApiProperty({ type: () => [Number], required: false, description: EnumHelper.toDescription(RecommendationSkinTypes) })
+    @IsOptional()
+    @IsArray()
+    @ArrayUnique()
+    @IsNumber({}, { each: true })
+    @IsEnum(RecommendationSkinTypes, { each: true })
+    @ValidateIdealSkinType()
+    readonly idealSkinTypes: number[];
+
+    @ApiProperty({ type: () => [Number], required: false, description: EnumHelper.toDescription(RecommendationSkinTypes) })
+    @IsOptional()
+    @IsArray()
+    @ArrayUnique()
+    @IsNumber({}, { each: true })
+    @IsEnum(RecommendationSkinTypes, { each: true })
+    readonly notMeantForSkinTypes: number[];
+
+    @ApiProperty({ type: () => [Number], required: false, description: EnumHelper.toDescription(RecommendationContradictionTypes) })
+    @IsOptional()
+    @IsArray()
+    @ArrayUnique()
+    @IsNumber({}, { each: true })
+    @IsEnum(RecommendationContradictionTypes, { each: true })
+    readonly contradictions: number[];
 }

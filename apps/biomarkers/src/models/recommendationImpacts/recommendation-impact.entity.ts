@@ -22,7 +22,8 @@ import { ImpactStudyLink } from './impact-study-link.entity';
                 required: false,
             },
         ]
-    })
+    }),
+    byRecommendationId: (recommendationId) => ({ where: { recommendationId } }),
 }))
 
 @Table({

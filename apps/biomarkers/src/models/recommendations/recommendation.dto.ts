@@ -29,8 +29,15 @@ export class RecommendationDto extends BaseDto<Recommendation> {
         this.userReactionType = entity.userReaction
             ? entity.userReaction.reactionType
             : undefined;
-        this.skinTypes = entity.skinTypes && entity.skinTypes.length
-            ? entity.skinTypes.map(skinType => new RecommendationSkinTypeDto(skinType))
+        this.idealSkinTypes = entity.skinTypes && entity.skinTypes.length
+            ? entity.skinTypes
+                .filter(skinType => skinType.isIdealSkinType)
+                .map(skinType => new RecommendationSkinTypeDto(skinType))
+            : undefined;
+        this.notMeantForSkinTypes = entity.skinTypes && entity.skinTypes.length
+            ? entity.skinTypes
+                .filter(skinType => !skinType.isIdealSkinType)
+                .map(skinType => new RecommendationSkinTypeDto(skinType))
             : undefined;
         this.contradictions = entity.contradictions && entity.contradictions.length
             ? entity.contradictions.map(contradiction => new RecommendationContradictionDto(contradiction))
@@ -68,7 +75,10 @@ export class RecommendationDto extends BaseDto<Recommendation> {
     readonly userReactionType: number;
 
     @ApiProperty({ type: () => [RecommendationSkinTypeDto], required: false })
-    readonly skinTypes: RecommendationSkinTypeDto[];
+    readonly idealSkinTypes: RecommendationSkinTypeDto[];
+
+    @ApiProperty({ type: () => [RecommendationSkinTypeDto], required: false })
+    readonly notMeantForSkinTypes: RecommendationSkinTypeDto[];
 
     @ApiProperty({ type: () => [RecommendationContradictionDto], required: false })
     readonly contradictions: RecommendationContradictionDto[];

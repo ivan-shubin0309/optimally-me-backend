@@ -235,10 +235,8 @@ export class BiomarkersController {
 
       scopes.push(
         { method: ['pagination', { limit, offset }] },
-        'withFiles',
-        { method: ['withImpacts', ['withBiomarker', 'withStudyLinks']] }
       );
-      recommendationsList = await this.recommendationsService.getList(scopes);
+      recommendationsList = await this.recommendationsService.getList(scopes, null, { isIncludeAll: true });
     }
 
     return new RecommendationsDto(recommendationsList, PaginationHelper.buildPagination({ limit, offset }, count));
@@ -408,7 +406,7 @@ export class BiomarkersController {
       const biomarkerIdsCount = Object.keys(biomarkerIdsMap).length;
       const biomarkersCount = await this.biomarkersService.getCount([
         { method: ['byId', body.impacts.map(impact => impact.biomarkerId)] },
-        { method: ['byType', BiomarkerTypes.blood] },
+        { method: ['byType', BiomarkerTypes.blood, BiomarkerTypes.skin] },
         { method: ['byIsDeleted', false] }
       ]);
       if (biomarkersCount !== biomarkerIdsCount) {
@@ -470,8 +468,7 @@ export class BiomarkersController {
     let recommendation = await this.recommendationsService.getOne([
       { method: ['byId', params.id] },
       'withFiles',
-      { method: ['withImpacts', ['withBiomarker', 'withStudyLinks']] }
-    ]);
+    ], null, { isIncludeAll: true });
 
     if (!recommendation) {
       throw new NotFoundException({
@@ -493,9 +490,8 @@ export class BiomarkersController {
   async getRecommendationById(@Param() params: EntityByIdDto): Promise<RecommendationDto> {
     const recommendation = await this.recommendationsService.getOne([
       { method: ['byId', params.id] },
-      'withFiles',
-      { method: ['withImpacts', ['withBiomarker', 'withStudyLinks']] }
-    ]);
+      'withFiles'
+    ], null, { isIncludeAll: true });
 
     if (!recommendation) {
       throw new NotFoundException({
@@ -516,8 +512,7 @@ export class BiomarkersController {
     let recommendation = await this.recommendationsService.getOne([
       { method: ['byId', params.id] },
       'withFiles',
-      { method: ['withImpacts', ['withBiomarker', 'withStudyLinks']] }
-    ]);
+    ], null, { isIncludeAll: true });
 
     if (!recommendation) {
       throw new NotFoundException({
@@ -571,8 +566,6 @@ export class BiomarkersController {
   async deleteRecommendationById(@Param() params: EntityByIdDto): Promise<void> {
     const recommendation = await this.recommendationsService.getOne([
       { method: ['byId', params.id] },
-      'withFiles',
-      { method: ['withImpacts', ['withBiomarker', 'withStudyLinks']] }
     ]);
 
     if (!recommendation) {
@@ -593,9 +586,8 @@ export class BiomarkersController {
   async copyRecommendation(@Param() params: EntityByIdDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
     const recommendation = await this.recommendationsService.getOne([
       { method: ['byId', params.id] },
-      'withFiles',
-      { method: ['withImpacts', ['withBiomarker', 'withStudyLinks']] }
-    ]);
+      'withFiles'
+    ], null, { isIncludeAll: true });
 
     if (!recommendation) {
       throw new NotFoundException({
