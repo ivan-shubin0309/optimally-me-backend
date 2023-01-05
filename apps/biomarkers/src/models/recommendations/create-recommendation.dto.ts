@@ -52,7 +52,7 @@ export class CreateRecommendationDto {
     @IsOptional()
     @IsBoolean()
     @IsAddToCartAllowed()
-    readonly isAddToCartAllowed: boolean = true;
+    readonly isAddToCartAllowed: boolean;
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(IdealTimeOfDayTypes) })
     @IsOptional()
