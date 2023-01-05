@@ -49,11 +49,14 @@ export class SessionsService {
             sessionId: uniqueKey
         };
 
-        const lifeTime = sessionOptions.lifeTime || this.configService.get('JWT_EXPIRES_IN');
+        const lifeTime = sessionOptions.lifeTime || this.configService.get('JWT_ACCESS_TOKEN_EXPIRES_IN');
 
         const accessToken = this.jwtService.sign(
             {
                 data: tokenParams
+            },
+            {
+                expiresIn: lifeTime
             }
         );
 
@@ -67,6 +70,9 @@ export class SessionsService {
                     tokenType: 'refresh',
                     accessToken: accessToken
                 }
+            },
+            {
+                expiresIn: this.configService.get('JWT_REFRESH_TOKEN_EXPIRES_IN')
             }
         );
 
