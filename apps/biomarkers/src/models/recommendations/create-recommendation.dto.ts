@@ -12,6 +12,7 @@ import { RecommendationSkinTypes } from '../../../../common/src/resources/recomm
 import { RecommendationContradictionTypes } from '../../../../common/src/resources/recommendations/contradiction-types';
 import { ValidateIdealSkinType } from '../../../../common/src/resources/recommendations/validate-ideal-skin-type';
 import { IdealTimeOfDayTypes } from '../../../../common/src/resources/recommendations/ideal-time-of-day-types';
+import { IsAddToCartAllowed } from '../../../../common/src/resources/recommendations/is-add-to-cart-allowed.decorator';
 
 export class CreateRecommendationDto {
     @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(RecommendationCategoryTypes) })
@@ -50,7 +51,8 @@ export class CreateRecommendationDto {
     @ApiProperty({ type: () => Boolean, required: false, default: true })
     @IsOptional()
     @IsBoolean()
-    readonly isAddToCartAllowed: boolean = true;
+    @IsAddToCartAllowed()
+    readonly isAddToCartAllowed: boolean;
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(IdealTimeOfDayTypes) })
     @IsOptional()
