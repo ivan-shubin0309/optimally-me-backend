@@ -103,15 +103,15 @@ import { BiomarkerSexTypes } from '../../../common/src/resources/biomarkers/biom
         ],
         group: ['recommendationRange']
     }),
-    orderByDeviation: () => ({
+    orderByDeviation: (orderType: string) => ({
         attributes: {
             include: [literal(OrderValueQuery)] as any,
         },
         order: [
-            [literal('`orderValue`'), 'desc'],
-            [literal('`lastResult`.`deviation`'), 'desc'],
-            [literal('`category.name`'), 'asc'],
-            [literal('`Biomarker`.`label`'), 'asc']
+            [literal('`orderValue`'), orderType],
+            [literal('`lastResult`.`deviation`'), orderType],
+            [literal('`category.name`'), orderType === 'desc' ? 'asc' : 'desc'],
+            [literal('`Biomarker`.`label`'), orderType === 'desc' ? 'asc' : 'desc']
         ]
     }),
     orderByLiteral: (field: string, values: any[]) => ({
