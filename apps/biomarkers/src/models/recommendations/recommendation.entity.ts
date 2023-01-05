@@ -12,6 +12,7 @@ import { RecommendationTypes } from '../../../../common/src/resources/recommenda
 import { RecommendationReaction } from '../recommendationReactions/recommendation-reaction.entity';
 import { RecommendationSkinType } from '../recommendationSkinTypes/recommendation-skin-type.entity';
 import { RecommendationContradiction } from '../recommendationContradictions/recommendation-contradiction.entity';
+import { IdealTimeOfDayTypes } from '../../../../common/src/resources/recommendations/ideal-time-of-day-types';
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
@@ -152,6 +153,12 @@ export class Recommendation extends Model {
         defaultValue: false
     })
     isAddToCartAllowed: boolean;
+
+    @Column({
+        type: DataType.TINYINT,
+        allowNull: true,
+    })
+    idealTimeOfDay: IdealTimeOfDayTypes;
 
     @BelongsToMany(() => File, () => RecommendationFile, 'recommendationId', 'fileId')
     files: File[];
