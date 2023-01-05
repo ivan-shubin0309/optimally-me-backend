@@ -16,14 +16,14 @@ import { IdealTimeOfDayTypes } from '../../../../common/src/resources/recommenda
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
-    search: (searchString) => ({
+    search: (searchString: string) => ({
         where: {
             [Op.or]: [
                 { title: { [Op.like]: `%${searchString}%` } },
                 {
                     category: EnumHelper
                         .toCollection(RecommendationCategoryTypes)
-                        .filter((categoryType: CollectionDto) => recommendationCategoryToString[categoryType.key].includes(searchString))
+                        .filter((categoryType: CollectionDto) => recommendationCategoryToString[categoryType.value].includes(searchString.toLowerCase()))
                         .map((categoryType: CollectionDto) => categoryType.value)
                 }
             ]

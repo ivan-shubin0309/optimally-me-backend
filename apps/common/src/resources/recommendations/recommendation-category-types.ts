@@ -13,15 +13,15 @@ export enum RecommendationCategoryTypes {
 }
 
 export const recommendationCategoryToString = {
-    [RecommendationCategoryTypes.diet]: 'Diet',
-    [RecommendationCategoryTypes.lifestyle]: 'Lifestyle',
-    [RecommendationCategoryTypes.supplements]: 'Supplements',
-    [RecommendationCategoryTypes.doctor]: 'Doctor',
-    [RecommendationCategoryTypes.tests]: 'Tests',
-    [RecommendationCategoryTypes.information]: 'Information',
-    [RecommendationCategoryTypes.skinProduct]: 'Skin Product',
-    [RecommendationCategoryTypes.diy]: 'DIY',
-    [RecommendationCategoryTypes.atHomeDevice]: 'At-home device',
+    [RecommendationCategoryTypes.diet]: 'diet',
+    [RecommendationCategoryTypes.lifestyle]: 'lifestyle',
+    [RecommendationCategoryTypes.supplements]: 'supplements',
+    [RecommendationCategoryTypes.doctor]: 'doctor',
+    [RecommendationCategoryTypes.tests]: 'tests',
+    [RecommendationCategoryTypes.information]: 'information',
+    [RecommendationCategoryTypes.skinProduct]: 'skin Product',
+    [RecommendationCategoryTypes.diy]: 'diy',
+    [RecommendationCategoryTypes.atHomeDevice]: 'at-home device',
 };
 
 export const recommendationCategoryOrder = EnumHelper
