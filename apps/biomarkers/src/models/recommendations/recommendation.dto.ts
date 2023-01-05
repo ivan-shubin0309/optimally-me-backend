@@ -8,6 +8,7 @@ import { RecommendationImpactDto } from '../recommendationImpacts/recommendation
 import { RecommendationReactionTypes } from '../../../../common/src/resources/recommendation-reactions/reaction-types';
 import { RecommendationSkinTypeDto } from '../recommendationSkinTypes/recommendation-skin-type.dto';
 import { RecommendationContradictionDto } from '../recommendationContradictions/recommendation-contradiction.dto';
+import { IdealTimeOfDayTypes } from '../../../../common/src/resources/recommendations/ideal-time-of-day-types';
 
 
 export class RecommendationDto extends BaseDto<Recommendation> {
@@ -20,6 +21,7 @@ export class RecommendationDto extends BaseDto<Recommendation> {
         this.productLink = entity.productLink;
         this.isArchived = entity.isArchived;
         this.isAddToCartAllowed = entity.isAddToCartAllowed;
+        this.idealTimeOfDay = entity.idealTimeOfDay;
         this.file = entity.files && entity.files.length
             ? new FileDto(entity.files[0])
             : undefined;
@@ -67,6 +69,9 @@ export class RecommendationDto extends BaseDto<Recommendation> {
 
     @ApiProperty({ type: () => Boolean, required: true })
     readonly isAddToCartAllowed: boolean;
+
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(IdealTimeOfDayTypes) })
+    readonly idealTimeOfDay: number;
 
     @ApiProperty({ type: () => [RecommendationImpactDto], required: false })
     readonly impacts: RecommendationImpactDto[];
