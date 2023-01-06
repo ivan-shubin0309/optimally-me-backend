@@ -21,7 +21,7 @@ export function RecommendationCategoryValidation(validationOptions?: ValidationO
                     const body = args.object as CreateRecommendationDto;
                     if (
                         skinCategoryTypes.includes(value)
-                        && (!body.idealTimeOfDay || !body?.idealSkinTypes?.length || !body?.notMeantForSkinTypes?.length)
+                        && (!body.idealTimeOfDay || !body?.idealSkinTypes?.length)
                     ) {
                         return false;
                     }
