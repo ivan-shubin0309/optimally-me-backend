@@ -108,7 +108,7 @@ export class CreateSkinFilterDto implements ICreateFilter {
     readonly highMax: number = null;
 
     @ApiProperty({ type: () => Number, required: false })
-    @IsOptional()
+    @IsNotEmpty()
     @IsNumber()
     @Min(FilterValidationRules.rangeMinValue)
     @NumberMaxCharacters(FilterValidationRules.rangeMaxCharactersCount)

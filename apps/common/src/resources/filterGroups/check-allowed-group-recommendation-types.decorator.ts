@@ -23,13 +23,9 @@ export function CheckAllowedGroupRecommendationTypes(validationOptions?: Validat
                             recommendationType === RecommendationTypes.criticalLow
                             || recommendationType === RecommendationTypes.criticalHigh
                         ) {
-                            console.log(typeof filter[RecommendationTypes[recommendationType]]);
-                            console.log(filter[RecommendationTypes[recommendationType]]);
                             return typeof filter[RecommendationTypes[recommendationType]] === 'number';
                         } else {
-                            console.log(typeof filter[`${RecommendationTypes[recommendationType]}Min`]);
-                            console.log(filter[`${RecommendationTypes[recommendationType]}Min`]);
-                            return typeof filter[`${RecommendationTypes[recommendationType]}Min`] === 'number' && typeof filter[`${RecommendationTypes[recommendationType]}Max`] === 'number';
+                            return typeof filter[`${RecommendationTypes[recommendationType]}Min`] === 'number' || typeof filter[`${RecommendationTypes[recommendationType]}Max`] === 'number';
                         }
                     });
 
