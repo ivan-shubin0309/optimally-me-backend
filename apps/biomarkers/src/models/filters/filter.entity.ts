@@ -14,6 +14,9 @@ import sequelize from 'sequelize';
 import { FilterSkinType } from '../filterSkinTypes/filter-skin-type.entity';
 import { FilterContradiction } from '../filterContradictions/filter-contradiction.entity';
 
+const PRECISION = 19;
+const SCALE = 9;
+
 @Scopes(() => ({
     includeAll: () => ({
         include: [
@@ -139,73 +142,73 @@ export class Filter extends Model {
     whatCanYouDo: string;
 
     @Column({
-        type: DataType.NUMBER,
+        type: DataType.DECIMAL(PRECISION, SCALE),
         allowNull: true
     })
     criticalLow: number;
 
     @Column({
-        type: DataType.NUMBER,
+        type: DataType.DECIMAL(PRECISION, SCALE),
         allowNull: true
     })
     lowMin: number;
 
     @Column({
-        type: DataType.NUMBER,
+        type: DataType.DECIMAL(PRECISION, SCALE),
         allowNull: true
     })
     lowMax: number;
 
     @Column({
-        type: DataType.NUMBER,
+        type: DataType.DECIMAL(PRECISION, SCALE),
         allowNull: true
     })
     subOptimalMin: number;
 
     @Column({
-        type: DataType.NUMBER,
+        type: DataType.DECIMAL(PRECISION, SCALE),
         allowNull: true
     })
     subOptimalMax: number;
 
     @Column({
-        type: DataType.NUMBER,
+        type: DataType.DECIMAL(PRECISION, SCALE),
         allowNull: true
     })
     optimalMin: number;
 
     @Column({
-        type: DataType.NUMBER,
+        type: DataType.DECIMAL(PRECISION, SCALE),
         allowNull: true
     })
     optimalMax: number;
 
     @Column({
-        type: DataType.NUMBER,
+        type: DataType.DECIMAL(PRECISION, SCALE),
         allowNull: true
     })
     supraOptimalMin: number;
 
     @Column({
-        type: DataType.NUMBER,
+        type: DataType.DECIMAL(PRECISION, SCALE),
         allowNull: true
     })
     supraOptimalMax: number;
 
     @Column({
-        type: DataType.NUMBER,
+        type: DataType.DECIMAL(PRECISION, SCALE),
         allowNull: true
     })
     highMin: number;
 
     @Column({
-        type: DataType.NUMBER,
+        type: DataType.DECIMAL(PRECISION, SCALE),
         allowNull: true
     })
     highMax: number;
 
     @Column({
-        type: DataType.NUMBER,
+        type: DataType.DECIMAL(PRECISION, SCALE),
         allowNull: true
     })
     criticalHigh: number;
