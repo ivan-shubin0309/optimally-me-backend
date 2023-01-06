@@ -9,12 +9,14 @@ export class RecommendationDataDto {
         this.title = data.title;
         this.type = data.type;
         this.isAddToCartAllowed = data.isAddToCartAllowed;
+        this.idealTimeOfDay = data.idealTimeOfDay;
     }
 
-    category: number;
-    content: string;
-    title: string;
-    type: number;
-    productLink: string;
-    isAddToCartAllowed: boolean;
+    category: number = null;
+    content: string = null;
+    title: string = null;
+    type: number = null;
+    productLink: string = null;
+    isAddToCartAllowed: boolean = null;
+    idealTimeOfDay: number = null;
 }

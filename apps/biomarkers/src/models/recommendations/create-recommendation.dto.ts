@@ -13,12 +13,14 @@ import { RecommendationContradictionTypes } from '../../../../common/src/resourc
 import { ValidateIdealSkinType } from '../../../../common/src/resources/recommendations/validate-ideal-skin-type';
 import { IdealTimeOfDayTypes } from '../../../../common/src/resources/recommendations/ideal-time-of-day-types';
 import { IsAddToCartAllowed } from '../../../../common/src/resources/recommendations/is-add-to-cart-allowed.decorator';
+import { RecommendationCategoryValidation } from '../../../../common/src/resources/recommendations/recommendation-category-validation.decorator';
 
 export class CreateRecommendationDto {
     @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(RecommendationCategoryTypes) })
     @IsNotEmpty()
     @IsNumber()
     @IsEnum(RecommendationCategoryTypes)
+    @RecommendationCategoryValidation()
     readonly category: number;
 
     @ApiProperty({ type: () => String, required: true })
