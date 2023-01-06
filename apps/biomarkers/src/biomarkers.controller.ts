@@ -540,7 +540,7 @@ export class BiomarkersController {
       const biomarkerIdsCount = Object.keys(biomarkerIdsMap).length;
       const biomarkersCount = await this.biomarkersService.getCount([
         { method: ['byId', body.impacts.map(impact => impact.biomarkerId)] },
-        { method: ['byType', BiomarkerTypes.blood] },
+        { method: ['byType', [BiomarkerTypes.blood, BiomarkerTypes.skin]] },
         { method: ['byIsDeleted', false] }
       ]);
       if (biomarkersCount !== biomarkerIdsCount) {
@@ -554,7 +554,14 @@ export class BiomarkersController {
 
     await this.recommendationsService.update(recommendation, body);
 
-    recommendation = await recommendation.reload();
+    recommendation = await this.recommendationsService.getOne(
+      [
+        { method: ['byId', params.id] },
+        'withFiles',
+      ],
+      null,
+      { isIncludeAll: true }
+    );
 
     return new RecommendationDto(recommendation);
   }
