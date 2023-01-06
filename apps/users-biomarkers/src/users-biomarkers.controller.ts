@@ -64,7 +64,7 @@ export class UsersBiomarkersController {
         { method: ['withLastResult', req.user.userId, query.beforeDate] },
         { method: ['pagination', { limit, offset }] }
       ]);
-      scopesForOrdering.push(userBiomarkerOrderScope[query.orderBy]);
+      scopesForOrdering.push(userBiomarkerOrderScope[query.orderBy](query));
 
       const orderedList = await this.usersBiomarkersService.getList(scopesForOrdering);
       const biomarkerIds = orderedList.map(biomarker => biomarker.get('id'));
