@@ -244,6 +244,10 @@ export class BiomarkersService extends BaseService<Biomarker> {
 
             await biomarker.update(biomarkerUpdateBody, { transaction });
 
+            if (body.alternativeNames && body.alternativeNames.length) {
+                await this.bloodBiomarkersFactory.attachAlternativeNames(body.alternativeNames, biomarker.id, transaction);
+            }
+
             await this.filtersService.update(body.filters, biomarker.id, this.skinBiomarkersFactory, transaction);
 
             return biomarker.id;
