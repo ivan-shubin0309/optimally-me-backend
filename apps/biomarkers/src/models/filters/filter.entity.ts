@@ -143,73 +143,109 @@ export class Filter extends Model {
 
     @Column({
         type: DataType.DECIMAL(PRECISION, SCALE),
-        allowNull: true
+        allowNull: true,
+        get() {
+            return this.getDataValue('criticalLow') && parseFloat(this.getDataValue('criticalLow').toString());
+        }
     })
     criticalLow: number;
 
     @Column({
         type: DataType.DECIMAL(PRECISION, SCALE),
-        allowNull: true
+        allowNull: true,
+        get() {
+            return this.getDataValue('lowMin') && parseFloat(this.getDataValue('lowMin').toString());
+        }
     })
     lowMin: number;
 
     @Column({
         type: DataType.DECIMAL(PRECISION, SCALE),
-        allowNull: true
+        allowNull: true,
+        get() {
+            return this.getDataValue('lowMax') && parseFloat(this.getDataValue('lowMax').toString());
+        }
     })
     lowMax: number;
 
     @Column({
         type: DataType.DECIMAL(PRECISION, SCALE),
-        allowNull: true
+        allowNull: true,
+        get() {
+            return this.getDataValue('subOptimalMin') && parseFloat(this.getDataValue('subOptimalMin').toString());
+        }
     })
     subOptimalMin: number;
 
     @Column({
         type: DataType.DECIMAL(PRECISION, SCALE),
-        allowNull: true
+        allowNull: true,
+        get() {
+            return this.getDataValue('subOptimalMax') && parseFloat(this.getDataValue('subOptimalMax').toString());
+        }
     })
     subOptimalMax: number;
 
     @Column({
         type: DataType.DECIMAL(PRECISION, SCALE),
-        allowNull: true
+        allowNull: true,
+        get() {
+            return this.getDataValue('optimalMin') && parseFloat(this.getDataValue('optimalMin').toString());
+        }
     })
     optimalMin: number;
 
     @Column({
         type: DataType.DECIMAL(PRECISION, SCALE),
-        allowNull: true
+        allowNull: true,
+        get() {
+            return this.getDataValue('optimalMax') && parseFloat(this.getDataValue('optimalMax').toString());
+        }
     })
     optimalMax: number;
 
     @Column({
         type: DataType.DECIMAL(PRECISION, SCALE),
-        allowNull: true
+        allowNull: true,
+        get() {
+            return this.getDataValue('supraOptimalMin') && parseFloat(this.getDataValue('supraOptimalMin').toString());
+        }
     })
     supraOptimalMin: number;
 
     @Column({
         type: DataType.DECIMAL(PRECISION, SCALE),
-        allowNull: true
+        allowNull: true,
+        get() {
+            return this.getDataValue('supraOptimalMax') && parseFloat(this.getDataValue('supraOptimalMax').toString());
+        }
     })
     supraOptimalMax: number;
 
     @Column({
         type: DataType.DECIMAL(PRECISION, SCALE),
-        allowNull: true
+        allowNull: true,
+        get() {
+            return this.getDataValue('highMin') && parseFloat(this.getDataValue('highMin').toString());
+        }
     })
     highMin: number;
 
     @Column({
         type: DataType.DECIMAL(PRECISION, SCALE),
-        allowNull: true
+        allowNull: true,
+        get() {
+            return this.getDataValue('highMax') && parseFloat(this.getDataValue('highMax').toString());
+        }
     })
     highMax: number;
 
     @Column({
         type: DataType.DECIMAL(PRECISION, SCALE),
-        allowNull: true
+        allowNull: true,
+        get() {
+            return this.getDataValue('criticalHigh') && parseFloat(this.getDataValue('criticalHigh').toString());
+        }
     })
     criticalHigh: number;
 
