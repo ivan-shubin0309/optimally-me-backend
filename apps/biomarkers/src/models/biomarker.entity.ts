@@ -8,6 +8,7 @@ import { Op, literal, fn } from 'sequelize';
 import { UserResult } from '../../../admins-results/src/models/user-result.entity';
 import { getLastUserResultsForEachBiomarker, OrderValueQuery } from '../../../common/src/resources/usersBiomarkers/queries';
 import { BiomarkerSexTypes } from '../../../common/src/resources/biomarkers/biomarker-sex-types';
+import { RecommendationTypes } from '../../../common/src/resources/recommendations/recommendation-types';
 
 @Scopes(() => ({
     byId: (id) => ({ where: { id } }),
@@ -86,19 +87,19 @@ import { BiomarkerSexTypes } from '../../../common/src/resources/biomarkers/biom
             },
         ]
     }),
-    withLastResult: (userId: number, beforeDate?: string) => ({
+    withLastResult: (userId: number, beforeDate?: string, isRequired = false) => ({
         include: [
             {
                 model: UserResult,
                 as: 'lastResult',
-                required: false,
+                required: isRequired,
                 where: literal(`\`lastResult\`.\`id\` IN (${getLastUserResultsForEachBiomarker(userId, 1, beforeDate)})`),
             },
         ]
     }),
     rangeCounters: () => ({
         attributes: [
-            [literal('`userResults`.`recommendationRange`'), 'recommendationRange'],
+            [literal('`lastResult`.`recommendationRange`'), 'recommendationRange'],
             [fn('COUNT', '*'), 'value']
         ],
         group: ['recommendationRange']
@@ -124,6 +125,16 @@ import { BiomarkerSexTypes } from '../../../common/src/resources/biomarkers/biom
                 { name: { [Op.like]: `%${searchString}%` } },
                 { label: { [Op.like]: `%${searchString}%` } },
                 { shortName: { [Op.like]: `%${searchString}%` } }
+            ]
+        }
+    }),
+    byRecommendationRange: (range: RecommendationTypes[]) => ({ where: { '$lastResult.recommendationRange$': range } }),
+    searchByResult: (searchString) => ({
+        where: {
+            [Op.or]: [
+                { name: { [Op.like]: `%${searchString}%` } },
+                { '$lastResult.date$': { [Op.like]: `%${searchString}%` } },
+                { '$lastResult.value$': { [Op.like]: `%${searchString}%` } }
             ]
         }
     }),

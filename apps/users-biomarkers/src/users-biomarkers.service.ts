@@ -15,7 +15,7 @@ export class UsersBiomarkersService extends BaseService<Biomarker> {
 
     async getBiomarkerRangeCounters(userId: number, beforeDate: string, additionalScopes = []): Promise<UserBiomarkerCounterDto> {
         const scopes: any[] = [
-            { method: ['withLastResults', userId, 1, false, true, beforeDate] },
+            { method: ['withLastResult', userId, beforeDate, true] },
             'rangeCounters'
         ];
 
