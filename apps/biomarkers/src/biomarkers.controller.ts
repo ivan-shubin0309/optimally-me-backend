@@ -406,7 +406,7 @@ export class BiomarkersController {
       const biomarkerIdsCount = Object.keys(biomarkerIdsMap).length;
       const biomarkersCount = await this.biomarkersService.getCount([
         { method: ['byId', body.impacts.map(impact => impact.biomarkerId)] },
-        { method: ['byType', BiomarkerTypes.blood, BiomarkerTypes.skin] },
+        { method: ['byType', [BiomarkerTypes.blood, BiomarkerTypes.skin]] },
         { method: ['byIsDeleted', false] }
       ]);
       if (biomarkersCount !== biomarkerIdsCount) {
