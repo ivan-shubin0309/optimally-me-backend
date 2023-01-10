@@ -21,7 +21,7 @@ export class ImpactStudyLinkDto extends BaseDto<ImpactStudyLink>{
     @ApiProperty({ type: () => String, required: false })
     content: string;
 
-    @ApiProperty({ type: () => String, required: false, description: EnumHelper.toDescription(ImpactStudyLinkTypes) })
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(ImpactStudyLinkTypes) })
     type: ImpactStudyLinkTypes;
 
     @ApiProperty({ type: () => String, required: false })
