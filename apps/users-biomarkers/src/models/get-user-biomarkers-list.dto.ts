@@ -1,9 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { userBiomarkersOrderTypes } from '../../../common/src/resources/usersBiomarkers/order-types';
-import { Transform } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, IsPositive, IsString, Max, Min } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { ArrayUnique, IsArray, IsEnum, IsInt, IsOptional, IsPositive, IsString, Max, Min } from 'class-validator';
 import { IsOnlyDate } from '../../../common/src/resources/common/is-only-date.decorator';
 import { orderTypes } from '../../../common/src/resources/common/order-types';
+import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
+import { RecommendationTypes } from '../../../common/src/resources/recommendations/recommendation-types';
 
 export class GetUserBiomarkersListDto {
     @ApiProperty({ type: () => Number, required: true, default: 100 })
@@ -47,4 +49,18 @@ export class GetUserBiomarkersListDto {
     @IsOptional()
     @IsString()
     readonly search: string;
+
+    @ApiProperty({ type: () => [Number], required: false, description: EnumHelper.toDescription(RecommendationTypes) })
+    @IsOptional()
+    @IsArray()
+    @ArrayUnique()
+    @IsEnum(RecommendationTypes, { each: true })
+    @Type(() => Number)
+    @Transform(({ value }) => typeof value === 'number' ? [value] : value)
+    readonly status: number[];
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    @IsString()
+    readonly searchByResult: string;
 }

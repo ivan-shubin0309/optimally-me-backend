@@ -36,6 +36,7 @@ export class UsersBiomarkersController {
 
     const scopes: any[] = [
       { method: ['byType', BiomarkerTypes.blood] },
+      { method: ['withLastResult', req.user.userId, query.beforeDate] },
     ];
 
     const user = await this.usersService.getOne([
@@ -56,12 +57,19 @@ export class UsersBiomarkersController {
       scopes.push({ method: ['searchByNames', query.search] });
     }
 
+    if (query.status && query.status.length) {
+      scopes.push({ method: ['byRecommendationRange', query.status] });
+    }
+
+    if (query.searchByResult) {
+      scopes.push({ method: ['searchByResult', query.searchByResult] });
+    }
+
     const count = await this.usersBiomarkersService.getCount(scopes);
 
     if (count) {
       const scopesForOrdering = scopes.concat([
         { method: ['withCategory', true] },
-        { method: ['withLastResult', req.user.userId, query.beforeDate] },
         { method: ['pagination', { limit, offset }] }
       ]);
       scopesForOrdering.push(userBiomarkerOrderScope[query.orderBy](query));
