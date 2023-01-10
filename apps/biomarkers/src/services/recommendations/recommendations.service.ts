@@ -166,20 +166,22 @@ export class RecommendationsService extends BaseService<Recommendation> {
 
     impacts.forEach((impact, index) => {
       if (body.impacts[index].lowStudyLinks && body.impacts[index].lowStudyLinks.length) {
-        body.impacts[index].lowStudyLinks.forEach(link => {
+        body.impacts[index].lowStudyLinks.forEach(studyLink => {
           studyLinksToCreate.push({
-            content: link,
+            content: studyLink.content,
             recommendationImpactId: impact.id,
-            type: ImpactStudyLinkTypes.low
+            type: ImpactStudyLinkTypes.low,
+            title: studyLink.title,
           });
         });
       }
       if (body.impacts[index].highStudyLinks && body.impacts[index].highStudyLinks.length) {
-        body.impacts[index].highStudyLinks.forEach(link => {
+        body.impacts[index].highStudyLinks.forEach(studyLink => {
           studyLinksToCreate.push({
-            content: link,
+            content: studyLink.content,
             recommendationImpactId: impact.id,
-            type: ImpactStudyLinkTypes.high
+            type: ImpactStudyLinkTypes.high,
+            title: studyLink.title,
           });
         });
       }

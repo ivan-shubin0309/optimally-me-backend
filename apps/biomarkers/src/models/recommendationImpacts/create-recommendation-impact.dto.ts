@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { recommendationImpactsValidationRules } from '../../../../common/src/resources/recommendation-impacts/recommendation-impacts-validation-rules';
-import { ArrayMaxSize, IsArray, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
+import { ArrayMaxSize, IsArray, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, Max, MaxLength, Min, MinLength, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { CreateImpactStudyLinkDto } from './create-impact-study-link.dto';
 
 export class CreateRecommendationImpactDto {
     @ApiProperty({ type: () => Number, required: true })
@@ -70,21 +72,19 @@ export class CreateRecommendationImpactDto {
     @Max(recommendationImpactsValidationRules.strengthOfEvidenceMaxValue)
     readonly strengthOfEvidenceLow: number;
 
-    @ApiProperty({ type: () => [String], required: false })
+    @ApiProperty({ type: () => [CreateImpactStudyLinkDto], required: false })
     @IsOptional()
     @IsArray()
-    @IsString({ each: true })
     @ArrayMaxSize(recommendationImpactsValidationRules.studyLinksMaxCount)
-    @MaxLength(recommendationImpactsValidationRules.studyLinkMaxLength, { each: true })
-    @MinLength(recommendationImpactsValidationRules.studyLinkMinLength, { each: true })
-    readonly highStudyLinks: string[];
+    @ValidateNested()
+    @Type(() => CreateImpactStudyLinkDto)
+    readonly highStudyLinks: CreateImpactStudyLinkDto[];
 
-    @ApiProperty({ type: () => [String], required: false })
+    @ApiProperty({ type: () => [CreateImpactStudyLinkDto], required: false })
     @IsOptional()
     @IsArray()
-    @IsString({ each: true })
     @ArrayMaxSize(recommendationImpactsValidationRules.studyLinksMaxCount)
-    @MaxLength(recommendationImpactsValidationRules.studyLinkMaxLength, { each: true })
-    @MinLength(recommendationImpactsValidationRules.studyLinkMinLength, { each: true })
-    readonly lowStudyLinks: string[];
+    @ValidateNested()
+    @Type(() => CreateImpactStudyLinkDto)
+    readonly lowStudyLinks: CreateImpactStudyLinkDto[];
 }

@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ImpactStudyLinkTypes } from '../../../../common/src/resources/recommendation-impacts/impact-study-link-types';
 import { BaseDto } from '../../../../common/src/base/base.dto';
 import { RecommendationImpact } from './recommendation-impact.entity';
+import { ImpactStudyLinkDto } from './impact-study-link.dto';
 
 
 export class RecommendationImpactDto extends BaseDto<RecommendationImpact>{
@@ -22,12 +23,12 @@ export class RecommendationImpactDto extends BaseDto<RecommendationImpact>{
         this.lowStudyLinks = entity.studyLinks
             ? entity.studyLinks
                 .filter(link => link.type === ImpactStudyLinkTypes.low)
-                .map(link => link.content)
+                .map(link => new ImpactStudyLinkDto(link))
             : undefined;
         this.highStudyLinks = entity.studyLinks
             ? entity.studyLinks
                 .filter(link => link.type === ImpactStudyLinkTypes.high)
-                .map(link => link.content)
+                .map(link => new ImpactStudyLinkDto(link))
             : undefined;
     }
 
@@ -64,9 +65,9 @@ export class RecommendationImpactDto extends BaseDto<RecommendationImpact>{
     @ApiProperty({ type: () => String, required: false })
     biomarkerName: string;
 
-    @ApiProperty({ type: () => [String], required: false })
-    lowStudyLinks: string[];
+    @ApiProperty({ type: () => [ImpactStudyLinkDto], required: false })
+    lowStudyLinks: ImpactStudyLinkDto[];
 
-    @ApiProperty({ type: () => [String], required: false })
-    highStudyLinks: string[];
+    @ApiProperty({ type: () => [ImpactStudyLinkDto], required: false })
+    highStudyLinks: ImpactStudyLinkDto[];
 }

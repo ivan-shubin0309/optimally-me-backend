@@ -9,4 +9,6 @@ export const recommendationImpactsValidationRules = {
     studyLinksMaxCount: 4,
     studyLinkMaxLength: 200,
     studyLinkMinLength: 1,
+    studyLinkTitleMinLength: 1,
+    studyLinkTitleMaxLength: 100,
 };
