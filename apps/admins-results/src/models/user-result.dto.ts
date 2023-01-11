@@ -5,6 +5,7 @@ import { UnitDto } from '../../../biomarkers/src/models/units/unit.dto';
 import { BaseDto } from '../../../common/src/base/base.dto';
 import { UserResultBiomarkerDto } from './user-result-biomarker.dto';
 import { UserResult } from './user-result.entity';
+import { UserFilterDto } from 'apps/biomarkers/src/models/filters/user-filter.dto';
 
 export class UserResultDto extends BaseDto<UserResult> {
     constructor(data: UserResult) {
@@ -19,6 +20,9 @@ export class UserResultDto extends BaseDto<UserResult> {
         this.filterId = data.filterId;
         this.unit = data.unit && new UnitDto(data.unit);
         this.biomarker = data.biomarker && new UserResultBiomarkerDto(data.biomarker);
+        this.filter = data.filter
+            ? new UserFilterDto(data.filter)
+            : undefined;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -50,4 +54,7 @@ export class UserResultDto extends BaseDto<UserResult> {
 
     @ApiProperty({ type: () => UserResultBiomarkerDto, required: true })
     readonly biomarker: UserResultBiomarkerDto;
+
+    @ApiProperty({ type: () => UserFilterDto, required: false })
+    readonly filter: UserFilterDto;
 }

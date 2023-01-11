@@ -6,9 +6,6 @@ import { Biomarker } from '../../../biomarkers/src/models/biomarker.entity';
 import { BaseDto } from '../../../common/src/base/base.dto';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { BiomarkerSexTypes } from '../../../common/src/resources/biomarkers/biomarker-sex-types';
-import { FilterDto } from '../../../biomarkers/src/models/filters/filter.dto';
-import { Filter } from '../../../biomarkers/src/models/filters/filter.entity';
-import { UserRecommendationDto } from '../../../biomarkers/src/models/userRecommendations/user-recommendation.dto';
 
 export class UserBiomarkerDto extends BaseDto<Biomarker> {
     constructor(entity: Biomarker) {

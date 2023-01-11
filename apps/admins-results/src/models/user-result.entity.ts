@@ -64,7 +64,16 @@ export interface IUserResult {
             opAnd.push({ [Op.lte]: endDate });
         }
         return { where: { date: { [Op.and]: opAnd } } };
-    }
+    },
+    withFilter: () => ({
+        include: [
+            {
+                model: Filter,
+                as: 'filter',
+                required: false,
+            },
+        ]
+    }),
 }))
 @Table({
     tableName: 'userResults',
@@ -132,4 +141,7 @@ export class UserResult extends Model {
 
     @HasMany(() => UserRecommendation, 'userResultId')
     userRecommendations: UserRecommendation[];
+
+    @BelongsTo(() => Filter)
+    filter: Filter;
 }
