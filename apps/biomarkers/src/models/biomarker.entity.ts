@@ -204,6 +204,13 @@ export class Biomarker extends Model {
     })
     sex: BiomarkerSexTypes;
 
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+    })
+    isActive: boolean;
+
     @HasMany(() => AlternativeName)
     alternativeNames: AlternativeName[];
 
