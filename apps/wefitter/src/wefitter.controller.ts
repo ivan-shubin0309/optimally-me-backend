@@ -246,6 +246,7 @@ export class WefitterController {
     @Post('push/heartrate-summary')
     async pushHeartrateSummary(@Body() body: WefitterUserHeartrateSummaryDto): Promise<void> {
         const user = await this.wefitterService.getUserWefitterByPublicId(body.profile);
+        console.log(JSON.stringify(body));
         if (!user) {
             throw new BadRequestException({
                 message: this.translator.translate('USER_NOT_FOUND'),
@@ -263,6 +264,7 @@ export class WefitterController {
     @Post('push/sleep-summary')
     async pushSleepSummary(@Body() body: WefitterUserSleepSummaryDto): Promise<void> {
         const user = await this.wefitterService.getUserWefitterByPublicId(body.profile);
+        console.log(JSON.stringify(body));
         if (!user) {
             throw new BadRequestException({
                 message: this.translator.translate('USER_NOT_FOUND'),
@@ -280,6 +282,7 @@ export class WefitterController {
     @Post('push/stress-summary')
     async pushStressSummary(@Body() body: WefitterUserStressSummaryDto): Promise<void> {
         const user = await this.wefitterService.getUserWefitterByPublicId(body.profile);
+        console.log(JSON.stringify(body));
         if (!user) {
             throw new BadRequestException({
                 message: this.translator.translate('USER_NOT_FOUND'),
