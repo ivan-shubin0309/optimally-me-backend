@@ -27,4 +27,10 @@ export class ImpactStudyLink extends Model {
         allowNull: false,
     })
     type: ImpactStudyLinkTypes;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true,
+    })
+    title: string;
 }
