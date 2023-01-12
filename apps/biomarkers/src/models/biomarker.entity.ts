@@ -72,10 +72,10 @@ import { RecommendationTypes } from '../../../common/src/resources/recommendatio
             },
         ]
     }),
-    withLastResults: (userId: number, numberOfLastResults: number, isWithAttributes = true, isRequired = false, beforeDate?: string) => ({
+    withLastResults: (userId: number, numberOfLastResults: number, isWithAttributes = true, isRequired = false, beforeDate?: string, additionalScopes?: any[]) => ({
         include: [
             {
-                model: UserResult,
+                model: UserResult.scope(additionalScopes),
                 as: 'userResults',
                 required: isRequired,
                 where: {

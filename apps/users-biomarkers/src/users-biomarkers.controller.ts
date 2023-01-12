@@ -80,7 +80,7 @@ export class UsersBiomarkersController {
       rangeCounters = await this.usersBiomarkersService.getBiomarkerRangeCounters(req.user.userId, query.beforeDate, scopes);
 
       scopes.push(
-        { method: ['withLastResults', req.user.userId, NUMBER_OF_LAST_USER_RESULTS, true, false, query.beforeDate] },
+        { method: ['withLastResults', req.user.userId, NUMBER_OF_LAST_USER_RESULTS, true, false, query.beforeDate, ['withFilter']] },
         { method: ['withCategory', true] },
         'withUnit',
         { method: ['byId', biomarkerIds] },
