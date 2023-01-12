@@ -10,6 +10,7 @@ import { BiomarkersFactory } from '../../biomarkers.factory';
 import { IUpdateFilter } from '../../models/create-biomarker.interface';
 import { FilterSkinType } from '../../models/filterSkinTypes/filter-skin-type.entity';
 import { FilterContradiction } from '../../models/filterContradictions/filter-contradiction.entity';
+import { UserResult } from '../../../../admins-results/src/models/user-result.entity';
 
 interface IFilterGetListOptions {
     readonly isIncludeAll: boolean,
@@ -23,6 +24,7 @@ export class FiltersService extends BaseService<Filter> {
         @Inject('FILTER_BULLET_LIST_MODEL') readonly filterBulletListModel: Repository<FilterBulletList>,
         @Inject('FILTER_SKIN_TYPE_MODEL') readonly filterSkinTypeModel: Repository<FilterSkinType>,
         @Inject('FILTER_CONTRADICTION_MODEL') readonly filterContradictionModel: Repository<FilterContradiction>,
+        @Inject('USER_RESULT_MODEL') protected userResultModel: Repository<UserResult>,
     ) { super(model); }
 
     async removeByBiomarkerId(biomarkerId: number, transaction?: Transaction): Promise<void> {
@@ -149,7 +151,7 @@ export class FiltersService extends BaseService<Filter> {
     }
 
     async update(filters: IUpdateFilter[], biomarkerId: number, biomarkerFactory: BiomarkersFactory, transaction?: Transaction): Promise<void> {
-        const filtersToCreate = [], filtersToUpdate = [];
+        const filtersToCreate = [], filtersToUpdate = [], filterResultCountersMap = {};
 
         filters.forEach(filter => {
             if (filter.id) {
@@ -157,6 +159,17 @@ export class FiltersService extends BaseService<Filter> {
             } else {
                 filtersToCreate.push(filter);
             }
+        });
+
+        const filterResultCounters: any[] = await this.userResultModel
+            .scope([
+                { method: ['byId', filtersToUpdate.map(filterToUpdate => filterToUpdate.id)] },
+                { method: ['filterCount'] }
+            ])
+            .findAll({ transaction });
+
+        filterResultCounters.forEach(filterCounter => {
+            filterResultCountersMap[filterCounter.filterId] = filterCounter;
         });
 
         await this.model
@@ -167,14 +180,18 @@ export class FiltersService extends BaseService<Filter> {
 
         promises.push(
             ...filtersToUpdate.map(async (filterToUpdate) => {
-                await biomarkerFactory.dettachAllFromFilter(filterToUpdate.id, transaction);
+                if (filterResultCountersMap[filterToUpdate.id] && filterResultCountersMap[filterToUpdate.id].counter) {
+                    await biomarkerFactory.attachFilter(filterToUpdate, biomarkerId, transaction);
+                } else {
+                    await biomarkerFactory.dettachAllFromFilter(filterToUpdate.id, transaction);
 
-                await Promise.all([
-                    this.model
-                        .scope([{ method: ['byId', filterToUpdate.id] }])
-                        .update(new UpdateFilterDataDto(filterToUpdate, biomarkerId), { transaction } as any),
-                    biomarkerFactory.attachAllToFilter(filterToUpdate, filterToUpdate.id, transaction),
-                ]);
+                    await Promise.all([
+                        this.model
+                            .scope([{ method: ['byId', filterToUpdate.id] }])
+                            .update(new UpdateFilterDataDto(filterToUpdate, biomarkerId), { transaction } as any),
+                        biomarkerFactory.attachAllToFilter(filterToUpdate, filterToUpdate.id, transaction),
+                    ]);
+                }
             })
         );
 
