@@ -56,6 +56,7 @@ import { UpdateBloodBiomarkerDto } from './models/update-blood-biomarker.dto';
 import { CreateSkinBiomarkerDto } from './models/create-skin-biomarker.dto';
 import { UpdateSkinBiomarkerDto } from './models/update-skin-biomarker.dto';
 import { GetRulesListDto } from './models/get-rules-list.dto';
+import { PatchSkinBiomarkerDto } from './models/patch-skin-biomarker.dto';
 
 const RULE_PREFIX = 'rule';
 
@@ -675,5 +676,28 @@ export class BiomarkersController {
     biomarker = await this.biomarkersService.updateSkinBiomarker(biomarker, body);
 
     return new BiomarkerDto(biomarker);
+  }
+
+  @ApiOperation({ summary: 'Patch skin biomarker' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Roles(UserRoles.superAdmin)
+  @Patch('/skin/:id')
+  async patchSkinBiomarker(@Param() param: EntityByIdDto, @Body() body: PatchSkinBiomarkerDto): Promise<void> {
+    const biomarker = await this.biomarkersService.getOne(
+      [
+        { method: ['byId', param.id] },
+        { method: ['byType', BiomarkerTypes.skin] }
+      ]
+    );
+
+    if (!biomarker) {
+      throw new NotFoundException({
+        message: this.translator.translate('BIOMARKER_NOT_FOUND'),
+        errorCode: 'BIOMARKER_NOT_FOUND',
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+    }
+
+    await biomarker.update({ isActive: body.isActive });
   }
 }

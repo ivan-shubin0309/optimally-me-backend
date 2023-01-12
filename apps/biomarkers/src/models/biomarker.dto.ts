@@ -38,6 +38,7 @@ export class BiomarkerDto extends BaseDto<Biomarker> {
             this.ruleId = entity.rule.id;
             this.ruleName = entity.rule.name;
         }
+        this.isActive = entity.isActive;
     }
 
     @ApiProperty({ type: () => String, required: true })
@@ -81,4 +82,7 @@ export class BiomarkerDto extends BaseDto<Biomarker> {
 
     @ApiProperty({ type: () => String, required: false })
     ruleName: string;
+
+    @ApiProperty({ type: () => Boolean, required: true })
+    isActive: boolean;
 }
