@@ -1,6 +1,12 @@
-import { Table, Column, Model, DataType, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey, Scopes } from 'sequelize-typescript';
 import { User } from '../../../users/src/models';
+import { UserWefitterDailySummary } from './wefitter-daily-summary.entity';
 
+@Scopes(() => ({
+    byDailySummaryId: (dailySummaryId) => ({ where: { dailySummaryId } }),
+    byUserId: (userId) => ({ where: { userId } }),
+    byTimestamp: (timestamp) => ({ where: { timestamp } }),
+}))
 @Table({
     tableName: 'userWefitterHeartrateSummary',
     timestamps: true,
@@ -14,6 +20,13 @@ export class UserWefitterHeartrateSummary extends Model {
         primaryKey: true
     })
     userId: number;
+
+    @ForeignKey(() => UserWefitterDailySummary)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: true,
+    })
+    dailySummaryId: number;
 
     @Column({
         type: DataType.DATE,

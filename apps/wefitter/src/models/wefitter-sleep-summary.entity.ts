@@ -1,6 +1,10 @@
-import { Table, Column, Model, DataType, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey, Scopes } from 'sequelize-typescript';
 import { User } from '../../../users/src/models';
 
+@Scopes(() => ({
+    byUserId: (userId) => ({ where: { userId } }),
+    byTimestamp: (timestamp) => ({ where: { timestamp } }),
+}))
 @Table({
     tableName: 'userWefitterSleepSummary',
     timestamps: true,
