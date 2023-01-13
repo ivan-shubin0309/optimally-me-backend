@@ -163,7 +163,7 @@ export class FiltersService extends BaseService<Filter> {
 
         const filterResultCounters: any[] = await this.userResultModel
             .scope([
-                { method: ['byId', filtersToUpdate.map(filterToUpdate => filterToUpdate.id)] },
+                { method: ['byFilterId', filtersToUpdate.map(filterToUpdate => filterToUpdate.id)] },
                 { method: ['filterCount'] }
             ])
             .findAll({ transaction });
@@ -180,7 +180,7 @@ export class FiltersService extends BaseService<Filter> {
 
         promises.push(
             ...filtersToUpdate.map(async (filterToUpdate) => {
-                if (filterResultCountersMap[filterToUpdate.id] && filterResultCountersMap[filterToUpdate.id].counter) {
+                if (filterResultCountersMap[filterToUpdate.id] && filterResultCountersMap[filterToUpdate.id].get('counter')) {
                     await biomarkerFactory.attachFilter(filterToUpdate, biomarkerId, transaction);
                 } else {
                     await biomarkerFactory.dettachAllFromFilter(filterToUpdate.id, transaction);
