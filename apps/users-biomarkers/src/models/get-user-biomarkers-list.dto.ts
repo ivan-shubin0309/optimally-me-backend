@@ -1,11 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { userBiomarkersOrderTypes } from '../../../common/src/resources/usersBiomarkers/order-types';
 import { Transform, Type } from 'class-transformer';
-import { ArrayUnique, IsArray, IsEnum, IsInt, IsOptional, IsPositive, IsString, Max, Min } from 'class-validator';
+import { ArrayUnique, IsArray, IsBoolean, IsEnum, IsInt, IsOptional, IsPositive, IsString, Max, Min } from 'class-validator';
 import { IsOnlyDate } from '../../../common/src/resources/common/is-only-date.decorator';
 import { orderTypes } from '../../../common/src/resources/common/order-types';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { RecommendationTypes } from '../../../common/src/resources/recommendations/recommendation-types';
+import { ParseBoolean } from '../../../common/src/resources/common/parse-boolean.decorator';
+import { NUMBER_OF_LAST_USER_RESULTS } from '../../../common/src/resources/usersBiomarkers/constants';
 
 export class GetUserBiomarkersListDto {
     @ApiProperty({ type: () => Number, required: true, default: 100 })
@@ -63,4 +65,18 @@ export class GetUserBiomarkersListDto {
     @IsOptional()
     @IsString()
     readonly searchByResult: string;
+
+    @ApiProperty({ type: () => Boolean, required: false, default: false })
+    @IsOptional()
+    @IsBoolean()
+    @ParseBoolean()
+    readonly isOnlyTested: boolean = false;
+
+    @ApiProperty({ type: () => Number, required: false, default: NUMBER_OF_LAST_USER_RESULTS })
+    @IsOptional()
+    @IsInt()
+    @IsPositive()
+    @Min(1)
+    @Transform(({ value }) => Number(value))
+    readonly maxResultsReturned: number = NUMBER_OF_LAST_USER_RESULTS;
 }
