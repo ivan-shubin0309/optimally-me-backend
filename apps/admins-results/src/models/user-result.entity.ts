@@ -4,8 +4,9 @@ import { Biomarker } from '../../../biomarkers/src/models/biomarker.entity';
 import { Op, fn, col } from 'sequelize';
 import { Unit } from '../../../biomarkers/src/models/units/unit.entity';
 import { Filter } from '../../../biomarkers/src/models/filters/filter.entity';
-import { RecommendationTypes } from 'apps/common/src/resources/recommendations/recommendation-types';
-import { UserRecommendation } from 'apps/biomarkers/src/models/userRecommendations/user-recommendation.entity';
+import { RecommendationTypes } from '../../../common/src/resources/recommendations/recommendation-types';
+import { UserRecommendation } from '../../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
+import { SkinUserResult } from '../../../haut-ai/src/models/skin-user-result.entity';
 
 export interface IUserResult {
     readonly value: number,
@@ -133,6 +134,13 @@ export class UserResult extends Model {
     })
     filterId: number;
 
+    @ForeignKey(() => SkinUserResult)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+    })
+    skinUserResultId: number;
+
     @BelongsTo(() => Unit)
     unit: Unit;
 
@@ -144,4 +152,7 @@ export class UserResult extends Model {
 
     @BelongsTo(() => Filter)
     filter: Filter;
+
+    @BelongsTo(() => SkinUserResult, 'skinUserResultId')
+    skinUserResult: SkinUserResult;
 }
