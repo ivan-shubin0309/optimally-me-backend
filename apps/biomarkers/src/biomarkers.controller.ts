@@ -287,7 +287,7 @@ export class BiomarkersController {
       });
     }
 
-    await this.biomarkersService.validateBody(body, BiomarkerTypes.bloodRule);
+    await this.biomarkersService.validateBody(body, BiomarkerTypes.bloodRule, biomarker);
 
     biomarker = await this.biomarkersService.updateBloodBiomarker(biomarker, body);
 
@@ -671,7 +671,7 @@ export class BiomarkersController {
       });
     }
 
-    await this.biomarkersService.validateBody(body, BiomarkerTypes.skinRule);
+    await this.biomarkersService.validateBody(body, BiomarkerTypes.skinRule, biomarker);
 
     biomarker = await this.biomarkersService.updateSkinBiomarker(biomarker, body);
 
