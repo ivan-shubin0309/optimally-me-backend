@@ -99,7 +99,7 @@ export class BiomarkersService extends BaseService<Biomarker> {
     }
 
     async validateBody(body: ICreateBiomarker, ruleType: BiomarkerTypes, biomarker?: Biomarker): Promise<void> {
-        if (body.ruleId !== biomarker?.templateId) {
+        if (body.ruleId && (body.ruleId !== biomarker?.templateId)) {
             const templateBiomarker = await this.getOne([
                 { method: ['byId', body.ruleId] },
                 { method: ['byType', ruleType] },
