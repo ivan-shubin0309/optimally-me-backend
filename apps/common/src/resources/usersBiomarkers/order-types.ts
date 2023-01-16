@@ -7,6 +7,7 @@ export const userBiomarkersOrderTypes = [
     'category',
     'name',
     'date',
+    'recommendationRange'
 ];
 
 export const userBiomarkerOrderScope = {
@@ -18,6 +19,15 @@ export const userBiomarkerOrderScope = {
             'orderBy',
             [
                 [sequelize.literal('`lastResult`.`date`'), query.orderType],
+                sequelize.literal(`FIELD(\`lastResult\`.\`recommendationRange\`, ${recommendationRangeSort.join(',')}) ${query.orderType === 'desc' ? 'asc' : 'desc'}`),
+                [sequelize.literal('`lastResult`.`deviation`'), query.orderType],
+            ]
+        ]
+    }),
+    'recommendationRange': (query: GetUserBiomarkersListDto) => ({
+        method: [
+            'orderBy',
+            [
                 sequelize.literal(`FIELD(\`lastResult\`.\`recommendationRange\`, ${recommendationRangeSort.join(',')}) ${query.orderType === 'desc' ? 'asc' : 'desc'}`),
                 [sequelize.literal('`lastResult`.`deviation`'), query.orderType],
             ]
