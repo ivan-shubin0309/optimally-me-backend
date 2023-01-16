@@ -74,6 +74,13 @@ export interface IUserResult {
             },
         ]
     }),
+    filterCount: () => ({
+        attributes: [
+            [fn('COUNT', col('filterId')), 'counter'],
+            'filterId'
+        ],
+        group: ['filterId']
+    }),
 }))
 @Table({
     tableName: 'userResults',

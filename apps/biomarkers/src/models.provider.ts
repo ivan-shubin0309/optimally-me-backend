@@ -25,6 +25,7 @@ import { FilterSkinType } from './models/filterSkinTypes/filter-skin-type.entity
 import { FilterContradiction } from './models/filterContradictions/filter-contradiction.entity';
 import { RecommendationSkinType } from './models/recommendationSkinTypes/recommendation-skin-type.entity';
 import { RecommendationContradiction } from './models/recommendationContradictions/recommendation-contradiction.entity';
+import { UserResult } from '../../admins-results/src/models/user-result.entity';
 
 export const modelProviders = [
     {
@@ -135,5 +136,9 @@ export const modelProviders = [
         provide: 'RECOMMENDATION_CONTRADICTION_MODEL',
         useValue: RecommendationContradiction
     },
+    {
+        provide: 'USER_RESULT_MODEL',
+        useValue: UserResult
+    }
 ];
 
