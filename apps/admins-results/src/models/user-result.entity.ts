@@ -13,6 +13,9 @@ export interface IUserResult {
     readonly userId: number,
     readonly biomarkerId: number,
     readonly date: string,
+    readonly filterId?: number,
+    readonly skinUserResultId?: number,
+    readonly recommendationRange?: number,
 }
 
 @Scopes(() => ({

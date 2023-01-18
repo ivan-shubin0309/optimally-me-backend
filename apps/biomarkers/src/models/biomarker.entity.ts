@@ -9,6 +9,7 @@ import { UserResult } from '../../../admins-results/src/models/user-result.entit
 import { getLastUserResultsForEachBiomarker, OrderValueQuery } from '../../../common/src/resources/usersBiomarkers/queries';
 import { BiomarkerSexTypes } from '../../../common/src/resources/biomarkers/biomarker-sex-types';
 import { RecommendationTypes } from '../../../common/src/resources/recommendations/recommendation-types';
+import { HautAiMetricTypes } from 'apps/common/src/resources/haut-ai/haut-ai-metric-types';
 
 @Scopes(() => ({
     byId: (id) => ({ where: { id } }),
@@ -33,6 +34,7 @@ import { RecommendationTypes } from '../../../common/src/resources/recommendatio
         ]
     }),
     byIsDeleted: (isDeleted) => ({ where: { isDeleted } }),
+    byIsActive: (isActive) => ({ where: { isActive } }),
     pagination: (query) => ({ limit: query.limit, offset: query.offset }),
     orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
     withUnit: () => ({
@@ -210,6 +212,12 @@ export class Biomarker extends Model {
         defaultValue: true
     })
     isActive: boolean;
+
+    @Column({
+        type: DataType.TINYINT,
+        allowNull: true,
+    })
+    hautAiMetricType: HautAiMetricTypes;
 
     @HasMany(() => AlternativeName)
     alternativeNames: AlternativeName[];

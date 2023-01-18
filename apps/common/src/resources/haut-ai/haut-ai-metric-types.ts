@@ -1,6 +1,6 @@
 export enum HautAiMetricTypes {
     acne = 1,
-    eyeArea = 2,
+    eyeBags = 2,
     hydration = 3,
     lines = 4,
     pigmentation = 5,
@@ -10,5 +10,22 @@ export enum HautAiMetricTypes {
     uniformness = 9,
     perceivedAge = 10,
     eyeAge = 11,
-    ita = 12,
+    age = 12,
+    ita = 13,
 }
+
+export const techNamesToMetricTypes = {
+    'acne': HautAiMetricTypes.acne,
+    'eye_bags': HautAiMetricTypes.eyeBags,
+    'hydration': HautAiMetricTypes.hydration,
+    'lines': HautAiMetricTypes.lines,
+    'pigmentation': HautAiMetricTypes.pigmentation,
+    'pores': HautAiMetricTypes.pores,
+    'redness': HautAiMetricTypes.redness,
+    'translucency': HautAiMetricTypes.translucency,
+    'uniformness': HautAiMetricTypes.uniformness,
+    'perceivedAge': HautAiMetricTypes.perceivedAge,
+    'eyes_age': HautAiMetricTypes.eyeAge,
+    'age': HautAiMetricTypes.age,
+    'skin_tone': HautAiMetricTypes.ita,
+};

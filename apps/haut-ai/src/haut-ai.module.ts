@@ -16,6 +16,7 @@ import { UserHautAiFieldsService } from './user-haut-ai-fields.service';
 import { FilesService } from '../../files/src/files.service';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
 import { S3Service } from '../../files/src/s3.service';
+import { SkinUserResultsService } from './skin-user-results.service';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { S3Service } from '../../files/src/s3.service';
     FilesService,
     FileHelper,
     S3Service,
+    SkinUserResultsService,
     SessionsService,
     JwtStrategy,
     ...guardProviders,

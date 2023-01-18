@@ -1,0 +1,2 @@
+export const MAX_IMAGE_UPLOAD_DAYS_INTERVAL = 7;
+export const MAX_IMAGE_UPLOAD_COUNT = 5;
