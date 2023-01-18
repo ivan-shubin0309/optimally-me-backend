@@ -16,6 +16,7 @@ export interface IUserResult {
     readonly filterId?: number,
     readonly skinUserResultId?: number,
     readonly recommendationRange?: number,
+    readonly createdAt?: string,
 }
 
 @Scopes(() => ({

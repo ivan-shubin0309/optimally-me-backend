@@ -11,8 +11,9 @@ export enum HautAiMetricTypes {
     perceivedAge = 10,
     eyeAge = 11,
     age = 12,
-    ita = 13,
 }
+
+export const ITA_SCORE_METRIC = 'itaScore';
 
 export const techNamesToMetricTypes = {
     'acne': HautAiMetricTypes.acne,
@@ -27,5 +28,5 @@ export const techNamesToMetricTypes = {
     'perceivedAge': HautAiMetricTypes.perceivedAge,
     'eyes_age': HautAiMetricTypes.eyeAge,
     'age': HautAiMetricTypes.age,
-    'skin_tone': HautAiMetricTypes.ita,
+    'skin_tone': ITA_SCORE_METRIC,
 };

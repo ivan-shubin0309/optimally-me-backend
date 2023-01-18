@@ -10,7 +10,7 @@ module.exports = {
 
         hautAiBatchId VARCHAR(255) NULL,
         hautAiFileId VARCHAR(255) NULL,
-        itaScore UNSIGNED INTEGER NULL,
+        itaScore INTEGER UNSIGNED NULL,
         status TINYINT NOT NULL DEFAULT 1,
 
         createdAt TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,

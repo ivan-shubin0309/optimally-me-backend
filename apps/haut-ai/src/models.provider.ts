@@ -4,6 +4,7 @@ import { UserHautAiField } from './models/user-haut-ai-field.entity';
 import { File } from '../../files/src/models/file.entity';
 import { SkinUserResult } from './models/skin-user-result.entity';
 import { UserResult } from '../../admins-results/src/models/user-result.entity';
+import { Biomarker } from '../../biomarkers/src/models/biomarker.entity';
 
 export const modelProviders = [
     {
@@ -29,5 +30,9 @@ export const modelProviders = [
     {
         provide: 'USER_RESULT_MODEL',
         useValue: UserResult,
+    },
+    {
+        provide: 'BIOMARKER_MODEL',
+        useValue: Biomarker
     }
 ];
