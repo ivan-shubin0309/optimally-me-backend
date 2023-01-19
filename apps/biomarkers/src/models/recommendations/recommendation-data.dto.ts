@@ -8,7 +8,7 @@ export class RecommendationDataDto {
         this.productLink = data.productLink || null;
         this.title = data.title || null;
         this.type = data.type || null;
-        this.isAddToCartAllowed = typeof data.isAddToCartAllowed === 'boolean' ? data.isAddToCartAllowed : null;
+        this.isAddToCartAllowed = data.isAddToCartAllowed;
         this.idealTimeOfDay = data.idealTimeOfDay || null;
     }
 
@@ -17,6 +17,6 @@ export class RecommendationDataDto {
     title: string = null;
     type: number = null;
     productLink: string = null;
-    isAddToCartAllowed: boolean = null;
+    isAddToCartAllowed: boolean;
     idealTimeOfDay: number = null;
 }
