@@ -87,13 +87,13 @@ import { RecommendationTypes } from '../../../common/src/resources/recommendatio
             },
         ]
     }),
-    withLastResult: (userId: number, beforeDate?: string, isRequired = false) => ({
+    withLastResult: (resultIds: number[], isRequired = false) => ({
         include: [
             {
                 model: UserResult,
                 as: 'lastResult',
                 required: isRequired,
-                where: literal(`\`lastResult\`.\`id\` IN (${getLastUserResultsForEachBiomarker(userId, 1, beforeDate)})`),
+                where: literal(`\`lastResult\`.\`id\` IN (${resultIds.length ? resultIds.join(', ') : 'NULL'})`),
             },
         ]
     }),
