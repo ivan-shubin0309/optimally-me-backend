@@ -55,7 +55,7 @@ export class UpdateSkinBiomarkerDto implements ICreateBiomarker {
     @IsPositive()
     readonly categoryId: number;
 
-    @ApiProperty({ type: () => [Number], required: false, description: EnumHelper.toDescription(HautAiMetricTypes) })
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(HautAiMetricTypes) })
     @IsNotEmpty()
     @IsNumber()
     @IsEnum(HautAiMetricTypes)
