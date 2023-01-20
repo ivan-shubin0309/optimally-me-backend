@@ -1,21 +1,23 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Biomarker } from '../../biomarkers/src/models/biomarker.entity';
-import { Repository } from 'sequelize-typescript';
+import { Repository, Sequelize } from 'sequelize-typescript';
 import { BaseService } from '../../common/src/base/base.service';
 import { UserResult } from '../../admins-results/src/models/user-result.entity';
 import { recommendationTypesToRangeTypes, UserBiomarkerRangeTypes } from '../../common/src/resources/usersBiomarkers/user-biomarker-range-types';
 import { UserBiomarkerCounterDto } from './models/user-biomarker-counter.dto';
+import { getLastUserResultsForEachBiomarker } from '../../common/src/resources/usersBiomarkers/queries';
 
 @Injectable()
 export class UsersBiomarkersService extends BaseService<Biomarker> {
     constructor(
         @Inject('BIOMARKER_MODEL') protected model: Repository<Biomarker>,
         @Inject('USER_RESULT_MODEL') protected userResultModel: Repository<UserResult>,
+        @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
     ) { super(model); }
 
-    async getBiomarkerRangeCounters(userId: number, beforeDate: string, additionalScopes = []): Promise<UserBiomarkerCounterDto> {
+    async getBiomarkerRangeCounters(lastResultIds: number[], additionalScopes = []): Promise<UserBiomarkerCounterDto> {
         const scopes: any[] = [
-            { method: ['withLastResult', userId, beforeDate, true] },
+            { method: ['withLastResult', lastResultIds, true] },
             'rangeCounters'
         ];
 
@@ -64,6 +66,12 @@ export class UsersBiomarkersService extends BaseService<Biomarker> {
             biomarker.resultsCount = resultsMap[biomarker.id];
             biomarker.setDataValue('resultsCount', resultsMap[biomarker.id]);
         });
+    }
+
+    async getLastResultIdsByDate(userId: number, beforeDate: string): Promise<number[]> {
+        const results = await this.dbConnection.query(getLastUserResultsForEachBiomarker(userId, 1, beforeDate), { model: UserResult });
+
+        return results.map(result => result.get('id'));
     }
 }
 

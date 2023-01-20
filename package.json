@@ -42,6 +42,7 @@
     "class-validator": "^0.13.2",
     "dotenv": "^16.0.1",
     "luxon": "^3.0.1",
+    "morgan": "^1.10.0",
     "mysql2": "^2.3.3",
     "nestjs-translator": "^0.0.6",
     "passport": "^0.6.0",

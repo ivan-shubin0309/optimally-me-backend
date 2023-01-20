@@ -18,12 +18,18 @@ export function CheckIsAllowedTextField(validationOptions?: ValidationOptions) {
 
                     if (typeof entity.low === 'string') {
                         isValidLow = typeof filter.criticalLow === 'number'
-                            || (typeof filter.lowMin === 'number' && typeof filter.lowMax === 'number');
+                            || typeof filter.lowMin === 'number'
+                            || typeof filter.lowMax === 'number'
+                            || typeof filter.subOptimalMin === 'number'
+                            || typeof filter.subOptimalMax === 'number';
                     }
 
                     if (typeof entity.high === 'string') {
                         isValidHigh = typeof filter.criticalHigh === 'number'
-                            || (typeof filter.highMin === 'number' && typeof filter.highMax === 'number');
+                            || typeof filter.highMin === 'number'
+                            || typeof filter.highMax === 'number'
+                            || typeof filter.supraOptimalMin === 'number'
+                            || typeof filter.supraOptimalMax === 'number';
                     }
 
                     return isValidLow && isValidHigh;

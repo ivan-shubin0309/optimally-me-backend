@@ -3,13 +3,13 @@ import { Recommendation } from './recommendation.entity';
 
 export class RecommendationDataDto {
     constructor(data: CreateRecommendationDto | Recommendation) {
-        this.category = data.category;
-        this.content = data.content;
-        this.productLink = data.productLink;
-        this.title = data.title;
-        this.type = data.type;
+        this.category = data.category || null;
+        this.content = data.content || null;
+        this.productLink = data.productLink || null;
+        this.title = data.title || null;
+        this.type = data.type || null;
         this.isAddToCartAllowed = data.isAddToCartAllowed;
-        this.idealTimeOfDay = data.idealTimeOfDay;
+        this.idealTimeOfDay = data.idealTimeOfDay || null;
     }
 
     category: number = null;
@@ -17,6 +17,6 @@ export class RecommendationDataDto {
     title: string = null;
     type: number = null;
     productLink: string = null;
-    isAddToCartAllowed: boolean = null;
+    isAddToCartAllowed: boolean;
     idealTimeOfDay: number = null;
 }

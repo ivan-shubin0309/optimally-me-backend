@@ -34,9 +34,11 @@ export class UsersBiomarkersController {
     const { limit, offset } = query;
     let biomarkersList = [], rangeCounters;
 
+    const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(req.user.userId, query.beforeDate);
+
     const scopes: any[] = [
       { method: ['byType', BiomarkerTypes.blood] },
-      { method: ['withLastResult', req.user.userId, query.beforeDate] },
+      { method: ['withLastResult', lastResultIds, query.isOnlyTested] },
     ];
 
     const user = await this.usersService.getOne([
@@ -77,10 +79,10 @@ export class UsersBiomarkersController {
       const orderedList = await this.usersBiomarkersService.getList(scopesForOrdering);
       const biomarkerIds = orderedList.map(biomarker => biomarker.get('id'));
 
-      rangeCounters = await this.usersBiomarkersService.getBiomarkerRangeCounters(req.user.userId, query.beforeDate, scopes);
+      rangeCounters = await this.usersBiomarkersService.getBiomarkerRangeCounters(lastResultIds, scopes);
 
       scopes.push(
-        { method: ['withLastResults', req.user.userId, NUMBER_OF_LAST_USER_RESULTS, true, false, query.beforeDate, ['withFilter']] },
+        { method: ['withLastResults', req.user.userId, query.maxResultsReturned, true, false, query.beforeDate, ['withFilter']] },
         { method: ['withCategory', true] },
         'withUnit',
         { method: ['byId', biomarkerIds] },
