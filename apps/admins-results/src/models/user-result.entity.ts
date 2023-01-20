@@ -86,6 +86,15 @@ export interface IUserResult {
         ],
         group: ['filterId']
     }),
+    avarages: () => ({
+        attributes: [
+            [fn('AVG', col('value')), 'avarageValue'],
+            [fn('MIN', col('value')), 'minValue'],
+            [fn('MAX', col('value')), 'maxValue'],
+            'biomarkerId',
+        ],
+        group: ['biomarkerId']
+    })
 }))
 @Table({
     tableName: 'userResults',

@@ -12,14 +12,42 @@ import { ICreateProfile } from './models/create-profile.interface';
 import { GetUserConnectionsDto } from './models/get-user-connections.dto';
 import { UserWefitterDailySummary } from './models/wefitter-daily-summary.entity';
 import { WefitterDailySummaryDto } from './models/wefitter-daily-summary.dto';
-import { Repository } from 'sequelize-typescript';
+import { Model, Repository } from 'sequelize-typescript';
 import { UserWefitterHeartrateSummary } from './models/wefitter-heartrate-summary.entity';
 import { WefitterHeartRateDto } from './models/wefitter-heart-rate.dto';
 import { WefitterSleepDto } from './models/wefitter-sleep.dto';
 import { UserWefitterSleepSummary } from './models/wefitter-sleep-summary.entity';
 import { WefitterStressSummaryDto } from './models/wefitter-stress-summary.dto';
 import { UserWefitterStressSummary } from './models/wefitter-stress-summary.entity';
+import { GetWefitterResultAvaragesDto } from './models/get-wefitter-result-avarages.dto';
+import { WefitterMetricTypes } from '../../common/src/resources/wefitter/wefitter-metric-types';
+import { WefitterResultAvaragesDto } from './models/wefitter-result-avarages.dto';
 
+const metricTypeToModelName = {
+    [WefitterMetricTypes.steps]: 'userWefitterDailySummary',
+    [WefitterMetricTypes.caloriesBurned]: 'userWefitterDailySummary',
+    [WefitterMetricTypes.hrvSleep]: 'userWefitterSleepSummary',
+    [WefitterMetricTypes.timeAsleep]: 'userWefitterSleepSummary',
+    [WefitterMetricTypes.sleepScore]: 'userWefitterSleepSummary',
+    [WefitterMetricTypes.avgHeartRate]: 'userWefitterHeartrateSummary',
+    /*[WefitterMetricTypes.vo2max]: '',
+    [WefitterMetricTypes.bloodSugar]: '',
+    [WefitterMetricTypes.bloodPressure]: '',*/
+};
+
+const metricTypeToFieldName = {
+    [WefitterMetricTypes.steps]: 'steps',
+    [WefitterMetricTypes.caloriesBurned]: 'bmrCalories',
+    [WefitterMetricTypes.hrvSleep]: 'resting',
+    [WefitterMetricTypes.timeAsleep]: 'totalTimeInSleep',
+    [WefitterMetricTypes.sleepScore]: 'sleepScore',
+    [WefitterMetricTypes.avgHeartRate]: 'avarage',
+    /*[WefitterMetricTypes.vo2max]: 'userWefitterDailySummary',
+    [WefitterMetricTypes.bloodSugar]: '',
+    [WefitterMetricTypes.bloodPressure]: '',*/
+};
+
+interface IMappedWefitterMetric { model: Repository<Model>, fieldName: string, metricEnum: WefitterMetricTypes }
 
 @Injectable()
 export class WefitterService {
@@ -310,5 +338,30 @@ export class WefitterService {
 
     async saveStressSummaryData(userId: number, data: WefitterStressSummaryDto, transaction?: Transaction): Promise<void> {
         await this.createOrUpdateStressSummary(userId, data, null, transaction);
+    }
+
+    async getAvarages(query: GetWefitterResultAvaragesDto): Promise<WefitterResultAvaragesDto> {
+        const dataObjectsArray: IMappedWefitterMetric[] = [];
+        query.metricNames.forEach(metric => {
+            const metricEnum = WefitterMetricTypes[metric];
+            const fieldName = metricTypeToFieldName[metricEnum];
+            const currentModel = this[`${metricTypeToModelName[metricEnum]}`];
+            if (!currentModel) {
+                return;
+            }
+            dataObjectsArray.push({
+                metricEnum,
+                fieldName,
+                model: currentModel,
+            });
+        });
+
+        const scopes = []; //TO DO
+
+        const promises = dataObjectsArray.map(dataObject => dataObject.model.scope(scopes).findOne({}));
+
+        const results = await Promise.all(promises);
+
+        return new WefitterResultAvaragesDto(results as any);
     }
 }

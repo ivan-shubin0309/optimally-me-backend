@@ -1,0 +1,1 @@
+export const MAX_USER_RESULT_AVARAGES = 4;

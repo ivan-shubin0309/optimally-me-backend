@@ -34,6 +34,8 @@ import { nonWefitterFieldNames } from '../../common/src/resources/wefitter/non-w
 import { WefitterUserHeartrateSummaryDto } from './models/wefitter-user-heartrate-summary.dto';
 import { WefitterUserSleepSummaryDto } from './models/wefitter-user-sleep-summary.dto';
 import { WefitterUserStressSummaryDto } from './models/wefitter-user-stress-summary.dto';
+import { GetWefitterResultAvaragesDto } from './models/get-wefitter-result-avarages.dto';
+import { WefitterResultAvaragesDto } from './models/wefitter-result-avarages.dto';
 
 @ApiTags('wefitter')
 @Controller('wefitter')
@@ -292,5 +294,14 @@ export class WefitterController {
         }
 
         await this.wefitterService.saveStressSummaryData(user.userId, body.data);
+    }
+
+    @ApiResponse({ type: () => WefitterResultAvaragesDto })
+    @ApiOperation({ summary: 'Get wefitter results avarages by metric name' })
+    @HttpCode(HttpStatus.OK)
+    @Roles(UserRoles.user)
+    @Get('/results/averages')
+    async getWefitterResultsAvarages(@Query() query: GetWefitterResultAvaragesDto, @Request() req: Request & { user: SessionDataDto }): Promise<WefitterResultAvaragesDto> {
+        return this.wefitterService.getAvarages(query);
     }
 }
