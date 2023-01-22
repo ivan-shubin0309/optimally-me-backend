@@ -4,11 +4,11 @@ import { UserWefitterHeartrateSummary } from './wefitter-heartrate-summary.entit
 import { UserWefitterSleepSummary } from './wefitter-sleep-summary.entity';
 import { UserWefitterStressSummary } from './wefitter-stress-summary.entity';
 
-export class WefitterResultAvarageDto {
+export class WefitterResultAverageDto {
     constructor(entity: UserWefitterDailySummary | UserWefitterHeartrateSummary | UserWefitterSleepSummary | UserWefitterStressSummary) {
-        this.avg = entity.get('avg') as number;
-        this.min = entity.get('min') as number;
-        this.max = entity.get('max') as number;
+        this.avg = entity.get('averageValue') as number;
+        this.min = entity.get('minValue') as number;
+        this.max = entity.get('maxValue') as number;
         this.metricName = entity.get('metricName') as string;
     }
 

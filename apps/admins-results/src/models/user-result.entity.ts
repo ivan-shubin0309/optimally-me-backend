@@ -86,9 +86,9 @@ export interface IUserResult {
         ],
         group: ['filterId']
     }),
-    avarages: () => ({
+    averages: () => ({
         attributes: [
-            [fn('AVG', col('value')), 'avarageValue'],
+            [fn('AVG', col('value')), 'averageValue'],
             [fn('MIN', col('value')), 'minValue'],
             [fn('MAX', col('value')), 'maxValue'],
             'biomarkerId',

@@ -16,8 +16,8 @@ import { GetUserResultsDto } from './models/get-user-results-list.dto';
 import { PutReactRecommendationDto } from './models/put-react-recommendation.dto';
 import { DeleteReactRecommendationDto } from './models/delete-react-recommendation.dto';
 import { FilterWithBiomarkerDto } from '../../biomarkers/src/models/filters/filter-with-biomarker.dto';
-import { GetUserResultAvaragesDto } from './models/get-user-result-avarages.dto';
-import { UserResultAvaragesDto } from './models/user-result-avarages.dto';
+import { GetUserResultAveragesDto } from './models/get-user-result-averages.dto';
+import { UserResultAveragesDto } from './models/user-result-averages.dto';
 
 @ApiBearerAuth()
 @ApiTags('users/biomarkers/results')
@@ -62,22 +62,22 @@ export class UsersResultsController {
         return new UserResultsDto(userResultsList, PaginationHelper.buildPagination({ limit, offset }, count));
     }
 
-    @ApiResponse({ type: () => UserResultAvaragesDto })
-    @ApiOperation({ summary: 'Get user results avarages by biomarker id' })
+    @ApiResponse({ type: () => UserResultAveragesDto })
+    @ApiOperation({ summary: 'Get user results averages by biomarker id' })
     @HttpCode(HttpStatus.OK)
     @Roles(UserRoles.user)
     @Get('/results/averages')
-    async getResultsAvarages(@Query() query: GetUserResultAvaragesDto, @Request() req: Request & { user: SessionDataDto }): Promise<UserResultAvaragesDto> {
-        let avaragesList = [];
+    async getResultsAvarages(@Query() query: GetUserResultAveragesDto, @Request() req: Request & { user: SessionDataDto }): Promise<UserResultAveragesDto> {
+        let averagesList = [];
         const scopes: any[] = [
             { method: ['byBiomarkerId', query.biomarkerIds] },
             { method: ['byUserId', req.user.userId] },
-            { method: ['avarages'] }
+            { method: ['averages'] }
         ];
 
-        avaragesList = await this.usersResultsService.getList(scopes);
+        averagesList = await this.usersResultsService.getList(scopes);
 
-        return new UserResultAvaragesDto(avaragesList);
+        return new UserResultAveragesDto(averagesList);
     }
 
     @ApiResponse({ type: () => FilterDto })

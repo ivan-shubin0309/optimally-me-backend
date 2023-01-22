@@ -4,7 +4,7 @@ import { ArrayMaxSize, ArrayNotEmpty, ArrayUnique, IsArray, IsEnum, IsNotEmpty }
 import { wefitterMetricNames } from '../../../common/src/resources/wefitter/wefitter-metric-types';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class GetWefitterResultAvaragesDto {
+export class GetWefitterResultAveragesDto {
     @ApiProperty({ type: () => [String], required: true, description: wefitterMetricNames.join(', ') })
     @IsNotEmpty()
     @ArrayNotEmpty()

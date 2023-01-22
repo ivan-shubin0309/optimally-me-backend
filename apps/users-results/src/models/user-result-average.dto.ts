@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserResult } from '../../../admins-results/src/models/user-result.entity';
 
-export class UserResultAvarageDto {
+export class UserResultAverageDto {
     constructor(entity: UserResult) {
         this.biomarkerId = entity.get('biomarkerId');
-        this.avg = entity.get('avg') as number;
-        this.min = entity.get('min') as number;
-        this.max = entity.get('max') as number;
+        this.avg = entity.get('averageValue') as number;
+        this.min = entity.get('minValue') as number;
+        this.max = entity.get('maxValue') as number;
     }
 
     @ApiProperty({ type: () => Number, required: true })

@@ -1,11 +1,43 @@
-import { Table, Column, Model, DataType, ForeignKey, Scopes } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey, Scopes, BelongsTo } from 'sequelize-typescript';
 import { User } from '../../../users/src/models';
 import { UserWefitterDailySummary } from './wefitter-daily-summary.entity';
+import { fn, col, Op, literal } from 'sequelize';
 
 @Scopes(() => ({
     byDailySummaryId: (dailySummaryId) => ({ where: { dailySummaryId } }),
     byUserId: (userId) => ({ where: { userId } }),
     byTimestamp: (timestamp) => ({ where: { timestamp } }),
+    averages: (fieldName: string) => ({
+        attributes: [
+            [fn('AVG', col(fieldName)), 'averageValue'],
+            [fn('MIN', col(fieldName)), 'minValue'],
+            [fn('MAX', col(fieldName)), 'maxValue'],
+            'userId',
+        ],
+        group: ['userId']
+    }),
+    pagination: (query) => ({ limit: query.limit, offset: query.offset }),
+    byFieldName: (fieldName) => ({
+        include: [
+            {
+                model: UserWefitterDailySummary,
+                as: 'dailySummary',
+                required: false,
+            },
+        ],
+        where: {
+            [fieldName]: { [Op.ne]: null }
+        },
+        attributes: [
+            [fieldName, 'value'],
+            [literal('IF(`UserWefitterStressSummary`.`timestamp` IS NULL, `dailySummary`.`date`, `UserWefitterStressSummary`.`timestamp`)'), 'date']
+        ]
+    }),
+    orderByDate: () => ({
+        order: [
+            ['date', 'desc']
+        ]
+    }),
 }))
 @Table({
     tableName: 'userWefitterStressSummary',
@@ -93,4 +125,7 @@ export class UserWefitterStressSummary extends Model {
         allowNull: true
     })
     stressDuration: string;
+
+    @BelongsTo(() => UserWefitterDailySummary, 'dailySummaryId')
+    dailySummary: UserWefitterDailySummary;
 }

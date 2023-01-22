@@ -19,14 +19,17 @@ import { WefitterSleepDto } from './models/wefitter-sleep.dto';
 import { UserWefitterSleepSummary } from './models/wefitter-sleep-summary.entity';
 import { WefitterStressSummaryDto } from './models/wefitter-stress-summary.dto';
 import { UserWefitterStressSummary } from './models/wefitter-stress-summary.entity';
-import { GetWefitterResultAvaragesDto } from './models/get-wefitter-result-avarages.dto';
+import { GetWefitterResultAveragesDto } from './models/get-wefitter-result-averages.dto';
 import { WefitterMetricTypes } from '../../common/src/resources/wefitter/wefitter-metric-types';
-import { WefitterResultAvaragesDto } from './models/wefitter-result-avarages.dto';
+import { WefitterResultAveragesDto } from './models/wefitter-result-averages.dto';
+import { GetWefitterResultsDto } from './models/get-wefitter-results.dto';
+import { WefitterMetricResultsDto } from './models/wefitter-metric-results.dto';
+import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
 
 const metricTypeToModelName = {
     [WefitterMetricTypes.steps]: 'userWefitterDailySummary',
     [WefitterMetricTypes.caloriesBurned]: 'userWefitterDailySummary',
-    [WefitterMetricTypes.hrvSleep]: 'userWefitterSleepSummary',
+    [WefitterMetricTypes.hrvSleep]: 'userWefitterHeartrateSummary',
     [WefitterMetricTypes.timeAsleep]: 'userWefitterSleepSummary',
     [WefitterMetricTypes.sleepScore]: 'userWefitterSleepSummary',
     [WefitterMetricTypes.avgHeartRate]: 'userWefitterHeartrateSummary',
@@ -41,8 +44,8 @@ const metricTypeToFieldName = {
     [WefitterMetricTypes.hrvSleep]: 'resting',
     [WefitterMetricTypes.timeAsleep]: 'totalTimeInSleep',
     [WefitterMetricTypes.sleepScore]: 'sleepScore',
-    [WefitterMetricTypes.avgHeartRate]: 'avarage',
-    /*[WefitterMetricTypes.vo2max]: 'userWefitterDailySummary',
+    [WefitterMetricTypes.avgHeartRate]: 'average',
+    /*[WefitterMetricTypes.vo2max]: '',
     [WefitterMetricTypes.bloodSugar]: '',
     [WefitterMetricTypes.bloodPressure]: '',*/
 };
@@ -340,13 +343,13 @@ export class WefitterService {
         await this.createOrUpdateStressSummary(userId, data, null, transaction);
     }
 
-    async getAvarages(query: GetWefitterResultAvaragesDto): Promise<WefitterResultAvaragesDto> {
+    async getAvarages(query: GetWefitterResultAveragesDto, userId: number): Promise<WefitterResultAveragesDto> {
         const dataObjectsArray: IMappedWefitterMetric[] = [];
         query.metricNames.forEach(metric => {
             const metricEnum = WefitterMetricTypes[metric];
             const fieldName = metricTypeToFieldName[metricEnum];
             const currentModel = this[`${metricTypeToModelName[metricEnum]}`];
-            if (!currentModel) {
+            if (!metricEnum || !currentModel || !fieldName) {
                 return;
             }
             dataObjectsArray.push({
@@ -356,12 +359,73 @@ export class WefitterService {
             });
         });
 
-        const scopes = []; //TO DO
+        const scopes: any[] = [
+            { method: ['byUserId', userId] }
+        ];
 
-        const promises = dataObjectsArray.map(dataObject => dataObject.model.scope(scopes).findOne({}));
+        const promises = dataObjectsArray.map(async (dataObject) => {
+            const result = await dataObject.model
+                .scope(
+                    scopes.concat([
+                        { method: ['averages', dataObject.fieldName] }
+                    ])
+                )
+                .findOne({});
+
+            if (!result) {
+                return null;
+            }
+
+            result.setDataValue('metricName', WefitterMetricTypes[dataObject.metricEnum]);
+
+            return result;
+        });
 
         const results = await Promise.all(promises);
 
-        return new WefitterResultAvaragesDto(results as any);
+        return new WefitterResultAveragesDto(results.filter(result => !!result) as any);
+    }
+
+    async getResultListByMetricName(query: GetWefitterResultsDto, userId: number) {
+        let resultList = [];
+        const metricEnum = WefitterMetricTypes[query.metricName];
+        const fieldName = metricTypeToFieldName[metricEnum];
+        const currentModel = this[`${metricTypeToModelName[metricEnum]}`];
+        const modelDataObject: IMappedWefitterMetric = {
+            metricEnum,
+            fieldName,
+            model: currentModel,
+        };
+        if (!metricEnum || !currentModel || !fieldName) {
+            return new WefitterMetricResultsDto(
+                resultList,
+                { fieldName: modelDataObject.fieldName, metricName: WefitterMetricTypes[modelDataObject.metricEnum] },
+                PaginationHelper.buildPagination({ limit: query.limit, offset: query.offset }, 0)
+            );
+        }
+        const scopes: any[] = [
+            { method: ['byUserId', userId] },
+            { method: ['byFieldName', modelDataObject.fieldName] }
+        ];
+
+        const count = await modelDataObject.model
+            .scope(scopes)
+            .count();
+
+        if (count) {
+            scopes.push(
+                { method: ['pagination', { limit: query.limit, offset: query.offset }] },
+                { method: ['orderByDate'] },
+            );
+            resultList = await modelDataObject.model
+                .scope(scopes)
+                .findAll({});
+        }
+
+        return new WefitterMetricResultsDto(
+            resultList,
+            { fieldName: modelDataObject.fieldName, metricName: WefitterMetricTypes[modelDataObject.metricEnum] },
+            PaginationHelper.buildPagination({ limit: query.limit, offset: query.offset }, count)
+        );
     }
 }

@@ -272,7 +272,12 @@ Resources:
         WefitterResultsAvaragesApi:
           Type: Api
           Properties:
-            Path: /wefitter/results/avarages
+            Path: /wefitter/results/averages
+            Method: ANY
+        WefitterResultsApi:
+          Type: Api
+          Properties:
+            Path: /wefitter/results
             Method: ANY
 
   VerificationsFunction:
@@ -420,7 +425,7 @@ Resources:
         UsersBiomarkersIdResultsAvaragesApi:
           Type: Api
           Properties:
-            Path: /users/biomarkers/results/avarages
+            Path: /users/biomarkers/results/averages
             Method: ANY
 
   HautAiFunction:

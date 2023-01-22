@@ -34,8 +34,10 @@ import { nonWefitterFieldNames } from '../../common/src/resources/wefitter/non-w
 import { WefitterUserHeartrateSummaryDto } from './models/wefitter-user-heartrate-summary.dto';
 import { WefitterUserSleepSummaryDto } from './models/wefitter-user-sleep-summary.dto';
 import { WefitterUserStressSummaryDto } from './models/wefitter-user-stress-summary.dto';
-import { GetWefitterResultAvaragesDto } from './models/get-wefitter-result-avarages.dto';
-import { WefitterResultAvaragesDto } from './models/wefitter-result-avarages.dto';
+import { GetWefitterResultAveragesDto } from './models/get-wefitter-result-averages.dto';
+import { WefitterResultAveragesDto } from './models/wefitter-result-averages.dto';
+import { GetWefitterResultsDto } from './models/get-wefitter-results.dto';
+import { WefitterMetricResultsDto } from './models/wefitter-metric-results.dto';
 
 @ApiTags('wefitter')
 @Controller('wefitter')
@@ -296,12 +298,23 @@ export class WefitterController {
         await this.wefitterService.saveStressSummaryData(user.userId, body.data);
     }
 
-    @ApiResponse({ type: () => WefitterResultAvaragesDto })
-    @ApiOperation({ summary: 'Get wefitter results avarages by metric name' })
+    @ApiBearerAuth()
+    @ApiResponse({ type: () => WefitterResultAveragesDto })
+    @ApiOperation({ summary: 'Get wefitter results averages by metric name' })
     @HttpCode(HttpStatus.OK)
     @Roles(UserRoles.user)
     @Get('/results/averages')
-    async getWefitterResultsAvarages(@Query() query: GetWefitterResultAvaragesDto, @Request() req: Request & { user: SessionDataDto }): Promise<WefitterResultAvaragesDto> {
-        return this.wefitterService.getAvarages(query);
+    async getWefitterResultsAvarages(@Query() query: GetWefitterResultAveragesDto, @Request() req: Request & { user: SessionDataDto }): Promise<WefitterResultAveragesDto> {
+        return this.wefitterService.getAvarages(query, req.user.userId);
+    }
+
+    @ApiBearerAuth()
+    @ApiResponse({ type: () => WefitterMetricResultsDto })
+    @ApiOperation({ summary: 'Get wefitter results by metric name' })
+    @HttpCode(HttpStatus.OK)
+    @Roles(UserRoles.user)
+    @Get('/results')
+    async getWefitterResults(@Query() query: GetWefitterResultsDto, @Request() req: Request & { user: SessionDataDto }): Promise<WefitterMetricResultsDto> {
+        return this.wefitterService.getResultListByMetricName(query, req.user.userId);
     }
 }
