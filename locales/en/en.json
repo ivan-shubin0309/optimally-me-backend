@@ -35,5 +35,9 @@
     "FILTER_NOT_FOUND": "Filter not found",
     "USER_RECOMMENDATION_NOT_FOUND": "User recommendation is not found",
     "RECOMMENDATION_REACTION_NOT_FOUND": "Reaction to specified recommendation is not found",
-    "CATEGORY_NOT_ALLOWED": "Specified category is not allowed for chosen biomarker type"
+    "CATEGORY_NOT_ALLOWED": "Specified category is not allowed for chosen biomarker type",
+    "HAUT_AI_IMAGE_UPLOAD_LIMIT": "Haut ai image upload limit reached",
+    "SKIN_RESULT_NOT_FOUND": "Skin result with specified id is not found",
+    "SKIN_RESULT_ALREADY_LOADED": "Skin results already loaded for specified id",
+    "SKIN_RESULT_NOT_LOADED": "Error happened while getting results"
 }

@@ -8,6 +8,7 @@ export interface ICreateBiomarker {
     readonly categoryId: number;
     readonly unitId?: number;
     readonly filters: ICreateFilter[];
+    readonly hautAiMetricType?: number;
 }
 
 export interface ICreateFilter {

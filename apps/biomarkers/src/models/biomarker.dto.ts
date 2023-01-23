@@ -8,6 +8,7 @@ import { Biomarker } from './biomarker.entity';
 import { CategoryDto } from './categories/category.dto';
 import { FilterDto } from './filters/filter.dto';
 import { UnitDto } from './units/unit.dto';
+import { HautAiMetricTypes } from '../../../common/src/resources/haut-ai/haut-ai-metric-types';
 
 export class BiomarkerDto extends BaseDto<Biomarker> {
     constructor(entity: Biomarker) {
@@ -39,6 +40,7 @@ export class BiomarkerDto extends BaseDto<Biomarker> {
             this.ruleName = entity.rule.name;
         }
         this.isActive = entity.isActive;
+        this.hautAiMetricType = entity.hautAiMetricType;
     }
 
     @ApiProperty({ type: () => String, required: true })
@@ -85,4 +87,7 @@ export class BiomarkerDto extends BaseDto<Biomarker> {
 
     @ApiProperty({ type: () => Boolean, required: true })
     isActive: boolean;
+
+    @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(HautAiMetricTypes) })
+    hautAiMetricType: number;
 }

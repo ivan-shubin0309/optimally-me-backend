@@ -1,9 +1,11 @@
 import { ICreateBiomarker } from './create-biomarker.interface';
-import { IsNotEmpty, MaxLength, MinLength, ArrayMaxSize, IsPositive, IsInt, ValidateNested, IsOptional, ArrayNotEmpty, IsArray, IsString, ArrayUnique } from 'class-validator';
+import { IsNotEmpty, MaxLength, MinLength, ArrayMaxSize, IsPositive, IsInt, ValidateNested, IsOptional, ArrayNotEmpty, IsArray, IsString, ArrayUnique, IsNumber, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
 import { biomarkerValidationRules, skinBiomarkerValidationRules } from '../../../common/src/resources/biomarkers/validation-rules';
 import { CreateSkinFilterDto } from './filters/create-skin-filter.dto';
+import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
+import { HautAiMetricTypes } from '../../../common/src/resources/haut-ai/haut-ai-metric-types';
 
 export class CreateSkinBiomarkerDto implements ICreateBiomarker {
     @ApiProperty({ type: () => String, required: true })
@@ -52,6 +54,12 @@ export class CreateSkinBiomarkerDto implements ICreateBiomarker {
     @IsInt()
     @IsPositive()
     readonly categoryId: number;
+
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(HautAiMetricTypes) })
+    @IsNotEmpty()
+    @IsNumber()
+    @IsEnum(HautAiMetricTypes)
+    readonly hautAiMetricType: number;
 
     @ApiProperty({ type: () => [CreateSkinFilterDto], required: true })
     @ArrayNotEmpty()
