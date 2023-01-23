@@ -2,6 +2,7 @@ import { Table, Column, Model, DataType, ForeignKey, Scopes, BelongsTo } from 's
 import { User } from '../../../users/src/models';
 import { UserWefitterDailySummary } from './wefitter-daily-summary.entity';
 import { fn, col, Op, literal } from 'sequelize';
+import { metricTypeToFieldName, WefitterMetricTypes } from 'apps/common/src/resources/wefitter/wefitter-metric-types';
 
 @Scopes(() => ({
     byDailySummaryId: (dailySummaryId) => ({ where: { dailySummaryId } }),
@@ -36,6 +37,11 @@ import { fn, col, Op, literal } from 'sequelize';
     orderByDate: () => ({
         order: [
             ['date', 'desc']
+        ]
+    }),
+    checkMetricAvailability: () => ({
+        attributes: [
+            [fn('COUNT', col(metricTypeToFieldName[WefitterMetricTypes.avgHeartRate])), metricTypeToFieldName[WefitterMetricTypes.avgHeartRate]],
         ]
     }),
 }))

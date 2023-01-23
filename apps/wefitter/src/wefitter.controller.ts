@@ -38,6 +38,7 @@ import { GetWefitterResultAveragesDto } from './models/get-wefitter-result-avera
 import { WefitterResultAveragesDto } from './models/wefitter-result-averages.dto';
 import { GetWefitterResultsDto } from './models/get-wefitter-results.dto';
 import { WefitterMetricResultsDto } from './models/wefitter-metric-results.dto';
+import { WefitterMetricNamesDto } from './models/wefitter-metric-names.dto';
 
 @ApiTags('wefitter')
 @Controller('wefitter')
@@ -316,5 +317,17 @@ export class WefitterController {
     @Get('/results')
     async getWefitterResults(@Query() query: GetWefitterResultsDto, @Request() req: Request & { user: SessionDataDto }): Promise<WefitterMetricResultsDto> {
         return this.wefitterService.getResultListByMetricName(query, req.user.userId);
+    }
+
+    @ApiBearerAuth()
+    @ApiResponse({ type: () => WefitterMetricNamesDto })
+    @ApiOperation({ summary: 'Get wefitter available metric names' })
+    @HttpCode(HttpStatus.OK)
+    @Roles(UserRoles.user)
+    @Get('/results/metric-names')
+    async getAvailableMetrics(@Request() req: Request & { user: SessionDataDto }): Promise<WefitterMetricNamesDto> {
+        const result: string[] = await this.wefitterService.getAvailableMetricNames(req.user.userId);
+
+        return new WefitterMetricNamesDto(result);
     }
 }

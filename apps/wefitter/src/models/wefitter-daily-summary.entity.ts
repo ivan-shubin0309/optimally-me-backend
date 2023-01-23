@@ -1,6 +1,7 @@
 import { Table, Column, Model, DataType, ForeignKey, Scopes } from 'sequelize-typescript';
 import { User } from '../../../users/src/models';
 import { fn, col, Op } from 'sequelize';
+import { metricTypeToFieldName, WefitterMetricTypes } from '../../../common/src/resources/wefitter/wefitter-metric-types';
 
 @Scopes(() => ({
     byUserId: (userId) => ({ where: { userId } }),
@@ -27,6 +28,12 @@ import { fn, col, Op } from 'sequelize';
     orderByDate: () => ({
         order: [
             ['date', 'desc']
+        ]
+    }),
+    checkMetricAvailability: () => ({
+        attributes: [
+            [fn('COUNT', col(metricTypeToFieldName[WefitterMetricTypes.steps])), metricTypeToFieldName[WefitterMetricTypes.steps]],
+            [fn('COUNT', col(metricTypeToFieldName[WefitterMetricTypes.caloriesBurned])), metricTypeToFieldName[WefitterMetricTypes.caloriesBurned]]
         ]
     }),
 }))
