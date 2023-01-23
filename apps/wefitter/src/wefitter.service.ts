@@ -29,11 +29,11 @@ import { PaginationHelper } from '../../common/src/utils/helpers/pagination.help
 const metricTypeToModelName = {
     [WefitterMetricTypes.steps]: 'userWefitterDailySummary',
     [WefitterMetricTypes.caloriesBurned]: 'userWefitterDailySummary',
-    [WefitterMetricTypes.hrvSleep]: 'userWefitterHeartrateSummary',
     [WefitterMetricTypes.timeAsleep]: 'userWefitterSleepSummary',
     [WefitterMetricTypes.sleepScore]: 'userWefitterSleepSummary',
     [WefitterMetricTypes.avgHeartRate]: 'userWefitterHeartrateSummary',
-    /*[WefitterMetricTypes.vo2max]: '',
+    /*[WefitterMetricTypes.hrvSleep]: '',
+    [WefitterMetricTypes.vo2max]: '',
     [WefitterMetricTypes.bloodSugar]: '',
     [WefitterMetricTypes.bloodPressure]: '',*/
 };
@@ -41,11 +41,11 @@ const metricTypeToModelName = {
 const metricTypeToFieldName = {
     [WefitterMetricTypes.steps]: 'steps',
     [WefitterMetricTypes.caloriesBurned]: 'bmrCalories',
-    [WefitterMetricTypes.hrvSleep]: 'resting',
     [WefitterMetricTypes.timeAsleep]: 'totalTimeInSleep',
     [WefitterMetricTypes.sleepScore]: 'sleepScore',
     [WefitterMetricTypes.avgHeartRate]: 'average',
-    /*[WefitterMetricTypes.vo2max]: '',
+    /*[WefitterMetricTypes.hrvSleep]: '',
+    [WefitterMetricTypes.vo2max]: '',
     [WefitterMetricTypes.bloodSugar]: '',
     [WefitterMetricTypes.bloodPressure]: '',*/
 };
