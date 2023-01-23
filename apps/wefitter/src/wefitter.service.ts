@@ -12,14 +12,45 @@ import { ICreateProfile } from './models/create-profile.interface';
 import { GetUserConnectionsDto } from './models/get-user-connections.dto';
 import { UserWefitterDailySummary } from './models/wefitter-daily-summary.entity';
 import { WefitterDailySummaryDto } from './models/wefitter-daily-summary.dto';
-import { Repository } from 'sequelize-typescript';
+import { Model, Repository } from 'sequelize-typescript';
 import { UserWefitterHeartrateSummary } from './models/wefitter-heartrate-summary.entity';
 import { WefitterHeartRateDto } from './models/wefitter-heart-rate.dto';
 import { WefitterSleepDto } from './models/wefitter-sleep.dto';
 import { UserWefitterSleepSummary } from './models/wefitter-sleep-summary.entity';
 import { WefitterStressSummaryDto } from './models/wefitter-stress-summary.dto';
 import { UserWefitterStressSummary } from './models/wefitter-stress-summary.entity';
+import { GetWefitterResultAveragesDto } from './models/get-wefitter-result-averages.dto';
+import { WefitterMetricTypes } from '../../common/src/resources/wefitter/wefitter-metric-types';
+import { WefitterResultAveragesDto } from './models/wefitter-result-averages.dto';
+import { GetWefitterResultsDto } from './models/get-wefitter-results.dto';
+import { WefitterMetricResultsDto } from './models/wefitter-metric-results.dto';
+import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
 
+const metricTypeToModelName = {
+    [WefitterMetricTypes.steps]: 'userWefitterDailySummary',
+    [WefitterMetricTypes.caloriesBurned]: 'userWefitterDailySummary',
+    [WefitterMetricTypes.timeAsleep]: 'userWefitterSleepSummary',
+    [WefitterMetricTypes.sleepScore]: 'userWefitterSleepSummary',
+    [WefitterMetricTypes.avgHeartRate]: 'userWefitterHeartrateSummary',
+    /*[WefitterMetricTypes.hrvSleep]: '',
+    [WefitterMetricTypes.vo2max]: '',
+    [WefitterMetricTypes.bloodSugar]: '',
+    [WefitterMetricTypes.bloodPressure]: '',*/
+};
+
+const metricTypeToFieldName = {
+    [WefitterMetricTypes.steps]: 'steps',
+    [WefitterMetricTypes.caloriesBurned]: 'bmrCalories',
+    [WefitterMetricTypes.timeAsleep]: 'totalTimeInSleep',
+    [WefitterMetricTypes.sleepScore]: 'sleepScore',
+    [WefitterMetricTypes.avgHeartRate]: 'average',
+    /*[WefitterMetricTypes.hrvSleep]: '',
+    [WefitterMetricTypes.vo2max]: '',
+    [WefitterMetricTypes.bloodSugar]: '',
+    [WefitterMetricTypes.bloodPressure]: '',*/
+};
+
+interface IMappedWefitterMetric { model: Repository<Model>, fieldName: string, metricEnum: WefitterMetricTypes }
 
 @Injectable()
 export class WefitterService {
@@ -310,5 +341,91 @@ export class WefitterService {
 
     async saveStressSummaryData(userId: number, data: WefitterStressSummaryDto, transaction?: Transaction): Promise<void> {
         await this.createOrUpdateStressSummary(userId, data, null, transaction);
+    }
+
+    async getAvarages(query: GetWefitterResultAveragesDto, userId: number): Promise<WefitterResultAveragesDto> {
+        const dataObjectsArray: IMappedWefitterMetric[] = [];
+        query.metricNames.forEach(metric => {
+            const metricEnum = WefitterMetricTypes[metric];
+            const fieldName = metricTypeToFieldName[metricEnum];
+            const currentModel = this[`${metricTypeToModelName[metricEnum]}`];
+            if (!metricEnum || !currentModel || !fieldName) {
+                return;
+            }
+            dataObjectsArray.push({
+                metricEnum,
+                fieldName,
+                model: currentModel,
+            });
+        });
+
+        const scopes: any[] = [
+            { method: ['byUserId', userId] }
+        ];
+
+        const promises = dataObjectsArray.map(async (dataObject) => {
+            const result = await dataObject.model
+                .scope(
+                    scopes.concat([
+                        { method: ['averages', dataObject.fieldName] }
+                    ])
+                )
+                .findOne({});
+
+            if (!result) {
+                return null;
+            }
+
+            result.setDataValue('metricName', WefitterMetricTypes[dataObject.metricEnum]);
+
+            return result;
+        });
+
+        const results = await Promise.all(promises);
+
+        return new WefitterResultAveragesDto(results.filter(result => !!result) as any);
+    }
+
+    async getResultListByMetricName(query: GetWefitterResultsDto, userId: number) {
+        let resultList = [];
+        const metricEnum = WefitterMetricTypes[query.metricName];
+        const fieldName = metricTypeToFieldName[metricEnum];
+        const currentModel = this[`${metricTypeToModelName[metricEnum]}`];
+        const modelDataObject: IMappedWefitterMetric = {
+            metricEnum,
+            fieldName,
+            model: currentModel,
+        };
+        if (!metricEnum || !currentModel || !fieldName) {
+            return new WefitterMetricResultsDto(
+                resultList,
+                { fieldName: modelDataObject.fieldName, metricName: WefitterMetricTypes[modelDataObject.metricEnum] },
+                PaginationHelper.buildPagination({ limit: query.limit, offset: query.offset }, 0)
+            );
+        }
+        const scopes: any[] = [
+            { method: ['byUserId', userId] },
+            { method: ['byFieldName', modelDataObject.fieldName] }
+        ];
+
+        const count = await modelDataObject.model
+            .scope(scopes)
+            .count();
+
+        if (count) {
+            scopes.push(
+                { method: ['pagination', { limit: query.limit, offset: query.offset }] },
+                { method: ['orderByDate'] },
+            );
+            resultList = await modelDataObject.model
+                .scope(scopes)
+                .findAll({});
+        }
+
+        return new WefitterMetricResultsDto(
+            resultList,
+            { fieldName: modelDataObject.fieldName, metricName: WefitterMetricTypes[modelDataObject.metricEnum] },
+            PaginationHelper.buildPagination({ limit: query.limit, offset: query.offset }, count)
+        );
     }
 }

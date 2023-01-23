@@ -269,6 +269,16 @@ Resources:
           Properties:
             Path: /wefitter/push/heartrate-summary
             Method: POST
+        WefitterResultsAvaragesApi:
+          Type: Api
+          Properties:
+            Path: /wefitter/results/averages
+            Method: ANY
+        WefitterResultsApi:
+          Type: Api
+          Properties:
+            Path: /wefitter/results
+            Method: ANY
 
   VerificationsFunction:
     Type: AWS::Serverless::Function
@@ -411,6 +421,11 @@ Resources:
           Type: Api
           Properties:
             Path: /users/biomarkers/{id}/filters
+            Method: ANY
+        UsersBiomarkersIdResultsAvaragesApi:
+          Type: Api
+          Properties:
+            Path: /users/biomarkers/results/averages
             Method: ANY
 
   HautAiFunction:
