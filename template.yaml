@@ -274,6 +274,11 @@ Resources:
           Properties:
             Path: /wefitter/results/averages
             Method: ANY
+        WefitterResultsMetricNamesApi:
+          Type: Api
+          Properties:
+            Path: /wefitter/results/metric-names
+            Method: ANY
         WefitterResultsApi:
           Type: Api
           Properties:

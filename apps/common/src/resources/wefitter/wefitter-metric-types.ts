@@ -12,6 +12,18 @@ export enum WefitterMetricTypes {
     bloodPressure = 9,
 }
 
+export const metricTypeToFieldName = {
+    [WefitterMetricTypes.steps]: 'steps',
+    [WefitterMetricTypes.caloriesBurned]: 'bmrCalories',
+    [WefitterMetricTypes.timeAsleep]: 'totalTimeInSleep',
+    [WefitterMetricTypes.sleepScore]: 'sleepScore',
+    [WefitterMetricTypes.avgHeartRate]: 'average',
+    /*[WefitterMetricTypes.hrvSleep]: '',
+    [WefitterMetricTypes.vo2max]: '',
+    [WefitterMetricTypes.bloodSugar]: '',
+    [WefitterMetricTypes.bloodPressure]: '',*/
+};
+
 export const wefitterMetricNames = EnumHelper
     .toCollection(WefitterMetricTypes)
     .map(metric => metric.key);

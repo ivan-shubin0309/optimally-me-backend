@@ -20,11 +20,12 @@ import { UserWefitterSleepSummary } from './models/wefitter-sleep-summary.entity
 import { WefitterStressSummaryDto } from './models/wefitter-stress-summary.dto';
 import { UserWefitterStressSummary } from './models/wefitter-stress-summary.entity';
 import { GetWefitterResultAveragesDto } from './models/get-wefitter-result-averages.dto';
-import { WefitterMetricTypes } from '../../common/src/resources/wefitter/wefitter-metric-types';
+import { metricTypeToFieldName, WefitterMetricTypes } from '../../common/src/resources/wefitter/wefitter-metric-types';
 import { WefitterResultAveragesDto } from './models/wefitter-result-averages.dto';
 import { GetWefitterResultsDto } from './models/get-wefitter-results.dto';
 import { WefitterMetricResultsDto } from './models/wefitter-metric-results.dto';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
+import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
 
 const metricTypeToModelName = {
     [WefitterMetricTypes.steps]: 'userWefitterDailySummary',
@@ -32,18 +33,6 @@ const metricTypeToModelName = {
     [WefitterMetricTypes.timeAsleep]: 'userWefitterSleepSummary',
     [WefitterMetricTypes.sleepScore]: 'userWefitterSleepSummary',
     [WefitterMetricTypes.avgHeartRate]: 'userWefitterHeartrateSummary',
-    /*[WefitterMetricTypes.hrvSleep]: '',
-    [WefitterMetricTypes.vo2max]: '',
-    [WefitterMetricTypes.bloodSugar]: '',
-    [WefitterMetricTypes.bloodPressure]: '',*/
-};
-
-const metricTypeToFieldName = {
-    [WefitterMetricTypes.steps]: 'steps',
-    [WefitterMetricTypes.caloriesBurned]: 'bmrCalories',
-    [WefitterMetricTypes.timeAsleep]: 'totalTimeInSleep',
-    [WefitterMetricTypes.sleepScore]: 'sleepScore',
-    [WefitterMetricTypes.avgHeartRate]: 'average',
     /*[WefitterMetricTypes.hrvSleep]: '',
     [WefitterMetricTypes.vo2max]: '',
     [WefitterMetricTypes.bloodSugar]: '',
@@ -386,7 +375,7 @@ export class WefitterService {
         return new WefitterResultAveragesDto(results.filter(result => !!result) as any);
     }
 
-    async getResultListByMetricName(query: GetWefitterResultsDto, userId: number) {
+    async getResultListByMetricName(query: GetWefitterResultsDto, userId: number): Promise<WefitterMetricResultsDto> {
         let resultList = [];
         const metricEnum = WefitterMetricTypes[query.metricName];
         const fieldName = metricTypeToFieldName[metricEnum];
@@ -427,5 +416,48 @@ export class WefitterService {
             { fieldName: modelDataObject.fieldName, metricName: WefitterMetricTypes[modelDataObject.metricEnum] },
             PaginationHelper.buildPagination({ limit: query.limit, offset: query.offset }, count)
         );
+    }
+
+    async getAvailableMetricNames(userId: number): Promise<string[]> {
+        const resultArray: string[] = [];
+
+        const scopes: any[] = [
+            { method: ['byUserId', userId] },
+            { method: ['checkMetricAvailability'] }
+        ];
+
+        const [
+            dailySummary,
+            heartrateSummary,
+            sleepSummary,
+        ] = await Promise.all([
+            this.userWefitterDailySummary
+                .scope(scopes)
+                .findOne(),
+            this.userWefitterHeartrateSummary
+                .scope(scopes)
+                .findOne(),
+            this.userWefitterSleepSummary
+                .scope(scopes)
+                .findOne(),
+        ]);
+
+        EnumHelper
+            .toCollection(WefitterMetricTypes)
+            .forEach(metric => {
+                const fieldName = metricTypeToFieldName[metric.value];
+                if (
+                    fieldName
+                    && (dailySummary.get(fieldName)
+                        || heartrateSummary.get(fieldName)
+                        || sleepSummary.get(fieldName))
+                ) {
+                    console.log(dailySummary.get(fieldName));
+                    console.log(typeof dailySummary.get(fieldName));
+                    resultArray.push(metric.key);
+                }
+            });
+
+        return resultArray;
     }
 }
