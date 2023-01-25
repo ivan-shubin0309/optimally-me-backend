@@ -75,6 +75,10 @@ export class UsersResultsController {
             { method: ['averages'] }
         ];
 
+        if (query.startDate || query.endDate) {
+            scopes.push({ method: ['byDate', query.startDate, query.endDate] });
+        }
+
         averagesList = await this.usersResultsService.getList(scopes);
 
         return new UserResultAveragesDto(averagesList);

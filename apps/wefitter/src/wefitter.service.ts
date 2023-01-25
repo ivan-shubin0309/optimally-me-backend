@@ -349,8 +349,13 @@ export class WefitterService {
         });
 
         const scopes: any[] = [
-            { method: ['byUserId', userId] }
+            { method: ['byUserId', userId] },
+            { method: ['withDailySummary'] }
         ];
+
+        if (query.startDate || query.endDate) {
+            scopes.push({ method: ['byDateInterval', query.startDate, query.endDate] });
+        }
 
         const promises = dataObjectsArray.map(async (dataObject) => {
             const result = await dataObject.model
@@ -396,6 +401,10 @@ export class WefitterService {
             { method: ['byUserId', userId] },
             { method: ['byFieldName', modelDataObject.fieldName] }
         ];
+
+        if (query.startDate || query.endDate) {
+            scopes.push({ method: ['byDateInterval', query.startDate, query.endDate] });
+        }
 
         const count = await modelDataObject.model
             .scope(scopes)
