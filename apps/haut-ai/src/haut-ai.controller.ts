@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, ForbiddenException, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Request, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, Body, Controller, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Query, Request, UnprocessableEntityException } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FileTypes } from '../../common/src/resources/files/file-types';
 import { FilesService } from '../../files/src/files.service';
@@ -12,13 +12,16 @@ import { SubjectInDto } from './models/subject-in.dto';
 import { HautAiHelper } from '../../common/src/resources/haut-ai/haut-ai.helper';
 import { SexTypes } from '../../common/src/resources/filters/sex-types';
 import { HautAiUploadedPhotoDto } from './models/haut-ai-uploaded-photo.dto';
-import { EntityByIdDto } from 'apps/common/src/models/entity-by-id.dto';
+import { EntityByIdDto } from '../../common/src/models/entity-by-id.dto';
 import { SkinUserResultsService } from './skin-user-results.service';
 import { DateTime } from 'luxon';
 import { MAX_IMAGE_UPLOAD_COUNT, MAX_IMAGE_UPLOAD_DAYS_INTERVAL } from '../../common/src/resources/haut-ai/constants';
 import { TranslatorService } from 'nestjs-translator';
 import { HautAiGetResultsDto } from './models/haut-ai-get-results.dto';
 import { SkinUserResultStatuses } from 'apps/common/src/resources/haut-ai/skin-user-result-statuses';
+import { GetSkinResultListDto } from './models/get-skin-result-list.dto';
+import { PaginationHelper } from 'apps/common/src/utils/helpers/pagination.helper';
+import { SkinResultListDto } from './models/skin-result-list.dto';
 
 @ApiBearerAuth()
 @ApiTags('haut-ai')
@@ -163,5 +166,41 @@ export class HautAiController {
         }
 
         await this.skinUserResultsService.saveResults(results, skinResult, req.user.userId);
+    }
+
+    @ApiOperation({ summary: 'Get skin tesult dates' })
+    @ApiResponse({ type: () => SkinResultListDto })
+    @Roles(UserRoles.user)
+    @HttpCode(HttpStatus.OK)
+    @Get('/face-skin-metrics/skin-results')
+    async getSkinResultDates(@Request() req: Request & { user: SessionDataDto }, @Query() query: GetSkinResultListDto): Promise<SkinResultListDto> {
+        let skinResults = [], count = 0;
+
+        const scopes: any[] = [];
+
+        const user = await this.usersSevice.getOne([
+            { method: ['byId', req.user.userId] },
+            { method: ['byRoles', UserRoles.user] },
+            'withHautAiField'
+        ]);
+
+        if (!user.hautAiField || !user.hautAiField?.hautAiSubjectId) {
+            return;
+        }
+
+        scopes.push({ method: ['byUserHautAiFieldId', user.hautAiField.id] });
+
+        count = await this.skinUserResultsService.getCount(scopes);
+
+        if (count) {
+            scopes.push(
+                { method: ['pagination', { limit: query.limit, offset: query.offset }] },
+                { method: ['orderBy', [['createdAt', 'desc']]] }
+            );
+
+            skinResults = await this.skinUserResultsService.getList(scopes);
+        }
+
+        return new SkinResultListDto(skinResults, PaginationHelper.buildPagination({ limit: query.limit, offset: query.offset }, count));
     }
 }
