@@ -17,6 +17,7 @@ import { FilesService } from '../../files/src/files.service';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
 import { S3Service } from '../../files/src/s3.service';
 import { SkinUserResultsService } from './skin-user-results.service';
+import { UsersResultsService } from '../../users-results/src/users-results.service';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { SkinUserResultsService } from './skin-user-results.service';
     FileHelper,
     S3Service,
     SkinUserResultsService,
+    UsersResultsService,
     SessionsService,
     JwtStrategy,
     ...guardProviders,

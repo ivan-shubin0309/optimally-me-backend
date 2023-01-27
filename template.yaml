@@ -456,6 +456,11 @@ Resources:
           Properties:
             Path: /haut-ai/face-skin-metrics/skin-results/{id}
             Method: ANY
+        HautAiFaceSkinMetricsSkinResultsIdResultsApi:
+          Type: Api
+          Properties:
+            Path: /haut-ai/face-skin-metrics/skin-results/{id}/results
+            Method: ANY
         HautAiFaceSkinMetricsSkinResultsApi:
           Type: Api
           Properties:

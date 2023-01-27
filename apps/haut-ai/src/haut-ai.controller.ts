@@ -22,6 +22,9 @@ import { SkinUserResultStatuses } from 'apps/common/src/resources/haut-ai/skin-u
 import { GetSkinResultListDto } from './models/get-skin-result-list.dto';
 import { PaginationHelper } from 'apps/common/src/utils/helpers/pagination.helper';
 import { SkinResultListDto } from './models/skin-result-list.dto';
+import { UsersResultsService } from '../../users-results/src/users-results.service';
+import { UserResultsDto } from 'apps/admins-results/src/models/user-results.dto';
+import { GetResultsBySkinResultDto } from './models/get-results-by-skin-result.dto';
 
 @ApiBearerAuth()
 @ApiTags('haut-ai')
@@ -33,6 +36,7 @@ export class HautAiController {
         private readonly usersSevice: UsersService,
         private readonly skinUserResultsService: SkinUserResultsService,
         private readonly translator: TranslatorService,
+        private readonly usersResultsService: UsersResultsService,
     ) { }
 
     @ApiCreatedResponse({ type: () => HautAiUploadedPhotoDto })
@@ -168,7 +172,7 @@ export class HautAiController {
         await this.skinUserResultsService.saveResults(results, skinResult, req.user.userId);
     }
 
-    @ApiOperation({ summary: 'Get skin tesult dates' })
+    @ApiOperation({ summary: 'Get skin result dates' })
     @ApiResponse({ type: () => SkinResultListDto })
     @Roles(UserRoles.user)
     @HttpCode(HttpStatus.OK)
@@ -202,5 +206,34 @@ export class HautAiController {
         }
 
         return new SkinResultListDto(skinResults, PaginationHelper.buildPagination({ limit: query.limit, offset: query.offset }, count));
+    }
+
+    @ApiOperation({ summary: 'Get results by skin result id' })
+    @ApiResponse({ type: () => UserResultsDto })
+    @Roles(UserRoles.user)
+    @HttpCode(HttpStatus.OK)
+    @Get('/face-skin-metrics/skin-results/:id/results')
+    async getResultsBySkinResultId(@Param() param: EntityByIdDto, @Query() query: GetResultsBySkinResultDto, @Request() req: Request & { user: SessionDataDto }): Promise<UserResultsDto> {
+        const { limit, offset } = query;
+
+        let userResultsList = [];
+        const scopes: any[] = [
+            { method: ['bySkinUserResultId', param.id] },
+            { method: ['byUserId', req.user.userId] }
+        ];
+
+        const count = await this.usersResultsService.getCount(scopes);
+
+        if (count) {
+            scopes.push(
+                { method: ['pagination', { limit, offset }] },
+                { method: ['orderBy', [['date', 'desc']]] },
+                'withUnit',
+                'withBiomarker'
+            );
+            userResultsList = await this.usersResultsService.getList(scopes);
+        }
+
+        return new UserResultsDto(userResultsList, PaginationHelper.buildPagination({ limit, offset }, count));
     }
 }

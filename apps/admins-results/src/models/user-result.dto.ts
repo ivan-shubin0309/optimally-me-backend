@@ -23,6 +23,7 @@ export class UserResultDto extends BaseDto<UserResult> {
         this.filter = data.filter
             ? new UserFilterDto(data.filter)
             : undefined;
+        this.skinUserResultId = data.skinUserResultId;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -57,4 +58,7 @@ export class UserResultDto extends BaseDto<UserResult> {
 
     @ApiProperty({ type: () => UserFilterDto, required: false })
     readonly filter: UserFilterDto;
+
+    @ApiProperty({ type: () => Number, required: false })
+    readonly skinUserResultId: number;
 }
