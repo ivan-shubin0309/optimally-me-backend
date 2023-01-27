@@ -38,6 +38,35 @@ import { fn, col, Op, literal } from 'sequelize';
             ['date', 'desc']
         ]
     }),
+    byDateInterval: (startDate?: string, endDate?: string) => {
+        const opAnd = [];
+        if (startDate) {
+            opAnd.push({
+                [Op.or]: [
+                    { '$dailySummary.date$': { [Op.gte]: startDate } },
+                    { timestamp: { [Op.gte]: startDate } },
+                ]
+            });
+        }
+        if (endDate) {
+            opAnd.push({
+                [Op.or]: [
+                    { '$dailySummary.date$': { [Op.lte]: endDate } },
+                    { timestamp: { [Op.lte]: endDate } },
+                ]
+            });
+        }
+        return { where: { [Op.and]: opAnd } };
+    },
+    withDailySummary: () => ({
+        include: [
+            {
+                model: UserWefitterDailySummary,
+                as: 'dailySummary',
+                required: false,
+            },
+        ],
+    }),
 }))
 @Table({
     tableName: 'userWefitterStressSummary',

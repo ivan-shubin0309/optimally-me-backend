@@ -36,6 +36,17 @@ import { metricTypeToFieldName, WefitterMetricTypes } from '../../../common/src/
             [fn('COUNT', col(metricTypeToFieldName[WefitterMetricTypes.sleepScore])), metricTypeToFieldName[WefitterMetricTypes.sleepScore]]
         ]
     }),
+    byDateInterval: (startDate?: string, endDate?: string) => {
+        const opAnd = [];
+        if (startDate) {
+            opAnd.push({ [Op.gte]: startDate });
+        }
+        if (endDate) {
+            opAnd.push({ [Op.lte]: endDate });
+        }
+        return { where: { timestamp: { [Op.and]: opAnd } } };
+    },
+    withDailySummary: () => ({}),
 }))
 @Table({
     tableName: 'userWefitterSleepSummary',
