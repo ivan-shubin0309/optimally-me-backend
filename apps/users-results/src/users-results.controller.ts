@@ -127,7 +127,8 @@ export class UsersResultsController {
     async getRecommendationsByResultId(@Param() param: EntityByIdDto, @Request() req: Request & { user: SessionDataDto }): Promise<RecommendationsWithoutPaginationDto> {
         const userResult = await this.usersResultsService.getOne([
             { method: ['byId', param.id] },
-            { method: ['byUserId', req.user.userId] }
+            { method: ['byUserId', req.user.userId] },
+            { method: ['withFilter'] }
         ]);
 
         if (!userResult) {
@@ -138,7 +139,7 @@ export class UsersResultsController {
             });
         }
 
-        const recommendations = await this.userRecommendationsService.getRecommendationList(userResult);
+        const recommendations = await this.userRecommendationsService.getRecommendationList(userResult, { biomarkerId: userResult?.filter?.biomarkerId || userResult?.filter?.removedFromBiomarkerId });
 
         return new RecommendationsWithoutPaginationDto(recommendations);
     }

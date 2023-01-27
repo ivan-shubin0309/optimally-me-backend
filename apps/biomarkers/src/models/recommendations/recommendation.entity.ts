@@ -41,12 +41,13 @@ import { IdealTimeOfDayTypes } from '../../../../common/src/resources/recommenda
             },
         ]
     }),
-    withImpacts: (additionalScopes?: any[]) => ({
+    withImpacts: (additionalScopes?: any[], biomarkerId?: number) => ({
         include: [
             {
                 model: RecommendationImpact.scope(additionalScopes),
                 as: 'impacts',
                 required: false,
+                where: { biomarkerId: biomarkerId || null },
             },
         ]
     }),
