@@ -2,12 +2,14 @@ import { SkinUserResultStatuses } from '../../../common/src/resources/haut-ai/sk
 import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
 import { UserHautAiField } from './user-haut-ai-field.entity';
 import { Op } from 'sequelize';
+import { File } from '../../../files/src/models/file.entity';
 
 export interface ISkinUserResult {
     userHautAiFieldId: number;
     hautAiBatchId?: string;
     hautAiFileId?: string;
     itaScore?: number;
+    fileId?: number;
 }
 
 @Scopes(() => ({
@@ -54,4 +56,23 @@ export class SkinUserResult extends Model {
         defaultValue: SkinUserResultStatuses.processing
     })
     status: SkinUserResultStatuses;
+
+    @ForeignKey(() => File)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: true
+    })
+    fileId: number;
+
+    @Column({
+        type: DataType.TINYINT.UNSIGNED,
+        allowNull: true
+    })
+    perceivedAge: number;
+
+    @Column({
+        type: DataType.TINYINT.UNSIGNED,
+        allowNull: true
+    })
+    eyesAge: number;
 }

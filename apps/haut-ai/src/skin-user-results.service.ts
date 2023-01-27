@@ -4,13 +4,14 @@ import { Repository } from 'sequelize-typescript';
 import { Transaction } from 'sequelize/types';
 import { Sequelize } from 'sequelize-typescript';
 import { ISkinUserResult, SkinUserResult } from './models/skin-user-result.entity';
-import { HautAiMetricTypes, ITA_SCORE_METRIC, techNamesToMetricTypes } from '../../common/src/resources/haut-ai/haut-ai-metric-types';
+import { EYES_AGE_METRIC, HautAiMetricTypes, ITA_SCORE_METRIC, PERCEIVED_AGE_METRIC, techNamesToMetricTypes } from '../../common/src/resources/haut-ai/haut-ai-metric-types';
 import { Biomarker } from '../../biomarkers/src/models/biomarker.entity';
 import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-types';
 import { IUserResult, UserResult } from '../../admins-results/src/models/user-result.entity';
 import { SkinUserResultStatuses } from '../../common/src/resources/haut-ai/skin-user-result-statuses';
 import { FilterRangeHelper } from '../../common/src/resources/filters/filter-range.helper';
 import { DateTime } from 'luxon';
+import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
 
 @Injectable()
 export class SkinUserResultsService extends BaseService<SkinUserResult> {
@@ -19,6 +20,7 @@ export class SkinUserResultsService extends BaseService<SkinUserResult> {
         @Inject('BIOMARKER_MODEL') private biomarkerModel: Repository<Biomarker>,
         @Inject('SEQUELIZE') private dbConnection: Sequelize,
         @Inject('USER_RESULT_MODEL') private userResultModel: Repository<UserResult>,
+        private readonly adminsResultsService: AdminsResultsService,
     ) { super(model); }
 
     create(body: ISkinUserResult, transaction?: Transaction): Promise<SkinUserResult> {
@@ -54,11 +56,21 @@ export class SkinUserResultsService extends BaseService<SkinUserResult> {
 
         await this.dbConnection.transaction(async transaction => {
             const resultsToCreate: IUserResult[] = [];
-            let itaResult;
+            let itaResult, perceivedAge, eyesAge;
 
             filteredResults.forEach(result => {
                 if (result.type === ITA_SCORE_METRIC) {
                     itaResult = result;
+                    return;
+                }
+
+                if (result.type === PERCEIVED_AGE_METRIC) {
+                    perceivedAge = result;
+                    return;
+                }
+
+                if (result.type === EYES_AGE_METRIC) {
+                    eyesAge = result;
                     return;
                 }
 
@@ -83,9 +95,19 @@ export class SkinUserResultsService extends BaseService<SkinUserResult> {
                 }
             });
 
-            await skinResult.update({ itaScore: itaResult.value, status: SkinUserResultStatuses.loaded }, { transaction });
+            await skinResult.update(
+                {
+                    itaScore: itaResult.value,
+                    perceivedAge: perceivedAge.value,
+                    eyesAge: eyesAge.value,
+                    status: SkinUserResultStatuses.loaded,
+                },
+                { transaction }
+            );
 
-            await this.userResultModel.bulkCreate(resultsToCreate as any, { transaction });
+            const createdResults = await this.userResultModel.bulkCreate(resultsToCreate as any, { transaction });
+
+            await this.adminsResultsService.attachRecommendations(createdResults, userId, transaction, { isAnyRecommendation: true });
         });
     }
 }

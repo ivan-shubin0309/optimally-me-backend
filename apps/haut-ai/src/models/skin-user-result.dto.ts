@@ -13,6 +13,9 @@ export class SkinUserResultDto extends BaseDto<SkinUserResult> {
         this.hautAiFileId = entity.hautAiFileId;
         this.itaScore = entity.itaScore;
         this.status = entity.status;
+        this.fileId = entity.fileId;
+        this.perceivedAge = entity.perceivedAge;
+        this.eyesAge = entity.eyesAge;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -29,4 +32,13 @@ export class SkinUserResultDto extends BaseDto<SkinUserResult> {
 
     @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(SkinUserResultStatuses) })
     readonly status: number;
+
+    @ApiProperty({ type: () => Number, required: false })
+    readonly fileId: number;
+
+    @ApiProperty({ type: () => Number, required: false })
+    readonly perceivedAge: number;
+
+    @ApiProperty({ type: () => Number, required: false })
+    readonly eyesAge: number;
 }

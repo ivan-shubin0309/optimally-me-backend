@@ -63,7 +63,7 @@ export class HautAiController {
 
         const imagesUploadedCount = await this.skinUserResultsService.getCount([
             { method: ['byUserHautAiFieldId', user.hautAiField.id] },
-            { method: ['afterDate', DateTime.utc().minus({ days: MAX_IMAGE_UPLOAD_DAYS_INTERVAL })] }
+            { method: ['afterDate', DateTime.utc().minus({ day: MAX_IMAGE_UPLOAD_DAYS_INTERVAL })] }
         ]);
 
         if (imagesUploadedCount >= MAX_IMAGE_UPLOAD_COUNT) {
@@ -97,7 +97,12 @@ export class HautAiController {
 
         await this.filesService.markFilesAsUsed([file.id]);
 
-        const skinResult = await this.skinUserResultsService.create({ hautAiBatchId: result.batchId, hautAiFileId: result.uploadedFileId, userHautAiFieldId: user.hautAiField.id });
+        const skinResult = await this.skinUserResultsService.create({
+            hautAiBatchId: result.batchId,
+            hautAiFileId: result.uploadedFileId,
+            userHautAiFieldId: user.hautAiField.id,
+            fileId: body.fileId
+        });
 
         result.skinResultId = skinResult.id;
 

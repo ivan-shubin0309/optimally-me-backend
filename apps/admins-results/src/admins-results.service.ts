@@ -22,18 +22,23 @@ export class AdminsResultsService extends BaseService<UserResult> {
     return this.model.bulkCreate(data as any, { transaction });
   }
 
-  async attachRecommendations(userResults: UserResult[], userId: number, transaction?: Transaction): Promise<void> {
+  async attachRecommendations(userResults: UserResult[], userId: number, transaction?: Transaction, options?: { isAnyRecommendation: boolean }): Promise<void> {
     const userRecommendationsToCreate = [];
     const filteredUserResults = userResults.filter(userResult => userResult.filterId && userResult.recommendationRange);
+    const scopes = [];
 
     if (!filteredUserResults.length) {
       return;
     }
 
+    if (options?.isAnyRecommendation) {
+      scopes.push({ method: ['byFilterId', filteredUserResults.map(userResult => userResult.filterId)] });
+    } else {
+      scopes.push({ method: ['byFilterIdAndType', filteredUserResults.map(userResult => ({ filterId: userResult.filterId, type: userResult.recommendationRange }))] });
+    }
+
     const recommendations = await this.recommendationModel
-      .scope([
-        { method: ['byFilterIdAndType', filteredUserResults.map(userResult => ({ filterId: userResult.filterId, type: userResult.recommendationRange }))] }
-      ])
+      .scope(scopes)
       .findAll({ transaction });
 
     const userResultsMap = {};

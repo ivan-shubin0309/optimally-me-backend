@@ -5,6 +5,8 @@ import { File } from '../../files/src/models/file.entity';
 import { SkinUserResult } from './models/skin-user-result.entity';
 import { UserResult } from '../../admins-results/src/models/user-result.entity';
 import { Biomarker } from '../../biomarkers/src/models/biomarker.entity';
+import { Recommendation } from '../../biomarkers/src/models/recommendations/recommendation.entity';
+import { UserRecommendation } from '../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
 
 export const modelProviders = [
     {
@@ -34,5 +36,13 @@ export const modelProviders = [
     {
         provide: 'BIOMARKER_MODEL',
         useValue: Biomarker
+    },
+    {
+        provide: 'RECOMMENDATION_MODEL',
+        useValue: Recommendation
+    },
+    {
+        provide: 'USER_RECOMMENDATION_MODEL',
+        useValue: UserRecommendation
     }
 ];

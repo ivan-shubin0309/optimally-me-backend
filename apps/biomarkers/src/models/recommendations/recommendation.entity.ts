@@ -63,6 +63,18 @@ import { IdealTimeOfDayTypes } from '../../../../common/src/resources/recommenda
             },
         ],
     }),
+    byFilterId: (filterIds: number[]) => ({
+        include: [
+            {
+                model: FilterRecommendation,
+                as: 'filterRecommendations',
+                required: true,
+                where: {
+                    id: filterIds
+                }
+            },
+        ],
+    }),
     withUserReaction: (userId) => ({
         include: [
             {

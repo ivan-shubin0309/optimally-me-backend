@@ -8,12 +8,11 @@ export enum HautAiMetricTypes {
     redness = 7,
     translucency = 8,
     uniformness = 9,
-    perceivedAge = 10,
-    eyeAge = 11,
-    age = 12,
 }
 
 export const ITA_SCORE_METRIC = 'itaScore';
+export const PERCEIVED_AGE_METRIC = 'perceivedAge';
+export const EYES_AGE_METRIC = 'eyesAge';
 
 export const techNamesToMetricTypes = {
     'acne': HautAiMetricTypes.acne,
@@ -25,8 +24,7 @@ export const techNamesToMetricTypes = {
     'redness': HautAiMetricTypes.redness,
     'translucency': HautAiMetricTypes.translucency,
     'uniformness': HautAiMetricTypes.uniformness,
-    'perceivedAge': HautAiMetricTypes.perceivedAge,
-    'eyes_age': HautAiMetricTypes.eyeAge,
-    'age': HautAiMetricTypes.age,
+    'age': PERCEIVED_AGE_METRIC,
+    'eyes_age': EYES_AGE_METRIC,
     'skin_tone': ITA_SCORE_METRIC,
 };
