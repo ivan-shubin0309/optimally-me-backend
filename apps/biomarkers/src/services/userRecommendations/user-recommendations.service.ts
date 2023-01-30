@@ -18,7 +18,7 @@ export class UserRecommendationsService extends BaseService<UserRecommendation> 
         private readonly translator: TranslatorService,
     ) { super(model); }
 
-    async getRecommendationList(userResult: UserResult): Promise<Recommendation[]> {
+    async getRecommendationList(userResult: UserResult, options: { biomarkerId: number }): Promise<Recommendation[]> {
         const userRecommendations = await this.getList([{ method: ['byUserResultId', userResult.id] }]);
 
         if (!userRecommendations.length) {
@@ -28,7 +28,7 @@ export class UserRecommendationsService extends BaseService<UserRecommendation> 
         const recommendations = await this.recommendationModel
             .scope([
                 { method: ['byId', userRecommendations.map(userRecommendation => userRecommendation.recommendationId)] },
-                { method: ['withImpacts', ['withStudyLinks']] },
+                { method: ['withImpacts', ['withStudyLinks'], options?.biomarkerId] },
                 { method: ['withFiles'] },
                 { method: ['withUserReaction', userResult.userId] },
                 { method: ['withFilterRecommendation', userResult.filterId] },
