@@ -94,7 +94,8 @@ export interface IUserResult {
             'biomarkerId',
         ],
         group: ['biomarkerId']
-    })
+    }),
+    bySkinUserResultId: (skinUserResultId: number) => ({ where: { skinUserResultId } }),
 }))
 @Table({
     tableName: 'userResults',
