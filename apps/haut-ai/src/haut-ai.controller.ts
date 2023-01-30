@@ -18,13 +18,14 @@ import { DateTime } from 'luxon';
 import { MAX_IMAGE_UPLOAD_COUNT, MAX_IMAGE_UPLOAD_DAYS_INTERVAL } from '../../common/src/resources/haut-ai/constants';
 import { TranslatorService } from 'nestjs-translator';
 import { HautAiGetResultsDto } from './models/haut-ai-get-results.dto';
-import { SkinUserResultStatuses } from 'apps/common/src/resources/haut-ai/skin-user-result-statuses';
+import { SkinUserResultStatuses } from '../../common/src/resources/haut-ai/skin-user-result-statuses';
 import { GetSkinResultListDto } from './models/get-skin-result-list.dto';
-import { PaginationHelper } from 'apps/common/src/utils/helpers/pagination.helper';
+import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
 import { SkinResultListDto } from './models/skin-result-list.dto';
 import { UsersResultsService } from '../../users-results/src/users-results.service';
-import { UserResultsDto } from 'apps/admins-results/src/models/user-results.dto';
+import { UserResultsDto } from '../../admins-results/src/models/user-results.dto';
 import { GetResultsBySkinResultDto } from './models/get-results-by-skin-result.dto';
+import { hautAiResultOrderScope } from '../../common/src/resources/haut-ai/result-order-types';
 
 @ApiBearerAuth()
 @ApiTags('haut-ai')
@@ -232,9 +233,9 @@ export class HautAiController {
         if (count) {
             scopes.push(
                 { method: ['pagination', { limit, offset }] },
-                { method: ['orderBy', [['date', 'desc']]] },
                 'withUnit',
-                'withBiomarker'
+                'withBiomarker',
+                hautAiResultOrderScope[query.orderBy](query),
             );
             userResultsList = await this.usersResultsService.getList(scopes);
         }

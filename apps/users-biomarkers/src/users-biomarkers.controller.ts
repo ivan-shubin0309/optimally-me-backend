@@ -6,7 +6,6 @@ import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-
 import { SessionDataDto } from '../../sessions/src/models';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
 import { UsersBiomarkersService } from './users-biomarkers.service';
-import { NUMBER_OF_LAST_USER_RESULTS } from '../../common/src/resources/usersBiomarkers/constants';
 import { UserBiomarkersDto } from './models/user-biomarkers.dto';
 import { GetUserBiomarkersListDto } from './models/get-user-biomarkers-list.dto';
 import { UsersResultsService } from '../../users-results/src/users-results.service';
