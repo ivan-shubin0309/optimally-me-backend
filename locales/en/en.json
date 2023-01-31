@@ -39,5 +39,6 @@
     "HAUT_AI_IMAGE_UPLOAD_LIMIT": "Haut ai image upload limit reached",
     "SKIN_RESULT_NOT_FOUND": "Skin result with specified id is not found",
     "SKIN_RESULT_ALREADY_LOADED": "Skin results already loaded for specified id",
-    "SKIN_RESULT_NOT_LOADED": "Error happened while getting results"
+    "SKIN_RESULT_NOT_LOADED": "Error happened while getting results",
+    "SKIN_TYPE_IS_EMPTY": "SkinType is required"
 }

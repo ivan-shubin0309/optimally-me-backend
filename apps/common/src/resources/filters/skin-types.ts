@@ -5,3 +5,10 @@ export enum SkinTypes {
     combination = 4,
     sensitive = 5,
 }
+
+export const hautAiSkinTypes = [
+    SkinTypes.normal,
+    SkinTypes.dry,
+    SkinTypes.oily,
+    SkinTypes.combination,
+];
