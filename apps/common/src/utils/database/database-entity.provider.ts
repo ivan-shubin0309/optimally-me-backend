@@ -35,6 +35,7 @@ import { UserHautAiField } from '../../../../haut-ai/src/models/user-haut-ai-fie
 import { RecommendationSkinType } from '../../../../biomarkers/src/models/recommendationSkinTypes/recommendation-skin-type.entity';
 import { RecommendationContradiction } from '../../../../biomarkers/src/models/recommendationContradictions/recommendation-contradiction.entity';
 import { SkinUserResult } from '../../../../haut-ai/src/models/skin-user-result.entity';
+import { UserSkinDiary } from '../../../../haut-ai/src/models/user-skin-diary.entity';
 
 export const entities = [
     User,
@@ -74,4 +75,5 @@ export const entities = [
     RecommendationSkinType,
     RecommendationContradiction,
     SkinUserResult,
+    UserSkinDiary,
 ];
