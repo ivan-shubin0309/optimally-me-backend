@@ -55,6 +55,18 @@ export class HautAiController {
             'withAdditionalField'
         ]);
 
+        if (!user?.additionalField?.skinType && !body.skinType) {
+            throw new BadRequestException({
+                message: this.translator.translate('SKIN_TYPE_IS_EMPTY'),
+                errorCode: 'SKIN_TYPE_IS_EMPTY',
+                statusCode: HttpStatus.FORBIDDEN
+            });
+        }
+
+        if (!user?.additionalField?.skinType && body.skinType) {
+            await user.additionalField.update({ skinType: body.skinType });
+        }
+
         if (!user.hautAiField) {
             const hautAiField = await this.userHautAiFieldsService.create(user.id);
 

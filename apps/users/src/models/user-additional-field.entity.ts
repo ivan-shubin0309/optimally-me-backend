@@ -4,6 +4,7 @@ import { SexTypes } from '../../../common/src/resources/filters/sex-types';
 import { EthnicityTypes } from '../../../common/src/resources/filters/ethnicity-types';
 import { OtherFeatureTypes } from '../../../common/src/resources/filters/other-feature-types';
 import { RegistrationSteps } from '../../../common/src/resources/users/registration-steps';
+import { SkinTypes } from '../../../common/src/resources/filters/skin-types';
 
 @Scopes(() => ({
     byUserId: (userId: number) => ({ where: { userId } }),
@@ -58,4 +59,10 @@ export class UserAdditionalField extends Model {
         defaultValue: false
     })
     isEmailVerified: boolean;
+
+    @Column({
+        type: DataType.TINYINT,
+        allowNull: true,
+    })
+    skinType: SkinTypes;
 }
