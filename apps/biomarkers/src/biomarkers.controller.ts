@@ -46,9 +46,6 @@ import { RecommendationDto } from './models/recommendations/recommendation.dto';
 import { CreateRecommendationDto } from './models/recommendations/create-recommendation.dto';
 import { FilesService } from '../../files/src/files.service';
 import { FileTypes } from '../../common/src/resources/files/file-types';
-import { RecommendationFilesService } from './services/recommendations/recommendation-files.service';
-import { ConfigService } from '../../common/src/utils/config/config.service';
-import { RecommendationImpactsService } from './services/recommendation-impacts/recommendation-impacts.service';
 import { CacheService } from '../../common/src/resources/cache/cache.service';
 import { PatchRecommendationDto } from './models/recommendations/patch-recommendation.dto';
 import { SessionDataDto } from '../../sessions/src/models';
@@ -75,9 +72,6 @@ export class BiomarkersController {
     private readonly alternativeNamesService: AlternativeNamesService,
     private readonly filtersService: FiltersService,
     private readonly filesService: FilesService,
-    private readonly recommendationFilesService: RecommendationFilesService,
-    private readonly configService: ConfigService,
-    private readonly recommendationImpactsService: RecommendationImpactsService,
     private readonly cacheService: CacheService,
   ) {}
 
