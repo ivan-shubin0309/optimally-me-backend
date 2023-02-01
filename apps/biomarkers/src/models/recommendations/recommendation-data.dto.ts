@@ -8,7 +8,7 @@ export class RecommendationDataDto {
         this.productLink = data.productLink || null;
         this.title = data.title || null;
         this.type = data.type || null;
-        this.isAddToCartAllowed = data.isAddToCartAllowed;
+        this.isAddToCartAllowed = data.isAddToCartAllowed || false;
         this.idealTimeOfDay = data.idealTimeOfDay || null;
     }
 
