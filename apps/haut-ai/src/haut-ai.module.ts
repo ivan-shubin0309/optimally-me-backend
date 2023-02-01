@@ -19,6 +19,7 @@ import { S3Service } from '../../files/src/s3.service';
 import { SkinUserResultsService } from './skin-user-results.service';
 import { UsersResultsService } from '../../users-results/src/users-results.service';
 import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
+import { UserSkinDiariesService } from './user-skin-diaries.service';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { AdminsResultsService } from '../../admins-results/src/admins-results.se
     UsersResultsService,
     AdminsResultsService,
     SessionsService,
+    UserSkinDiariesService,
     JwtStrategy,
     ...guardProviders,
     sequelizeProvider(entities),
