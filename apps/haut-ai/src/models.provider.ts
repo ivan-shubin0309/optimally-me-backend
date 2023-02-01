@@ -7,6 +7,7 @@ import { UserResult } from '../../admins-results/src/models/user-result.entity';
 import { Biomarker } from '../../biomarkers/src/models/biomarker.entity';
 import { Recommendation } from '../../biomarkers/src/models/recommendations/recommendation.entity';
 import { UserRecommendation } from '../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
+import { UserSkinDiary } from './models/user-skin-diary.entity';
 
 export const modelProviders = [
     {
@@ -44,5 +45,9 @@ export const modelProviders = [
     {
         provide: 'USER_RECOMMENDATION_MODEL',
         useValue: UserRecommendation
+    },
+    {
+        provide: 'USER_SKIN_DIARY_MODEL',
+        useValue: UserSkinDiary
     }
 ];

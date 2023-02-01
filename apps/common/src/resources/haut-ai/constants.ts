@@ -1,2 +1,3 @@
 export const MAX_IMAGE_UPLOAD_DAYS_INTERVAL = 7;
 export const MAX_IMAGE_UPLOAD_COUNT = 5;
+export const NOTES_MAX_LENGTH = 10000;

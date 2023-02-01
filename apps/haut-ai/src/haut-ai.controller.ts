@@ -26,6 +26,7 @@ import { UsersResultsService } from '../../users-results/src/users-results.servi
 import { UserResultsDto } from '../../admins-results/src/models/user-results.dto';
 import { GetResultsBySkinResultDto } from './models/get-results-by-skin-result.dto';
 import { hautAiResultOrderScope } from '../../common/src/resources/haut-ai/result-order-types';
+import { UserSkinDiariesService } from './user-skin-diaries.service';
 
 @ApiBearerAuth()
 @ApiTags('haut-ai')
@@ -38,6 +39,7 @@ export class HautAiController {
         private readonly skinUserResultsService: SkinUserResultsService,
         private readonly translator: TranslatorService,
         private readonly usersResultsService: UsersResultsService,
+        private readonly userSkinDiariesService: UserSkinDiariesService,
     ) { }
 
     @ApiCreatedResponse({ type: () => HautAiUploadedPhotoDto })
@@ -54,6 +56,15 @@ export class HautAiController {
             'withHautAiField',
             'withAdditionalField'
         ]);
+
+        if (body.feelingType && body.notes) {
+            await this.userSkinDiariesService.create({
+                userId: user.id,
+                feelingType: body.feelingType,
+                isWearingMakeUp: body.isWearingMakeUp,
+                notes: body.notes,
+            });
+        }
 
         if (!user?.additionalField?.skinType && !body.skinType) {
             throw new BadRequestException({
