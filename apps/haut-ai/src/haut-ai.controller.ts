@@ -179,7 +179,7 @@ export class HautAiController {
             throw new BadRequestException({
                 message: this.translator.translate('SKIN_RESULT_ALREADY_LOADED'),
                 errorCode: 'SKIN_RESULT_ALREADY_LOADED',
-                statusCode: HttpStatus.NOT_FOUND
+                statusCode: HttpStatus.BAD_REQUEST
             });
         }
 
@@ -194,9 +194,19 @@ export class HautAiController {
             throw new UnprocessableEntityException({
                 message: this.translator.translate('SKIN_RESULT_NOT_LOADED'),
                 errorCode: 'SKIN_RESULT_NOT_LOADED',
-                statusCode: HttpStatus.NOT_FOUND
+                statusCode: HttpStatus.UNPROCESSABLE_ENTITY
             });
         }
+
+        results.forEach(result => {
+            if (result?.result?.error) {
+                throw new UnprocessableEntityException({
+                    message: result?.result?.error,
+                    errorCode: 'HAUT_AI_ERROR',
+                    statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+                });
+            }
+        });
 
         await this.skinUserResultsService.saveResults(results, skinResult, req.user.userId);
     }
