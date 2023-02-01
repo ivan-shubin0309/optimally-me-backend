@@ -87,7 +87,7 @@ export class HautAiController {
 
         const imagesUploadedCount = await this.skinUserResultsService.getCount([
             { method: ['byUserHautAiFieldId', user.hautAiField.id] },
-            { method: ['afterDate', DateTime.utc().minus({ day: MAX_IMAGE_UPLOAD_DAYS_INTERVAL })] }
+            { method: ['afterDate', DateTime.utc().minus({ days: MAX_IMAGE_UPLOAD_DAYS_INTERVAL }).toISO()] }
         ]);
 
         if (imagesUploadedCount >= MAX_IMAGE_UPLOAD_COUNT) {
