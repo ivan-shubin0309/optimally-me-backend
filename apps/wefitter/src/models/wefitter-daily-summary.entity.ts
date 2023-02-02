@@ -4,6 +4,12 @@ import { fn, col, Op } from 'sequelize';
 import { metricTypeToFieldName, WefitterMetricTypes } from '../../../common/src/resources/wefitter/wefitter-metric-types';
 
 @Scopes(() => ({
+    withIdAttribute: () => ({
+        attributes: {
+            include: [['id', 'id']]
+        }
+    }),
+    byId: (id) => ({ where: { id } }),
     byUserId: (userId) => ({ where: { userId } }),
     byDate: (date) => ({ where: { date } }),
     averages: (fieldName: string) => ({

@@ -182,7 +182,8 @@ export class WefitterService {
         let dailySummary = await this.userWefitterDailySummary
             .scope([
                 { method: ['byUserId', userId] },
-                { method: ['byDate', data.date] }
+                { method: ['byDate', data.date] },
+                'withIdAttribute'
             ])
             .findOne({ transaction });
 
@@ -201,7 +202,9 @@ export class WefitterService {
         if (!dailySummary) {
             dailySummary = await this.userWefitterDailySummary.create(dailySummaryBody, { transaction });
         } else {
-            await dailySummary.update(dailySummaryBody, { transaction });
+            await this.userWefitterDailySummary
+                .scope({ method: ['byId', dailySummary.get('id')] })
+                .update(dailySummaryBody, { transaction } as any);
         }
 
         if (data.heart_rate_summary) {
