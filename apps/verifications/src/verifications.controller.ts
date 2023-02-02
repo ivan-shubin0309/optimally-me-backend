@@ -106,7 +106,10 @@ export class VerificationsController {
 
         const decoded = await this.verificationsService.decodeToken(body.token, 'RESTORATION_LINK_EXPIRED');
 
-        const user = await this.usersService.getUser(decoded.data.userId);
+        const user = await this.usersService.getOne([
+            { method: ['byId', decoded.data.userId] },
+            'withAdditionalField'
+        ]);
 
         if (!user) {
             throw new NotFoundException({
