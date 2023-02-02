@@ -74,14 +74,14 @@ import { HautAiMetricTypes } from 'apps/common/src/resources/haut-ai/haut-ai-met
             },
         ]
     }),
-    withLastResults: (userId: number, numberOfLastResults: number, isWithAttributes = true, isRequired = false, beforeDate?: string, additionalScopes?: any[]) => ({
+    withLastResults: (resultIds: number[], isWithAttributes = true, isRequired = false, additionalScopes?: any[]) => ({
         include: [
             {
                 model: UserResult.scope(additionalScopes),
                 as: 'userResults',
                 required: isRequired,
                 where: {
-                    id: literal(`\`userResults\`.\`id\` IN (${getLastUserResultsForEachBiomarker(userId, numberOfLastResults, beforeDate)})`)
+                    id: literal(`\`userResults\`.\`id\` IN (${resultIds.length ? resultIds.join(', ') : 'NULL'})`)
                 },
                 attributes: isWithAttributes
                     ? undefined
