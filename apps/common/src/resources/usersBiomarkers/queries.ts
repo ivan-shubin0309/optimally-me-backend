@@ -27,3 +27,21 @@ export const OrderValueQuery = `
         )
     ) as \`orderValue\`
 `.replace(/\s+/ig, ' ').trim();
+
+export const RangeCountersQuery = `
+    IF(
+        \`lastResult\`.\`recommendationRange\` < ${RecommendationTypes.optimal},
+        IF(
+            \`lastResult\`.\`recommendationRange\` = ${RecommendationTypes.low} 
+                AND \`lastResult->filter\`.\`criticalLow\` IS NULL,
+            ${RecommendationTypes.criticalLow},
+            \`lastResult\`.\`recommendationRange\`
+        ),
+        IF(
+            \`lastResult\`.\`recommendationRange\` = ${RecommendationTypes.high} 
+                AND \`lastResult->filter\`.\`criticalHigh\` IS NULL,
+            ${RecommendationTypes.criticalHigh},
+            \`lastResult\`.\`recommendationRange\`
+        )
+    )
+`.replace(/\s+/ig, ' ').trim();
