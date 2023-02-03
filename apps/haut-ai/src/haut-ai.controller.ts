@@ -268,6 +268,7 @@ export class HautAiController {
                 { method: ['pagination', { limit, offset }] },
                 'withUnit',
                 'withBiomarker',
+                'withFilter',
                 hautAiResultOrderScope[query.orderBy](query),
             );
             userResultsList = await this.usersResultsService.getList(scopes);
