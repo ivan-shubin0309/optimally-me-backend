@@ -42,5 +42,6 @@
     "SKIN_RESULT_NOT_LOADED": "Error happened while getting results",
     "SKIN_TYPE_IS_EMPTY": "SkinType is required",
     "QUIZ_NOT_FOUND": "Quiz ${quizName} is not found",
-    "EMAIL_NOT_FOUND_ON_BODY": "Email not found on request body"
+    "EMAIL_NOT_FOUND_ON_BODY": "Email not found on request body",
+    "TYPEFORM_EVENT_NOT_VERIFIED": "Signature is not verified"
 }
