@@ -95,12 +95,28 @@ module.exports = {
         id: 23,
         unit: 'IU/L',
       },
+      {
+        id: 24,
+        unit: 'ug/dL',
+      },
+      {
+        id: 25,
+        unit: 'IU/mL',
+      },
+      {
+        id: 26,
+        unit: 'mL/min',
+      },
+      {
+        id: 27,
+        unit: 'mU/L',
+      },
     ], {});
   },
   down: async (queryInterface) => {
     await queryInterface.bulkDelete('units', {
       where: {
-        id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+        id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27]
       }
     });
   }
