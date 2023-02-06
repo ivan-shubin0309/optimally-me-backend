@@ -675,12 +675,12 @@ export class BiomarkersController {
   @ApiOperation({ summary: 'Patch skin biomarker' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Roles(UserRoles.superAdmin)
-  @Patch('/skin/:id')
+  @Patch('/:id')
   async patchSkinBiomarker(@Param() param: EntityByIdDto, @Body() body: PatchSkinBiomarkerDto): Promise<void> {
     const biomarker = await this.biomarkersService.getOne(
       [
         { method: ['byId', param.id] },
-        { method: ['byType', BiomarkerTypes.skin] }
+        { method: ['byType', [BiomarkerTypes.skin, BiomarkerTypes.blood]] }
       ]
     );
 
