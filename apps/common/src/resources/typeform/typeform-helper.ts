@@ -20,7 +20,7 @@ export class TypeformHelper {
 
         const answer = answersArray.find(answer => answer.type === 'email');
 
-        return answer.email;
+        return answer?.email;
     }
 
     static getFormId(body: any): string {
@@ -57,7 +57,7 @@ export class TypeformHelper {
         });
 
         answers.forEach(answer => {
-            answer.answerText = questionsMap[answer.questionId];
+            answer.questionText = questionsMap[answer.questionId].title;
         });
 
         return answers;

@@ -9,6 +9,7 @@ import { UserQuizesService } from './user-quizes.service';
 import { UsersService } from '../../users/src/users.service';
 import { UserQuizAnswersService } from './user-quiz-answers.service';
 import { Sequelize } from 'sequelize-typescript';
+import { UserRoles } from 'apps/common/src/resources/users';
 
 @ApiTags('typeform')
 @Controller('typeform')
@@ -26,6 +27,8 @@ export class TypeformController {
     @ApiOperation({ summary: 'Typeform webhook' })
     @Post('/push')
     async handleTypeformEvent(@Body() body: any, @Headers('Typeform-Signature') signature, @Req() req: RawBodyRequest<Request>): Promise<TypeformEventResponseDto> {
+        console.log(JSON.stringify(body));
+
         const isVerified = this.typeformService.verifySignature(signature.split('sha256=')[1], req.rawBody);
         if (!isVerified) {
             throw new UnauthorizedException({
@@ -44,7 +47,11 @@ export class TypeformController {
             );
         }
 
-        const user = await this.usersService.getOne([{ method: ['byEmail', userEmail] }]);
+        const user = await this.usersService.getOne([
+            { method: ['byEmail', userEmail] },
+            { method: ['byRoles', UserRoles.user] },
+            { method: ['withAdditionalField'] }
+        ]);
 
         if (!user) {
             return new TypeformEventResponseDto(
@@ -68,10 +75,11 @@ export class TypeformController {
                     quizType,
                     typeformFormId: TypeformHelper.getFormId(body)
                 },
-                { transaction } as any
+                transaction
             );
 
             const answers = TypeformHelper.getAnswers(body);
+            console.log(JSON.stringify(answers));
             const answersToCreate = answers.map(answer => Object.assign({ userId: user.id, quizId: userQuiz.id }, answer));
 
             await this.userQuizAnswersService.bulkCreate(answersToCreate, transaction);
