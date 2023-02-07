@@ -152,6 +152,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/haut-ai/tsconfig.app.json"
       }
+    },
+    "samples": {
+      "type": "application",
+      "root": "apps/samples",
+      "entryFile": "main",
+      "sourceRoot": "apps/samples/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/samples/tsconfig.app.json"
+      }
     }
   }
 }
