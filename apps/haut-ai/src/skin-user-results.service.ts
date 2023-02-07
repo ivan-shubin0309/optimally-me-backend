@@ -87,7 +87,7 @@ export class SkinUserResultsService extends BaseService<SkinUserResult> {
                             biomarkerId: skinBiomarkerByType.id,
                             userId,
                             value: result.value,
-                            recommendationRange: FilterRangeHelper.getRecommendationTypeBySkinValue(skinBiomarkerByType.filters[0], result.value),
+                            recommendationRange: FilterRangeHelper.getRecommendationTypeByValue(skinBiomarkerByType.filters[0], result.value),
                             date: creationDate.toFormat('yyyy-MM-dd'),
                             createdAt: creationDate.toISO(),
                         });

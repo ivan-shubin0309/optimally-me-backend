@@ -3,45 +3,6 @@ import { EnumHelper } from '../../utils/helpers/enum.helper';
 import { RecommendationTypes } from '../recommendations/recommendation-types';
 
 export class FilterRangeHelper {
-    static getRecommendationTypeByValue(filter: Filter, value: number): RecommendationTypes {
-        if (typeof filter.get('optimalMin') === 'number'
-            && typeof filter.get('optimalMax') === 'number'
-            && filter.get('optimalMin') <= value
-            && filter.get('optimalMax') >= value) {
-            return RecommendationTypes.optimal;
-        }
-
-        if (filter.get('optimalMin') > value) {
-            if (typeof filter.get('criticalLow') === 'number' && filter.get('criticalLow') >= value) {
-                return RecommendationTypes.criticalLow;
-            }
-
-            if (typeof filter.get('lowMax') === 'number' && filter.get('lowMax') >= value) {
-                return RecommendationTypes.low;
-            }
-
-            if (typeof filter.get('subOptimalMax') === 'number' && filter.get('subOptimalMax') >= value) {
-                return RecommendationTypes.subOptimal;
-            }
-        }
-
-        if (filter.get('optimalMax') < value) {
-            if (typeof filter.get('criticalHigh') === 'number' && filter.get('criticalHigh') <= value) {
-                return RecommendationTypes.criticalHigh;
-            }
-
-            if (typeof filter.get('highMin') === 'number' && filter.get('highMin') <= value) {
-                return RecommendationTypes.high;
-            }
-
-            if (typeof filter.get('supraOptimalMin') === 'number' && filter.get('supraOptimalMin') <= value) {
-                return RecommendationTypes.supraOptimal;
-            }
-        }
-
-        return null;
-    }
-
     static calculateDeviation(filter: Filter, recommendationRange: RecommendationTypes, value: number): number {
         if (recommendationRange === RecommendationTypes.optimal) {
             return 0;
@@ -61,7 +22,7 @@ export class FilterRangeHelper {
         }
     }
 
-    static getRecommendationTypeBySkinValue(filter: Filter, value: number): RecommendationTypes {
+    static getRecommendationTypeByValue(filter: Filter, value: number): RecommendationTypes {
         const ranges: { min: number, max: number, type: RecommendationTypes }[] = [];
 
         EnumHelper
@@ -107,7 +68,7 @@ export class FilterRangeHelper {
             }
         });
 
-        const resultRange = ranges.find(range => value >= range.min && value <= range.max);
+        const resultRange = ranges.find(range => value > range.min && value <= range.max);
 
         return resultRange && resultRange.type;
     }
