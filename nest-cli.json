@@ -153,6 +153,15 @@
         "tsConfigPath": "apps/haut-ai/tsconfig.app.json"
       }
     },
+    "typeform": {
+      "type": "application",
+      "root": "apps/typeform",
+      "entryFile": "main",
+      "sourceRoot": "apps/typeform/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/typeform/tsconfig.app.json"
+      }
+    },
     "samples": {
       "type": "application",
       "root": "apps/samples",

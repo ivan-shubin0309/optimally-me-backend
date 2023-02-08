@@ -14,6 +14,7 @@ import { ShopifyModule } from '../../shopify/src/shopify.module';
 import { UsersResultsModule } from '../../users-results/src/users-results.module';
 import { HautAiModule } from '../../haut-ai/src/haut-ai.module';
 import { SamplesModule } from '../../samples/src/samples.module';
+import { TypeformModule } from '../../typeform/src/typeform.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { SamplesModule } from '../../samples/src/samples.module';
     ShopifyModule,
     UsersResultsModule,
     HautAiModule,
+    TypeformModule,
     SamplesModule,
   ]
 })

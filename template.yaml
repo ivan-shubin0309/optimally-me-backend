@@ -467,6 +467,20 @@ Resources:
             Path: /haut-ai/face-skin-metrics/skin-results
             Method: ANY
 
+  TypeformFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/typeform/src/main.handler
+      Description: 
+      Events:
+        TypeformPushApi:
+          Type: Api
+          Properties:
+            Path: /typeform/push
+            Method: ANY
+
   SamplesFunction:
     Type: AWS::Serverless::Function
     Metadata:
@@ -479,4 +493,3 @@ Resources:
           Type: Api
           Properties:
             Path: /samples
-            Method: ANY

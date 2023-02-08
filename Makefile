@@ -14,6 +14,7 @@
 .PHONY: build-ShopifyFunction
 .PHONY: build-UsersBiomarkersResultsFunction
 .PHONY: build-HautAiFunction
+.PHONY: build-TypeformFunction
 .PHONY: build-SamplesFunction
 
 
@@ -76,6 +77,9 @@ build-UsersBiomarkersResultsFunction:
 	
 build-HautAiFunction:
 	$(MAKE) HANDLER=apps/haut-ai/src/main.ts ENTITY=haut-ai build-lambda-common
+
+build-TypeformFunction:
+	$(MAKE) HANDLER=apps/typeform/src/main.ts ENTITY=typeform build-lambda-common
 
 build-SamplesFunction:
 	$(MAKE) HANDLER=apps/samples/src/main.ts ENTITY=samples build-lambda-common
