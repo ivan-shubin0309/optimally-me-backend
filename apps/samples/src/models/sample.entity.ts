@@ -2,6 +2,8 @@ import { Table, Column, Model, Scopes, DataType } from 'sequelize-typescript';
 
 @Scopes(() => ({
     byId: (id: number) => ({ where: { id } }),
+    byIsActive: (isActive) => ({ where: { isActive } }),
+    pagination: (query) => ({ limit: query.limit, offset: query.offset }),
 }))
 @Table({
     tableName: 'samples',

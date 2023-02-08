@@ -466,3 +466,17 @@ Resources:
           Properties:
             Path: /haut-ai/face-skin-metrics/skin-results
             Method: ANY
+
+  SamplesFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/samples/src/main.handler
+      Description: 
+      Events:
+        SamplesApi:
+          Type: Api
+          Properties:
+            Path: /samples
+            Method: ANY
