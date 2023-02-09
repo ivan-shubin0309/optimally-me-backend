@@ -499,3 +499,8 @@ Resources:
           Properties:
             Path: /samples/sampleId
             Method: ANY
+        SamplesBySampleIdApi:
+          Type: Api
+          Properties:
+            Path: /samples/{sampleId}
+            Method: ANY

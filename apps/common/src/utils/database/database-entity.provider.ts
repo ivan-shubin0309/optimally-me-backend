@@ -39,6 +39,7 @@ import { UserSkinDiary } from '../../../../haut-ai/src/models/user-skin-diary.en
 import { Sample } from '../../../../samples/src/models/sample.entity';
 import { UserQuiz } from '../../../../typeform/src/models/user-quiz.entity';
 import { UserQuizAnswer } from '../../../../typeform/src/models/user-quiz-answer.entity';
+import { UserSample } from '../../../../samples/src/models/user-sample.entity';
 
 export const entities = [
     User,
@@ -82,4 +83,5 @@ export const entities = [
     Sample,
     UserQuiz,
     UserQuizAnswer,
+    UserSample,
 ];
