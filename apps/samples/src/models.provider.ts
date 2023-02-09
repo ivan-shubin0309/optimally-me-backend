@@ -1,6 +1,7 @@
 import { UserAdditionalField } from '../../users/src/models/user-additional-field.entity';
 import { User } from '../../users/src/models';
 import { Sample } from './models/sample.entity';
+import { UserSample } from './models/user-sample.entity';
 
 export const modelProviders = [
     {
@@ -14,5 +15,9 @@ export const modelProviders = [
     {
         provide: 'SAMPLE_MODEL',
         useValue: Sample,
-    }
+    },
+    {
+        provide: 'USER_SAMPLE_MODEL',
+        useValue: UserSample
+    },
 ];

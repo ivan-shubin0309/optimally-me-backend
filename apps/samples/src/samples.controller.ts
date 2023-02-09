@@ -1,14 +1,16 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Query, Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserRoles } from '../../common/src/resources/users';
 import { Roles } from '../../common/src/resources/common/role.decorator';
 import { GenerateSamplesDto } from './models/generate-samples.dto';
 import { GetSamplesListDto } from './models/get-samples-list.dto';
 import { SamplesService } from './samples.service';
-import { PaginationHelper } from 'apps/common/src/utils/helpers/pagination.helper';
+import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
 import { SamplesDto } from './models/samples.dto';
 import { TranslatorService } from 'nestjs-translator';
 import { CheckSampleIdDto } from './models/check-sample-id.dto';
+import { ActivateSampleDto } from './models/activate-sample.dto';
+import { SessionDataDto } from '../../sessions/src/models';
 
 @ApiBearerAuth()
 @ApiTags('samples')
@@ -58,7 +60,7 @@ export class SamplesController {
     @Get('/sampleId')
     async checkSampleId(@Query() query: CheckSampleIdDto): Promise<void> {
         const sample = await this.samplesService.getOne([
-            { method: ['byIsActive', true] },
+            { method: ['byIsActive', false] },
             { method: ['bySampleId', query.sampleId] }
         ]);
 
@@ -69,5 +71,26 @@ export class SamplesController {
                 statusCode: HttpStatus.NOT_FOUND
             });
         }
+    }
+
+    @Roles(UserRoles.user)
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiOperation({ summary: 'Activate sample by sampleId' })
+    @Post(':sampleId')
+    async activateSample(@Param() params: ActivateSampleDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
+        const sample = await this.samplesService.getOne([
+            { method: ['byIsActive', false] },
+            { method: ['bySampleId', params.sampleId] }
+        ]);
+
+        if (!sample) {
+            throw new NotFoundException({
+                message: this.translator.translate('SAMPLE_NOT_FOUND'),
+                errorCode: 'SAMPLE_NOT_FOUND',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        await this.samplesService.activateSample(sample.id, req.user.userId);
     }
 }
