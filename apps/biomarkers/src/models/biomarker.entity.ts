@@ -110,10 +110,10 @@ import { HautAiMetricTypes } from 'apps/common/src/resources/haut-ai/haut-ai-met
     }),
     rangeCounters: () => ({
         attributes: [
-            [literal(RangeCountersQuery), 'recommendationRange'],
+            [literal(RangeCountersQuery), 'recommendationRangeValue'],
             [fn('COUNT', '*'), 'value']
         ],
-        group: ['recommendationRange']
+        group: ['recommendationRangeValue']
     }),
     orderByDeviation: (orderType: string) => ({
         attributes: {

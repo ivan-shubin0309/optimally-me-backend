@@ -30,7 +30,7 @@ export class UsersBiomarkersService extends BaseService<Biomarker> {
         results.forEach(result => {
             //eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
-            const rangeType = recommendationTypesToRangeTypes[result.get('recommendationRange')];
+            const rangeType = recommendationTypesToRangeTypes[result.get('recommendationRangeValue')];
             const fieldName = UserBiomarkerRangeTypes[rangeType];
             if (rangeType && fieldName) {
                 if (!resultMap[fieldName]) {
