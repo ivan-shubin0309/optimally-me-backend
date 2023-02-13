@@ -81,12 +81,16 @@ export class MailerService {
         );
     }
 
-    async sendUserVerificationEmail(user: User, token: string): Promise<void> {
+    async sendUserVerificationEmail(user: User, token: string, queryString?: string): Promise<void> {
+        let link = `${this.configService.get('FRONTEND_BASE_URL')}/verify-email?token=${token}`;
+
+        if (queryString) {
+            link = `${link}&${queryString}`;
+        }
+
         return this.sendEmail(
             this.translatorService.translate('USER_EMAIL_VERIFICATION_TEXT', {
-                replace: {
-                    link: `${this.configService.get('FRONTEND_BASE_URL')}/verify-email?token=${token}`
-                }
+                replace: { link }
             }),
             this.translatorService.translate('USER_EMAIL_VERIFICATION_SUBJECT'),
             user.email

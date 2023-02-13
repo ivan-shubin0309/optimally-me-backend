@@ -287,7 +287,7 @@ export class VerificationsController {
         const token = await this.verificationsService.generateToken({ userId: user.id }, body.tokenLifeTime);
         await this.verificationsService.saveToken(user.id, token, TokenTypes.email, true);
 
-        await this.mailerService.sendUserVerificationEmail(user, token);
+        await this.mailerService.sendUserVerificationEmail(user, token, body.queryString);
     }
 
     @Public()

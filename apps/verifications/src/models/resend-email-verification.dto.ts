@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsInt, IsNotEmpty, IsOptional, IsPositive, ValidateIf } from 'class-validator';
+import { IsEmail, IsInt, IsNotEmpty, IsOptional, IsPositive, IsString, MaxLength, ValidateIf } from 'class-validator';
 import { Xor } from '../../../common/src/resources/common/xor.decorator';
 
 export class ResendEmailVerificationDto {
@@ -21,4 +21,10 @@ export class ResendEmailVerificationDto {
     @IsInt()
     @IsPositive()
     readonly tokenLifeTime: number;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    @IsString()
+    @MaxLength(255)
+    readonly queryString: string;
 }
