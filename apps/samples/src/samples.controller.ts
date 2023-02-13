@@ -11,8 +11,8 @@ import { TranslatorService } from 'nestjs-translator';
 import { CheckSampleIdDto } from './models/check-sample-id.dto';
 import { ActivateSampleDto } from './models/activate-sample.dto';
 import { SessionDataDto } from '../../sessions/src/models';
+import { Public } from '../../common/src/resources/common/public.decorator';
 
-@ApiBearerAuth()
 @ApiTags('samples')
 @Controller('samples')
 export class SamplesController {
@@ -21,6 +21,7 @@ export class SamplesController {
         private readonly translator: TranslatorService,
     ) { }
 
+    @ApiBearerAuth()
     @Roles(UserRoles.superAdmin)
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ summary: 'Generate samples' })
@@ -29,6 +30,7 @@ export class SamplesController {
         await this.samplesService.generateSamples(body);
     }
 
+    @ApiBearerAuth()
     @Roles(UserRoles.superAdmin)
     @HttpCode(HttpStatus.OK)
     @ApiResponse({ type: () => GetSamplesListDto })
@@ -54,7 +56,7 @@ export class SamplesController {
         return new SamplesDto(samplesList, PaginationHelper.buildPagination({ limit: query.limit, offset: query.offset }, count));
     }
 
-    @Roles(UserRoles.user)
+    @Public()
     @HttpCode(HttpStatus.OK)
     @ApiOperation({ summary: 'Check sample id' })
     @Get('/sampleId')
@@ -73,6 +75,7 @@ export class SamplesController {
         }
     }
 
+    @ApiBearerAuth()
     @Roles(UserRoles.user)
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ summary: 'Activate sample by sampleId' })

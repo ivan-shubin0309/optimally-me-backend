@@ -89,6 +89,10 @@ export class VerificationsController {
             link = `${this.configService.get('SWAGGER_BACKEND_URL')}/verifications/password/redirect?token=${token}`;
         }
 
+        if (body.queryString) {
+            link = `${link}&${body.queryString}`;
+        }
+
         await this.mailerService.sendUserRestorePasswordEmail(user, link);
     }
 
