@@ -9,7 +9,7 @@ export class UsersDevicesController {
   constructor(private readonly usersDevicesService: UsersDevicesService) {}
 
   @ApiResponse({ type: () =>  })
-  @ApiOperation({ summary: 'Get list of user biomarkers' })
+  @ApiOperation({ summary: 'Save user device notification token' })
   @Roles(UserRoles.user)
   @Post()
   async saveNotificationToken(): Promise<void> {
