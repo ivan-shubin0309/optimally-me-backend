@@ -89,7 +89,7 @@ export class UsersController {
         const token = await this.verificationsService.generateToken({ userId: createdUser.id }, EMAIL_TOKEN_EXPIRE);
         await this.verificationsService.saveToken(createdUser.id, token, TokenTypes.email, true);
 
-        await this.mailerService.sendUserVerificationEmail(createdUser, token);
+        await this.mailerService.sendUserVerificationEmail(createdUser, token, body.queryString);
 
         return {};
     }

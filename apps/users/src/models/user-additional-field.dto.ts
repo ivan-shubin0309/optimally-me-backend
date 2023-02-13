@@ -5,6 +5,7 @@ import { RegistrationSteps } from '../../../common/src/resources/users/registrat
 import { SexTypes } from '../../../common/src/resources/filters/sex-types';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { UserAdditionalField } from './user-additional-field.entity';
+import { SkinTypes } from '../../../common/src/resources/filters/skin-types';
 
 export class UserAdditionalFieldDto {
     constructor(additionalField: UserAdditionalField) {
@@ -15,6 +16,9 @@ export class UserAdditionalFieldDto {
         this.otherFeature = additionalField.otherFeature;
         this.registrationStep = additionalField.registrationStep;
         this.isEmailVerified = additionalField.isEmailVerified;
+        this.isUserVerified = additionalField.isUserVerified;
+        this.skinType = additionalField.skinType;
+        this.isSensitiveSkin = additionalField.isSensitiveSkin;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -37,4 +41,13 @@ export class UserAdditionalFieldDto {
 
     @ApiProperty({ type: () => Boolean, required: true })
     readonly isEmailVerified: boolean;
+
+    @ApiProperty({ type: () => Boolean, required: true })
+    readonly isUserVerified: boolean;
+
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(SkinTypes) })
+    readonly skinType: number;
+
+    @ApiProperty({ type: () => Boolean, required: false })
+    readonly isSensitiveSkin: boolean;
 }

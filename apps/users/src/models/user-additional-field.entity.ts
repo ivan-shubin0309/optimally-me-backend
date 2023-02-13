@@ -72,4 +72,11 @@ export class UserAdditionalField extends Model {
         defaultValue: false,
     })
     isSensitiveSkin: boolean;
+
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    })
+    isUserVerified: boolean;
 }
