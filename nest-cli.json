@@ -170,6 +170,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/samples/tsconfig.app.json"
       }
+    },
+    "users-devices": {
+      "type": "application",
+      "root": "apps/users-devices",
+      "entryFile": "main",
+      "sourceRoot": "apps/users-devices/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/users-devices/tsconfig.app.json"
+      }
     }
   }
 }
