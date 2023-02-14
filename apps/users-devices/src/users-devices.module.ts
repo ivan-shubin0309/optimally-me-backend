@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { redisModuleInstance } from '../../common/src/utils/database/redis.provider';
 import { jwtModuleInstance } from '../../common/src/utils/jwt/jwt.module';
 import { translatorInstance } from '../../common/src/utils/translator/translator.provider';
@@ -12,6 +11,7 @@ import { UsersService } from '../../users/src/users.service';
 import { modelProviders } from './models.provider';
 import { UsersDevicesController } from './users-devices.controller';
 import { UsersDevicesService } from './users-devices.service';
+import { ConfigModule } from '../../common/src/utils/config/config.module';
 
 @Module({
   imports: [

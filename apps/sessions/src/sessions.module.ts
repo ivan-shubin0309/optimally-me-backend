@@ -11,6 +11,7 @@ import { redisModuleInstance } from 'apps/common/src/utils/database/redis.provid
 import { modelProviders } from './model.provider';
 import { translatorInstance } from '../../common/src/utils/translator/translator.provider';
 import { entities } from '../../common/src/utils/database/database-entity.provider';
+import { UsersDevicesService } from '../../users-devices/src/users-devices.service';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { entities } from '../../common/src/utils/database/database-entity.provid
     SessionsService,
     UsersService,
     JwtStrategy,
+    UsersDevicesService,
     ...guardProviders,
     sequelizeProvider(entities),
     ...modelProviders

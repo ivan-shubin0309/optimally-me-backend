@@ -40,6 +40,7 @@ import { Sample } from '../../../../samples/src/models/sample.entity';
 import { UserQuiz } from '../../../../typeform/src/models/user-quiz.entity';
 import { UserQuizAnswer } from '../../../../typeform/src/models/user-quiz-answer.entity';
 import { UserSample } from '../../../../samples/src/models/user-sample.entity';
+import { UserDevice } from '../../../../users-devices/src/models/user-device.entity';
 
 export const entities = [
     User,
@@ -84,4 +85,5 @@ export const entities = [
     UserQuiz,
     UserQuizAnswer,
     UserSample,
+    UserDevice,
 ];

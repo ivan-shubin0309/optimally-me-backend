@@ -30,6 +30,7 @@ import { Roles } from '../../common/src/resources/common/role.decorator';
 import { RegistrationSteps } from '../../common/src/resources/users/registration-steps';
 import { AllowedRegistrationSteps } from '../../common/src/resources/common/registration-step.decorator';
 import { EnumHelper } from '../../common/src/utils/helpers/enum.helper';
+import { UsersDevicesService } from '../../users-devices/src/users-devices.service';
 
 @ApiTags('sessions')
 @Controller('sessions')
@@ -39,6 +40,7 @@ export class SessionsController {
     private readonly usersService: UsersService,
     private readonly translator: TranslatorService,
     private readonly configService: ConfigService,
+    private readonly usersDevicesService: UsersDevicesService,
   ) {}
 
   @Public()
@@ -88,6 +90,8 @@ export class SessionsController {
     accessToken = accessToken.split(' ')[1];
 
     await this.sessionsService.destroy(user.userId, accessToken);
+
+    await this.usersDevicesService.removeDeviceBySessionId(user.sessionId);
   }
 
   @Public()

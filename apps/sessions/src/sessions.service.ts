@@ -46,7 +46,7 @@ export class SessionsService {
             email: sessionOptions.email,
             registrationStep: sessionOptions.registrationStep,
             isEmailVerified: sessionOptions.isEmailVerified,
-            sessionId: uniqueKey
+            sessionId: sessionOptions.sessionId || uniqueKey
         };
 
         const lifeTime = sessionOptions.lifeTime || this.configService.get('JWT_ACCESS_TOKEN_EXPIRES_IN');
@@ -119,6 +119,7 @@ export class SessionsService {
             email: sessionParams.data.email,
             registrationStep: sessionParams.data.registrationStep,
             isEmailVerified: sessionParams.data.isEmailVerified,
+            sessionId: sessionParams.data.sessionId,
         };
         return this.create(sessionParams.data.userId, paramsForNewSession);
     }
