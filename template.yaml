@@ -518,3 +518,8 @@ Resources:
           Properties:
             Path: /users/devices
             Method: ANY
+        UsersDevicesNotificationsDataSyncApi:
+          Type: Api
+          Properties:
+            Path: /users/devices/notifications/data-sync
+            Method: ANY

@@ -2,6 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import * as firebaseAdmin from 'firebase-admin';
 import { messaging } from 'firebase-admin';
+import { UserDevice } from './models/user-device.entity';
+
+export interface INotificationBody {
+    title: string,
+    body: string,
+    type: number
+}
 
 @Injectable()
 export class PushNotificationsService {
@@ -20,15 +27,17 @@ export class PushNotificationsService {
 
     }
 
-    async pushNotification() {
-        let toUserDevices = userDevices, sendResult;
+    async sendPushNotification(userDevices: UserDevice | UserDevice[], notification: INotificationBody): Promise<void> {
+        let sendResult, toUserDevices: UserDevice[];
 
         if (!Array.isArray(userDevices)) {
             toUserDevices = [userDevices];
+        } else {
+            toUserDevices = userDevices;
         }
 
         const notificationPayload = {
-            tokens: toUserDevices.map(userDevice => userDevice.deviceToken),
+            tokens: toUserDevices.map(userDevice => userDevice.token),
             notification: { title: notification.title, body: notification.body },
             data: {
                 type: `${notification.type}`
@@ -42,26 +51,16 @@ export class PushNotificationsService {
             },
         };
 
-        if (notification.premiumArticleId) {
-            notificationPayload.data.premiumArticleId = notification.premiumArticleId.toString();
-        }
-
         try {
             sendResult = await this.messagingInstance.sendMulticast(notificationPayload);
 
-            const notificationLogs = userDevices.map(userDevice => ({
-                recipientId: userDevice.userId,
-                token: userDevice.deviceToken,
-                title: notification.title,
-                body: notification.body,
-                type: notification.type
-            }));
-
-            await this.PushNotificationLog.bulkCreate(notificationLogs);
-
-            this.pushNotificationLogger.info('Push-notification was successfully delivered.');
+            console.log('Push-notification was successfully delivered.');
         } catch (e) {
-            this.pushNotificationLogger.error(e);
+            console.log(e);
         }
+
+        console.log(`Result: ${JSON.stringify(sendResult)}`);
+        console.log(`Tokens: ${toUserDevices.map(userDevice => userDevice.token)}`);
+        console.log(`Notification: ${JSON.stringify(notificationPayload)}`);
     }
 }
