@@ -73,6 +73,7 @@ import { metricTypeToFieldName, WefitterMetricTypes } from 'apps/common/src/reso
             },
         ],
     }),
+    bySource: (source) => ({ where: { source } }),
 }))
 @Table({
     tableName: 'userWefitterHeartrateSummary',

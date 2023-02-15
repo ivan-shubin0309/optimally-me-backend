@@ -67,6 +67,7 @@ import { fn, col, Op, literal } from 'sequelize';
             },
         ],
     }),
+    bySource: (source) => ({ where: { source } }),
 }))
 @Table({
     tableName: 'userWefitterStressSummary',

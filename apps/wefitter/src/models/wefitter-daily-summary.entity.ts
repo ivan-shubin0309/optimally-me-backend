@@ -53,6 +53,7 @@ import { metricTypeToFieldName, WefitterMetricTypes } from '../../../common/src/
         return { where: { date: { [Op.and]: opAnd } } };
     },
     withDailySummary: () => ({}),
+    bySource: (source) => ({ where: { source } }),
 }))
 @Table({
     tableName: 'userWefitterDailySummary',
