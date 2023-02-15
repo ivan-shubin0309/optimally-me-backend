@@ -1,6 +1,6 @@
 import { UserAdditionalField } from '../../users/src/models/user-additional-field.entity';
 import { User } from '../../users/src/models';
-import { UserDevice } from '../../users-devices/src/models/user-device.entity';
+import { UserDevice } from './models/user-device.entity';
 
 export const modelProviders = [
     {

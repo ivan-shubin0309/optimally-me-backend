@@ -16,6 +16,7 @@
 .PHONY: build-HautAiFunction
 .PHONY: build-TypeformFunction
 .PHONY: build-SamplesFunction
+.PHONY: build-UsersDevicesFunction
 
 
 build-RuntimeDependenciesLayer:
@@ -83,3 +84,6 @@ build-TypeformFunction:
 
 build-SamplesFunction:
 	$(MAKE) HANDLER=apps/samples/src/main.ts ENTITY=samples build-lambda-common
+
+build-UsersDevicesFunction:
+	$(MAKE) HANDLER=apps/users-devices/src/main.ts ENTITY=users-devices build-lambda-common

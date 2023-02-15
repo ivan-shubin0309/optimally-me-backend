@@ -504,3 +504,17 @@ Resources:
           Properties:
             Path: /samples/{sampleId}
             Method: ANY
+
+  UsersDevicesFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/users-devices/src/main.handler
+      Description: 
+      Events:
+        UsersDevicesApi:
+          Type: Api
+          Properties:
+            Path: /users/devices
+            Method: ANY
