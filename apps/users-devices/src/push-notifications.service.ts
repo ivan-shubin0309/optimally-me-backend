@@ -56,7 +56,7 @@ export class PushNotificationsService {
 
             console.log('Push-notification was successfully delivered.');
         } catch (e) {
-            console.log(e);
+            console.log(e.message);
         }
 
         console.log(`Result: ${JSON.stringify(sendResult)}`);
