@@ -4,7 +4,6 @@ import { User } from '../../../users/src/models';
 @Scopes(() => ({
     byId: (id) => ({ where: { id } }),
     bySessionId: (sessionId) => ({ where: { sessionId } }),
-    pagination: (query) => ({ limit: query.limit, offset: query.offset }),
 }))
 @Table({
     tableName: 'userDevices',
