@@ -23,6 +23,8 @@ build-RuntimeDependenciesLayer:
 	mkdir -p "$(ARTIFACTS_DIR)/nodejs"
 	cp package.json package-lock.json "$(ARTIFACTS_DIR)/nodejs/"
 	npm install --production --prefix "$(ARTIFACTS_DIR)/nodejs/"
+	npm install -g modclean
+	modclean -n default:safe
 	rm "$(ARTIFACTS_DIR)/nodejs/package.json"
 	cp ".env.$(NODE_ENV)" "$(ARTIFACTS_DIR)/nodejs/.env.$(NODE_ENV)"
 	cp -r "locales" "$(ARTIFACTS_DIR)/nodejs/locales"
