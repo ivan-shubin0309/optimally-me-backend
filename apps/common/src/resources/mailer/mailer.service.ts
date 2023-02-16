@@ -2,12 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '../../utils/config/config.service';
 import { User } from '../../../../users/src/models';
 import { TranslatorService } from 'nestjs-translator';
-import { SES as SESClient } from 'aws-sdk';
+import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 
 
 @Injectable()
 export class MailerService {
-
     private readonly SESClient: SESClient;
 
     constructor(
@@ -44,7 +43,8 @@ export class MailerService {
             Source: this.configService.get('SES_SOURCE_EMAIL'),
         };
 
-        const response = await this.SESClient.sendEmail(params);
+        const command = new SendEmailCommand(params);
+        const response = await this.SESClient.send(command);
         console.log('MailerService: Email sent with SES');
         console.log(JSON.stringify(response));
     }
