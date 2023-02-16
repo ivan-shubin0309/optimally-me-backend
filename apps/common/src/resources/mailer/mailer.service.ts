@@ -2,19 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '../../utils/config/config.service';
 import { User } from '../../../../users/src/models';
 import { TranslatorService } from 'nestjs-translator';
-import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
+import { SES as SESClient } from 'aws-sdk';
 
 
 @Injectable()
 export class MailerService {
 
-    private readonly SESClient;
+    private readonly SESClient: SESClient;
 
     constructor(
         private readonly configService: ConfigService,
         private readonly translatorService: TranslatorService
     ) {
-        this.SESClient = new SESClient({ region: this.configService.get('SES_REGION') });
         this.SESClient = new SESClient({
             region: this.configService.get('SES_REGION'),
             credentials: {
@@ -45,8 +44,7 @@ export class MailerService {
             Source: this.configService.get('SES_SOURCE_EMAIL'),
         };
 
-        const command = new SendEmailCommand(params);
-        const response = await this.SESClient.send(command);
+        const response = await this.SESClient.sendEmail(params);
         console.log('MailerService: Email sent with SES');
         console.log(JSON.stringify(response));
     }

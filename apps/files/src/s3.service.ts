@@ -2,8 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import { Repository } from 'sequelize-typescript';
 import { File } from './models/file.entity';
-import { S3 } from '@aws-sdk/client-s3';
-import { createPresignedPost as s3CreatePresignedPost, PresignedPost } from '@aws-sdk/s3-presigned-post';
+import { S3 } from 'aws-sdk';
 import { Transaction } from 'sequelize/types';
 import { FileStatuses } from '../../common/src/resources/files/file-statuses';
 import { IAwsCopyFile } from './files.service';
@@ -28,7 +27,7 @@ export class S3Service {
         });
     }
 
-    createPresignedPost(key: string, contentType: string, acl: string): Promise<PresignedPost> {
+    createPresignedPost(key: string, contentType: string, acl: string): Promise<S3.ManagedUpload.SendData> {
         const params = {
             Bucket: this.bucket,
             Conditions: [
@@ -38,7 +37,9 @@ export class S3Service {
             Key: key
         };
 
-        return s3CreatePresignedPost(this.s3Connection, params);
+        return this.s3Connection
+            .upload(params)
+            .promise();
     }
 
     async markFileAsUploaded(file: File, transaction?: Transaction): Promise<void> {
