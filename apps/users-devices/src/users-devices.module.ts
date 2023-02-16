@@ -12,7 +12,6 @@ import { modelProviders } from './models.provider';
 import { UsersDevicesController } from './users-devices.controller';
 import { UsersDevicesService } from './users-devices.service';
 import { ConfigModule } from '../../common/src/utils/config/config.module';
-import { PushNotificationsService } from './push-notifications.service';
 
 @Module({
   imports: [
@@ -24,7 +23,6 @@ import { PushNotificationsService } from './push-notifications.service';
   controllers: [UsersDevicesController],
   providers: [
     UsersDevicesService,
-    PushNotificationsService,
     SessionsService,
     UsersService,
     JwtStrategy,

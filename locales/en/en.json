@@ -44,7 +44,5 @@
     "QUIZ_NOT_FOUND": "Quiz ${quizName} is not found",
     "EMAIL_NOT_FOUND_ON_BODY": "Email not found on request body",
     "TYPEFORM_EVENT_NOT_VERIFIED": "Signature is not verified",
-    "SAMPLE_NOT_FOUND": "Sample with specified sampleId is not found",
-    "DATA_SYNC_NOTIFICATION_TITLE": "Data synchronization",
-    "DATA_SYNC_NOTIFICATION_BODY": "Please go to the app to synchronize the data"
+    "SAMPLE_NOT_FOUND": "Sample with specified sampleId is not found"
 }
