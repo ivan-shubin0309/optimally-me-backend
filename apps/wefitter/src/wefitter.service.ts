@@ -183,6 +183,7 @@ export class WefitterService {
             .scope([
                 { method: ['byUserId', userId] },
                 { method: ['byDate', data.date] },
+                { method: ['bySource', data.source] },
                 'withIdAttribute'
             ])
             .findOne({ transaction });
@@ -208,28 +209,29 @@ export class WefitterService {
         }
 
         if (data.heart_rate_summary) {
-            await this.createOrUpdateHeartrateSummary(userId, data.heart_rate_summary, dailySummary.id, transaction);
+            await this.createOrUpdateHeartrateSummary(userId, data.heart_rate_summary, data.source, dailySummary, transaction);
         }
 
         if (data.stress_summary) {
-            await this.createOrUpdateStressSummary(userId, data.stress_summary, dailySummary.id, transaction);
+            await this.createOrUpdateStressSummary(userId, data.stress_summary, data.source, dailySummary, transaction);
         }
     }
 
-    async createOrUpdateHeartrateSummary(userId: number, data: WefitterHeartRateDto, dailySummaryId?: number, transaction?: Transaction): Promise<void> {
+    async createOrUpdateHeartrateSummary(userId: number, data: WefitterHeartRateDto, source: string, dailySummary?: UserWefitterDailySummary, transaction?: Transaction): Promise<void> {
         let heartrateSummary;
 
         const scopes: any[] = [
-            { method: ['byUserId', userId] }
+            { method: ['byUserId', userId] },
+            { method: ['bySource', source] }
         ];
 
-        if (dailySummaryId) {
-            scopes.push({ method: ['byDailySummaryId', dailySummaryId] });
+        if (dailySummary) {
+            scopes.push({ method: ['byDailySummaryId', dailySummary.get('id')] });
         } else if (data.timestamp) {
             scopes.push({ method: ['byTimestamp', data.timestamp] });
         }
 
-        if (dailySummaryId || data.timestamp) {
+        if (dailySummary || data.timestamp) {
             heartrateSummary = await this.userWefitterHeartrateSummary
                 .scope(scopes)
                 .findOne({ transaction });
@@ -237,14 +239,14 @@ export class WefitterService {
 
         const heartrateSummaryBody = {
             userId,
-            timestamp: data.timestamp,
-            source: data.source,
+            timestamp: data.timestamp || dailySummary?.get('date'),
+            source: data.source || source,
             duration: data.duration,
             min: data.min,
             max: data.max,
             average: data.average,
             resting: data.resting,
-            dailySummaryId: dailySummaryId,
+            dailySummaryId: dailySummary?.get('id'),
         };
         if (!heartrateSummary) {
             await this.userWefitterHeartrateSummary.create(heartrateSummaryBody, { transaction });
@@ -253,20 +255,21 @@ export class WefitterService {
         }
     }
 
-    async createOrUpdateStressSummary(userId: number, data: WefitterStressSummaryDto, dailySummaryId?: number, transaction?: Transaction): Promise<void> {
+    async createOrUpdateStressSummary(userId: number, data: WefitterStressSummaryDto, source: string, dailySummary?: UserWefitterDailySummary, transaction?: Transaction): Promise<void> {
         let stressSummary;
 
         const scopes: any[] = [
-            { method: ['byUserId', userId] }
+            { method: ['byUserId', userId] },
+            { method: ['bySource', source] }
         ];
 
-        if (dailySummaryId) {
-            scopes.push({ method: ['byDailySummaryId', dailySummaryId] });
+        if (dailySummary) {
+            scopes.push({ method: ['byDailySummaryId', dailySummary.get('id')] });
         } else if (data.timestamp) {
             scopes.push({ method: ['byTimestamp', data.timestamp] });
         }
 
-        if (dailySummaryId || data.timestamp) {
+        if (dailySummary || data.timestamp) {
             stressSummary = await this.userWefitterStressSummary
                 .scope(scopes)
                 .findOne({ transaction });
@@ -275,7 +278,7 @@ export class WefitterService {
         const stressSummaryBody = {
             userId,
             timestamp: data.timestamp,
-            source: data.source,
+            source: data.source || source,
             duration: data.duration,
             stressQualifier: data.stress_qualifier,
             averageStressLevel: data.average_stress_level,
@@ -285,7 +288,7 @@ export class WefitterService {
             mediumStressDuration: data.medium_stress_duration,
             highStressDuration: data.high_stress_duration,
             stressDuration: data.stress_duration,
-            dailySummaryId: dailySummaryId,
+            dailySummaryId: dailySummary?.get('id'),
         };
         if (!stressSummary) {
             await this.userWefitterStressSummary.create(stressSummaryBody, { transaction });
@@ -295,7 +298,7 @@ export class WefitterService {
     }
 
     async saveHeartrateSummaryData(userId: number, data: WefitterHeartRateDto, transaction?: Transaction): Promise<void> {
-        await this.createOrUpdateHeartrateSummary(userId, data, null, transaction);
+        await this.createOrUpdateHeartrateSummary(userId, data, data.source, null, transaction);
     }
 
     async saveSleepSummaryData(userId: number, data: WefitterSleepDto, transaction?: Transaction): Promise<void> {
@@ -305,7 +308,8 @@ export class WefitterService {
             sleepSummary = await this.userWefitterSleepSummary
                 .scope([
                     { method: ['byUserId', userId] },
-                    { method: ['byTimestamp', data.timestamp] }
+                    { method: ['byTimestamp', data.timestamp] },
+                    { method: ['bySource', data.source] }
                 ])
                 .findOne({ transaction });
         }
@@ -332,7 +336,7 @@ export class WefitterService {
     }
 
     async saveStressSummaryData(userId: number, data: WefitterStressSummaryDto, transaction?: Transaction): Promise<void> {
-        await this.createOrUpdateStressSummary(userId, data, null, transaction);
+        await this.createOrUpdateStressSummary(userId, data, data.source, null, transaction);
     }
 
     async getAvarages(query: GetWefitterResultAveragesDto, userId: number): Promise<WefitterResultAveragesDto> {

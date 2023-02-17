@@ -47,6 +47,7 @@ import { metricTypeToFieldName, WefitterMetricTypes } from '../../../common/src/
         return { where: { timestamp: { [Op.and]: opAnd } } };
     },
     withDailySummary: () => ({}),
+    bySource: (source) => ({ where: { source } }),
 }))
 @Table({
     tableName: 'userWefitterSleepSummary',
