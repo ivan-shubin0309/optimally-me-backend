@@ -523,3 +523,16 @@ Resources:
           Properties:
             Path: /users/devices/notifications/data-sync
             Method: ANY
+
+  SyncDataPushNotificationFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/data-sync-notification-cron/src/main.handler
+      Description: 
+      Events:
+        SyncDataEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(00 19 * * *)

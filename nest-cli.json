@@ -179,6 +179,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/users-devices/tsconfig.app.json"
       }
+    },
+    "data-sync-notification-cron": {
+      "type": "application",
+      "root": "apps/data-sync-notification-cron",
+      "entryFile": "main",
+      "sourceRoot": "apps/data-sync-notification-cron/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/data-sync-notification-cron/tsconfig.app.json"
+      }
     }
   }
 }

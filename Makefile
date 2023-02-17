@@ -17,6 +17,7 @@
 .PHONY: build-TypeformFunction
 .PHONY: build-SamplesFunction
 .PHONY: build-UsersDevicesFunction
+.PHONY: build-SyncDataPushNotificationFunction
 
 
 build-RuntimeDependenciesLayer:
@@ -89,3 +90,6 @@ build-SamplesFunction:
 
 build-UsersDevicesFunction:
 	$(MAKE) HANDLER=apps/users-devices/src/main.ts ENTITY=users-devices build-lambda-common
+
+build-SyncDataPushNotificationFunction:
+	$(MAKE) HANDLER=apps/data-sync-notification-cron/src/main.ts ENTITY=data-sync-notification-cron build-lambda-common
