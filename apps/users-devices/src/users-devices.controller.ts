@@ -49,8 +49,9 @@ export class UsersDevicesController {
             });
         }
 
+        const scopes: any[] = ['withConnectedSDK'];
         const limit = 1000;
-        const userDevicesCount = await this.usersDevicesService.getCount();
+        const userDevicesCount = await this.usersDevicesService.getCount(scopes);
         const iterations = Math.ceil(userDevicesCount / limit);
 
         const notificationBody: INotificationBody = {
@@ -60,7 +61,7 @@ export class UsersDevicesController {
         };
 
         for (let i = 0; i < iterations; i++) {
-            const devicesList = await this.usersDevicesService.getList([{ method: ['pagination', { limit: limit, offset: i * limit }] }]);
+            const devicesList = await this.usersDevicesService.getList(scopes.concat([{ method: ['pagination', { limit: limit, offset: i * limit }] }]));
             await this.pushNotificationsService.sendPushNotification(devicesList, notificationBody);
         }
     }
