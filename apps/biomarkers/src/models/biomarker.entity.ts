@@ -149,6 +149,17 @@ import { HautAiMetricTypes } from 'apps/common/src/resources/haut-ai/haut-ai-met
             ]
         }
     }),
+    onlyActive: () => ({
+        where: {
+            [Op.or]: [
+                { isActive: true },
+                {
+                    isActive: false,
+                    '$lastResult.id$': { [Op.ne]: null }
+                }
+            ]
+        }
+    })
 }))
 @Table({
     tableName: 'biomarkers',
