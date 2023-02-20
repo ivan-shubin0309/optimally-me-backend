@@ -84,7 +84,7 @@ export class TypeformController {
 
             await this.userQuizAnswersService.bulkCreate(answersToCreate, transaction);
 
-            await this.typeformService.saveParametersFromQuiz(answers, user, transaction);
+            await this.typeformService.saveParametersFromQuiz(answers, user, quizType, transaction);
         });
 
         return new TypeformEventResponseDto(null, null);

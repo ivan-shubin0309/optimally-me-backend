@@ -19,6 +19,7 @@ export class UserAdditionalFieldDto {
         this.isUserVerified = additionalField.isUserVerified;
         this.skinType = additionalField.skinType;
         this.isSensitiveSkin = additionalField.isSensitiveSkin;
+        this.isSelfAssesmentQuizCompleted = additionalField.isSelfAssesmentQuizCompleted;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -50,4 +51,7 @@ export class UserAdditionalFieldDto {
 
     @ApiProperty({ type: () => Boolean, required: false })
     readonly isSensitiveSkin: boolean;
+
+    @ApiProperty({ type: () => Boolean, required: true })
+    readonly isSelfAssesmentQuizCompleted: boolean;
 }
