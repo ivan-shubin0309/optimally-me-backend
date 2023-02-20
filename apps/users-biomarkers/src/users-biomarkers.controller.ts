@@ -38,6 +38,7 @@ export class UsersBiomarkersController {
     const scopes: any[] = [
       { method: ['byType', BiomarkerTypes.blood] },
       { method: ['withLastResult', lastResultIds, query.isOnlyTested] },
+      'onlyActive'
     ];
 
     const user = await this.usersService.getOne([

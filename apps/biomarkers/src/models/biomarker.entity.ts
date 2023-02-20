@@ -6,7 +6,7 @@ import { AlternativeName } from './alternativeNames/alternative-name.entity';
 import { BiomarkerTypes } from '../../../common/src/resources/biomarkers/biomarker-types';
 import { Op, literal, fn } from 'sequelize';
 import { UserResult } from '../../../admins-results/src/models/user-result.entity';
-import { getLastUserResultsForEachBiomarker, OrderValueQuery, RangeCountersQuery } from '../../../common/src/resources/usersBiomarkers/queries';
+import { OrderValueQuery, RangeCountersQuery } from '../../../common/src/resources/usersBiomarkers/queries';
 import { BiomarkerSexTypes } from '../../../common/src/resources/biomarkers/biomarker-sex-types';
 import { RecommendationTypes } from '../../../common/src/resources/recommendations/recommendation-types';
 import { HautAiMetricTypes } from 'apps/common/src/resources/haut-ai/haut-ai-metric-types';
@@ -149,6 +149,17 @@ import { HautAiMetricTypes } from 'apps/common/src/resources/haut-ai/haut-ai-met
             ]
         }
     }),
+    onlyActive: () => ({
+        where: {
+            [Op.or]: [
+                { isActive: true },
+                {
+                    isActive: false,
+                    '$lastResult.id$': { [Op.ne]: null }
+                }
+            ]
+        }
+    })
 }))
 @Table({
     tableName: 'biomarkers',
