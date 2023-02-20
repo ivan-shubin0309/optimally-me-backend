@@ -40,6 +40,12 @@ import { UserQuiz } from '../../../../typeform/src/models/user-quiz.entity';
 import { UserQuizAnswer } from '../../../../typeform/src/models/user-quiz-answer.entity';
 import { UserSample } from '../../../../samples/src/models/user-sample.entity';
 import { UserDevice } from '../../../../users-devices/src/models/user-device.entity';
+import { WefitterBloodPressure } from '../../../../wefitter/src/models/biometric-measurements/wefitter-blood-pressure.entity';
+import { WefitterBloodSugar } from '../../../../wefitter/src/models/biometric-measurements/wefitter-blood-sugar.entity';
+import { WefitterSystolicBloodPressure } from '../../../../wefitter/src/models/biometric-measurements/wefitter-systolic-blood-pressure.entity';
+import { WefitterDiastolicBloodPressure } from '../../../../wefitter/src/models/biometric-measurements/wefitter-diastolic-blood-pressure.entity';
+import { WefitterHrvSleep } from '../../../../wefitter/src/models/biometric-measurements/wefitter-hrv-sleep.entity';
+import { WefitterVo2Max } from '../../../../wefitter/src/models/biometric-measurements/wefitter-vo2-max.entity';
 
 export const entities = [
     User,
@@ -84,4 +90,10 @@ export const entities = [
     UserQuizAnswer,
     UserSample,
     UserDevice,
+    WefitterBloodPressure,
+    WefitterBloodSugar,
+    WefitterSystolicBloodPressure,
+    WefitterDiastolicBloodPressure,
+    WefitterHrvSleep,
+    WefitterVo2Max,
 ];

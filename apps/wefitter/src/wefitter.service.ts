@@ -24,7 +24,13 @@ import { GetWefitterResultsDto } from './models/get-wefitter-results.dto';
 import { WefitterMetricResultsDto } from './models/wefitter-metric-results.dto';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
 import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
-import { WefitterBiometricMeasurementDto } from './models/wefitter-biometric-measurement.dto';
+import { WefitterBiometricMeasurementDto } from './models/biometric-measurements/wefitter-biometric-measurement.dto';
+import { WefitterBloodPressure } from './models/biometric-measurements/wefitter-blood-pressure.entity';
+import { WefitterBloodSugar } from './models/biometric-measurements/wefitter-blood-sugar.entity';
+import { WefitterDiastolicBloodPressure } from './models/biometric-measurements/wefitter-diastolic-blood-pressure.entity';
+import { WefitterSystolicBloodPressure } from './models/biometric-measurements/wefitter-systolic-blood-pressure.entity';
+import { WefitterVo2Max } from './models/biometric-measurements/wefitter-vo2-max.entity';
+import { WefitterHrvSleep } from './models/biometric-measurements/wefitter-hrv-sleep.entity';
 
 const metricTypeToModelName = {
     [WefitterMetricTypes.steps]: 'userWefitterDailySummary',
@@ -60,6 +66,12 @@ export class WefitterService {
         @Inject('USER_WEFITTER_DAILY_SUMMARY_MODEL') private userWefitterDailySummary: Repository<UserWefitterDailySummary>,
         @Inject('USER_WEFITTER_HEARTRATE_SUMMARY_MODEL') private userWefitterHeartrateSummary: Repository<UserWefitterHeartrateSummary>,
         @Inject('USER_WEFITTER_SLEEP_SUMMARY_MODEL') private userWefitterSleepSummary: Repository<UserWefitterSleepSummary>,
+        @Inject('WEFITTER_BLOOD_PRESSURE') private wefitterBloodPressureModel: Repository<WefitterBloodPressure>,
+        @Inject('WEFITTER_BLOOD_SUGAR') private wefitterBloodSugarModel: Repository<WefitterBloodSugar>,
+        @Inject('WEFITTER_DIASTOLIC_BLOOD_PRESSURE') private wefitterDiastolicBloodPressureModel: Repository<WefitterDiastolicBloodPressure>,
+        @Inject('WEFITTER_SYSTOLIC_BLOOD_PRESSURE') private wefitterSystolicBloodPressureModel: Repository<WefitterSystolicBloodPressure>,
+        @Inject('WEFITTER_VO2_MAX') private wefitterVo2MaxModel: Repository<WefitterVo2Max>,
+        @Inject('WEFITTER_HRV_SLEEP') private wefitterHrvSleepModel: Repository<WefitterHrvSleep>,
     ) {
         this.redisClient = redisService.getClient();
         this.baseUrl = this.configService.get('WEFITTER_API_URL');
