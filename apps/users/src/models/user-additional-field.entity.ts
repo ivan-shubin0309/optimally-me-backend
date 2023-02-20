@@ -79,4 +79,11 @@ export class UserAdditionalField extends Model {
         defaultValue: false,
     })
     isUserVerified: boolean;
+
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    })
+    isSelfAssesmentQuizCompleted: boolean;
 }

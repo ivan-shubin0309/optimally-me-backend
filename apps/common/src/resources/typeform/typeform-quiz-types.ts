@@ -1,9 +1,11 @@
 export enum TypeformQuizType {
     sensitiveSkin = 1,
+    selfAssesment = 2,
 }
 
 export const titleToQuizType = {
     'Sensitive Skin Quiz': TypeformQuizType.sensitiveSkin,
+    'Example Quiz': TypeformQuizType.selfAssesment,
 };
 
 export const SENSITIVE_SKIN_QUESTION = 'How sensitive is your skin? Does it turn red or itch after sun exposure or when you use certain products?';
