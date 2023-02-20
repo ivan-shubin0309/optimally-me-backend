@@ -20,7 +20,6 @@ import { RecommendationImpact } from '../../../../biomarkers/src/models/recommen
 import { UserWefitterDailySummary } from '../../../../wefitter/src/models/wefitter-daily-summary.entity';
 import { UserWefitterHeartrateSummary } from '../../../../wefitter/src/models/wefitter-heartrate-summary.entity';
 import { UserWefitterSleepSummary } from '../../../../wefitter/src/models/wefitter-sleep-summary.entity';
-import { UserWefitterStressSummary } from '../../../../wefitter/src/models/wefitter-stress-summary.entity';
 import { FilterGroup } from '../../../../biomarkers/src/models/filterGroups/filter-group.entity';
 import { FilterSummary } from '../../../../biomarkers/src/models/filterSummaries/filter-summary.entity';
 import { FilterBulletList } from '../../../../biomarkers/src/models/filterBulletLists/filter-bullet-list.entity';
@@ -65,7 +64,6 @@ export const entities = [
     RecommendationImpact,
     UserWefitterHeartrateSummary,
     UserWefitterSleepSummary,
-    UserWefitterStressSummary,
     FilterGroup,
     FilterSummary,
     FilterBulletList,

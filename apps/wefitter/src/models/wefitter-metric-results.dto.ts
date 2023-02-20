@@ -5,7 +5,6 @@ import { UserWefitterHeartrateSummary } from './wefitter-heartrate-summary.entit
 import { WefitterMetricMetadataDto } from './wefitter-metric-metadata.dto';
 import { WefitterMetricResultDto } from './wefitter-metric-result.dto';
 import { UserWefitterSleepSummary } from './wefitter-sleep-summary.entity';
-import { UserWefitterStressSummary } from './wefitter-stress-summary.entity';
 
 export class WefitterMetricResultsDto {
     @ApiProperty({ type: () => [WefitterMetricResultDto] })
@@ -17,7 +16,7 @@ export class WefitterMetricResultsDto {
     @ApiProperty({ type: () => PaginationDto, required: true })
     readonly pagination: PaginationDto;
 
-    constructor(metricResults: UserWefitterDailySummary[] | UserWefitterHeartrateSummary[] | UserWefitterSleepSummary[] | UserWefitterStressSummary[], metadata: { metricName: string, fieldName: string }, pagination: PaginationDto) {
+    constructor(metricResults: UserWefitterDailySummary[] | UserWefitterHeartrateSummary[] | UserWefitterSleepSummary[], metadata: { metricName: string, fieldName: string }, pagination: PaginationDto) {
         this.metadata = new WefitterMetricMetadataDto(metadata.fieldName, metadata.metricName);
         this.pagination = pagination;
         this.data = metricResults.map(metricResult => new WefitterMetricResultDto(metricResult));

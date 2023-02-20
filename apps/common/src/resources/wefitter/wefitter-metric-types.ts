@@ -10,6 +10,8 @@ export enum WefitterMetricTypes {
     avgHeartRate = 7,
     bloodSugar = 8,
     bloodPressure = 9,
+    systolicBloodPressure = 10,
+    diastolicBloodPressure = 11,
 }
 
 export const metricTypeToFieldName = {

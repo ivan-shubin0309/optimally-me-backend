@@ -17,8 +17,6 @@ import { UserWefitterHeartrateSummary } from './models/wefitter-heartrate-summar
 import { WefitterHeartRateDto } from './models/wefitter-heart-rate.dto';
 import { WefitterSleepDto } from './models/wefitter-sleep.dto';
 import { UserWefitterSleepSummary } from './models/wefitter-sleep-summary.entity';
-import { WefitterStressSummaryDto } from './models/wefitter-stress-summary.dto';
-import { UserWefitterStressSummary } from './models/wefitter-stress-summary.entity';
 import { GetWefitterResultAveragesDto } from './models/get-wefitter-result-averages.dto';
 import { metricTypeToFieldName, WefitterMetricTypes } from '../../common/src/resources/wefitter/wefitter-metric-types';
 import { WefitterResultAveragesDto } from './models/wefitter-result-averages.dto';
@@ -26,6 +24,7 @@ import { GetWefitterResultsDto } from './models/get-wefitter-results.dto';
 import { WefitterMetricResultsDto } from './models/wefitter-metric-results.dto';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
 import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
+import { WefitterBiometricMeasurementDto } from './models/wefitter-biometric-measurement.dto';
 
 const metricTypeToModelName = {
     [WefitterMetricTypes.steps]: 'userWefitterDailySummary',
@@ -61,7 +60,6 @@ export class WefitterService {
         @Inject('USER_WEFITTER_DAILY_SUMMARY_MODEL') private userWefitterDailySummary: Repository<UserWefitterDailySummary>,
         @Inject('USER_WEFITTER_HEARTRATE_SUMMARY_MODEL') private userWefitterHeartrateSummary: Repository<UserWefitterHeartrateSummary>,
         @Inject('USER_WEFITTER_SLEEP_SUMMARY_MODEL') private userWefitterSleepSummary: Repository<UserWefitterSleepSummary>,
-        @Inject('USER_WEFITTER_STRESS_SUMMARY_MODEL') private userWefitterStressSummary: Repository<UserWefitterStressSummary>,
     ) {
         this.redisClient = redisService.getClient();
         this.baseUrl = this.configService.get('WEFITTER_API_URL');
@@ -211,10 +209,6 @@ export class WefitterService {
         if (data.heart_rate_summary) {
             await this.createOrUpdateHeartrateSummary(userId, data.heart_rate_summary, data.source, dailySummary, transaction);
         }
-
-        if (data.stress_summary) {
-            await this.createOrUpdateStressSummary(userId, data.stress_summary, data.source, dailySummary, transaction);
-        }
     }
 
     async createOrUpdateHeartrateSummary(userId: number, data: WefitterHeartRateDto, source: string, dailySummary?: UserWefitterDailySummary, transaction?: Transaction): Promise<void> {
@@ -255,48 +249,6 @@ export class WefitterService {
         }
     }
 
-    async createOrUpdateStressSummary(userId: number, data: WefitterStressSummaryDto, source: string, dailySummary?: UserWefitterDailySummary, transaction?: Transaction): Promise<void> {
-        let stressSummary;
-
-        const scopes: any[] = [
-            { method: ['byUserId', userId] },
-            { method: ['bySource', source] }
-        ];
-
-        if (dailySummary) {
-            scopes.push({ method: ['byDailySummaryId', dailySummary.get('id')] });
-        } else if (data.timestamp) {
-            scopes.push({ method: ['byTimestamp', data.timestamp] });
-        }
-
-        if (dailySummary || data.timestamp) {
-            stressSummary = await this.userWefitterStressSummary
-                .scope(scopes)
-                .findOne({ transaction });
-        }
-
-        const stressSummaryBody = {
-            userId,
-            timestamp: data.timestamp,
-            source: data.source || source,
-            duration: data.duration,
-            stressQualifier: data.stress_qualifier,
-            averageStressLevel: data.average_stress_level,
-            maxStressLevel: data.max_stress_level,
-            restStressDuration: data.rest_stress_duration,
-            lowStressDuration: data.low_stress_duration,
-            mediumStressDuration: data.medium_stress_duration,
-            highStressDuration: data.high_stress_duration,
-            stressDuration: data.stress_duration,
-            dailySummaryId: dailySummary?.get('id'),
-        };
-        if (!stressSummary) {
-            await this.userWefitterStressSummary.create(stressSummaryBody, { transaction });
-        } else {
-            await stressSummary.update(stressSummaryBody, { transaction });
-        }
-    }
-
     async saveHeartrateSummaryData(userId: number, data: WefitterHeartRateDto, transaction?: Transaction): Promise<void> {
         await this.createOrUpdateHeartrateSummary(userId, data, data.source, null, transaction);
     }
@@ -333,10 +285,6 @@ export class WefitterService {
         } else {
             await sleepSummary.update(sleepSummaryBody, { transaction });
         }
-    }
-
-    async saveStressSummaryData(userId: number, data: WefitterStressSummaryDto, transaction?: Transaction): Promise<void> {
-        await this.createOrUpdateStressSummary(userId, data, data.source, null, transaction);
     }
 
     async getAvarages(query: GetWefitterResultAveragesDto, userId: number): Promise<WefitterResultAveragesDto> {
@@ -475,5 +423,9 @@ export class WefitterService {
             });
 
         return resultArray;
+    }
+
+    async saveBiometricMeasurement(userId: number, data: WefitterBiometricMeasurementDto, transaction?: Transaction): Promise<void> {
+
     }
 }
