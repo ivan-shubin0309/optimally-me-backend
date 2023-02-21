@@ -46,6 +46,15 @@ const metricTypeToModelName = {
     [WefitterMetricTypes.diastolicBloodPressure]: 'wefitterDiastolicBloodPressureModel',
 };
 
+const measurementTypeToModelName = {
+    'BLOOD_PRESSURE': 'wefitterBloodPressureModel',
+    'GLUCOSE': 'wefitterBloodSugarModel',
+    'SYSTOLIC_BP': 'wefitterSystolicBloodPressureModel',
+    'DIASTOLIC_BP': 'wefitterDiastolicBloodPressureModel',
+    'HRV': 'wefitterHrvSleepModel',
+    'VO2_MAX': 'wefitterVo2MaxModel',
+};
+
 interface IMappedWefitterMetric { model: Repository<Model>, fieldName: string, metricEnum: WefitterMetricTypes }
 
 @Injectable()
@@ -479,6 +488,40 @@ export class WefitterService {
     }
 
     async saveBiometricMeasurement(userId: number, data: WefitterBiometricMeasurementDto, transaction?: Transaction): Promise<void> {
+        const modelName = measurementTypeToModelName[data.measurement_type];
+        const model = this[modelName];
 
+        if (!model) {
+            console.log(`Model for ${data.measurement_type} - not found`);
+            return;
+        }
+
+        const scopes: any[] = [
+            { method: ['byUserId', userId] },
+            { method: ['bySource', data.source] },
+            { method: ['byTimestamp', data.timestamp] }
+        ];
+
+        const biometricMeasurement = await model
+            .scope(scopes)
+            .findOne({ transaction });
+
+        const dataForCreate = {
+            userId,
+            timestamp: data.timestamp,
+            timestampEnd: data.end,
+            source: data.source,
+            isManual: data.is_manual,
+            value: data.value,
+            unit: data.unit,
+        };
+
+        if (biometricMeasurement) {
+            await model
+                .scope([{ method: ['byId', biometricMeasurement.get('id')] }])
+                .findOne({ transaction });
+        } else {
+            await model.create(dataForCreate, { transaction });
+        }
     }
 }

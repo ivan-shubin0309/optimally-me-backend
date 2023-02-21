@@ -36,6 +36,9 @@ import { col, fn, Op } from 'sequelize';
         ],
         group: ['userId']
     }),
+    bySource: (source) => ({ where: { source } }),
+    byTimestamp: (timestamp) => ({ where: { timestamp } }),
+    byId: (id) => ({ where: { id } }),
 }))
 @Table({
     tableName: 'wefitterSystolicBloodPressure',
