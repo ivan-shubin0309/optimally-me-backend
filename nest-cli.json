@@ -188,6 +188,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/data-sync-notification-cron/tsconfig.app.json"
       }
+    },
+    "users-widgets": {
+      "type": "application",
+      "root": "apps/users-widgets",
+      "entryFile": "main",
+      "sourceRoot": "apps/users-widgets/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/users-widgets/tsconfig.app.json"
+      }
     }
   }
 }
