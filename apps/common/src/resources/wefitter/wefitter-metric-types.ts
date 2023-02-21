@@ -20,10 +20,12 @@ export const metricTypeToFieldName = {
     [WefitterMetricTypes.timeAsleep]: 'totalTimeInSleep',
     [WefitterMetricTypes.sleepScore]: 'sleepScore',
     [WefitterMetricTypes.avgHeartRate]: 'average',
-    /*[WefitterMetricTypes.hrvSleep]: '',
-    [WefitterMetricTypes.vo2max]: '',
-    [WefitterMetricTypes.bloodSugar]: '',
-    [WefitterMetricTypes.bloodPressure]: '',*/
+    [WefitterMetricTypes.hrvSleep]: 'value',
+    [WefitterMetricTypes.vo2max]: 'value',
+    [WefitterMetricTypes.bloodSugar]: 'value',
+    [WefitterMetricTypes.bloodPressure]: 'value',
+    [WefitterMetricTypes.systolicBloodPressure]: 'value',
+    [WefitterMetricTypes.diastolicBloodPressure]: 'value',
 };
 
 export const wefitterMetricNames = EnumHelper

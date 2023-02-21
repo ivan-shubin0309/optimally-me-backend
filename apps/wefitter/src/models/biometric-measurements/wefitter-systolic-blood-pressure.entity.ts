@@ -1,8 +1,41 @@
 import { User } from '../../../../users/src/models';
 import { Table, Column, Model, DataType, ForeignKey, Scopes } from 'sequelize-typescript';
+import { col, fn, Op } from 'sequelize';
 
 @Scopes(() => ({
-
+    byUserId: (userId) => ({ where: { userId } }),
+    byFieldName: (fieldName) => ({
+        attributes: [
+            [fieldName, 'value'],
+            ['timestamp', 'date']
+        ]
+    }),
+    byDateInterval: (startDate?: string, endDate?: string) => {
+        const opAnd = [];
+        if (startDate) {
+            opAnd.push({ [Op.gte]: startDate });
+        }
+        if (endDate) {
+            opAnd.push({ [Op.lte]: endDate });
+        }
+        return { where: { timestamp: { [Op.and]: opAnd } } };
+    },
+    pagination: (query) => ({ limit: query.limit, offset: query.offset }),
+    orderByDate: () => ({
+        order: [
+            ['timestamp', 'desc']
+        ]
+    }),
+    withDailySummary: () => ({}),
+    averages: (fieldName: string) => ({
+        attributes: [
+            [fn('AVG', col(fieldName)), 'averageValue'],
+            [fn('MIN', col(fieldName)), 'minValue'],
+            [fn('MAX', col(fieldName)), 'maxValue'],
+            'userId',
+        ],
+        group: ['userId']
+    }),
 }))
 @Table({
     tableName: 'wefitterSystolicBloodPressure',

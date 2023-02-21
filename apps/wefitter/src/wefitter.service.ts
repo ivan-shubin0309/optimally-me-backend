@@ -38,10 +38,12 @@ const metricTypeToModelName = {
     [WefitterMetricTypes.timeAsleep]: 'userWefitterSleepSummary',
     [WefitterMetricTypes.sleepScore]: 'userWefitterSleepSummary',
     [WefitterMetricTypes.avgHeartRate]: 'userWefitterHeartrateSummary',
-    /*[WefitterMetricTypes.hrvSleep]: '',
-    [WefitterMetricTypes.vo2max]: '',
-    [WefitterMetricTypes.bloodSugar]: '',
-    [WefitterMetricTypes.bloodPressure]: '',*/
+    [WefitterMetricTypes.hrvSleep]: 'wefitterHrvSleepModel',
+    [WefitterMetricTypes.vo2max]: 'wefitterVo2MaxModel',
+    [WefitterMetricTypes.bloodSugar]: 'wefitterBloodSugarModel',
+    [WefitterMetricTypes.bloodPressure]: 'wefitterBloodPressureModel',
+    [WefitterMetricTypes.systolicBloodPressure]: 'wefitterSystolicBloodPressureModel',
+    [WefitterMetricTypes.diastolicBloodPressure]: 'wefitterDiastolicBloodPressureModel',
 };
 
 interface IMappedWefitterMetric { model: Repository<Model>, fieldName: string, metricEnum: WefitterMetricTypes }
@@ -61,7 +63,6 @@ export class WefitterService {
         private readonly configService: ConfigService,
         private readonly translator: TranslatorService,
         private readonly redisService: RedisService,
-        @Inject('USER_MODEL') private userModel: Repository<User>,
         @Inject('USER_WEFITTER_MODEL') private userWefitterModel: Repository<UserWefitter>,
         @Inject('USER_WEFITTER_DAILY_SUMMARY_MODEL') private userWefitterDailySummary: Repository<UserWefitterDailySummary>,
         @Inject('USER_WEFITTER_HEARTRATE_SUMMARY_MODEL') private userWefitterHeartrateSummary: Repository<UserWefitterHeartrateSummary>,
@@ -402,10 +403,20 @@ export class WefitterService {
             { method: ['checkMetricAvailability'] }
         ];
 
+        const scopesForBiometricMeasurements: any[] = [
+            { method: ['byUserId', userId] },
+        ];
+
         const [
             dailySummary,
             heartrateSummary,
             sleepSummary,
+            bloodPressureCount,
+            bloodSugarCount,
+            diastolicBloodPressureCount,
+            systolicBloodPressureCount,
+            vo2MaxCount,
+            hrvSleepCount,
         ] = await Promise.all([
             this.userWefitterDailySummary
                 .scope(scopes)
@@ -416,7 +427,34 @@ export class WefitterService {
             this.userWefitterSleepSummary
                 .scope(scopes)
                 .findOne(),
+            this.wefitterBloodPressureModel
+                .scope(scopesForBiometricMeasurements)
+                .count(),
+            this.wefitterBloodSugarModel
+                .scope(scopesForBiometricMeasurements)
+                .count(),
+            this.wefitterDiastolicBloodPressureModel
+                .scope(scopesForBiometricMeasurements)
+                .count(),
+            this.wefitterSystolicBloodPressureModel
+                .scope(scopesForBiometricMeasurements)
+                .count(),
+            this.wefitterVo2MaxModel
+                .scope(scopesForBiometricMeasurements)
+                .count(),
+            this.wefitterHrvSleepModel
+                .scope(scopesForBiometricMeasurements)
+                .count(),
         ]);
+
+        const biometricMeasurementMap = {
+            vo2max: vo2MaxCount,
+            hrvSleep: hrvSleepCount,
+            bloodSugar: bloodSugarCount,
+            bloodPressure: bloodPressureCount,
+            systolicBloodPressure: systolicBloodPressureCount,
+            diastolicBloodPressure: diastolicBloodPressureCount,
+        };
 
         EnumHelper
             .toCollection(WefitterMetricTypes)
@@ -430,6 +468,9 @@ export class WefitterService {
                 ) {
                     console.log(dailySummary.get(fieldName));
                     console.log(typeof dailySummary.get(fieldName));
+                    resultArray.push(metric.key);
+                }
+                if (biometricMeasurementMap[metric.key]) {
                     resultArray.push(metric.key);
                 }
             });

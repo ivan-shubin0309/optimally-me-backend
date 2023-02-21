@@ -38,6 +38,7 @@ import { WefitterResultAveragesDto } from './models/wefitter-result-averages.dto
 import { GetWefitterResultsDto } from './models/get-wefitter-results.dto';
 import { WefitterMetricResultsDto } from './models/wefitter-metric-results.dto';
 import { WefitterMetricNamesDto } from './models/wefitter-metric-names.dto';
+import { ProfileWefitterBiometricMeasurementDto } from './models/biometric-measurements/profile-wefitter-biometric-measurement.dto';
 
 @ApiTags('wefitter')
 @Controller('wefitter')
@@ -284,7 +285,7 @@ export class WefitterController {
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ summary: 'Wefitter push biometric measurement data' })
     @Post('push/biometric-measurement')
-    async pushBiometricMeasurement(@Body() body: ): Promise<void> {
+    async pushBiometricMeasurement(@Body() body: ProfileWefitterBiometricMeasurementDto): Promise<void> {
         const user = await this.wefitterService.getUserWefitterByPublicId(body.profile);
         console.log(JSON.stringify(body));
         if (!user) {
