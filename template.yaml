@@ -541,3 +541,17 @@ Resources:
           Type: Schedule
           Properties:
             Schedule: cron(00 19 * * ? *)
+
+  UsersWidgetsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/users-widgets/src/main.handler
+      Description: 
+      Events:
+        UsersWidgetsSettingsApi:
+          Type: Api
+          Properties:
+            Path: /users/widgets/dashboard-settings
+            Method: ANY

@@ -16,6 +16,7 @@ import { HautAiModule } from '../../haut-ai/src/haut-ai.module';
 import { SamplesModule } from '../../samples/src/samples.module';
 import { TypeformModule } from '../../typeform/src/typeform.module';
 import { UsersDevicesModule } from '../../users-devices/src/users-devices.module';
+import { UsersWidgetsModule } from '../../users-widgets/src/users-widgets.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { UsersDevicesModule } from '../../users-devices/src/users-devices.module
     TypeformModule,
     SamplesModule,
     UsersDevicesModule,
+    UsersWidgetsModule,
   ]
 })
 export class SwaggerAppModule { }

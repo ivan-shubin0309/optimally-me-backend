@@ -18,6 +18,7 @@
 .PHONY: build-SamplesFunction
 .PHONY: build-UsersDevicesFunction
 .PHONY: build-SyncDataPushNotificationFunction
+.PHONY: build-UsersWidgetsFunction
 
 
 build-RuntimeDependenciesLayer:
@@ -93,3 +94,6 @@ build-UsersDevicesFunction:
 
 build-SyncDataPushNotificationFunction:
 	$(MAKE) HANDLER=apps/data-sync-notification-cron/src/main.ts ENTITY=data-sync-notification-cron build-lambda-common
+
+build-UsersWidgetsFunction:
+	$(MAKE) HANDLER=apps/users-widgets/src/main.ts ENTITY=users-widgets build-lambda-common
