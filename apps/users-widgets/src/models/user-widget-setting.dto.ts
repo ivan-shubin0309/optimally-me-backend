@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from '../../../common/src/base/base.dto';
-import { DashboardWidgetTypes } from '../../../common/src/resources/users-widgets/users-widgets-types';
+import { DashboardWidgetTypes, DeviceDataWidgetTypes } from '../../../common/src/resources/users-widgets/users-widgets-types';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { UserWidgetSetting } from './user-widget-setting.entity';
 
@@ -16,7 +16,14 @@ export class UserWidgetSettingDto extends BaseDto<UserWidgetSetting> {
     @ApiProperty({ type: () => Number, required: true })
     readonly userId: number;
 
-    @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(DashboardWidgetTypes) })
+    @ApiProperty({
+        type: () => Number,
+        required: true,
+        description: [
+            EnumHelper.toDescription(DashboardWidgetTypes),
+            EnumHelper.toDescription(DeviceDataWidgetTypes),
+        ].join('<br/>&emsp;')
+    })
     readonly widgetType: number;
 
     @ApiProperty({ type: () => Number, required: true })
