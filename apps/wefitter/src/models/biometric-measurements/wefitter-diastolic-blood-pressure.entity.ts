@@ -49,8 +49,7 @@ export class WefitterDiastolicBloodPressure extends Model {
     @ForeignKey(() => User)
     @Column({
         type: DataType.INTEGER,
-        allowNull: false,
-        primaryKey: true
+        allowNull: false
     })
     userId: number;
 
