@@ -20,7 +20,6 @@ import { RecommendationImpact } from '../../../../biomarkers/src/models/recommen
 import { UserWefitterDailySummary } from '../../../../wefitter/src/models/wefitter-daily-summary.entity';
 import { UserWefitterHeartrateSummary } from '../../../../wefitter/src/models/wefitter-heartrate-summary.entity';
 import { UserWefitterSleepSummary } from '../../../../wefitter/src/models/wefitter-sleep-summary.entity';
-import { UserWefitterStressSummary } from '../../../../wefitter/src/models/wefitter-stress-summary.entity';
 import { FilterGroup } from '../../../../biomarkers/src/models/filterGroups/filter-group.entity';
 import { FilterSummary } from '../../../../biomarkers/src/models/filterSummaries/filter-summary.entity';
 import { FilterBulletList } from '../../../../biomarkers/src/models/filterBulletLists/filter-bullet-list.entity';
@@ -41,6 +40,12 @@ import { UserQuiz } from '../../../../typeform/src/models/user-quiz.entity';
 import { UserQuizAnswer } from '../../../../typeform/src/models/user-quiz-answer.entity';
 import { UserSample } from '../../../../samples/src/models/user-sample.entity';
 import { UserDevice } from '../../../../users-devices/src/models/user-device.entity';
+import { WefitterBloodPressure } from '../../../../wefitter/src/models/biometric-measurements/wefitter-blood-pressure.entity';
+import { WefitterBloodSugar } from '../../../../wefitter/src/models/biometric-measurements/wefitter-blood-sugar.entity';
+import { WefitterSystolicBloodPressure } from '../../../../wefitter/src/models/biometric-measurements/wefitter-systolic-blood-pressure.entity';
+import { WefitterDiastolicBloodPressure } from '../../../../wefitter/src/models/biometric-measurements/wefitter-diastolic-blood-pressure.entity';
+import { WefitterHrvSleep } from '../../../../wefitter/src/models/biometric-measurements/wefitter-hrv-sleep.entity';
+import { WefitterVo2Max } from '../../../../wefitter/src/models/biometric-measurements/wefitter-vo2-max.entity';
 
 export const entities = [
     User,
@@ -65,7 +70,6 @@ export const entities = [
     RecommendationImpact,
     UserWefitterHeartrateSummary,
     UserWefitterSleepSummary,
-    UserWefitterStressSummary,
     FilterGroup,
     FilterSummary,
     FilterBulletList,
@@ -86,4 +90,10 @@ export const entities = [
     UserQuizAnswer,
     UserSample,
     UserDevice,
+    WefitterBloodPressure,
+    WefitterBloodSugar,
+    WefitterSystolicBloodPressure,
+    WefitterDiastolicBloodPressure,
+    WefitterHrvSleep,
+    WefitterVo2Max,
 ];

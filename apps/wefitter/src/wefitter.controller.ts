@@ -33,12 +33,12 @@ import { WefitterUserDailySummaryDto } from './models/wefitter-user-daily-summar
 import { nonWefitterFieldNames } from '../../common/src/resources/wefitter/non-wefitter-connection-slugs';
 import { WefitterUserHeartrateSummaryDto } from './models/wefitter-user-heartrate-summary.dto';
 import { WefitterUserSleepSummaryDto } from './models/wefitter-user-sleep-summary.dto';
-import { WefitterUserStressSummaryDto } from './models/wefitter-user-stress-summary.dto';
 import { GetWefitterResultAveragesDto } from './models/get-wefitter-result-averages.dto';
 import { WefitterResultAveragesDto } from './models/wefitter-result-averages.dto';
 import { GetWefitterResultsDto } from './models/get-wefitter-results.dto';
 import { WefitterMetricResultsDto } from './models/wefitter-metric-results.dto';
 import { WefitterMetricNamesDto } from './models/wefitter-metric-names.dto';
+import { ProfileWefitterBiometricMeasurementDto } from './models/biometric-measurements/profile-wefitter-biometric-measurement.dto';
 
 @ApiTags('wefitter')
 @Controller('wefitter')
@@ -283,9 +283,9 @@ export class WefitterController {
 
     @Public()
     @HttpCode(HttpStatus.NO_CONTENT)
-    @ApiOperation({ summary: 'Wefitter push stress summary data' })
-    @Post('push/stress-summary')
-    async pushStressSummary(@Body() body: WefitterUserStressSummaryDto): Promise<void> {
+    @ApiOperation({ summary: 'Wefitter push biometric measurement data' })
+    @Post('push/biometric-measurement')
+    async pushBiometricMeasurement(@Body() body: ProfileWefitterBiometricMeasurementDto): Promise<void> {
         const user = await this.wefitterService.getUserWefitterByPublicId(body.profile);
         console.log(JSON.stringify(body));
         if (!user) {
@@ -296,7 +296,7 @@ export class WefitterController {
             });
         }
 
-        await this.wefitterService.saveStressSummaryData(user.userId, body.data);
+        await this.wefitterService.saveBiometricMeasurement(user.userId, body.data);
     }
 
     @ApiBearerAuth()

@@ -1,11 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserWefitterDailySummary } from './wefitter-daily-summary.entity';
-import { UserWefitterHeartrateSummary } from './wefitter-heartrate-summary.entity';
-import { UserWefitterSleepSummary } from './wefitter-sleep-summary.entity';
-import { UserWefitterStressSummary } from './wefitter-stress-summary.entity';
+import { WefitterMetricResultType } from './wefitter-metric-result.type';
 
 export class WefitterResultAverageDto {
-    constructor(entity: UserWefitterDailySummary | UserWefitterHeartrateSummary | UserWefitterSleepSummary | UserWefitterStressSummary) {
+    constructor(entity: WefitterMetricResultType) {
         this.avg = entity.get('averageValue') as number;
         this.min = entity.get('minValue') as number;
         this.max = entity.get('maxValue') as number;

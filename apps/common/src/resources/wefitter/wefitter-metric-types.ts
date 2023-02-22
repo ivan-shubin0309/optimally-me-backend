@@ -10,6 +10,8 @@ export enum WefitterMetricTypes {
     avgHeartRate = 7,
     bloodSugar = 8,
     bloodPressure = 9,
+    systolicBloodPressure = 10,
+    diastolicBloodPressure = 11,
 }
 
 export const metricTypeToFieldName = {
@@ -18,10 +20,12 @@ export const metricTypeToFieldName = {
     [WefitterMetricTypes.timeAsleep]: 'totalTimeInSleep',
     [WefitterMetricTypes.sleepScore]: 'sleepScore',
     [WefitterMetricTypes.avgHeartRate]: 'average',
-    /*[WefitterMetricTypes.hrvSleep]: '',
-    [WefitterMetricTypes.vo2max]: '',
-    [WefitterMetricTypes.bloodSugar]: '',
-    [WefitterMetricTypes.bloodPressure]: '',*/
+    [WefitterMetricTypes.hrvSleep]: 'value',
+    [WefitterMetricTypes.vo2max]: 'value',
+    [WefitterMetricTypes.bloodSugar]: 'value',
+    [WefitterMetricTypes.bloodPressure]: 'value',
+    [WefitterMetricTypes.systolicBloodPressure]: 'value',
+    [WefitterMetricTypes.diastolicBloodPressure]: 'value',
 };
 
 export const wefitterMetricNames = EnumHelper
