@@ -269,6 +269,11 @@ Resources:
           Properties:
             Path: /wefitter/push/heartrate-summary
             Method: POST
+        WefitterUserSleepSummary:
+          Type: Api
+          Properties:
+            Path: /wefitter/push/sleep-summary
+            Method: POST
         WefitterUserBiometricMeasurement:
           Type: Api
           Properties:
