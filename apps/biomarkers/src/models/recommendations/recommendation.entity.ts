@@ -71,7 +71,7 @@ import { IdealTimeOfDayTypes } from '../../../../common/src/resources/recommenda
                 as: 'filterRecommendations',
                 required: true,
                 where: {
-                    id: filterIds
+                    filterId: filterIds
                 }
             },
         ],
