@@ -14,7 +14,7 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
     const jwtService = app.get(JwtService);
 
     const baseUrl = configService.get('SWAGGER_BACKEND_URL');
-    const url = `${baseUrl}users/devices/notifications/data-sync`;
+    const url = `${baseUrl}/users/devices/notifications/data-sync`;
     const authToken = jwtService.sign({ isWebhook: true });
 
     try {
@@ -30,6 +30,11 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
         );
     } catch (err) {
         console.log(err.message);
+        if (err.response) {
+            console.log(err.response.data);
+            console.log(err.response.status);
+            console.log(err.response.headers);
+        }
         throw new UnprocessableEntityException({
             message: err.message,
             errorCode: 'BACKEND_REQUEST_ERROR',
