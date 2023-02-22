@@ -1,4 +1,4 @@
-import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsPositive } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { DashboardWidgetTypes } from '../../../common/src/resources/users-widgets/users-widgets-types';
@@ -11,7 +11,7 @@ export class DashboardWidgetSettingDto {
     readonly widgetType: number;
 
     @ApiProperty({ type: () => Number, required: true })
-    @IsNotEmpty()
+    @IsOptional()
     @IsNumber()
     @IsInt()
     @IsPositive()

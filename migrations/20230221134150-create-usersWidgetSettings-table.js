@@ -8,7 +8,7 @@ module.exports = {
  
         userId INTEGER NOT NULL,
         widgetType TINYINT NOT NULL,
-        \`order\` INTEGER NOT NULL,
+        \`order\` INTEGER NULL,
 
         createdAt DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
         updatedAt DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
