@@ -555,8 +555,18 @@ Resources:
       Handler: dist/apps/users-widgets/src/main.handler
       Description: 
       Events:
-        UsersWidgetsSettingsApi:
+        UsersWidgetsDashboardSettingsApi:
           Type: Api
           Properties:
             Path: /users/widgets/dashboard-settings
+            Method: ANY
+        UsersWidgetsSettingsApi:
+          Type: Api
+          Properties:
+            Path: /users/widgets/settings
+            Method: ANY
+        UsersWidgetsDeviceDataSettingsApi:
+          Type: Api
+          Properties:
+            Path: /users/widgets/device-data-settings
             Method: ANY
