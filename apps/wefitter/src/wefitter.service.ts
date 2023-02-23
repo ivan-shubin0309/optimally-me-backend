@@ -44,6 +44,10 @@ const metricTypeToModelName = {
     [WefitterMetricTypes.bloodPressure]: 'wefitterBloodPressureModel',
     [WefitterMetricTypes.systolicBloodPressure]: 'wefitterSystolicBloodPressureModel',
     [WefitterMetricTypes.diastolicBloodPressure]: 'wefitterDiastolicBloodPressureModel',
+    [WefitterMetricTypes.awake]: 'userWefitterSleepSummary',
+    [WefitterMetricTypes.light]: 'userWefitterSleepSummary',
+    [WefitterMetricTypes.deep]: 'userWefitterSleepSummary',
+    [WefitterMetricTypes.rem]: 'userWefitterSleepSummary',
 };
 
 const measurementTypeToModelName = {
