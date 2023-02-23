@@ -10,7 +10,6 @@ import { UserRoles } from '../../common/src/resources/users';
 import { UsersResultsService } from './users-results.service';
 import { SessionDataDto } from '../../sessions/src/models';
 import { TranslatorService } from 'nestjs-translator';
-import { UserRecommendationsService } from '../../biomarkers/src/services/userRecommendations/user-recommendations.service';
 import { RecommendationsWithoutPaginationDto } from './models/user-recommendations-without-pagination.dto';
 import { GetUserResultsDto } from './models/get-user-results-list.dto';
 import { PutReactRecommendationDto } from './models/put-react-recommendation.dto';
@@ -18,6 +17,7 @@ import { DeleteReactRecommendationDto } from './models/delete-react-recommendati
 import { FilterWithBiomarkerDto } from '../../biomarkers/src/models/filters/filter-with-biomarker.dto';
 import { GetUserResultAveragesDto } from './models/get-user-result-averages.dto';
 import { UserResultAveragesDto } from './models/user-result-averages.dto';
+import { UsersRecommendationsService } from '../../users-recommendations/src/users-recommendations.service';
 
 @ApiBearerAuth()
 @ApiTags('users/biomarkers/results')
@@ -27,7 +27,7 @@ export class UsersResultsController {
         private readonly usersResultsService: UsersResultsService,
         private readonly filtersService: FiltersService,
         private readonly translator: TranslatorService,
-        private readonly userRecommendationsService: UserRecommendationsService,
+        private readonly userRecommendationsService: UsersRecommendationsService,
     ) { }
 
     @ApiResponse({ type: () => UserResultsDto })
@@ -139,7 +139,7 @@ export class UsersResultsController {
             });
         }
 
-        const recommendations = await this.userRecommendationsService.getRecommendationList(userResult, { biomarkerId: userResult?.filter?.biomarkerId || userResult?.filter?.removedFromBiomarkerId });
+        const recommendations = await this.userRecommendationsService.getRecommendationListByUserResult(userResult, { biomarkerId: userResult?.filter?.biomarkerId || userResult?.filter?.removedFromBiomarkerId });
 
         return new RecommendationsWithoutPaginationDto(recommendations);
     }

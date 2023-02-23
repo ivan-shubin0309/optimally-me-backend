@@ -16,8 +16,8 @@ import { modelProviders } from './models.provider';
 import { UnitsService } from '../../biomarkers/src/services/units/units.service';
 import { BloodBiomarkersFactory } from '../../biomarkers/src/blood-biomarkers.factory';
 import { FiltersService } from '../../biomarkers/src/services/filters/filters.service';
-import { UserRecommendationsService } from '../../biomarkers/src/services/userRecommendations/user-recommendations.service';
 import { SkinBiomarkersFactory } from '../../biomarkers/src/skin-biomarkers.factory';
+import { UsersRecommendationsService } from '../../users-recommendations/src/users-recommendations.service';
 
 @Module({
   imports: [
@@ -36,7 +36,7 @@ import { SkinBiomarkersFactory } from '../../biomarkers/src/skin-biomarkers.fact
     SessionsService,
     UsersService,
     FiltersService,
-    UserRecommendationsService,
+    UsersRecommendationsService,
     JwtStrategy,
     ...guardProviders,
     sequelizeProvider(entities),

@@ -9,6 +9,7 @@ import { RecommendationReactionTypes } from '../../../../common/src/resources/re
 import { RecommendationSkinTypeDto } from '../recommendationSkinTypes/recommendation-skin-type.dto';
 import { RecommendationContradictionDto } from '../recommendationContradictions/recommendation-contradiction.dto';
 import { IdealTimeOfDayTypes } from '../../../../common/src/resources/recommendations/ideal-time-of-day-types';
+import { UserBiomarkerDto } from '../../../../users-biomarkers/src/models/user-biomarker.dto';
 
 
 export class RecommendationDto extends BaseDto<Recommendation> {
@@ -43,6 +44,9 @@ export class RecommendationDto extends BaseDto<Recommendation> {
             : undefined;
         this.contradictions = entity.contradictions && entity.contradictions.length
             ? entity.contradictions.map(contradiction => new RecommendationContradictionDto(contradiction))
+            : undefined;
+        this.userBiomarkers = entity.get('biomarkers') && entity.get('biomarkers').length
+            ? entity.get('biomarkers').map(biomarker => new UserBiomarkerDto(biomarker))
             : undefined;
     }
 
@@ -87,4 +91,7 @@ export class RecommendationDto extends BaseDto<Recommendation> {
 
     @ApiProperty({ type: () => [RecommendationContradictionDto], required: false })
     readonly contradictions: RecommendationContradictionDto[];
+
+    @ApiProperty({ type: () => [UserBiomarkerDto], required: false })
+    readonly userBiomarkers: UserBiomarkerDto[];
 }

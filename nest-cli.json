@@ -197,6 +197,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/users-widgets/tsconfig.app.json"
       }
+    },
+    "users-recommendations": {
+      "type": "application",
+      "root": "apps/users-recommendations",
+      "entryFile": "main",
+      "sourceRoot": "apps/users-recommendations/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/users-recommendations/tsconfig.app.json"
+      }
     }
   }
 }

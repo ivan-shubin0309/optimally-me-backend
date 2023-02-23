@@ -560,3 +560,17 @@ Resources:
           Properties:
             Path: /users/widgets/dashboard-settings
             Method: ANY
+
+  UsersRecommendationsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/users-recommendations/src/main.handler
+      Description: 
+      Events:
+        UsersRecommendationsApi:
+          Type: Api
+          Properties:
+            Path: /users/recommendations
+            Method: ANY
