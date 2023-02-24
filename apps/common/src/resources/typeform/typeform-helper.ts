@@ -12,15 +12,7 @@ export class TypeformHelper {
     }
 
     static getUserEmail(body: any): string {
-        const answersArray: any[] = body?.form_response?.answers;
-
-        if (!answersArray) {
-            return null;
-        }
-
-        const answer = answersArray.find(answer => answer.type === 'email');
-
-        return answer?.email;
+        return body?.form_response?.hidden?.email;
     }
 
     static getFormId(body: any): string {
