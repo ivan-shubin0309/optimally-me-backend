@@ -4,7 +4,8 @@ import { Repository, Sequelize } from 'sequelize-typescript';
 import { UserWidgetSetting } from './models/user-widget-setting.entity';
 import { PutWidgetUserDashboardSettingsDto } from './models/put-widget-user-dashboard-settings.dto';
 import { EnumHelper } from '../../common/src/utils/helpers/enum.helper';
-import { DashboardWidgetTypes } from '../../common/src/resources/users-widgets/users-widgets-types';
+import { DashboardWidgetTypes, DeviceDataWidgetTypes } from '../../common/src/resources/users-widgets/users-widgets-types';
+import { PutWidgetUserDeviceDataSettingsDto } from './models/put-widget-user-device-data-settings.dto';
 
 @Injectable()
 export class UsersWidgetSettingsService extends BaseService<UserWidgetSetting> {
@@ -24,6 +25,28 @@ export class UsersWidgetSettingsService extends BaseService<UserWidgetSetting> {
                             'byWidgetType',
                             EnumHelper
                                 .toCollection(DashboardWidgetTypes)
+                                .map(widgetType => widgetType.value)
+                        ]
+                    },
+                    { method: ['byUserId', userId] }
+                ])
+                .destroy({ transaction });
+
+            await this.model.bulkCreate(settingsToCreate, { transaction });
+        });
+    }
+
+    async bulkCreateDeviceDataSettings(body: PutWidgetUserDeviceDataSettingsDto, userId: number): Promise<void> {
+        const settingsToCreate: any[] = body.data.map(widgetSetting => Object.assign({ userId }, widgetSetting));
+
+        await this.dbConnection.transaction(async transaction => {
+            await this.model
+                .scope([
+                    {
+                        method: [
+                            'byWidgetType',
+                            EnumHelper
+                                .toCollection(DeviceDataWidgetTypes)
                                 .map(widgetType => widgetType.value)
                         ]
                     },
