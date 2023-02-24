@@ -96,6 +96,22 @@ export interface IUserResult {
         group: ['biomarkerId']
     }),
     bySkinUserResultId: (skinUserResultId: number) => ({ where: { skinUserResultId } }),
+    withUserRecommendation: (userId: number, recommendationIds: number | number[], isRequired = true) => ({
+        include: [
+            {
+                model: UserRecommendation,
+                as: 'userRecommendations',
+                required: isRequired,
+                where: {
+                    userId,
+                    recommendationId: recommendationIds
+                }
+            },
+        ],
+        where: {
+            userId
+        }
+    }),
 }))
 @Table({
     tableName: 'userResults',

@@ -17,8 +17,8 @@ import { FiltersService } from '../../biomarkers/src/services/filters/filters.se
 import { AgeHelper } from '../../common/src/resources/filters/age.helper';
 import { FilterRangeHelper } from '../../common/src/resources/filters/filter-range.helper';
 import { Sequelize } from 'sequelize-typescript';
-import { UserRecommendationsService } from '../../biomarkers/src/services/userRecommendations/user-recommendations.service';
-import { UserRecommendationsDto } from 'apps/biomarkers/src/models/userRecommendations/user-recommendations.dto';
+import { UserRecommendationsDto } from '../../biomarkers/src/models/userRecommendations/user-recommendations.dto';
+import { UsersRecommendationsService } from '../../users-recommendations/src/users-recommendations.service';
 
 @ApiBearerAuth()
 @ApiTags('admins/users/results')
@@ -32,7 +32,7 @@ export class AdminsResultsController {
     private readonly unitsService: UnitsService,
     private readonly filtersService: FiltersService,
     @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
-    private readonly userRecommendationsService: UserRecommendationsService,
+    private readonly userRecommendationsService: UsersRecommendationsService,
   ) { }
 
   @HttpCode(HttpStatus.NO_CONTENT)

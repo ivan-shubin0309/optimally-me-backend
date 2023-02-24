@@ -13,6 +13,7 @@ import { RecommendationReaction } from '../recommendationReactions/recommendatio
 import { RecommendationSkinType } from '../recommendationSkinTypes/recommendation-skin-type.entity';
 import { RecommendationContradiction } from '../recommendationContradictions/recommendation-contradiction.entity';
 import { IdealTimeOfDayTypes } from '../../../../common/src/resources/recommendations/ideal-time-of-day-types';
+import { Biomarker } from '../biomarker.entity';
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
@@ -193,4 +194,6 @@ export class Recommendation extends Model {
 
     @HasMany(() => RecommendationContradiction, 'recommendationId')
     contradictions: RecommendationContradiction[];
+
+    biomarkers: Biomarker[];
 }
