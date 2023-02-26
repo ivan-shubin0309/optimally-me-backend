@@ -17,8 +17,6 @@ import { AlternativeName } from '../../biomarkers/src/models/alternativeNames/al
 import { FilterGroup } from '../../biomarkers/src/models/filterGroups/filter-group.entity';
 import { FilterSummary } from '../../biomarkers/src/models/filterSummaries/filter-summary.entity';
 import { StudyLink } from '../../biomarkers/src/models/filterBulletLists/study-link.entity';
-import { FilterSkinType } from '../../biomarkers/src/models/filterSkinTypes/filter-skin-type.entity';
-import { FilterContradiction } from '../../biomarkers/src/models/filterContradictions/filter-contradiction.entity';
 
 export const modelProviders = [
     {
@@ -96,13 +94,5 @@ export const modelProviders = [
     {
         provide: 'STUDY_LINK_MODEL',
         useValue: StudyLink
-    },
-    {
-        provide: 'FILTER_SKIN_TYPE_MODEL',
-        useValue: FilterSkinType,
-    },
-    {
-        provide: 'FILTER_CONTRADICTION_MODEL',
-        useValue: FilterContradiction
     },
 ];

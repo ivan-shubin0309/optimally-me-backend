@@ -1,11 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from '../../../../common/src/base/base.dto';
-import { FilterContradictionDto } from '../filterContradictions/filter-contradiction.dto';
 import { FilterEthnicityDto } from '../filterEthnicity/filter-ethnicity.dto';
 import { FilterGroupDto } from '../filterGroups/filter-group.dto';
 import { FilterOtherFeatureDto } from '../filterOtherFeatures/filter-other-feature.dto';
 import { FilterAgeDto } from '../filtersAge/filter-age.dto';
-import { FilterSkinTypeDto } from '../filterSkinTypes/filter-skin-type.dto';
 import { FilterSexDto } from '../filtersSex/filter-sex.dto';
 import { FilterSummaryDto } from '../filterSummaries/filter-summary.dto';
 import { InteractionDto } from '../interactions/interaction.dto';
@@ -59,19 +57,6 @@ export class FilterDto extends BaseDto<Filter> {
             : undefined;
         this.groups = entity.groups && entity.groups.length
             ? entity.groups.map(group => new FilterGroupDto(group))
-            : undefined;
-        this.idealSkinTypes = entity.skinTypes && entity.skinTypes.length
-            ? entity.skinTypes
-                .filter(skinType => skinType.isIdealSkinType)
-                .map(skinType => new FilterSkinTypeDto(skinType))
-            : undefined;
-        this.notMeantForSkinTypes = entity.skinTypes && entity.skinTypes.length
-            ? entity.skinTypes
-                .filter(skinType => !skinType.isIdealSkinType)
-                .map(skinType => new FilterSkinTypeDto(skinType))
-            : undefined;
-        this.contradictions = entity.contradictions && entity.contradictions.length
-            ? entity.contradictions.map(contradiction => new FilterContradictionDto(contradiction))
             : undefined;
     }
 
@@ -155,13 +140,4 @@ export class FilterDto extends BaseDto<Filter> {
 
     @ApiProperty({ type: () => [FilterGroupDto], required: false })
     groups: FilterGroupDto[];
-
-    @ApiProperty({ type: () => [FilterSkinTypeDto], required: false })
-    idealSkinTypes: FilterSkinTypeDto[];
-
-    @ApiProperty({ type: () => [FilterSkinTypeDto], required: false })
-    notMeantForSkinTypes: FilterSkinTypeDto[];
-
-    @ApiProperty({ type: () => [FilterContradictionDto], required: false })
-    contradictions: FilterContradictionDto[];
 }
