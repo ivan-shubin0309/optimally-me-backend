@@ -62,7 +62,7 @@ export class FilterRangeHelper {
         if (ranges.length && !ranges[0].min) {
             ranges[0].min = -Infinity;
         }
-        if (ranges.length && !ranges[ranges.length - 1]) {
+        if (ranges.length && !ranges[ranges.length - 1].max) {
             ranges[ranges.length - 1].max = Infinity;
         }
 
