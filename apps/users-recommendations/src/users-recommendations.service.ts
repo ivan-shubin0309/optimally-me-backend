@@ -91,9 +91,10 @@ export class UsersRecommendationsService extends BaseService<UserRecommendation>
             .findAll({ transaction });
     }
 
-    async attachBiomarkersToRecommendations(recommendations: Recommendation[], userId: number) {
+    async attachBiomarkersToRecommendations(userResultIds: number[], recommendations: Recommendation[], userId: number) {
         const userResults = await this.userResultModel
             .scope([
+                { method: ['byId', userResultIds] },
                 { method: ['withUserRecommendation', userId, recommendations.map(recommendation => recommendation.id)] },
                 { method: ['withBiomarker'] }
             ])

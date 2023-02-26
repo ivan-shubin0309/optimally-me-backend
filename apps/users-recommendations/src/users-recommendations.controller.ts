@@ -7,7 +7,7 @@ import { PaginationHelper } from '../../common/src/utils/helpers/pagination.help
 import { GetUserRecommendationsDto } from './models/get-user-recommendations.dto';
 import { UsersRecommendationsService } from './users-recommendations.service';
 import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomarkers.service';
-import { RecommendationsDto } from '../../biomarkers/src/models/recommendations/recommendations.dto';
+import { UserRecommendationsListDto } from './models/user-recommendations-list.dto';
 
 @ApiBearerAuth()
 @ApiTags('users/recommendations')
@@ -18,12 +18,12 @@ export class UsersRecommendationsController {
         private readonly usersBiomarkersService: UsersBiomarkersService,
     ) { }
 
-    @ApiResponse({ type: () => RecommendationsDto })
+    @ApiResponse({ type: () => UserRecommendationsListDto })
     @ApiOperation({ summary: 'Get user recommendations list' })
     @Roles(UserRoles.user)
     @HttpCode(HttpStatus.OK)
     @Get()
-    async getRecommendationsList(@Query() query: GetUserRecommendationsDto, @Request() req: Request & { user: SessionDataDto }): Promise<RecommendationsDto> {
+    async getRecommendationsList(@Query() query: GetUserRecommendationsDto, @Request() req: Request & { user: SessionDataDto }): Promise<UserRecommendationsListDto> {
         let recommendationsList = [];
 
         const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(req.user.userId, null, 1);
@@ -43,12 +43,13 @@ export class UsersRecommendationsController {
             scopes.push(
                 { method: ['withFiles'] },
                 { method: ['withUserReaction', req.user.userId] },
+                { method: ['withUserRecommendation', lastResultIds] },
             );
             recommendationsList = await this.usersRecommendationsService.getRecommendationList(scopes);
 
-            await this.usersRecommendationsService.attachBiomarkersToRecommendations(recommendationsList, req.user.userId);
+            await this.usersRecommendationsService.attachBiomarkersToRecommendations(lastResultIds, recommendationsList, req.user.userId);
         }
 
-        return new RecommendationsDto(recommendationsList, PaginationHelper.buildPagination({ limit: query.limit, offset: query.offset }, count));
+        return new UserRecommendationsListDto(recommendationsList, PaginationHelper.buildPagination({ limit: query.limit, offset: query.offset }, count));
     }
 }
