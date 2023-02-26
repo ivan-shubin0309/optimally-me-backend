@@ -1,6 +1,7 @@
 import { User } from '../../../../users/src/models';
 import { Table, Column, Model, DataType, ForeignKey, Scopes } from 'sequelize-typescript';
 import { col, fn, Op } from 'sequelize';
+import { DateTime } from 'luxon';
 
 @Scopes(() => ({
     byUserId: (userId) => ({ where: { userId } }),
@@ -16,7 +17,7 @@ import { col, fn, Op } from 'sequelize';
             opAnd.push({ [Op.gte]: startDate });
         }
         if (endDate) {
-            opAnd.push({ [Op.lte]: endDate });
+            opAnd.push({ [Op.lte]: DateTime.fromFormat(endDate, 'yyyy-MM-dd').endOf('day').toISO() });
         }
         return { where: { timestamp: { [Op.and]: opAnd } } };
     },
