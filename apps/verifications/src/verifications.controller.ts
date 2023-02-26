@@ -88,7 +88,7 @@ export class VerificationsController {
         link = `${this.configService.get('SWAGGER_BACKEND_URL')}/verifications/password/redirect?token=${token}`;
 
         if (body.queryString) {
-            link = `${link}&queryString='${JSON.stringify(body.queryString)}'`;
+            link = `${link}&queryString=${encodeURIComponent(body.queryString)}`;
         }
 
         await this.mailerService.sendUserRestorePasswordEmail(user, link);
@@ -172,7 +172,7 @@ export class VerificationsController {
         }
 
         if (query.queryString) {
-            link = `${link}&${JSON.parse(query.queryString)}`;
+            link = `${link}&${decodeURIComponent(query.queryString)}`;
         }
 
         response.set('Content-Type', 'text/html');
