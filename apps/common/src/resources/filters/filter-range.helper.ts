@@ -59,6 +59,13 @@ export class FilterRangeHelper {
                 }
             });
 
+        if (ranges.length && !ranges[0].min) {
+            ranges[0].min = -Infinity;
+        }
+        if (ranges.length && ranges[ranges.length - 1]) {
+            ranges[ranges.length - 1].max = Infinity;
+        }
+
         ranges.forEach((range, index, arr) => {
             if (!range.min && arr[index - 1]?.max) {
                 range.min = arr[index - 1]?.max;
