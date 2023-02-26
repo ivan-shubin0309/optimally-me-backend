@@ -18,12 +18,16 @@ export function getLastUserResultsForEachBiomarker(userId: number, numberOfLastR
 
 export const OrderValueQuery = `
     IF(
-        \`lastResult\`.\`recommendationRange\` IN (${RecommendationTypes.criticalHigh}, ${RecommendationTypes.criticalLow}, ${RecommendationTypes.high}, ${RecommendationTypes.low}),
-        3,
+        \`lastResult\`.\`recommendationRange\` IN (${RecommendationTypes.criticalHigh}, ${RecommendationTypes.criticalLow}),
+        4,
         IF(
-            \`lastResult\`.\`recommendationRange\` IN (${RecommendationTypes.subOptimal}, ${RecommendationTypes.supraOptimal}),
-            2,
-            IF(\`lastResult\`.\`recommendationRange\` = ${RecommendationTypes.optimal}, 1, 0)
+            \`lastResult\`.\`recommendationRange\` IN (${RecommendationTypes.high}, ${RecommendationTypes.low}),
+            3,
+            IF(
+                \`lastResult\`.\`recommendationRange\` IN (${RecommendationTypes.subOptimal}, ${RecommendationTypes.supraOptimal}),
+                2,
+                IF(\`lastResult\`.\`recommendationRange\` = ${RecommendationTypes.optimal}, 1, 0)
+            )
         )
     ) as \`orderValue\`
 `.replace(/\s+/ig, ' ').trim();
