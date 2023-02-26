@@ -6,8 +6,6 @@ import { RecommendationImpactDto } from '../recommendationImpacts/recommendation
 import { RecommendationReactionTypes } from '../../../../common/src/resources/recommendation-reactions/reaction-types';
 import { RecommendationSkinTypeDto } from '../recommendationSkinTypes/recommendation-skin-type.dto';
 import { RecommendationContradictionDto } from '../recommendationContradictions/recommendation-contradiction.dto';
-import { UserBiomarkerDto } from '../../../../users-biomarkers/src/models/user-biomarker.dto';
-import { BaseUserRecommendationDto } from '../userRecommendations/base-user-recommendation.dto';
 import { BaseRecommendationDto } from './base-recommendation.dto';
 
 
