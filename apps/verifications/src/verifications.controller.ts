@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, NotFoundException, Patch, Post, Inject, Get, Query, Response, ForbiddenException, BadRequestException, UnprocessableEntityException } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, NotFoundException, Patch, Post, Inject, Get, Query, Response, ForbiddenException, BadRequestException, UnprocessableEntityException, Headers } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MailerService } from '../../common/src/resources/mailer/mailer.service';
 import { UserRoles } from '../../common/src/resources/users';
@@ -17,6 +17,8 @@ import { UserSessionDto } from '../../users/src/models/user-session.dto';
 import { DateTime } from 'luxon';
 import { EMAIL_VERIFICATION_HOURS_LIMIT, EMAIL_VERIFICATION_LIMIT, RESTORATION_TOKEN_EXPIRE, RESTORE_PASSWORD_HOURS_LIMIT, RESTORE_PASSWORD_LIMIT } from '../../common/src/resources/verificationTokens/constants';
 import { ResendEmailVerificationDto } from './models/resend-email-verification.dto';
+import * as userAgent from 'express-useragent';
+import { UserVerificationTokenDto } from './models/user-verification-token.dto';
 
 @ApiTags('verifications')
 @Controller('verifications')
@@ -83,14 +85,10 @@ export class VerificationsController {
         const token = await this.verificationsService.generateToken({ userId: user.id }, body.tokenLifeTime || RESTORATION_TOKEN_EXPIRE);
         await this.verificationsService.saveToken(user.id, token, TokenTypes.userPassword, true);
 
-        if (body.isDesktop) {
-            link = `${this.configService.get('FRONTEND_BASE_URL')}/reset-password?token=${token}`;
-        } else {
-            link = `${this.configService.get('SWAGGER_BACKEND_URL')}/verifications/password/redirect?token=${token}`;
-        }
+        link = `${this.configService.get('SWAGGER_BACKEND_URL')}/verifications/password/redirect?token=${token}`;
 
         if (body.queryString) {
-            link = `${link}&${body.queryString}`;
+            link = `${link}&queryString=${encodeURIComponent(body.queryString)}`;
         }
 
         await this.mailerService.sendUserRestorePasswordEmail(user, link);
@@ -161,11 +159,24 @@ export class VerificationsController {
     }
 
     @Public()
-    @ApiOperation({ summary: 'Redirect code to mobile app' })
+    @ApiOperation({ summary: 'Redirect after password reset' })
     @Get('password/redirect')
-    async redirectToRestorePassword(@Query() query: VerificationTokenDto, @Response() response): Promise<void> {
+    async redirectToRestorePassword(@Query() query: UserVerificationTokenDto, @Response() response, @Headers('user-agent') userAgentSource: string): Promise<void> {
+        const parsedUserAgent = userAgent.parse(userAgentSource);
+        let link;
+
+        if (parsedUserAgent.isMobile) {
+            link = `${this.configService.get('MOBILE_FRONTEND_BASE_URL')}restore-password?code=${query.token}`;
+        } else {
+            link = `${this.configService.get('FRONTEND_BASE_URL')}/reset-password?token=${query.token}`;
+        }
+
+        if (query.queryString) {
+            link = `${link}&${decodeURIComponent(query.queryString)}`;
+        }
+
         response.set('Content-Type', 'text/html');
-        response.send(Buffer.from(`<!DOCTYPE html><html><head><title></title><meta charset="UTF-8" /><meta http-equiv="refresh" content="3; URL=${this.configService.get('MOBILE_FRONTEND_BASE_URL')}restore-password?code=${query.token}" /></head><body></body></html>`));
+        response.send(Buffer.from(`<!DOCTYPE html><html><head><title></title><meta charset="UTF-8" /><meta http-equiv="refresh" content="3; URL=${link}" /></head><body></body></html>`));
     }
 
     @Public()
