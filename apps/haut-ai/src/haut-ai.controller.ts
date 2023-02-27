@@ -209,6 +209,7 @@ export class HautAiController {
         });
 
         await this.skinUserResultsService.saveResults(results, skinResult, req.user.userId);
+        await user.additionalField.update({ isUserVerified: true });
     }
 
     @ApiOperation({ summary: 'Get skin result dates' })
