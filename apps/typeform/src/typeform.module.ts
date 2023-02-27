@@ -14,6 +14,7 @@ import { TypeformController } from './typeform.controller';
 import { TypeformService } from './typeform.service';
 import { UserQuizAnswersService } from './user-quiz-answers.service';
 import { UserQuizesService } from './user-quizes.service';
+import { DecisionRulesService } from './decision-rules.service';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UserQuizesService } from './user-quizes.service';
   controllers: [TypeformController],
   providers: [
     TypeformService,
+    DecisionRulesService,
     SessionsService,
     UsersService,
     JwtStrategy,

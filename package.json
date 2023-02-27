@@ -27,6 +27,7 @@
     "@aws-sdk/client-s3": "^3.272.0",
     "@aws-sdk/client-ses": "^3.272.0",
     "@aws-sdk/s3-presigned-post": "^3.272.0",
+    "@decisionrules/decisionrules-js": "^3.0.4",
     "@liaoliaots/nestjs-redis": "^9.0.1",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.2.0",
