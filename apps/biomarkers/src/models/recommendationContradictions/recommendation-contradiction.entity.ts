@@ -1,5 +1,5 @@
+import { RecommendationContradictionTypes } from 'apps/common/src/resources/recommendations/contradiction-types';
 import { Table, Column, Model, DataType, Scopes, ForeignKey } from 'sequelize-typescript';
-import { ContradictionTypes } from '../../../../common/src/resources/filters/contradiction-types';
 import { Recommendation } from '../recommendations/recommendation.entity';
 
 @Scopes(() => ({
@@ -24,5 +24,5 @@ export class RecommendationContradiction extends Model {
         type: DataType.TINYINT,
         allowNull: false,
     })
-    contradictionType: ContradictionTypes;
+    contradictionType: RecommendationContradictionTypes;
 }
