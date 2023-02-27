@@ -18,8 +18,6 @@ import { FilterBulletList } from './models/filterBulletLists/filter-bullet-list.
 import { StudyLink } from './models/filterBulletLists/study-link.entity';
 import { BiomarkerHelper } from '../../common/src/resources/biomarkers/biomarker-helper';
 import { BiomarkersFactory } from './biomarkers.factory';
-import { FilterSkinType } from './models/filterSkinTypes/filter-skin-type.entity';
-import { FilterContradiction } from './models/filterContradictions/filter-contradiction.entity';
 
 @Injectable()
 export class BloodBiomarkersFactory extends BiomarkersFactory {
@@ -37,8 +35,6 @@ export class BloodBiomarkersFactory extends BiomarkersFactory {
         @Inject('FILTER_SUMMARY_MODEL') readonly filterSummaryModel: Repository<FilterSummary>,
         @Inject('FILTER_BULLET_LIST_MODEL') readonly filterBulletListModel: Repository<FilterBulletList>,
         @Inject('STUDY_LINK_MODEL') readonly studyLinkModel: Repository<StudyLink>,
-        @Inject('FILTER_SKIN_TYPE_MODEL') readonly filterSkinTypeModel: Repository<FilterSkinType>,
-        @Inject('FILTER_CONTRADICTION_MODEL') readonly filterContradiction: Repository<FilterContradiction>,
     ) {
         super(
             biomarkerModel,
@@ -53,9 +49,7 @@ export class BloodBiomarkersFactory extends BiomarkersFactory {
             filterGroupModel,
             filterSummaryModel,
             filterBulletListModel,
-            studyLinkModel,
-            filterSkinTypeModel,
-            filterContradiction,
+            studyLinkModel
         );
     }
 
