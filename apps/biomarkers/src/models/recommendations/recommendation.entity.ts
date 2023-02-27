@@ -15,6 +15,7 @@ import { RecommendationContradiction } from '../recommendationContradictions/rec
 import { IdealTimeOfDayTypes } from '../../../../common/src/resources/recommendations/ideal-time-of-day-types';
 import { Biomarker } from '../biomarker.entity';
 import { UserRecommendation } from '../userRecommendations/user-recommendation.entity';
+import { RecommendationReactionTypes } from '../../../../common/src/resources/recommendation-reactions/reaction-types';
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
@@ -78,15 +79,18 @@ import { UserRecommendation } from '../userRecommendations/user-recommendation.e
             },
         ],
     }),
-    withUserReaction: (userId) => ({
+    withUserReaction: (userId, isExcludeDisliked = false) => ({
         include: [
             {
                 model: RecommendationReaction,
                 as: 'userReaction',
-                required: false,
+                required: isExcludeDisliked,
                 where: { userId }
             },
         ],
+        where: isExcludeDisliked
+            ? { '$userReaction.reactionType$': { [Op.ne]: RecommendationReactionTypes.dislike } }
+            : undefined,
     }),
     withFilterRecommendation: (filterId) => ({
         include: [

@@ -249,7 +249,7 @@ export class Biomarker extends Model {
     userResults: UserResult[];
 
     @HasOne(() => UserResult, 'biomarkerId')
-    lastResult: UserResult[];
+    lastResult: UserResult;
 
     resultsCount?: number;
 }

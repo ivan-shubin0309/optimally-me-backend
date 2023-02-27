@@ -19,22 +19,28 @@ export class UsersRecommendationsService extends BaseService<UserRecommendation>
         @Inject('USER_RESULT_MODEL') private readonly userResultModel: Repository<UserResult>,
     ) { super(model); }
 
-    async getRecommendationListByUserResult(userResult: UserResult, options: { biomarkerId: number }): Promise<Recommendation[]> {
+    async getRecommendationListByUserResult(userResult: UserResult, options: { biomarkerId: number, additionalScopes?: any[] }): Promise<Recommendation[]> {
         const userRecommendations = await this.getList([{ method: ['byUserResultId', userResult.id] }]);
 
         if (!userRecommendations.length) {
             return [];
         }
 
+        const scopes: any[] = [
+            { method: ['byId', userRecommendations.map(userRecommendation => userRecommendation.recommendationId)] },
+            { method: ['withImpacts', ['withStudyLinks'], options?.biomarkerId] },
+            { method: ['withFiles'] },
+            { method: ['withUserReaction', userResult.userId, true] },
+            { method: ['withFilterRecommendation', userResult.filterId] },
+            { method: ['orderBy', [[sequelize.literal('`filterRecommendation.order`'), 'asc']]] }
+        ];
+
+        if (options?.additionalScopes?.length) {
+            scopes.push(...options.additionalScopes);
+        }
+
         const recommendations = await this.recommendationModel
-            .scope([
-                { method: ['byId', userRecommendations.map(userRecommendation => userRecommendation.recommendationId)] },
-                { method: ['withImpacts', ['withStudyLinks'], options?.biomarkerId] },
-                { method: ['withFiles'] },
-                { method: ['withUserReaction', userResult.userId] },
-                { method: ['withFilterRecommendation', userResult.filterId] },
-                { method: ['orderBy', [[sequelize.literal('`filterRecommendation.order`'), 'asc']]] }
-            ])
+            .scope(scopes)
             .findAll();
 
         return recommendations;
@@ -118,5 +124,9 @@ export class UsersRecommendationsService extends BaseService<UserRecommendation>
             recommendation.biomarkers = biomarkersMap[recommendation.id];
             recommendation.setDataValue('biomarkers', biomarkersMap[recommendation.id]);
         });
+    }
+
+    async update(body: { isExcluded: boolean }, scopes: any[], transaction?: Transaction): Promise<[number, UserRecommendation[]]> {
+        return this.model.scope(scopes).update(body, { transaction } as any);
     }
 }
