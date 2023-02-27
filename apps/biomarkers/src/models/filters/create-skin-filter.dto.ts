@@ -10,10 +10,6 @@ import { CheckIsAllowedTextField } from '../../../../common/src/resources/filter
 import { CreateWhatAreTheCausesDto } from './create-what-are-the-causes.dto';
 import { ICreateFilter } from '../create-biomarker.interface';
 import { skinBiomarkerValidationRules } from '../../../../common/src/resources/biomarkers/validation-rules';
-import { SkinTypes } from '../../../../common/src/resources/filters/skin-types';
-import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
-import { ValidateIdealSkinType } from '../../../../common/src/resources/filters/validate-ideal-skin-types.decorator';
-import { ContradictionTypes } from '../../../../common/src/resources/filters/contradiction-types';
 
 export class CreateSkinFilterDto implements ICreateFilter {
     @ApiProperty({ type: () => String, required: false })
@@ -121,29 +117,4 @@ export class CreateSkinFilterDto implements ICreateFilter {
     @ValidateNested()
     @Type(() => AddRecommendationDto)
     readonly recommendations: AddRecommendationDto[];
-
-    @ApiProperty({ type: () => [Number], required: false, description: EnumHelper.toDescription(SkinTypes) })
-    @IsOptional()
-    @IsArray()
-    @ArrayUnique()
-    @IsNumber({}, { each: true })
-    @IsEnum(SkinTypes, { each: true })
-    @ValidateIdealSkinType()
-    readonly idealSkinTypes: number[];
-
-    @ApiProperty({ type: () => [Number], required: false, description: EnumHelper.toDescription(SkinTypes) })
-    @IsOptional()
-    @IsArray()
-    @ArrayUnique()
-    @IsNumber({}, { each: true })
-    @IsEnum(SkinTypes, { each: true })
-    readonly notMeantForSkinTypes: number[];
-
-    @ApiProperty({ type: () => [Number], required: false, description: EnumHelper.toDescription(ContradictionTypes) })
-    @IsOptional()
-    @IsArray()
-    @ArrayUnique()
-    @IsNumber({}, { each: true })
-    @IsEnum(ContradictionTypes, { each: true })
-    readonly contradictions: number[];
 }

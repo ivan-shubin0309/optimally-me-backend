@@ -38,9 +38,6 @@ export interface ICreateFilter {
     readonly ethnicities?: number[];
     readonly otherFeatures?: number[];
     readonly groups?: ICreateFilterGroup[];
-    readonly idealSkinTypes?: number[];
-    readonly notMeantForSkinTypes?: number[];
-    readonly contradictions?: number[];
 }
 
 export interface ICreateResultSummary {
