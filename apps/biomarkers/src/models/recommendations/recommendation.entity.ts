@@ -14,6 +14,7 @@ import { RecommendationSkinType } from '../recommendationSkinTypes/recommendatio
 import { RecommendationContradiction } from '../recommendationContradictions/recommendation-contradiction.entity';
 import { IdealTimeOfDayTypes } from '../../../../common/src/resources/recommendations/ideal-time-of-day-types';
 import { Biomarker } from '../biomarker.entity';
+import { UserRecommendation } from '../userRecommendations/user-recommendation.entity';
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
@@ -115,6 +116,18 @@ import { Biomarker } from '../biomarker.entity';
             },
         ]
     }),
+    withUserRecommendation: (userResultId: number) => ({
+        include: [
+            {
+                model: UserRecommendation,
+                as: 'userRecommendation',
+                required: false,
+                where: {
+                    userResultId
+                }
+            },
+        ]
+    }),
 }))
 
 @Table({
@@ -194,6 +207,9 @@ export class Recommendation extends Model {
 
     @HasMany(() => RecommendationContradiction, 'recommendationId')
     contradictions: RecommendationContradiction[];
+
+    @HasOne(() => UserRecommendation, 'recommendationId')
+    userRecommendation: UserRecommendation;
 
     biomarkers: Biomarker[];
 }
