@@ -6,7 +6,7 @@ import { AlternativeName } from './alternativeNames/alternative-name.entity';
 import { BiomarkerTypes } from '../../../common/src/resources/biomarkers/biomarker-types';
 import { Op, literal, fn } from 'sequelize';
 import { UserResult } from '../../../admins-results/src/models/user-result.entity';
-import { OrderValueQuery, RangeCountersQuery } from '../../../common/src/resources/usersBiomarkers/queries';
+import { OrderValueQuery } from '../../../common/src/resources/usersBiomarkers/queries';
 import { BiomarkerSexTypes } from '../../../common/src/resources/biomarkers/biomarker-sex-types';
 import { RecommendationTypes } from '../../../common/src/resources/recommendations/recommendation-types';
 import { HautAiMetricTypes } from 'apps/common/src/resources/haut-ai/haut-ai-metric-types';
@@ -89,31 +89,22 @@ import { HautAiMetricTypes } from 'apps/common/src/resources/haut-ai/haut-ai-met
             },
         ]
     }),
-    withLastResult: (resultIds: number[], isRequired = false, isWithFilter?: boolean) => ({
+    withLastResult: (resultIds: number[], isRequired = false) => ({
         include: [
             {
                 model: UserResult,
                 as: 'lastResult',
                 required: isRequired,
                 where: literal(`\`lastResult\`.\`id\` IN (${resultIds.length ? resultIds.join(', ') : 'NULL'})`),
-                include: isWithFilter
-                    ? [
-                        {
-                            model: Filter,
-                            as: 'filter',
-                            required: false,
-                        },
-                    ] 
-                    : []
             },
         ]
     }),
     rangeCounters: () => ({
         attributes: [
-            [literal(RangeCountersQuery), 'recommendationRangeValue'],
+            [literal('`lastResult`.`recommendationRange`'), 'recommendationRange'],
             [fn('COUNT', '*'), 'value']
         ],
-        group: ['recommendationRangeValue']
+        group: ['recommendationRange']
     }),
     orderByDeviation: (orderType: string) => ({
         attributes: {
