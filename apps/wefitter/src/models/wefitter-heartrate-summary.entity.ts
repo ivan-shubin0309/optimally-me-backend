@@ -3,6 +3,7 @@ import { User } from '../../../users/src/models';
 import { UserWefitterDailySummary } from './wefitter-daily-summary.entity';
 import { fn, col, Op, literal } from 'sequelize';
 import { metricTypeToFieldName, WefitterMetricTypes } from 'apps/common/src/resources/wefitter/wefitter-metric-types';
+import { DateTime } from 'luxon';
 
 @Scopes(() => ({
     byDailySummaryId: (dailySummaryId) => ({ where: { dailySummaryId } }),
@@ -58,7 +59,7 @@ import { metricTypeToFieldName, WefitterMetricTypes } from 'apps/common/src/reso
             opAnd.push({
                 [Op.or]: [
                     { '$dailySummary.date$': { [Op.lte]: endDate } },
-                    { timestamp: { [Op.lte]: endDate } },
+                    { timestamp: { [Op.lte]: DateTime.fromFormat(endDate, 'yyyy-MM-dd').endOf('day').toISO() } },
                 ]
             });
         }

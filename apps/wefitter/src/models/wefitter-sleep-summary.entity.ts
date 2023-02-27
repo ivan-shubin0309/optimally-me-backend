@@ -2,6 +2,7 @@ import { Table, Column, Model, DataType, ForeignKey, Scopes } from 'sequelize-ty
 import { User } from '../../../users/src/models';
 import { fn, col, Op } from 'sequelize';
 import { metricTypeToFieldName, WefitterMetricTypes } from '../../../common/src/resources/wefitter/wefitter-metric-types';
+import { DateTime } from 'luxon';
 
 @Scopes(() => ({
     byUserId: (userId) => ({ where: { userId } }),
@@ -42,7 +43,7 @@ import { metricTypeToFieldName, WefitterMetricTypes } from '../../../common/src/
             opAnd.push({ [Op.gte]: startDate });
         }
         if (endDate) {
-            opAnd.push({ [Op.lte]: endDate });
+            opAnd.push({ [Op.lte]: DateTime.fromFormat(endDate, 'yyyy-MM-dd').endOf('day').toISO() });
         }
         return { where: { timestamp: { [Op.and]: opAnd } } };
     },
