@@ -18,6 +18,7 @@ import { FilterWithBiomarkerDto } from '../../biomarkers/src/models/filters/filt
 import { GetUserResultAveragesDto } from './models/get-user-result-averages.dto';
 import { UserResultAveragesDto } from './models/user-result-averages.dto';
 import { UsersRecommendationsService } from '../../users-recommendations/src/users-recommendations.service';
+import sequelize from 'sequelize';
 
 @ApiBearerAuth()
 @ApiTags('users/biomarkers/results')
@@ -139,7 +140,16 @@ export class UsersResultsController {
             });
         }
 
-        const recommendations = await this.userRecommendationsService.getRecommendationListByUserResult(userResult, { biomarkerId: userResult?.filter?.biomarkerId || userResult?.filter?.removedFromBiomarkerId });
+        const recommendations = await this.userRecommendationsService.getRecommendationListByUserResult(
+            userResult,
+            {
+                biomarkerId: userResult?.filter?.biomarkerId || userResult?.filter?.removedFromBiomarkerId,
+                additionalScopes: [
+                    { method: ['withFilterRecommendation', userResult.filterId] },
+                    { method: ['orderBy', [[sequelize.literal('`filterRecommendation.order`'), 'asc']]] }
+                ]
+            }
+        );
 
         return new RecommendationsWithoutPaginationDto(recommendations);
     }

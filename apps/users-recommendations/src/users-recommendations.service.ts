@@ -1,7 +1,7 @@
 import { HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'sequelize-typescript';
 import { TranslatorService } from 'nestjs-translator';
-import sequelize, { Transaction } from 'sequelize';
+import { Transaction } from 'sequelize';
 import { BaseService } from '../../common/src/base/base.service';
 import { UserRecommendation } from '../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
 import { Recommendation } from '../../biomarkers/src/models/recommendations/recommendation.entity';
@@ -31,8 +31,6 @@ export class UsersRecommendationsService extends BaseService<UserRecommendation>
             { method: ['withImpacts', ['withStudyLinks'], options?.biomarkerId] },
             { method: ['withFiles'] },
             { method: ['withUserReaction', userResult.userId, true] },
-            { method: ['withFilterRecommendation', userResult.filterId] },
-            { method: ['orderBy', [[sequelize.literal('`filterRecommendation.order`'), 'asc']]] }
         ];
 
         if (options?.additionalScopes?.length) {

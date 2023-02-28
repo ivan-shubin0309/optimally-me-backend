@@ -89,7 +89,12 @@ import { RecommendationReactionTypes } from '../../../../common/src/resources/re
             },
         ],
         where: isExcludeDisliked
-            ? { '$userReaction.reactionType$': { [Op.ne]: RecommendationReactionTypes.dislike } }
+            ? {
+                [Op.or]: [
+                    { '$userReaction.reactionType$': { [Op.ne]: RecommendationReactionTypes.dislike } },
+                    { '$userReaction.reactionType$': null }
+                ]
+            }
             : undefined,
     }),
     withFilterRecommendation: (filterId) => ({

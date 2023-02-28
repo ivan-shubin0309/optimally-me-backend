@@ -15,6 +15,8 @@ import { TypeformService } from './typeform.service';
 import { UserQuizAnswersService } from './user-quiz-answers.service';
 import { UserQuizesService } from './user-quizes.service';
 import { DecisionRulesService } from './decision-rules.service';
+import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomarkers.service';
+import { UsersRecommendationsService } from '../../users-recommendations/src/users-recommendations.service';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { DecisionRulesService } from './decision-rules.service';
   providers: [
     TypeformService,
     DecisionRulesService,
+    UsersBiomarkersService,
+    UsersRecommendationsService,
     SessionsService,
     UsersService,
     JwtStrategy,

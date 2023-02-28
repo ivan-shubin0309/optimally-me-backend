@@ -2,6 +2,11 @@ import { UserAdditionalField } from '../../users/src/models/user-additional-fiel
 import { User } from '../../users/src/models';
 import { UserQuiz } from './models/user-quiz.entity';
 import { UserQuizAnswer } from './models/user-quiz-answer.entity';
+import { Biomarker } from '../../biomarkers/src/models/biomarker.entity';
+import { UserResult } from '../../admins-results/src/models/user-result.entity';
+import { UserRecommendation } from '../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
+import { Recommendation } from '../../biomarkers/src/models/recommendations/recommendation.entity';
+import { RecommendationReaction } from '../../biomarkers/src/models/recommendationReactions/recommendation-reaction.entity';
 
 export const modelProviders = [
     {
@@ -19,5 +24,25 @@ export const modelProviders = [
     {
         provide: 'USER_QUIZ_ANSWER_MODEL',
         useValue: UserQuizAnswer
+    },
+    {
+        provide: 'BIOMARKER_MODEL',
+        useValue: Biomarker
+    },
+    {
+        provide: 'USER_RESULT_MODEL',
+        useValue: UserResult
+    },
+    {
+        provide: 'USER_RECOMMENDATION_MODEL',
+        useValue: UserRecommendation
+    },
+    {
+        provide: 'RECOMMENDATION_MODEL',
+        useValue: Recommendation
+    },
+    {
+        provide: 'RECOMMENDATION_REACTION_MODEL',
+        useValue: RecommendationReaction
     },
 ];

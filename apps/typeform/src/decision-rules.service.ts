@@ -50,7 +50,7 @@ export class DecisionRulesService {
     }
 
     solveRuleFlow(data: IRuleFlowData): Promise<IRuleFlowResponseObject> {
-        return this.solver.SolverRuleFlow(this.configService.get('DECISION_RULES_RECOMMENDATIONS_ITEM_ID'), data);
+        return this.solver.solveRule(this.configService.get('DECISION_RULES_RECOMMENDATIONS_ITEM_ID'), data);
     }
 
     async updateUserRecommendations(userId: number, typeformQuizData: any): Promise<void> {
@@ -73,6 +73,10 @@ export class DecisionRulesService {
                 }
             );
 
+            if (!recommendations.length) {
+                return null;
+            }
+
             const payload: IRuleFlowData = {
                 customer: {
                     id: userId,
@@ -89,9 +93,14 @@ export class DecisionRulesService {
                 form_response: typeformQuizData,
             };
 
+            console.log(JSON.stringify(payload));
+
             return this.solveRuleFlow(payload)
                 .catch(err => {
-                    console.log(`\n${err.message}\nError on biomarker id - ${biomarker.id}\n`);
+                    console.log(`\nError on biomarker id - ${biomarker.id} `);
+                    if (err?.response?.error) {
+                        console.log(`\n${err?.response?.error?.message}`);
+                    }
                     throw new UnprocessableEntityException({
                         message: err.message,
                         errorCode: 'DECISION_RULES_ERROR',
@@ -106,6 +115,9 @@ export class DecisionRulesService {
         const userRecommendationIdsToInclude = [];
 
         results.forEach(result => {
+            if (!result) {
+                return;
+            }
             result.recommendations.forEach(recommendation => {
                 if (recommendation.exclude) {
                     userRecommendationIdsToExclude.push(recommendation.id);

@@ -57,6 +57,13 @@ export class UserRecommendation extends Model {
     })
     userResultId: number;
 
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    })
+    isExcluded: boolean;
+
     @BelongsTo(() => Recommendation)
     recommendation: Recommendation;
 
