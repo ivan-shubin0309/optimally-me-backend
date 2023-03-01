@@ -10,7 +10,6 @@ import { UsersService } from '../../users/src/users.service';
 import { UserQuizAnswersService } from './user-quiz-answers.service';
 import { Sequelize } from 'sequelize-typescript';
 import { UserRoles } from '../../common/src/resources/users';
-import { DecisionRulesService } from './decision-rules.service';
 
 @ApiTags('typeform')
 @Controller('typeform')
@@ -22,7 +21,6 @@ export class TypeformController {
         private readonly usersService: UsersService,
         @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
         private readonly userQuizAnswersService: UserQuizAnswersService,
-        private readonly decisionRulesService: DecisionRulesService,
     ) { }
 
     @Public()
@@ -32,13 +30,13 @@ export class TypeformController {
         console.log(JSON.stringify(body));
 
         const isVerified = this.typeformService.verifySignature(signature.split('sha256=')[1], req.rawBody);
-        /*if (!isVerified) {
+        if (!isVerified) {
             throw new UnauthorizedException({
                 message: this.translator.translate('TYPEFORM_EVENT_NOT_VERIFIED'),
                 errorCode: 'TYPEFORM_EVENT_NOT_VERIFIED',
                 statusCode: HttpStatus.UNAUTHORIZED
             });
-        }*/
+        }
 
         const userEmail = TypeformHelper.getUserEmail(body);
 
@@ -86,9 +84,7 @@ export class TypeformController {
 
             await this.userQuizAnswersService.bulkCreate(answersToCreate, transaction);
 
-            await this.typeformService.saveParametersFromQuiz(answers, user, quizType, transaction);
-
-            await this.decisionRulesService.updateUserRecommendations(user.id, body.form_response, transaction);
+            await this.typeformService.saveParametersFromQuiz(answers, user, quizType, body, transaction);
         });
 
         return new TypeformEventResponseDto(null, null);
