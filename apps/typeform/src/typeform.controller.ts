@@ -88,7 +88,7 @@ export class TypeformController {
 
             await this.typeformService.saveParametersFromQuiz(answers, user, quizType, transaction);
 
-            await this.decisionRulesService.updateUserRecommendations(user.id, body.form_response);
+            await this.decisionRulesService.updateUserRecommendations(user.id, body.form_response, transaction);
         });
 
         return new TypeformEventResponseDto(null, null);

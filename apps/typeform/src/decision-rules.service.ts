@@ -7,6 +7,7 @@ import { DateTime } from 'luxon';
 import { RecommendationTypes } from '../../common/src/resources/recommendations/recommendation-types';
 import { UsersRecommendationsService } from '../../users-recommendations/src/users-recommendations.service';
 import { Sequelize } from 'sequelize-typescript';
+import { Transaction } from 'sequelize/types';
 
 interface IRuleFlowData {
     customer: {
@@ -50,10 +51,10 @@ export class DecisionRulesService {
     }
 
     solveRuleFlow(data: IRuleFlowData): Promise<IRuleFlowResponseObject> {
-        return this.solver.solveRule(this.configService.get('DECISION_RULES_RECOMMENDATIONS_ITEM_ID'), data);
+        return this.solver.solveRule(this.configService.get('DECISION_RULES_RECOMMENDATIONS_ITEM_ID'), { data });
     }
 
-    async updateUserRecommendations(userId: number, typeformQuizData: any): Promise<void> {
+    async updateUserRecommendations(userId: number, typeformQuizData: any, transaction: Transaction): Promise<void> {
         const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(userId, DateTime.utc().toFormat('yyyy-MM-dd'), 1);
         const biomarkerScopes = [
             { method: ['byType', [BiomarkerTypes.blood, BiomarkerTypes.skin]] },
@@ -98,9 +99,6 @@ export class DecisionRulesService {
             return this.solveRuleFlow(payload)
                 .catch(err => {
                     console.log(`\nError on biomarker id - ${biomarker.id} `);
-                    if (err?.response?.error) {
-                        console.log(`\n${err?.response?.error?.message}`);
-                    }
                     throw new UnprocessableEntityException({
                         message: err.message,
                         errorCode: 'DECISION_RULES_ERROR',
@@ -115,30 +113,31 @@ export class DecisionRulesService {
         const userRecommendationIdsToInclude = [];
 
         results.forEach(result => {
-            if (!result) {
-                return;
+            if (result && result[0]) {
+                result[0].recommendations.forEach(recommendation => {
+                    if (recommendation.exclude) {
+                        userRecommendationIdsToExclude.push(recommendation.id);
+                    } else {
+                        userRecommendationIdsToInclude.push(recommendation.id);
+                    }
+                });
             }
-            result.recommendations.forEach(recommendation => {
-                if (recommendation.exclude) {
-                    userRecommendationIdsToExclude.push(recommendation.id);
-                } else {
-                    userRecommendationIdsToInclude.push(recommendation.id);
-                }
-            });
         });
 
-        await this.dbConnection.transaction(async transaction => {
+        if (userRecommendationIdsToExclude.length) {
             await this.userRecommendationsService.update(
                 { isExcluded: true },
                 { method: ['byId', userRecommendationIdsToExclude] } as any,
                 transaction
             );
+        }
 
+        if (userRecommendationIdsToInclude.length) {
             await this.userRecommendationsService.update(
                 { isExcluded: false },
-                { method: ['byId', userRecommendationIdsToExclude] } as any,
-                transaction
-            );
-        });
+            { method: ['byId', userRecommendationIdsToInclude] } as any,
+            transaction
+        );
+        }
     }
 }
