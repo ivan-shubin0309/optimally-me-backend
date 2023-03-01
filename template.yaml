@@ -485,10 +485,15 @@ Resources:
       Handler: dist/apps/typeform/src/main.handler
       Description: 
       Events:
-        TypeformPushApi:
+        TypeformSensistiveQuizApi:
           Type: Api
           Properties:
-            Path: /typeform/push
+            Path: /typeform/sensitive-quiz
+            Method: ANY
+        TypeformSelfAssesmentApi:
+          Type: Api
+          Properties:
+            Path: /typeform/self-assesment
             Method: ANY
 
   SamplesFunction:
