@@ -28,13 +28,15 @@ export class UsersRecommendationsController {
 
         const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(req.user.userId, null, 1);
         const userRecommendations = await this.usersRecommendationsService.getList([
-            { method: ['byUserResultId', lastResultIds] }
+            { method: ['byUserResultId', lastResultIds] },
+            { method: ['byIsExcluded', false] }
         ]);
 
         const recommendationIds = userRecommendations.map(userRecommendation => userRecommendation.recommendationId);
 
         const scopes: any[] = [
             { method: ['byId', recommendationIds] },
+            { method: ['withUserReaction', req.user.userId, true] },
         ];
 
         const count = await this.usersRecommendationsService.getRecommendationCount(scopes);
@@ -42,7 +44,7 @@ export class UsersRecommendationsController {
         if (count) {
             scopes.push(
                 { method: ['withFiles'] },
-                { method: ['withUserReaction', req.user.userId] },
+                { method: ['withUserReaction', req.user.userId, true] },
                 { method: ['withUserRecommendation', lastResultIds] },
             );
             recommendationsList = await this.usersRecommendationsService.getRecommendationList(scopes);

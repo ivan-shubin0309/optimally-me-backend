@@ -9,7 +9,7 @@ import { UserQuizesService } from './user-quizes.service';
 import { UsersService } from '../../users/src/users.service';
 import { UserQuizAnswersService } from './user-quiz-answers.service';
 import { Sequelize } from 'sequelize-typescript';
-import { UserRoles } from 'apps/common/src/resources/users';
+import { UserRoles } from '../../common/src/resources/users';
 
 @ApiTags('typeform')
 @Controller('typeform')
@@ -84,7 +84,7 @@ export class TypeformController {
 
             await this.userQuizAnswersService.bulkCreate(answersToCreate, transaction);
 
-            await this.typeformService.saveParametersFromQuiz(answers, user, quizType, transaction);
+            await this.typeformService.saveParametersFromQuiz(answers, user, quizType, body, transaction);
         });
 
         return new TypeformEventResponseDto(null, null);
