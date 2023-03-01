@@ -1,12 +1,6 @@
-import { titleToQuizType } from './typeform-quiz-types';
-
 export interface ITypeformAnswer { questionId: string, questionText: string, answerType: string, answerText: string }
 
 export class TypeformHelper {
-    static getQuizType(body: any): number | null {
-        return titleToQuizType[body?.form_response?.definition?.title] || null;
-    }
-
     static getQuizName(body: any): string {
         return body?.form_response?.definition?.title;
     }
