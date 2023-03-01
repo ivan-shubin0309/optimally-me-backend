@@ -84,7 +84,7 @@ import { RecommendationReactionTypes } from '../../../../common/src/resources/re
             {
                 model: RecommendationReaction,
                 as: 'userReaction',
-                required: isExcludeDisliked,
+                required: false,
                 where: { userId }
             },
         ],

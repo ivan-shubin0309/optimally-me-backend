@@ -36,6 +36,7 @@ export class UsersRecommendationsController {
 
         const scopes: any[] = [
             { method: ['byId', recommendationIds] },
+            { method: ['withUserReaction', req.user.userId, true] },
         ];
 
         const count = await this.usersRecommendationsService.getRecommendationCount(scopes);
@@ -43,7 +44,7 @@ export class UsersRecommendationsController {
         if (count) {
             scopes.push(
                 { method: ['withFiles'] },
-                { method: ['withUserReaction', req.user.userId] },
+                { method: ['withUserReaction', req.user.userId, true] },
                 { method: ['withUserRecommendation', lastResultIds] },
             );
             recommendationsList = await this.usersRecommendationsService.getRecommendationList(scopes);
