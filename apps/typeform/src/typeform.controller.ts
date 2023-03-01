@@ -11,6 +11,7 @@ import { UserQuizAnswersService } from './user-quiz-answers.service';
 import { Sequelize } from 'sequelize-typescript';
 import { UserRoles } from '../../common/src/resources/users';
 import { TypeformQuizType } from '../../common/src/resources/typeform/typeform-quiz-types';
+import { DecisionRulesService } from './decision-rules.service';
 
 @ApiTags('typeform')
 @Controller('typeform')
@@ -22,6 +23,7 @@ export class TypeformController {
         private readonly usersService: UsersService,
         @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
         private readonly userQuizAnswersService: UserQuizAnswersService,
+        private readonly decisionRulesService: DecisionRulesService,
     ) { }
 
     @Public()
@@ -77,7 +79,9 @@ export class TypeformController {
 
             await this.userQuizAnswersService.bulkCreate(answersToCreate, transaction);
 
-            await this.typeformService.saveSensitiveQuizParameters(answers, user, body, transaction);
+            await this.typeformService.saveSensitiveQuizParameters(answers, user, transaction);
+
+            await this.decisionRulesService.updateUserRecommendations(user.id, body.form_response, transaction);
         });
 
         return new TypeformEventResponseDto(null, null);
@@ -136,7 +140,9 @@ export class TypeformController {
 
             await this.userQuizAnswersService.bulkCreate(answersToCreate, transaction);
 
-            await this.typeformService.saveSelfAssesmentQuizParameters(answers, user, body, transaction);
+            await this.typeformService.saveSelfAssesmentQuizParameters(answers, user, transaction);
+
+            await this.decisionRulesService.updateUserRecommendations(user.id, body.form_response, transaction);
         });
 
         return new TypeformEventResponseDto(null, null);
