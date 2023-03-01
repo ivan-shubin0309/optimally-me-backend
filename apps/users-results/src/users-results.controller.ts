@@ -147,7 +147,8 @@ export class UsersResultsController {
                 additionalScopes: [
                     { method: ['withFilterRecommendation', userResult.filterId] },
                     { method: ['orderBy', [[sequelize.literal('`filterRecommendation.order`'), 'asc']]] }
-                ]
+                ],
+                isExcluded: false,
             }
         );
 

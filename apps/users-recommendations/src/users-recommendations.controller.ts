@@ -28,7 +28,8 @@ export class UsersRecommendationsController {
 
         const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(req.user.userId, null, 1);
         const userRecommendations = await this.usersRecommendationsService.getList([
-            { method: ['byUserResultId', lastResultIds] }
+            { method: ['byUserResultId', lastResultIds] },
+            { method: ['byIsExcluded', false] }
         ]);
 
         const recommendationIds = userRecommendations.map(userRecommendation => userRecommendation.recommendationId);

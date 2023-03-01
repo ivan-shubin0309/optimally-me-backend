@@ -27,6 +27,7 @@ import { Recommendation } from '../recommendations/recommendation.entity';
     }),
     byUserResultId: (userResultId) => ({ where: { userResultId } }),
     byRecommendationId: (recommendationId) => ({ where: { recommendationId } }),
+    byIsExcluded: (isExcluded) => ({ where: { isExcluded } }),
 }))
 
 @Table({
