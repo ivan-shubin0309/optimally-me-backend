@@ -232,6 +232,8 @@ export class BiomarkersController {
         { method: ['pagination', { limit, offset }] },
       );
       recommendationsList = await this.recommendationsService.getList(scopes, null, { isIncludeAll: true });
+
+      await this.recommendationsService.attachIsCanBeDeletedProperty(recommendationsList);
     }
 
     return new RecommendationsDto(recommendationsList, PaginationHelper.buildPagination({ limit, offset }, count));
@@ -568,6 +570,7 @@ export class BiomarkersController {
   async deleteRecommendationById(@Param() params: EntityByIdDto): Promise<void> {
     const recommendation = await this.recommendationsService.getOne([
       { method: ['byId', params.id] },
+      'withAnyUserRecommendation'
     ]);
 
     if (!recommendation) {
@@ -575,6 +578,14 @@ export class BiomarkersController {
         message: this.translator.translate('RECOMMENDATION_NOT_FOUND'),
         errorCode: 'RECOMMENDATION_NOT_FOUND',
         statusCode: HttpStatus.NOT_FOUND
+      });
+    }
+
+    if (recommendation.userRecommendation) {
+      throw new BadRequestException({
+        message: this.translator.translate('RECOMMENDATION_LINKED_TO_USER_RESULT'),
+        errorCode: 'RECOMMENDATION_LINKED_TO_USER_RESULT',
+        statusCode: HttpStatus.BAD_REQUEST
       });
     }
 

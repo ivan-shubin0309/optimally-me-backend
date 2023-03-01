@@ -137,6 +137,15 @@ import { RecommendationReactionTypes } from '../../../../common/src/resources/re
             },
         ]
     }),
+    withAnyUserRecommendation: () => ({
+        include: [
+            {
+                model: UserRecommendation,
+                as: 'userRecommendation',
+                required: false,
+            },
+        ]
+    }),
 }))
 
 @Table({
@@ -221,4 +230,6 @@ export class Recommendation extends Model {
     userRecommendation: UserRecommendation;
 
     biomarkers: Biomarker[];
+
+    isCanBeDeleted: boolean;
 }

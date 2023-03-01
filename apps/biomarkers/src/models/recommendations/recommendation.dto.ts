@@ -12,6 +12,7 @@ import { BaseRecommendationDto } from './base-recommendation.dto';
 export class RecommendationDto extends BaseRecommendationDto {
     constructor(entity: Recommendation) {
         super(entity);
+        this.isCanBeDeleted = entity.isCanBeDeleted;
         this.file = entity.files && entity.files.length
             ? new FileDto(entity.files[0])
             : undefined;
@@ -35,6 +36,9 @@ export class RecommendationDto extends BaseRecommendationDto {
             ? entity.contradictions.map(contradiction => new RecommendationContradictionDto(contradiction))
             : undefined;
     }
+
+    @ApiProperty({ type: () => Boolean, required: false })
+    isCanBeDeleted: boolean;
 
     @ApiProperty({ type: () => FileDto, required: false })
     readonly file: FileDto;
