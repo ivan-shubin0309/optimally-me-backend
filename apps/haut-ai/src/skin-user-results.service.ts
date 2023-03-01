@@ -12,6 +12,9 @@ import { SkinUserResultStatuses } from '../../common/src/resources/haut-ai/skin-
 import { FilterRangeHelper } from '../../common/src/resources/filters/filter-range.helper';
 import { DateTime } from 'luxon';
 import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
+import { TypeformService } from '../../typeform/src/typeform.service';
+import { UserQuizesService } from '../../typeform/src/user-quizes.service';
+import { DecisionRulesService } from 'apps/typeform/src/decision-rules.service';
 
 @Injectable()
 export class SkinUserResultsService extends BaseService<SkinUserResult> {
@@ -21,6 +24,9 @@ export class SkinUserResultsService extends BaseService<SkinUserResult> {
         @Inject('SEQUELIZE') private dbConnection: Sequelize,
         @Inject('USER_RESULT_MODEL') private userResultModel: Repository<UserResult>,
         private readonly adminsResultsService: AdminsResultsService,
+        private readonly typeformService: TypeformService,
+        private readonly userQuizesService: UserQuizesService,
+        private readonly decisionRulesService: DecisionRulesService,
     ) { super(model); }
 
     create(body: ISkinUserResult, transaction?: Transaction): Promise<SkinUserResult> {
@@ -108,6 +114,18 @@ export class SkinUserResultsService extends BaseService<SkinUserResult> {
             const createdResults = await this.userResultModel.bulkCreate(resultsToCreate as any, { transaction });
 
             await this.adminsResultsService.attachRecommendations(createdResults, userId, transaction, { isAnyRecommendation: true });
+
+            const lastSensitiveSkinQuiz = await this.userQuizesService.getOne(
+                [
+                    { metho: ['byUserId', userId] },
+                    { method: ['orderBy', [['submittedAt', 'desc']]] }
+                ],
+                transaction
+            );
+            if (lastSensitiveSkinQuiz) {
+                const formResponse = await this.typeformService.getFormResponse(lastSensitiveSkinQuiz);
+                await this.decisionRulesService.updateUserRecommendations(userId, formResponse, transaction);
+            }
         });
     }
 }

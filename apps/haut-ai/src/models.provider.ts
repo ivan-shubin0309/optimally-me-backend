@@ -8,6 +8,8 @@ import { Biomarker } from '../../biomarkers/src/models/biomarker.entity';
 import { Recommendation } from '../../biomarkers/src/models/recommendations/recommendation.entity';
 import { UserRecommendation } from '../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
 import { UserSkinDiary } from './models/user-skin-diary.entity';
+import { UserQuiz } from '../../typeform/src/models/user-quiz.entity';
+import { RecommendationReaction } from '../../biomarkers/src/models/recommendationReactions/recommendation-reaction.entity';
 
 export const modelProviders = [
     {
@@ -49,5 +51,13 @@ export const modelProviders = [
     {
         provide: 'USER_SKIN_DIARY_MODEL',
         useValue: UserSkinDiary
-    }
+    },
+    {
+        provide: 'USER_QUIZ_MODEL',
+        useValue: UserQuiz
+    },
+    {
+        provide: 'RECOMMENDATION_REACTION_MODEL',
+        useValue: RecommendationReaction
+    },
 ];

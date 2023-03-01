@@ -68,7 +68,8 @@ export class TypeformController {
                 {
                     userId: user.id,
                     quizType: TypeformQuizType.sensitiveSkin,
-                    typeformFormId: TypeformHelper.getFormId(body)
+                    typeformFormId: TypeformHelper.getFormId(body),
+                    submittedAt: TypeformHelper.getSubmittedAt(body),
                 },
                 transaction
             );
@@ -129,7 +130,8 @@ export class TypeformController {
                 {
                     userId: user.id,
                     quizType: TypeformQuizType.selfAssesment,
-                    typeformFormId: TypeformHelper.getFormId(body)
+                    typeformFormId: TypeformHelper.getFormId(body),
+                    submittedAt: TypeformHelper.getSubmittedAt(body),
                 },
                 transaction
             );
