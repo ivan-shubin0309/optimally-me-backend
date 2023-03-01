@@ -9,7 +9,7 @@ import { UsersRecommendationsService } from '../../users-recommendations/src/use
 import { Sequelize } from 'sequelize-typescript';
 import { Transaction } from 'sequelize/types';
 
-interface IRuleFlowData {
+interface IRuleData {
     customer: {
         id: number;
         attributes: string[];
@@ -25,7 +25,7 @@ interface IRuleFlowData {
     form_response: any;
 }
 
-interface IRuleFlowResponseObject {
+interface IRuleResponseObject {
     customer: {
         id: number;
         attributes: string[];
@@ -50,7 +50,7 @@ export class DecisionRulesService {
         this.solver = new Solver(configService.get('DECISION_RULES_SOLVER_API_KEY'));
     }
 
-    solveRuleFlow(data: IRuleFlowData): Promise<IRuleFlowResponseObject> {
+    solveRule(data: IRuleData): Promise<IRuleResponseObject> {
         return this.solver.solveRule(this.configService.get('DECISION_RULES_RECOMMENDATIONS_ITEM_ID'), { data });
     }
 
@@ -78,7 +78,7 @@ export class DecisionRulesService {
                 return null;
             }
 
-            const payload: IRuleFlowData = {
+            const payload: IRuleData = {
                 customer: {
                     id: userId,
                     attributes: []
@@ -96,7 +96,7 @@ export class DecisionRulesService {
 
             console.log(JSON.stringify(payload));
 
-            return this.solveRuleFlow(payload)
+            return this.solveRule(payload)
                 .catch(err => {
                     console.log(`\nError on biomarker id - ${biomarker.id} `);
                     throw new UnprocessableEntityException({

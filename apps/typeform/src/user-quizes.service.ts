@@ -9,6 +9,7 @@ interface ICreateUserQuiz {
     userId: number;
     quizType: number;
     typeformFormId: string;
+    submittedAt: string;
 }
 
 @Injectable()

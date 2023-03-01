@@ -48,4 +48,8 @@ export class TypeformHelper {
 
         return answers;
     }
+
+    static getSubmittedAt(body: any): string {
+        return body?.form_response?.submitted_at;
+    }
 }

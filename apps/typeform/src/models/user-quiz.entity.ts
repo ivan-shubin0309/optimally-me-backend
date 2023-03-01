@@ -4,7 +4,8 @@ import { User } from '../../../users/src/models';
 
 @Scopes(() => ({
     byId: (id: number) => ({ where: { id } }),
-    byUserId: (userId: number) => ({ where: { userId } })
+    byUserId: (userId: number) => ({ where: { userId } }),
+    orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
 }))
 @Table({
     tableName: 'userQuizes',
@@ -31,4 +32,9 @@ export class UserQuiz extends Model {
     })
     typeformFormId: string;
 
+    @Column({
+        type: DataType.DATE,
+        allowNull: true
+    })
+    submittedAt: Date;
 }

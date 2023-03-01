@@ -20,6 +20,11 @@ import { SkinUserResultsService } from './skin-user-results.service';
 import { UsersResultsService } from '../../users-results/src/users-results.service';
 import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
 import { UserSkinDiariesService } from './user-skin-diaries.service';
+import { TypeformService } from '../../typeform/src/typeform.service';
+import { DecisionRulesService } from '../../typeform/src/decision-rules.service';
+import { UserQuizesService } from '../../typeform/src/user-quizes.service';
+import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomarkers.service';
+import { UsersRecommendationsService } from '../../users-recommendations/src/users-recommendations.service';
 
 @Module({
   imports: [
@@ -39,6 +44,11 @@ import { UserSkinDiariesService } from './user-skin-diaries.service';
     SkinUserResultsService,
     UsersResultsService,
     AdminsResultsService,
+    TypeformService,
+    UserQuizesService,
+    DecisionRulesService,
+    UsersBiomarkersService,
+    UsersRecommendationsService,
     SessionsService,
     UserSkinDiariesService,
     JwtStrategy,
