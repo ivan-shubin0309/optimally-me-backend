@@ -137,15 +137,6 @@ import { RecommendationReactionTypes } from '../../../../common/src/resources/re
             },
         ]
     }),
-    withAnyUserRecommendation: () => ({
-        include: [
-            {
-                model: UserRecommendation,
-                as: 'userRecommendation',
-                required: false,
-            },
-        ]
-    }),
 }))
 
 @Table({
@@ -205,6 +196,13 @@ export class Recommendation extends Model {
     })
     idealTimeOfDay: IdealTimeOfDayTypes;
 
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    })
+    isDeletable: boolean;
+
     @BelongsToMany(() => File, () => RecommendationFile, 'recommendationId', 'fileId')
     files: File[];
 
@@ -230,6 +228,4 @@ export class Recommendation extends Model {
     userRecommendation: UserRecommendation;
 
     biomarkers: Biomarker[];
-
-    isCanBeDeleted: boolean;
 }

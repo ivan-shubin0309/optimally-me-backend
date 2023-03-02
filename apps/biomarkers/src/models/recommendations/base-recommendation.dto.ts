@@ -17,6 +17,7 @@ export class BaseRecommendationDto extends BaseDto<Recommendation> {
         this.isArchived = entity.isArchived;
         this.isAddToCartAllowed = entity.isAddToCartAllowed;
         this.idealTimeOfDay = entity.idealTimeOfDay;
+        this.isDeletable = entity.isDeletable;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -42,4 +43,7 @@ export class BaseRecommendationDto extends BaseDto<Recommendation> {
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(IdealTimeOfDayTypes) })
     readonly idealTimeOfDay: number;
+
+    @ApiProperty({ type: () => Boolean, required: true })
+    readonly isDeletable: boolean;
 }

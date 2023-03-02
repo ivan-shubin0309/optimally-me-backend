@@ -35,7 +35,7 @@ export class RecommendationsService extends BaseService<Recommendation> {
     const file = await this.filesService.checkCanUse(body.fileId, FileTypes.recommendation, null, false);
 
     const createdRecommendation = await this.dbConnection.transaction(async transaction => {
-      const recommendation = await this.model.create(body as any, { transaction });
+      const recommendation = await this.model.create(Object.assign({ isDeletable: true }, body) as any, { transaction });
 
       if (body.fileId) {
         let fileId = body.fileId;
