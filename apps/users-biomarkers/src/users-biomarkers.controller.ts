@@ -71,6 +71,7 @@ export class UsersBiomarkersController {
 
     if (count) {
       const scopesForOrdering = scopes.concat([
+        { method: ['withLastResult', lastResultIds, query.isOnlyTested, ['withFilter']] },
         { method: ['withCategory', true] },
         { method: ['pagination', { limit, offset }] }
       ]);
