@@ -19,6 +19,7 @@ import { EMAIL_VERIFICATION_HOURS_LIMIT, EMAIL_VERIFICATION_LIMIT, RESTORATION_T
 import { ResendEmailVerificationDto } from './models/resend-email-verification.dto';
 import * as userAgent from 'express-useragent';
 import { UserVerificationTokenDto } from './models/user-verification-token.dto';
+import { RegistrationSteps } from '../../common/src/resources/users/registration-steps';
 
 @ApiTags('verifications')
 @Controller('verifications')
@@ -129,6 +130,9 @@ export class VerificationsController {
 
         const session = await this.sessionsService.create(user.id, {
             role: user.role,
+            email: user.email,
+            registrationStep: user?.additionalField?.registrationStep || RegistrationSteps.profileSetup,
+            isEmailVerified: !!user?.additionalField?.isEmailVerified,
             lifeTime: this.configService.get('JWT_EXPIRES_IN')
         });
 
