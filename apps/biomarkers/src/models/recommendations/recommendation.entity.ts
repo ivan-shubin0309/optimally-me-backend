@@ -196,6 +196,13 @@ export class Recommendation extends Model {
     })
     idealTimeOfDay: IdealTimeOfDayTypes;
 
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    })
+    isDeletable: boolean;
+
     @BelongsToMany(() => File, () => RecommendationFile, 'recommendationId', 'fileId')
     files: File[];
 

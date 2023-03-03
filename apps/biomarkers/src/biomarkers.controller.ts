@@ -578,6 +578,14 @@ export class BiomarkersController {
       });
     }
 
+    if (!recommendation.isDeletable) {
+      throw new BadRequestException({
+        message: this.translator.translate('RECOMMENDATION_LINKED_TO_USER_RESULT'),
+        errorCode: 'RECOMMENDATION_LINKED_TO_USER_RESULT',
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+    }
+
     await recommendation.destroy();
   }
 

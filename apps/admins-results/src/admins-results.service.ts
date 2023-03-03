@@ -57,6 +57,12 @@ export class AdminsResultsService extends BaseService<UserResult> {
     });
 
     await this.userRecommendationModel.bulkCreate(userRecommendationsToCreate, { transaction });
+
+    if (recommendations.length) {
+      await this.recommendationModel
+        .scope([{ method: ['byId', recommendations.map(recommendation => recommendation.id)] }])
+        .update({ isDeletable: false }, { transaction } as any);
+    }
   }
 
   async dettachFilters(filterIds: number[], transaction?:Transaction): Promise<void> {
