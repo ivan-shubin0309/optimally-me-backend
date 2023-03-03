@@ -19,10 +19,22 @@ export function getLastUserResultsForEachBiomarker(userId: number, numberOfLastR
 export const OrderValueQuery = `
     IF(
         \`lastResult\`.\`recommendationRange\` IN (${RecommendationTypes.criticalHigh}, ${RecommendationTypes.criticalLow}),
-        4,
+        5,
         IF(
             \`lastResult\`.\`recommendationRange\` IN (${RecommendationTypes.high}, ${RecommendationTypes.low}),
-            3,
+            IF(
+                \`lastResult\`.\`recommendationRange\` = ${RecommendationTypes.high},
+                IF(
+                    \`lastResult->filter\`.\`criticalHigh\` IS NULL,
+                    4,
+                    3
+                ),
+                IF(
+                    \`lastResult->filter\`.\`criticalLow\` IS NULL,
+                    4,
+                    3
+                )
+            ),
             IF(
                 \`lastResult\`.\`recommendationRange\` IN (${RecommendationTypes.subOptimal}, ${RecommendationTypes.supraOptimal}),
                 2,

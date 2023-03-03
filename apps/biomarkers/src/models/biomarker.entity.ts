@@ -89,13 +89,16 @@ import { HautAiMetricTypes } from 'apps/common/src/resources/haut-ai/haut-ai-met
             },
         ]
     }),
-    withLastResult: (resultIds: number[], isRequired = false) => ({
+    withLastResult: (resultIds: number[], isRequired = false, additionalScopes?: any[], isWithAttributes = true) => ({
         include: [
             {
-                model: UserResult,
+                model: UserResult.scope(additionalScopes),
                 as: 'lastResult',
                 required: isRequired,
                 where: literal(`\`lastResult\`.\`id\` IN (${resultIds.length ? resultIds.join(', ') : 'NULL'})`),
+                attributes: isWithAttributes
+                    ? undefined
+                    : []
             },
         ]
     }),
