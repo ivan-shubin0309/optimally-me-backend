@@ -51,12 +51,12 @@ const metricTypeToModelName = {
 };
 
 const measurementTypeToModelName = {
-    'BLOOD_PRESSURE': 'wefitterBloodPressureModel',
-    'GLUCOSE': 'wefitterBloodSugarModel',
-    'SYSTOLIC_BP': 'wefitterSystolicBloodPressureModel',
-    'DIASTOLIC_BP': 'wefitterDiastolicBloodPressureModel',
-    'HRV': 'wefitterHrvSleepModel',
-    'VO2_MAX': 'wefitterVo2MaxModel',
+    'blood_pressure': 'wefitterBloodPressureModel',
+    'glucose': 'wefitterBloodSugarModel',
+    'systolic_bp': 'wefitterSystolicBloodPressureModel',
+    'diastolic_bp': 'wefitterDiastolicBloodPressureModel',
+    'hrv': 'wefitterHrvSleepModel',
+    'vo2_max': 'wefitterVo2MaxModel',
 };
 
 interface IMappedWefitterMetric { model: Repository<Model>, fieldName: string, metricEnum: WefitterMetricTypes }
