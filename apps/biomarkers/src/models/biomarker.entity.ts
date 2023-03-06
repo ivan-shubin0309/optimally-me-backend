@@ -129,7 +129,12 @@ import { HautAiMetricTypes } from 'apps/common/src/resources/haut-ai/haut-ai-met
             [Op.or]: [
                 { name: { [Op.like]: `%${searchString}%` } },
                 { label: { [Op.like]: `%${searchString}%` } },
-                { shortName: { [Op.like]: `%${searchString}%` } }
+                { shortName: { [Op.like]: `%${searchString}%` } },
+                { isActive: true },
+                {
+                    isActive: false,
+                    '$lastResult.id$': { [Op.ne]: null }
+                }
             ]
         }
     }),
@@ -139,7 +144,12 @@ import { HautAiMetricTypes } from 'apps/common/src/resources/haut-ai/haut-ai-met
             [Op.or]: [
                 { name: { [Op.like]: `%${searchString}%` } },
                 { '$lastResult.date$': { [Op.like]: `%${searchString}%` } },
-                { '$lastResult.value$': { [Op.like]: `%${searchString}%` } }
+                { '$lastResult.value$': { [Op.like]: `%${searchString}%` } },
+                { isActive: true },
+                {
+                    isActive: false,
+                    '$lastResult.id$': { [Op.ne]: null }
+                }
             ]
         }
     }),
