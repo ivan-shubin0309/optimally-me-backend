@@ -5,6 +5,7 @@ import { User } from '../../../users/src/models';
 
 @Scopes(() => ({
     bySampleCode: (sampleCode: string) => ({ where: { sampleCode } }),
+    pagination: (query) => ({ limit: query.limit, offset: query.offset }),
 }))
 @Table({
     tableName: 'hl7Objects',

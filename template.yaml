@@ -603,3 +603,8 @@ Resources:
           Properties:
             Path: /hl7/hl7-objects/{sampleCode}
             Method: ANY
+        Hl7ObjectsApi:
+          Type: Api
+          Properties:
+            Path: /hl7/hl7-objects
+            Method: ANY
