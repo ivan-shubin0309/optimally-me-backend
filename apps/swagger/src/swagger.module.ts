@@ -18,6 +18,7 @@ import { TypeformModule } from '../../typeform/src/typeform.module';
 import { UsersDevicesModule } from '../../users-devices/src/users-devices.module';
 import { UsersWidgetsModule } from '../../users-widgets/src/users-widgets.module';
 import { UsersRecommendationsModule } from '../../users-recommendations/src/users-recommendations.module';
+import { Hl7Module } from '../../hl7/src/hl7.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { UsersRecommendationsModule } from '../../users-recommendations/src/user
     UsersDevicesModule,
     UsersWidgetsModule,
     UsersRecommendationsModule,
+    Hl7Module,
   ]
 })
 export class SwaggerAppModule { }

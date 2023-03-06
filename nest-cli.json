@@ -206,6 +206,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/users-recommendations/tsconfig.app.json"
       }
+    },
+    "hl7": {
+      "type": "application",
+      "root": "apps/hl7",
+      "entryFile": "main",
+      "sourceRoot": "apps/hl7/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/hl7/tsconfig.app.json"
+      }
     }
   }
 }

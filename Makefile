@@ -20,6 +20,7 @@
 .PHONY: build-SyncDataPushNotificationFunction
 .PHONY: build-UsersWidgetsFunction
 .PHONY: build-UsersRecommendationsFunction
+.PHONY: build-Hl7Function
 
 
 build-RuntimeDependenciesLayer:
@@ -101,3 +102,6 @@ build-UsersWidgetsFunction:
 
 build-UsersRecommendationsFunction:
 	$(MAKE) HANDLER=apps/users-recommendations/src/main.ts ENTITY=users-recommendations build-lambda-common
+
+build-Hl7Function:
+	$(MAKE) HANDLER=apps/hl7/src/main.ts ENTITY=hl7 build-lambda-common
