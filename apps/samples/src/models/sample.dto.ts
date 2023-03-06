@@ -6,12 +6,12 @@ export class SampleDto extends BaseDto<Sample> {
     constructor(data: Sample) {
         super(data);
         this.sampleId = data.sampleId;
-        this.isActive = data.isActive;
+        this.isActivated = data.isActivated;
     }
 
     @ApiProperty({ type: () => String, required: true })
     readonly sampleId: string;
 
     @ApiProperty({ type: () => Boolean, required: true })
-    readonly isActive: boolean;
+    readonly isActivated: boolean;
 }

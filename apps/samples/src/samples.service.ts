@@ -23,7 +23,7 @@ export class SamplesService extends BaseService<Sample> {
         for (let i = 0; i <= body.quantity; i++) {
             arrayOfSamples.push({
                 sampleId: SampleHelper.generateSampleCode(SAMPLE_CODE_LENGTH),
-                isActive: false
+                isActivated: false
             });
         }
 
@@ -37,7 +37,7 @@ export class SamplesService extends BaseService<Sample> {
             await Promise.all([
                 this.model
                     .scope([{ method: ['byId', sampleId] }])
-                    .update({ isActive: true }, { transaction } as any),
+                    .update({ isActivated: true }, { transaction } as any),
                 this.userSampleModel.create({ sampleId, userId }, { transaction })
             ]);
         });

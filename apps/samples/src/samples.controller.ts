@@ -40,8 +40,8 @@ export class SamplesController {
         let samplesList = [];
         const scopes: any[] = [];
 
-        if (typeof query.isActive === 'boolean') {
-            scopes.push({ method: ['byIsActive', query.isActive] });
+        if (typeof query.isActivated === 'boolean') {
+            scopes.push({ method: ['byIsActivated', query.isActivated] });
         }
 
         const count = await this.samplesService.getCount(scopes);
@@ -62,7 +62,7 @@ export class SamplesController {
     @Get('/sampleId')
     async checkSampleId(@Query() query: CheckSampleIdDto): Promise<void> {
         const sample = await this.samplesService.getOne([
-            { method: ['byIsActive', false] },
+            { method: ['byIsActivated', false] },
             { method: ['bySampleId', query.sampleId] }
         ]);
 
@@ -82,7 +82,7 @@ export class SamplesController {
     @Post(':sampleId')
     async activateSample(@Param() params: ActivateSampleDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
         const sample = await this.samplesService.getOne([
-            { method: ['byIsActive', false] },
+            { method: ['byIsActivated', false] },
             { method: ['bySampleId', params.sampleId] }
         ]);
 
