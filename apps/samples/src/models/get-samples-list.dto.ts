@@ -21,5 +21,5 @@ export class GetSamplesListDto {
     @IsOptional()
     @IsBoolean()
     @ParseBoolean()
-    readonly isActive: boolean;
+    readonly isActivated: boolean;
 }
