@@ -50,6 +50,16 @@ import { Op } from 'sequelize';
         }
         return { where: { resultAt: { [Op.and]: opAnd } } };
     },
+    byDateOfBirthInterval: (startDate?: string, endDate?: string) => {
+        const opAnd = [];
+        if (startDate) {
+            opAnd.push({ [Op.gte]: startDate });
+        }
+        if (endDate) {
+            opAnd.push({ [Op.lte]: endDate });
+        }
+        return { where: { dateOfBirth: { [Op.and]: opAnd } } };
+    },
 }))
 @Table({
     tableName: 'hl7Objects',
