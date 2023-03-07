@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOnlyDate } from '../../../common/src/resources/common/is-only-date.decorator';
 import { Transform } from 'class-transformer';
 import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
@@ -20,4 +21,14 @@ export class GetHl7ObjectListDto {
     @IsOptional()
     @IsString()
     readonly search: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    @IsOnlyDate()
+    readonly activatedAtStartDate: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    @IsOnlyDate()
+    readonly activatedAtEndDate: string;
 }
