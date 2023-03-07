@@ -45,6 +45,7 @@ import { WefitterDiastolicBloodPressure } from '../../../../wefitter/src/models/
 import { WefitterHrvSleep } from '../../../../wefitter/src/models/biometric-measurements/wefitter-hrv-sleep.entity';
 import { WefitterVo2Max } from '../../../../wefitter/src/models/biometric-measurements/wefitter-vo2-max.entity';
 import { UserWidgetSetting } from '../../../../users-widgets/src/models/user-widget-setting.entity';
+import { Hl7Object } from '../../../../hl7/src/models/hl7-object.entity';
 
 export const entities = [
     User,
@@ -94,4 +95,5 @@ export const entities = [
     WefitterHrvSleep,
     WefitterVo2Max,
     UserWidgetSetting,
+    Hl7Object,
 ];

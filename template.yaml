@@ -589,3 +589,17 @@ Resources:
           Properties:
             Path: /users/recommendations
             Method: ANY
+  
+  Hl7Function:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/hl7/src/main.handler
+      Description: 
+      Events:
+        Hl7ObjectsByIdApi:
+          Type: Api
+          Properties:
+            Path: /hl7/hl7-objects/{sampleCode}
+            Method: ANY
