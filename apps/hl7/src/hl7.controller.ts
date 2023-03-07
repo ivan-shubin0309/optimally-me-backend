@@ -54,6 +54,10 @@ export class Hl7Controller {
             scopes.push({ method: ['search', query.search] });
         }
 
+        if (query.activatedAtStartDate || query.activatedAtEndDate) {
+            scopes.push({ method: ['byActivatedAtInterval', query.activatedAtStartDate, query.activatedAtEndDate] });
+        }
+
         const count = await this.hl7Service.getCount(scopes);
 
         if (count) {
