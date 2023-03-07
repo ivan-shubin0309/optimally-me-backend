@@ -74,6 +74,10 @@ export class Hl7Controller {
             scopes.push({ method: ['byDateOfBirthInterval', query.dateOfBirthStartDate, query.dateOfBirthEndDate] });
         }
 
+        if (query.status) {
+            scopes.push({ method: ['byStatus', query.status] });
+        }
+
         const count = await this.hl7Service.getCount(scopes);
 
         if (count) {

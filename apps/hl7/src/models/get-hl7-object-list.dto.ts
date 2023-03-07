@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOnlyDate } from '../../../common/src/resources/common/is-only-date.decorator';
-import { Transform } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
+import { Hl7ObjectStatuses } from '../../../common/src/resources/hl7/hl7-object-statuses';
+import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 
 export class GetHl7ObjectListDto {
     @ApiProperty({ type: () => Number, required: true, default: 100 })
@@ -71,4 +73,11 @@ export class GetHl7ObjectListDto {
     @IsOptional()
     @IsOnlyDate()
     readonly dateOfBirthEndDate: string;
+
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(Hl7ObjectStatuses) })
+    @IsNumber()
+    @IsEnum(Hl7ObjectStatuses)
+    @Type(() => Number)
+    @Transform(({ value }) => Number(value))
+    readonly status: number;
 }
