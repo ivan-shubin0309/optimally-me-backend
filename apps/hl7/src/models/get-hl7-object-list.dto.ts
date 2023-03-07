@@ -45,6 +45,16 @@ export class GetHl7ObjectListDto {
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsOnlyDate()
+    readonly labReceivedAtStartDate: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    @IsOnlyDate()
+    readonly labReceivedAtEndDate: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    @IsOnlyDate()
     readonly resultAtStartDate: string;
 
     @ApiProperty({ type: () => String, required: false })

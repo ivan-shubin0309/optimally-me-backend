@@ -40,6 +40,16 @@ import { Op } from 'sequelize';
         }
         return { where: { sampleAt: { [Op.and]: opAnd } } };
     },
+    byLabReceivedAtInterval: (startDate?: string, endDate?: string) => {
+        const opAnd = [];
+        if (startDate) {
+            opAnd.push({ [Op.gte]: startDate });
+        }
+        if (endDate) {
+            opAnd.push({ [Op.lte]: endDate });
+        }
+        return { where: { labReceivedAt: { [Op.and]: opAnd } } };
+    },
     byResultAtInterval: (startDate?: string, endDate?: string) => {
         const opAnd = [];
         if (startDate) {
