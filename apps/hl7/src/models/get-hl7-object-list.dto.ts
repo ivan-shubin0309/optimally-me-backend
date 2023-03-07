@@ -51,4 +51,14 @@ export class GetHl7ObjectListDto {
     @IsOptional()
     @IsOnlyDate()
     readonly resultAtEndDate: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    @IsOnlyDate()
+    readonly dateOfBirthStartDate: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    @IsOnlyDate()
+    readonly dateOfBirthEndDate: string;
 }

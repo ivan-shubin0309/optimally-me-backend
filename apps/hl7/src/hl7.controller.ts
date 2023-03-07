@@ -66,6 +66,10 @@ export class Hl7Controller {
             scopes.push({ method: ['byResultAtInterval', query.resultAtStartDate, query.resultAtEndDate] });
         }
 
+        if (query.dateOfBirthStartDate || query.dateOfBirthEndDate) {
+            scopes.push({ method: ['byDateOfBirthInterval', query.dateOfBirthStartDate, query.dateOfBirthEndDate] });
+        }
+
         const count = await this.hl7Service.getCount(scopes);
 
         if (count) {
