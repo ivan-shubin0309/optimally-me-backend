@@ -2,10 +2,24 @@ import { Hl7ObjectStatuses } from '../../../common/src/resources/hl7/hl7-object-
 import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
 import { SexTypes } from '../../../common/src/resources/filters/sex-types';
 import { User } from '../../../users/src/models';
+import { Op } from 'sequelize';
 
 @Scopes(() => ({
     bySampleCode: (sampleCode: string) => ({ where: { sampleCode } }),
     pagination: (query) => ({ limit: query.limit, offset: query.offset }),
+    search: (searchString: string) => ({
+        where: {
+            [Op.or]: [
+                { firstName: { [Op.like]: `%${searchString}%` } },
+                { lastName: { [Op.like]: `%${searchString}%` } },
+                { email: { [Op.like]: `%${searchString}%` } },
+                { sampleCode: { [Op.like]: `%${searchString}%` } },
+                { lab: { [Op.like]: `%${searchString}%` } },
+                { orderId: { [Op.like]: `%${searchString}%` } },
+                { testProductName: { [Op.like]: `%${searchString}%` } },
+            ]
+        }
+    }),
 }))
 @Table({
     tableName: 'hl7Objects',
