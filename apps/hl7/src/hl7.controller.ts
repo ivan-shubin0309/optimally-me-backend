@@ -1,11 +1,14 @@
-import { Controller, Get, HttpCode, HttpStatus, NotFoundException, Param } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { GetListDto } from '../../common/src/models/get-list.dto';
 import { TranslatorService } from 'nestjs-translator';
 import { Roles } from '../../common/src/resources/common/role.decorator';
 import { UserRoles } from '../../common/src/resources/users';
 import { Hl7Service } from './hl7.service';
 import { GetHl7ObjectBySampleCodeDto } from './models/get-hl7-object-by-sample-code.dto';
 import { Hl7ObjectDto } from './models/hl7-object.dto';
+import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
+import { Hl7ObjectsDto } from './models/hl7-objects.dto';
 
 @ApiBearerAuth()
 @ApiTags('hl7')
@@ -36,5 +39,26 @@ export class Hl7Controller {
         }
 
         return new Hl7ObjectDto(hl7Object);
+    }
+
+    @ApiResponse({ type: () => Hl7ObjectsDto })
+    @ApiOperation({ summary: 'Get hl7 object list' })
+    @Roles(UserRoles.superAdmin)
+    @HttpCode(HttpStatus.OK)
+    @Get('/hl7-objects')
+    async getHl7ObjectList(@Query() query: GetListDto): Promise<Hl7ObjectsDto> {
+        let hl7ObjectsList = [];
+        const scopes: any[] = [];
+
+        const count = await this.hl7Service.getCount(scopes);
+
+        if (count) {
+            scopes.push(
+                { method: ['pagination', { limit: query.limit, offset: query.offset }] },
+            );
+            hl7ObjectsList = await this.hl7Service.getList(scopes);
+        }
+
+        return new Hl7ObjectsDto(hl7ObjectsList, PaginationHelper.buildPagination({ limit: query.limit, offset: query.offset }, count));
     }
 }
