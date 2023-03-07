@@ -62,6 +62,10 @@ export class Hl7Controller {
             scopes.push({ method: ['bySampleAtInterval', query.sampleAtStartDate, query.sampleAtEndDate] });
         }
 
+        if (query.labReceivedAtStartDate || query.labReceivedAtEndDate) {
+            scopes.push({ method: ['byLabReceivedAtInterval', query.labReceivedAtStartDate, query.labReceivedAtEndDate] });
+        }
+
         if (query.resultAtStartDate || query.resultAtEndDate) {
             scopes.push({ method: ['byResultAtInterval', query.resultAtStartDate, query.resultAtEndDate] });
         }
