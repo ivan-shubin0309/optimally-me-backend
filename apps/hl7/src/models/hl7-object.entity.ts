@@ -71,6 +71,7 @@ import { Op } from 'sequelize';
         return { where: { dateOfBirth: { [Op.and]: opAnd } } };
     },
     byStatus: (status) => ({ where: { status } }),
+    orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
 }))
 @Table({
     tableName: 'hl7Objects',
