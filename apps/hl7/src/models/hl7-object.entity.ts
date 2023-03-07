@@ -30,6 +30,16 @@ import { Op } from 'sequelize';
         }
         return { where: { activatedAt: { [Op.and]: opAnd } } };
     },
+    bySampleAtInterval: (startDate?: string, endDate?: string) => {
+        const opAnd = [];
+        if (startDate) {
+            opAnd.push({ [Op.gte]: startDate });
+        }
+        if (endDate) {
+            opAnd.push({ [Op.lte]: endDate });
+        }
+        return { where: { sampleAt: { [Op.and]: opAnd } } };
+    },
 }))
 @Table({
     tableName: 'hl7Objects',
