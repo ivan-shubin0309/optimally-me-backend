@@ -70,6 +70,7 @@ import { Op } from 'sequelize';
         }
         return { where: { dateOfBirth: { [Op.and]: opAnd } } };
     },
+    byStatus: (status) => ({ where: { status } }),
 }))
 @Table({
     tableName: 'hl7Objects',
