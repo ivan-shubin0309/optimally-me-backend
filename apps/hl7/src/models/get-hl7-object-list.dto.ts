@@ -41,4 +41,14 @@ export class GetHl7ObjectListDto {
     @IsOptional()
     @IsOnlyDate()
     readonly sampleAtEndDate: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    @IsOnlyDate()
+    readonly resultAtStartDate: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    @IsOnlyDate()
+    readonly resultAtEndDate: string;
 }
