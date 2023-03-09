@@ -601,7 +601,7 @@ Resources:
         Hl7ObjectsByIdApi:
           Type: Api
           Properties:
-            Path: /hl7/hl7-objects/{sampleCode}
+            Path: /hl7/hl7-objects/{id}
             Method: ANY
         Hl7ObjectsApi:
           Type: Api
