@@ -77,6 +77,7 @@ export class GetHl7ObjectListDto {
     readonly dateOfBirthEndDate: string;
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(Hl7ObjectStatuses) })
+    @IsOptional()
     @IsNumber()
     @IsEnum(Hl7ObjectStatuses)
     @Type(() => Number)
