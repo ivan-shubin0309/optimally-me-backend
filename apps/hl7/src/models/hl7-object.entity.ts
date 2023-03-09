@@ -72,6 +72,7 @@ import { Op } from 'sequelize';
     },
     byStatus: (status) => ({ where: { status } }),
     orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
+    byId: (id) => ({ where: { id } }),
 }))
 @Table({
     tableName: 'hl7Objects',
