@@ -613,3 +613,21 @@ Resources:
           Properties:
             Path: /hl7/hl7-objects/{id}/status
             Method: ANY
+        Hl7WebhookObjectGeneratorApi:
+          Type: Api
+          Properties:
+            Path: /hl7/webhook/object-generator
+            Method: ANY
+
+  Hl7ObjectDataGeneratorFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/hl7-object-data-generator-cron/src/main.handler
+      Description: 
+      Events:
+        SyncDataEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(00 02 * * ? *)

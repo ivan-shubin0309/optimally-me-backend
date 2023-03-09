@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Headers, HttpCode, HttpStatus, NotFoundException, Param, Patch, Query, UnauthorizedException } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TranslatorService } from 'nestjs-translator';
 import { Roles } from '../../common/src/resources/common/role.decorator';
@@ -12,6 +12,8 @@ import { GetHl7ObjectListDto } from './models/get-hl7-object-list.dto';
 import { EntityByIdDto } from '../../common/src/models/entity-by-id.dto';
 import { Hl7ObjectStatuses } from '../../common/src/resources/hl7/hl7-object-statuses';
 import { PatchHl7ObjectStatusDto } from './models/patch-hl7-object-status.dto';
+import { Public } from '../../common/src/resources/common/public.decorator';
+import { JwtService } from '@nestjs/jwt';
 
 @ApiBearerAuth()
 @ApiTags('hl7')
@@ -20,6 +22,7 @@ export class Hl7Controller {
     constructor(
         private readonly hl7Service: Hl7Service,
         private readonly translator: TranslatorService,
+        private readonly jwtService: JwtService,
     ) { }
 
     @ApiResponse({ type: () => Hl7ObjectDto })
@@ -118,5 +121,25 @@ export class Hl7Controller {
         }
 
         await hl7Object.update({ status: body.status });
+    }
+
+    @Public()
+    @ApiOperation({ summary: 'Hl7 object generator webhook' })
+    @HttpCode(HttpStatus.OK)
+    @Get('/webhook/object-generator')
+    async generateHl7ObjectsWebhook(@Headers('Authorization') authHeader): Promise<void> {
+        const token = authHeader && authHeader.split(' ')[1];
+
+        const decodedToken: any = this.jwtService.decode(token);
+
+        if (!decodedToken || !decodedToken.isWebhook) {
+            throw new UnauthorizedException({
+                message: this.translator.translate('WRONG_CREDENTIALS'),
+                errorCode: 'WRONG_CREDENTIALS',
+                statusCode: HttpStatus.UNAUTHORIZED
+            });
+        }
+
+        await this.hl7Service.generateHl7ObjectsFromSamples();
     }
 }
