@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TranslatorService } from 'nestjs-translator';
 import { Roles } from '../../common/src/resources/common/role.decorator';
@@ -9,6 +9,9 @@ import { Hl7ObjectDto } from './models/hl7-object.dto';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
 import { Hl7ObjectsDto } from './models/hl7-objects.dto';
 import { GetHl7ObjectListDto } from './models/get-hl7-object-list.dto';
+import { EntityByIdDto } from '../../common/src/models/entity-by-id.dto';
+import { Hl7ObjectStatuses } from '../../common/src/resources/hl7/hl7-object-statuses';
+import { PatchHl7ObjectStatusDto } from './models/patch-hl7-object-status.dto';
 
 @ApiBearerAuth()
 @ApiTags('hl7')
@@ -89,5 +92,31 @@ export class Hl7Controller {
         }
 
         return new Hl7ObjectsDto(hl7ObjectsList, PaginationHelper.buildPagination({ limit: query.limit, offset: query.offset }, count));
+    }
+
+    @ApiOperation({ summary: 'Patch status field' })
+    @Roles(UserRoles.superAdmin)
+    @HttpCode(HttpStatus.OK)
+    @Patch('/hl7-objects/:id/status')
+    async patchStatus(@Param() param: EntityByIdDto, @Body() body: PatchHl7ObjectStatusDto): Promise<void> {
+        const hl7Object = await this.hl7Service.getOne([{ method: ['byId', param.id] }]);
+
+        if (!hl7Object) {
+            throw new NotFoundException({
+                message: this.translator.translate('HL7_OBJECT_NOT_FOUND'),
+                errorCode: 'HL7_OBJECT_NOT_FOUND',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        if (hl7Object.status !== Hl7ObjectStatuses.error) {
+            throw new BadRequestException({
+                message: this.translator.translate('HL7_OBJECT_NOT_ERROR_STATUS'),
+                errorCode: 'HL7_OBJECT_NOT_ERROR_STATUS',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        await hl7Object.update({ status: body.status });
     }
 }
