@@ -3,7 +3,7 @@ import { FileStatuses } from '../../common/src/resources/files/file-statuses';
 import { Repository } from 'sequelize-typescript';
 import { BaseService } from '../../common/src/base/base.service';
 import { File } from './models/file.entity';
-import { FileTypes } from '../../common/src/resources/files/file-types';
+import { FileTypes, InternalFileTypes } from '../../common/src/resources/files/file-types';
 import { Transaction } from 'sequelize/types';
 import { TranslatorService } from 'nestjs-translator';
 import { S3Service } from './s3.service';
@@ -115,6 +115,33 @@ export class FilesService extends BaseService<File> {
         });
     }
 
+    prepareFile(body: { contentType: string, type: FileTypes | InternalFileTypes }, userId: number, folderName: string): IAwsFile {
+        let extension = '';
+        const fileToCreate: IAwsFile = Object.assign({}, body);
+
+        if (!rules.supportedTypes[body.type].includes(body.contentType)) {
+            throw new ForbiddenException({
+                message: this.translator.translate('INVALID_FILE_TYPE'),
+                errorCode: 'INVALID_FILE_TYPE',
+                statusCode: HttpStatus.FORBIDDEN
+            });
+        }
+
+        Object
+            .keys(rules.filesContentTypes)
+            .forEach(contentType => {
+                if (rules.filesContentTypes[contentType].contentTypes.includes(body.contentType)) {
+                    extension = rules.filesContentTypes[contentType].extension;
+                }
+            });
+
+        fileToCreate.acl = 'public-read';
+        fileToCreate.fileName = `${FILE_PREFIX}_${uuid.v4()}.${extension}`;
+        fileToCreate.key = `files/${folderName}/user_${userId}/${fileToCreate.fileName}`;
+
+        return fileToCreate;
+    }
+
     update(scopes: any[], body: { status: FileStatuses }, transaction?: Transaction): Promise<[affectedCount: number, affectedRows: File[]]> {
         //eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
@@ -197,5 +224,10 @@ export class FilesService extends BaseService<File> {
         await this.model
             .scope([{ method: ['byId', fileIds] }])
             .update({ isUsed: false }, { transaction } as any);
+    }
+
+    async putFileToS3(body: any, awsFile: IAwsFile, file: File, transaction?: Transaction): Promise<void> {
+        await this.s3Service.putObject(body, awsFile.key, awsFile.contentType, awsFile.acl);
+        await this.markFilesAsUploaded([file], transaction);
     }
 }

@@ -9,6 +9,7 @@ import { jwtModuleInstance } from '../../common/src/utils/jwt/jwt.module';
 import { translatorInstance } from '../../common/src/utils/translator/translator.provider';
 import { SessionsService } from '../../sessions/src/sessions.service';
 import { UsersService } from '../../users/src/users.service';
+import { Hl7FilesService } from './hl7-files.service';
 import { Hl7Controller } from './hl7.controller';
 import { Hl7Service } from './hl7.service';
 import { modelProviders } from './models.provider';
@@ -25,6 +26,7 @@ import { modelProviders } from './models.provider';
         Hl7Service,
         SessionsService,
         UsersService,
+        Hl7FilesService,
         JwtStrategy,
         ...guardProviders,
         sequelizeProvider(entities),
