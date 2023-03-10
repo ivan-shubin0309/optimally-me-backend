@@ -215,6 +215,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/hl7/tsconfig.app.json"
       }
+    },
+    "hl7-object-data-generator-cron": {
+      "type": "application",
+      "root": "apps/hl7-object-data-generator-cron",
+      "entryFile": "main",
+      "sourceRoot": "apps/hl7-object-data-generator-cron/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/hl7-object-data-generator-cron/tsconfig.app.json"
+      }
     }
   }
 }
