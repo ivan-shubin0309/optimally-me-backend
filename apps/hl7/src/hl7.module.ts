@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { FilesService } from '../../files/src/files.service';
+import { S3Service } from '../../files/src/s3.service';
 import { JwtStrategy } from '../../common/src/strategies/jwt.strategy';
 import { ConfigModule } from '../../common/src/utils/config/config.module';
 import { entities } from '../../common/src/utils/database/database-entity.provider';
@@ -27,6 +29,8 @@ import { modelProviders } from './models.provider';
         SessionsService,
         UsersService,
         Hl7FilesService,
+        FilesService,
+        S3Service,
         JwtStrategy,
         ...guardProviders,
         sequelizeProvider(entities),
