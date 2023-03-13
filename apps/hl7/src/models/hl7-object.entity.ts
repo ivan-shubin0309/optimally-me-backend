@@ -18,6 +18,7 @@ import { File } from '../../../files/src/models/file.entity';
                 { lab: { [Op.like]: `%${searchString}%` } },
                 { orderId: { [Op.like]: `%${searchString}%` } },
                 { testProductName: { [Op.like]: `%${searchString}%` } },
+                { labId: { [Op.like]: `%${searchString}%` } },
             ]
         }
     }),
