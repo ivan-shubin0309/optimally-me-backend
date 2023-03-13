@@ -4,6 +4,10 @@ import { BaseService } from '../../common/src/base/base.service';
 import { Hl7Object } from './models/hl7-object.entity';
 import { UserSample } from '../../samples/src/models/user-sample.entity';
 import { Hl7ObjectStatuses } from '../../common/src/resources/hl7/hl7-object-statuses';
+import { Hl7FilesService } from './hl7-files.service';
+import { FilesService } from '../../files/src/files.service';
+import { InternalFileTypes } from '../../common/src/resources/files/file-types';
+import { HL7_FILE_TYPE } from '../../common/src/resources/files/files-validation-rules';
 
 @Injectable()
 export class Hl7Service extends BaseService<Hl7Object> {
@@ -11,6 +15,8 @@ export class Hl7Service extends BaseService<Hl7Object> {
         @Inject('HL7_OBJECT_MODEL') protected readonly model: Repository<Hl7Object>,
         @Inject('USER_SAMPLE_MODEL') private readonly userSampleModel: Repository<UserSample>,
         @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
+        private readonly hl7FilesService: Hl7FilesService,
+        private readonly filesService: FilesService,
     ) { super(model); }
 
     async generateHl7ObjectsFromSamples(): Promise<void> {
@@ -32,7 +38,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
         );
 
         const step = 1000;
-        const iterations = Math.ceil(userSamplesCount / step);
+        let iterations = Math.ceil(userSamplesCount / step);
 
         await this.dbConnection.transaction(async transaction => {
             for (let i = 0; i < iterations; i++) {
@@ -64,6 +70,29 @@ export class Hl7Service extends BaseService<Hl7Object> {
             }
         });
 
-        //TO DO generate file
+        const hl7ObjectsToUploadCount = await this.getCount([{ method: ['byFileId', null] }]);
+        iterations = Math.ceil(hl7ObjectsToUploadCount / step);
+
+        for (let i = 0; i < iterations; i++) {
+            const hl7ObjectsToUpload = await this.getList([
+                { method: ['byFileId', null] },
+                { method: ['pagination', { limit: step, offset: i * step }] }
+            ]);
+
+            await Promise.all(
+                hl7ObjectsToUpload.map(async objectToUpload => {
+                    const dataString = this.hl7FilesService.createHl7FileFromHl7Object(objectToUpload);
+
+                    const awsFile = await this.filesService.prepareFile({ contentType: HL7_FILE_TYPE, type: InternalFileTypes.hl7 }, objectToUpload.userId, InternalFileTypes[InternalFileTypes.hl7]);
+                    const [createdFile] = await this.filesService.createFilesInDb(objectToUpload.userId, [awsFile]);
+                    await objectToUpload.update({ fileId: createdFile.id });
+
+                    await this.filesService.putFileToS3(dataString, awsFile, createdFile);
+
+                    await this.filesService.markFilesAsUsed([createdFile.id]);
+                })
+            );
+        }
+        //TO DO send file to eurofin
     }
 }

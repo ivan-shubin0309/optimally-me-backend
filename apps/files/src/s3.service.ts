@@ -1,8 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import { Repository } from 'sequelize-typescript';
 import { File } from './models/file.entity';
-import { S3 } from '@aws-sdk/client-s3';
+import { PutObjectCommand, S3 } from '@aws-sdk/client-s3';
 import { createPresignedPost as s3CreatePresignedPost, PresignedPost } from '@aws-sdk/s3-presigned-post';
 import { Transaction } from 'sequelize/types';
 import { FileStatuses } from '../../common/src/resources/files/file-statuses';
@@ -80,5 +80,27 @@ export class S3Service {
         );
 
         return await this.fileModel.bulkCreate(copiedFiles, { transaction });
+    }
+
+    async putObject(body: any, key: string, contentType: string, acl: string): Promise<void> {
+        const command = new PutObjectCommand({
+            Bucket: this.bucket,
+            Key: key,
+            Body: body,
+            ACL: acl,
+            ContentType: contentType
+        });
+
+        try {
+            const response = await this.s3Connection.send(command);
+            console.log(response);
+        } catch (err) {
+            console.error(err.message);
+            throw new UnprocessableEntityException({
+                message: err.message,
+                errorCode: 'S3_FILE_UPLOAD_ERROR',
+                statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+            });
+        }
     }
 }

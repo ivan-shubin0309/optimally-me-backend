@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Headers, HttpCode, HttpStatus, NotFoundException, Param, Patch, Query, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Headers, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Query, UnauthorizedException } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TranslatorService } from 'nestjs-translator';
 import { Roles } from '../../common/src/resources/common/role.decorator';
@@ -126,7 +126,7 @@ export class Hl7Controller {
     @Public()
     @ApiOperation({ summary: 'Hl7 object generator webhook' })
     @HttpCode(HttpStatus.OK)
-    @Get('/webhook/object-generator')
+    @Post('/webhook/object-generator')
     async generateHl7ObjectsWebhook(@Headers('Authorization') authHeader): Promise<void> {
         const token = authHeader && authHeader.split(' ')[1];
 

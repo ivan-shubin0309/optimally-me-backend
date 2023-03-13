@@ -3,6 +3,7 @@ import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-ty
 import { SexTypes } from '../../../common/src/resources/filters/sex-types';
 import { User } from '../../../users/src/models';
 import { Op } from 'sequelize';
+import { File } from '../../../files/src/models/file.entity';
 
 @Scopes(() => ({
     bySampleCode: (sampleCode: string) => ({ where: { sampleCode } }),
@@ -17,6 +18,7 @@ import { Op } from 'sequelize';
                 { lab: { [Op.like]: `%${searchString}%` } },
                 { orderId: { [Op.like]: `%${searchString}%` } },
                 { testProductName: { [Op.like]: `%${searchString}%` } },
+                { labId: { [Op.like]: `%${searchString}%` } },
             ]
         }
     }),
@@ -73,6 +75,7 @@ import { Op } from 'sequelize';
     byStatus: (status) => ({ where: { status } }),
     orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
     byId: (id) => ({ where: { id } }),
+    byFileId: (fileId) => ({ where: { fileId } }),
 }))
 @Table({
     tableName: 'hl7Objects',
@@ -86,6 +89,13 @@ export class Hl7Object extends Model {
         allowNull: false
     })
     userId: number;
+
+    @ForeignKey(() => File)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false
+    })
+    fileId: number;
 
     @Column({
         type: DataType.STRING,
@@ -151,25 +161,25 @@ export class Hl7Object extends Model {
         type: DataType.DATEONLY,
         allowNull: true
     })
-    activatedAt: string;
+    activatedAt: Date | any;
 
     @Column({
         type: DataType.DATEONLY,
         allowNull: true
     })
-    sampleAt: string;
+    sampleAt: Date | any;
 
     @Column({
         type: DataType.DATEONLY,
         allowNull: true
     })
-    labReceivedAt: string;
+    labReceivedAt: Date | any;
 
     @Column({
         type: DataType.DATEONLY,
         allowNull: true
     })
-    resultAt: string;
+    resultAt: Date | any;
 
     @Column({
         type: DataType.BOOLEAN,
