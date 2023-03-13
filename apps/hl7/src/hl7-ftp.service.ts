@@ -1,9 +1,11 @@
 import { HttpStatus, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ConfigService } from '../../common/src/utils/config/config.service';
-import axios from 'axios';
-import * as ClientSftp from 'ssh2-sftp-client'; 
+import * as ClientSftp from 'ssh2-sftp-client';
+import * as https from 'https';
+import { Readable } from 'stream';
 
-const HL7_BASE_REQUEST_PATH = 'HL7/HL7 Requests';
+const HL7_BASE_REQUEST_PATH = './HL7';
+const FILE_PREFIX = 'OPME';
 
 @Injectable()
 export class Hl7FtpService {
@@ -32,25 +34,16 @@ export class Hl7FtpService {
     }
 
     async uploadFileToFileServer(source: string, fileName: string): Promise<void> {
-        const response = await axios
-            .get(
-                source,
-                { headers: { responseType: 'stream' } }
-            )
-            .catch(err => {
-                console.log(err.message);
-                throw new UnprocessableEntityException({
-                    message: err.message,
-                    errorCode: 'HL7_S3_FILE_ERROR',
-                    statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-                });
+        const fileStream = await new Promise<Readable>((resolve, reject) => {
+            https.get(source, (stream) => {
+                resolve(stream);
             });
-        const fileStream = response.data;
+        });
 
         const client = await this.getFtpClient();
 
         await client
-            .put(fileStream, `${HL7_BASE_REQUEST_PATH}/${fileName}.hl7`)
+            .put(fileStream, `${HL7_BASE_REQUEST_PATH}/${FILE_PREFIX}-${fileName}.hl7`)
             .catch(err => {
                 console.log(err.message);
                 throw new UnprocessableEntityException({
