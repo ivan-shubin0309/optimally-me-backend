@@ -9,6 +9,7 @@ import { FilesService } from '../../files/src/files.service';
 import { InternalFileTypes } from '../../common/src/resources/files/file-types';
 import { HL7_FILE_TYPE } from '../../common/src/resources/files/files-validation-rules';
 import { Hl7FtpService } from './hl7-ftp.service';
+import { FileHelper } from '../../common/src/utils/helpers/file.helper';
 
 @Injectable()
 export class Hl7Service extends BaseService<Hl7Object> {
@@ -52,7 +53,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
                 const objectsToCreate = userSamples.map(userSample => ({
                     userId: userSample.userId,
-                    lab: null,
+                    lab: 'County_Pathology',
                     sampleCode: userSample.sample.sampleId,
                     status: Hl7ObjectStatuses.new,
                     email: userSample.user.email,
@@ -93,7 +94,12 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
                     await this.filesService.markFilesAsUsed([createdFile.id]);
 
-                    await this.hl7FtpService.uploadFileToFileServer(); //TO DO
+                    await this.hl7FtpService.uploadFileToFileServer(
+                        FileHelper
+                            .getInstance()
+                            .buildBaseLink(createdFile),
+                        objectToUpload.sampleCode,
+                    );
                 })
             );
         }

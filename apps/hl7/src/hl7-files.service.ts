@@ -16,7 +16,7 @@ export class Hl7FilesService {
 
         const mshSegment = message.header;
         mshSegment.addField('OM', 2);
-        mshSegment.addField('County Pathology', 3);
+        mshSegment.addField(hl7Object.lab, 3);
         mshSegment.addField(DateTime.fromJSDate(hl7Object.createdAt).toFormat('yyyyMMddHHmmss'), 5);
         mshSegment.addField('OMG^019', 7);
         mshSegment.addField(hl7Object.id, 8);
