@@ -4,7 +4,7 @@ import * as ClientSftp from 'ssh2-sftp-client';
 import * as https from 'https';
 import { Readable } from 'stream';
 
-const HL7_BASE_REQUEST_PATH = './HL7';
+const HL7_BASE_REQUEST_PATH = './HL7/HL7 Requests';
 const FILE_PREFIX = 'OPME';
 
 @Injectable()
