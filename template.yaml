@@ -631,3 +631,16 @@ Resources:
           Type: Schedule
           Properties:
             Schedule: cron(00 02 * * ? *)
+
+  Hl7ResultFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/hl7-result-cron/src/main.handler
+      Description: 
+      Events:
+        SyncDataEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(00 * * * ? *)

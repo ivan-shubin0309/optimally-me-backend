@@ -22,6 +22,7 @@
 .PHONY: build-UsersRecommendationsFunction
 .PHONY: build-Hl7Function
 .PHONY: build-Hl7ObjectDataGeneratorFunction
+.PHONY: build-Hl7ResultFunction
 
 
 build-RuntimeDependenciesLayer:
@@ -109,3 +110,6 @@ build-Hl7Function:
 
 build-Hl7ObjectDataGeneratorFunction:
 	$(MAKE) HANDLER=apps/hl7-object-data-generator-cron/src/main.ts ENTITY=hl7-object-data-generator-cron build-lambda-common
+
+build-Hl7ResultFunction:
+	$(MAKE) HANDLER=apps/hl7-result-cron/src/main.ts ENTITY=hl7-result-cron build-lambda-common
