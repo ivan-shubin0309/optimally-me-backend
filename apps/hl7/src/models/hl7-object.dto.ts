@@ -4,7 +4,7 @@ import { Hl7ObjectStatuses } from '../../../common/src/resources/hl7/hl7-object-
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { BaseDto } from '../../../common/src/base/base.dto';
 import { Hl7Object } from './hl7-object.entity';
-import { FileDto } from 'apps/files/src/models/file.dto';
+import { FileDto } from '../../../files/src/models/file.dto';
 
 export class Hl7ObjectDto extends BaseDto<Hl7Object> {
     constructor(data: Hl7Object) {
@@ -94,6 +94,6 @@ export class Hl7ObjectDto extends BaseDto<Hl7Object> {
     @ApiProperty({ type: () => String, required: false })
     readonly toFollow: string;
 
-    @ApiProperty({ type: () => File, required: false })
+    @ApiProperty({ type: () => FileDto, required: false })
     readonly file: FileDto;
 }
