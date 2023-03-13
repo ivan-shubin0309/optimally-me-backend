@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOnlyDate } from '../../../common/src/resources/common/is-only-date.decorator';
 import { Transform, Type } from 'class-transformer';
-import { IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
+import { ArrayUnique, IsArray, IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 import { Hl7ObjectStatuses } from '../../../common/src/resources/hl7/hl7-object-statuses';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { orderTypes } from '../../../common/src/resources/common/order-types';
@@ -78,10 +78,12 @@ export class GetHl7ObjectListDto {
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(Hl7ObjectStatuses) })
     @IsOptional()
-    @IsNumber()
+    @IsArray()
+    @ArrayUnique()
+    @IsNumber({}, { each: true })
     @IsEnum(Hl7ObjectStatuses)
     @Type(() => Number)
-    @Transform(({ value }) => Number(value))
+    @Transform(({ value }) => typeof value === 'number' ? [value] : value)
     readonly status: number;
 
     @ApiProperty({ type: () => String, required: false, default: 'createdAt', description: sortingFieldNames.join(', ') })
