@@ -1,5 +1,5 @@
 import { Hl7ObjectStatuses } from '../../../common/src/resources/hl7/hl7-object-statuses';
-import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Model, Scopes, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { SexTypes } from '../../../common/src/resources/filters/sex-types';
 import { User } from '../../../users/src/models';
 import { Op } from 'sequelize';
@@ -76,6 +76,15 @@ import { File } from '../../../files/src/models/file.entity';
     orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
     byId: (id) => ({ where: { id } }),
     byFileId: (fileId) => ({ where: { fileId } }),
+    withFile: () => ({
+        include: [
+            {
+                model: File,
+                as: 'file',
+                required: false,
+            },
+        ]
+    }),
 }))
 @Table({
     tableName: 'hl7Objects',
@@ -210,4 +219,7 @@ export class Hl7Object extends Model {
         allowNull: true
     })
     toFollow: string;
+
+    @BelongsTo(() => File, 'fileId')
+    file: File;
 }

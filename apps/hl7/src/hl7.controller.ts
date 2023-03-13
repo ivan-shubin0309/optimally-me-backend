@@ -89,7 +89,8 @@ export class Hl7Controller {
         if (count) {
             scopes.push(
                 { method: ['pagination', { limit: query.limit, offset: query.offset }] },
-                { method: ['orderBy', [[query.orderBy, query.orderType]]] }
+                { method: ['orderBy', [[query.orderBy, query.orderType]]] },
+                { method: ['withFile'] }
             );
             hl7ObjectsList = await this.hl7Service.getList(scopes);
         }
