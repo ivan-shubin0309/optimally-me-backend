@@ -8,6 +8,7 @@ import { Hl7FilesService } from './hl7-files.service';
 import { FilesService } from '../../files/src/files.service';
 import { InternalFileTypes } from '../../common/src/resources/files/file-types';
 import { HL7_FILE_TYPE } from '../../common/src/resources/files/files-validation-rules';
+import { Hl7FtpService } from './hl7-ftp.service';
 
 @Injectable()
 export class Hl7Service extends BaseService<Hl7Object> {
@@ -17,6 +18,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
         @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
         private readonly hl7FilesService: Hl7FilesService,
         private readonly filesService: FilesService,
+        private readonly hl7FtpService: Hl7FtpService,
     ) { super(model); }
 
     async generateHl7ObjectsFromSamples(): Promise<void> {
@@ -90,9 +92,10 @@ export class Hl7Service extends BaseService<Hl7Object> {
                     await this.filesService.putFileToS3(dataString, awsFile, createdFile);
 
                     await this.filesService.markFilesAsUsed([createdFile.id]);
+
+                    await this.hl7FtpService.uploadFileToFileServer(); //TO DO
                 })
             );
         }
-        //TO DO send file to eurofin
     }
 }

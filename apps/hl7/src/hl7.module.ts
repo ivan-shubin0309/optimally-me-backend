@@ -16,6 +16,7 @@ import { Hl7Controller } from './hl7.controller';
 import { Hl7Service } from './hl7.service';
 import { modelProviders } from './models.provider';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
+import { Hl7FtpService } from './hl7-ftp.service';
 
 @Module({
     imports: [
@@ -33,6 +34,7 @@ import { FileHelper } from '../../common/src/utils/helpers/file.helper';
         FilesService,
         FileHelper,
         S3Service,
+        Hl7FtpService,
         JwtStrategy,
         ...guardProviders,
         sequelizeProvider(entities),
