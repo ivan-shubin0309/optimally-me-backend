@@ -15,6 +15,7 @@ import { Hl7FilesService } from './hl7-files.service';
 import { Hl7Controller } from './hl7.controller';
 import { Hl7Service } from './hl7.service';
 import { modelProviders } from './models.provider';
+import { FileHelper } from '../../common/src/utils/helpers/file.helper';
 
 @Module({
     imports: [
@@ -30,6 +31,7 @@ import { modelProviders } from './models.provider';
         UsersService,
         Hl7FilesService,
         FilesService,
+        FileHelper,
         S3Service,
         JwtStrategy,
         ...guardProviders,
