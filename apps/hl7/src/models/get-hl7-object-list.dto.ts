@@ -76,15 +76,15 @@ export class GetHl7ObjectListDto {
     @IsOnlyDate()
     readonly dateOfBirthEndDate: string;
 
-    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(Hl7ObjectStatuses) })
+    @ApiProperty({ type: () => [Number], required: false, description: EnumHelper.toDescription(Hl7ObjectStatuses) })
     @IsOptional()
     @IsArray()
     @ArrayUnique()
     @IsNumber({}, { each: true })
-    @IsEnum(Hl7ObjectStatuses)
+    @IsEnum(Hl7ObjectStatuses, { each: true })
     @Type(() => Number)
     @Transform(({ value }) => typeof value === 'number' ? [value] : value)
-    readonly status: number;
+    readonly status: number[];
 
     @ApiProperty({ type: () => String, required: false, default: 'createdAt', description: sortingFieldNames.join(', ') })
     @IsOptional()
