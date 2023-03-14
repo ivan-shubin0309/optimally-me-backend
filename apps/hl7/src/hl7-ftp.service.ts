@@ -4,7 +4,9 @@ import * as ClientSftp from 'ssh2-sftp-client';
 import * as https from 'https';
 import { Readable } from 'stream';
 
-const HL7_BASE_REQUEST_PATH = './HL7/HL7 Requests';
+const HL7_BASE_REQUEST_PATH = '/HL7/HL7 Requests';
+const HL7_STATUS_PATH = '/HL7 Status';
+const HL7_RESULT_PATH = '/HL7 Results';
 const FILE_PREFIX = 'OPME';
 
 @Injectable()
@@ -52,5 +54,33 @@ export class Hl7FtpService {
                     statusCode: HttpStatus.UNPROCESSABLE_ENTITY
                 });
             });
+    }
+
+    private async getFileList(path: string): Promise<ClientSftp.FileInfo[]> {
+        const client = await this.getFtpClient();
+
+        return client.list(path);
+    }
+
+    getStatusFileList(): Promise<ClientSftp.FileInfo[]> {
+        return this.getFileList(`${HL7_STATUS_PATH}/`);
+    }
+
+    getResultFileList(): Promise<ClientSftp.FileInfo[]> {
+        return this.getFileList(`${HL7_RESULT_PATH}/`);
+    }
+
+    private async downloadFile(fullPath: string): Promise<string | Buffer | NodeJS.WritableStream> {
+        const client = await this.getFtpClient();
+
+        return client.get(fullPath);
+    }
+
+    downloadStatusFile(fileName: string): Promise<string | Buffer | NodeJS.WritableStream> {
+        return this.downloadFile(`${HL7_STATUS_PATH}/${fileName}`);
+    }
+
+    downloadResultFile(fileName: string): Promise<string | Buffer | NodeJS.WritableStream> {
+        return this.downloadFile(`${HL7_RESULT_PATH}/${fileName}`);
     }
 }

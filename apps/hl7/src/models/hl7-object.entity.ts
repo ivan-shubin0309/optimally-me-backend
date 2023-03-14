@@ -5,6 +5,35 @@ import { User } from '../../../users/src/models';
 import { Op } from 'sequelize';
 import { File } from '../../../files/src/models/file.entity';
 
+export interface IHl7Object {
+    id?: number;
+    userId?: number;
+    fileId?: number;
+    statusFileId?: number;
+    resultFileId?: number;
+    lab?: string;
+    orderId?: number;
+    testProductName?: string;
+    sampleCode?: string;
+    status?: Hl7ObjectStatuses;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    dateOfBirth?: string;
+    sex?: SexTypes;
+    activatedAt?: Date | any;
+    sampleAt?: Date | any;
+    labReceivedAt?: Date | any;
+    resultAt?: Date | any;
+    isQuizCompleted?: boolean;
+    labId?: string;
+    abnormalResults?: string;
+    failedTests?: string;
+    toFollow?: string;
+    createdAt?: Date | any;
+    updatedAt?: Date | any;
+}
+
 @Scopes(() => ({
     bySampleCode: (sampleCode: string) => ({ where: { sampleCode } }),
     pagination: (query) => ({ limit: query.limit, offset: query.offset }),
@@ -76,15 +105,27 @@ import { File } from '../../../files/src/models/file.entity';
     orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
     byId: (id) => ({ where: { id } }),
     byFileId: (fileId) => ({ where: { fileId } }),
-    withFile: () => ({
+    withFiles: () => ({
         include: [
             {
                 model: File,
                 as: 'file',
                 required: false,
             },
+            {
+                model: File,
+                as: 'statusFile',
+                required: false,
+            },
+            {
+                model: File,
+                as: 'resultFile',
+                required: false,
+            },
         ]
     }),
+    byStatusFileId: (statusFileId) => ({ where: { statusFileId } }),
+    byResultFileId: (resultFileId) => ({ where: { resultFileId } }),
 }))
 @Table({
     tableName: 'hl7Objects',
@@ -105,6 +146,20 @@ export class Hl7Object extends Model {
         allowNull: false
     })
     fileId: number;
+
+    @ForeignKey(() => File)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false
+    })
+    statusFileId: number;
+
+    @ForeignKey(() => File)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false
+    })
+    resultFileId: number;
 
     @Column({
         type: DataType.STRING,
@@ -222,4 +277,10 @@ export class Hl7Object extends Model {
 
     @BelongsTo(() => File, 'fileId')
     file: File;
+
+    @BelongsTo(() => File, 'statusFileId')
+    statusFile: File;
+
+    @BelongsTo(() => File, 'resultFileId')
+    resultFile: File;
 }
