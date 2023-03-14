@@ -3,4 +3,5 @@ export enum Hl7ObjectStatuses {
     inProgress = 2,
     error = 3,
     verified = 4,
+    canceled = 5,
 }

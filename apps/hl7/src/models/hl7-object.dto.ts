@@ -32,6 +32,12 @@ export class Hl7ObjectDto extends BaseDto<Hl7Object> {
         this.file = data.file
             ? new FileDto(data.file)
             : undefined;
+        this.statusFile = data.statusFile
+            ? new FileDto(data.statusFile)
+            : undefined;
+        this.resultFile = data.resultFile
+            ? new FileDto(data.resultFile)
+            : undefined;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -96,4 +102,10 @@ export class Hl7ObjectDto extends BaseDto<Hl7Object> {
 
     @ApiProperty({ type: () => FileDto, required: false })
     readonly file: FileDto;
+
+    @ApiProperty({ type: () => FileDto, required: false })
+    readonly statusFile: FileDto;
+
+    @ApiProperty({ type: () => FileDto, required: false })
+    readonly resultFile: FileDto;
 }

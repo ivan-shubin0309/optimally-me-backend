@@ -1,12 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { Hl7Object } from './models/hl7-object.entity';
-import { Message } from 'simple-hl7';
+import { Hl7Object, IHl7Object } from './models/hl7-object.entity';
+import { Message, Parser } from 'simple-hl7';
 import { DateTime } from 'luxon';
 import { SexTypes } from '../../common/src/resources/filters/sex-types';
+import { Hl7ObjectStatuses } from 'apps/common/src/resources/hl7/hl7-object-statuses';
 
 const sexTypeToHl7Sex = {
     [SexTypes.male]: 'M',
     [SexTypes.female]: 'F',
+};
+
+const hl7SexToSexType = {
+    'M': SexTypes.male,
+    'F': SexTypes.female
+};
+
+const hl7FileStatusToHl7ObjectStatuses = {
+    'IP': Hl7ObjectStatuses.inProgress,
+    'CM': Hl7ObjectStatuses.verified,
 };
 
 @Injectable()
@@ -46,5 +57,38 @@ export class Hl7FilesService {
         obrSegment.addField('Normal', 5);
 
         return message.toString();
+    }
+
+    parseHl7FileToHl7Object(messageString: string): IHl7Object {
+        const message = (new Parser()).parse(messageString);
+        const pidSegment = message.getSegment('PID');
+        const orcSegment = message.getSegment('ORC');
+        const obrSegment = message.getSegment('OBR');
+        const obxSegment = message.getSegment('OBX');
+
+        return {
+            lab: message.header.getField(3),
+            createdAt: message.header.getField(5) && DateTime.fromFormat(message.header.getField(5), 'yyyyMMddHHmmss').toJSDate(),
+            id: message.header.getField(8),
+            userId: pidSegment.getField(3),
+            firstName: pidSegment.getField(5) && pidSegment.getField(5).split(' ')[1],
+            lastName: pidSegment.getField(5) && pidSegment.getField(5).split(' ')[0],
+            dateOfBirth: pidSegment.getField(7) && DateTime.fromFormat(pidSegment.getField(7), 'yyyyMMdd').toFormat('yyyy-MM-dd'),
+            sex: pidSegment.getField(8) && hl7SexToSexType[pidSegment.getField(8)],
+            sampleCode: orcSegment.getField(2),
+            status: orcSegment.getField(5) && hl7FileStatusToHl7ObjectStatuses[orcSegment.getField(5)],
+            activatedAt: orcSegment.getField(9) && DateTime.fromFormat(orcSegment.getField(9), 'yyyyMMddHHmmss').toFormat('yyyy-MM-dd'),
+            labId: obrSegment.getField(3),
+            labReceivedAt: obrSegment.getField(6) && DateTime.fromFormat(obrSegment.getField(6), 'yyyyMMddHHmmss').toFormat('yyyy-MM-dd'),
+            sampleAt: obrSegment.getField(14) && DateTime.fromFormat(obrSegment.getField(14), 'yyyyMMddHHmmss').toFormat('yyyy-MM-dd'),
+            failedTests: obxSegment && obxSegment.getField(5),
+            resultAt: undefined,
+            email: undefined,
+            isQuizCompleted: undefined,
+            abnormalResults: undefined,
+            toFollow: undefined,
+            orderId: undefined,
+            testProductName: undefined,
+        };
     }
 }

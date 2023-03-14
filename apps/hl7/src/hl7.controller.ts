@@ -90,7 +90,7 @@ export class Hl7Controller {
             scopes.push(
                 { method: ['pagination', { limit: query.limit, offset: query.offset }] },
                 { method: ['orderBy', [[query.orderBy, query.orderType]]] },
-                { method: ['withFile'] }
+                { method: ['withFiles'] }
             );
             hl7ObjectsList = await this.hl7Service.getList(scopes);
         }
@@ -161,6 +161,7 @@ export class Hl7Controller {
             });
         }
 
-        //TO DO add check for updates on eurofin
+        await this.hl7Service.checkForStatusFiles();
+        await this.hl7Service.checkForResultFiles();
     }
 }

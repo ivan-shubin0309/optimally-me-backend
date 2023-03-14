@@ -618,6 +618,11 @@ Resources:
           Properties:
             Path: /hl7/webhook/object-generator
             Method: ANY
+        Hl7WebhookResultsApi:
+          Type: Api
+          Properties:
+            Path: /hl7/webhook/results
+            Method: ANY
 
   Hl7ObjectDataGeneratorFunction:
     Type: AWS::Serverless::Function
