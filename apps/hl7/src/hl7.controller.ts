@@ -143,4 +143,24 @@ export class Hl7Controller {
 
         await this.hl7Service.generateHl7ObjectsFromSamples();
     }
+
+    @Public()
+    @ApiOperation({ summary: 'Hl7 result updates check webhook' })
+    @HttpCode(HttpStatus.OK)
+    @Post('/webhook/results')
+    async hl7ResultsWebhook(@Headers('Authorization') authHeader): Promise<void> {
+        const token = authHeader && authHeader.split(' ')[1];
+
+        const decodedToken: any = this.jwtService.decode(token);
+
+        if (!decodedToken || !decodedToken.isWebhook) {
+            throw new UnauthorizedException({
+                message: this.translator.translate('WRONG_CREDENTIALS'),
+                errorCode: 'WRONG_CREDENTIALS',
+                statusCode: HttpStatus.UNAUTHORIZED
+            });
+        }
+
+        //TO DO add check for updates on eurofin
+    }
 }
