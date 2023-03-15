@@ -5,35 +5,6 @@ import { User } from '../../../users/src/models';
 import { Op } from 'sequelize';
 import { File } from '../../../files/src/models/file.entity';
 
-export interface IHl7Object {
-    id?: number;
-    userId?: number;
-    fileId?: number;
-    statusFileId?: number;
-    resultFileId?: number;
-    lab?: string;
-    orderId?: number;
-    testProductName?: string;
-    sampleCode?: string;
-    status?: Hl7ObjectStatuses;
-    email?: string;
-    firstName?: string;
-    lastName?: string;
-    dateOfBirth?: string;
-    sex?: SexTypes;
-    activatedAt?: Date | any;
-    sampleAt?: Date | any;
-    labReceivedAt?: Date | any;
-    resultAt?: Date | any;
-    isQuizCompleted?: boolean;
-    labId?: string;
-    abnormalResults?: string;
-    failedTests?: string;
-    toFollow?: string;
-    createdAt?: Date | any;
-    updatedAt?: Date | any;
-}
-
 @Scopes(() => ({
     bySampleCode: (sampleCode: string) => ({ where: { sampleCode } }),
     pagination: (query) => ({ limit: query.limit, offset: query.offset }),

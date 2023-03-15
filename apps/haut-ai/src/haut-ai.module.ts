@@ -25,6 +25,7 @@ import { DecisionRulesService } from '../../typeform/src/decision-rules.service'
 import { UserQuizesService } from '../../typeform/src/user-quizes.service';
 import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomarkers.service';
 import { UsersRecommendationsService } from '../../users-recommendations/src/users-recommendations.service';
+import { FiltersService } from 'apps/biomarkers/src/services/filters/filters.service';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { UsersRecommendationsService } from '../../users-recommendations/src/use
     SkinUserResultsService,
     UsersResultsService,
     AdminsResultsService,
+    FiltersService,
     TypeformService,
     UserQuizesService,
     DecisionRulesService,

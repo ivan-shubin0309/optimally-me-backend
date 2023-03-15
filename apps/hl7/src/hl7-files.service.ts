@@ -1,9 +1,47 @@
 import { Injectable } from '@nestjs/common';
-import { Hl7Object, IHl7Object } from './models/hl7-object.entity';
-import { Message, Parser } from 'simple-hl7';
+import { Hl7Object } from './models/hl7-object.entity';
+import { Message, Parser, Segment } from 'simple-hl7';
 import { DateTime } from 'luxon';
 import { SexTypes } from '../../common/src/resources/filters/sex-types';
 import { Hl7ObjectStatuses } from 'apps/common/src/resources/hl7/hl7-object-statuses';
+
+export interface IHl7Object {
+    id?: number;
+    userId?: number;
+    fileId?: number;
+    statusFileId?: number;
+    resultFileId?: number;
+    lab?: string;
+    orderId?: number;
+    testProductName?: string;
+    sampleCode?: string;
+    status?: Hl7ObjectStatuses;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    dateOfBirth?: string;
+    sex?: SexTypes;
+    activatedAt?: Date | any;
+    sampleAt?: Date | any;
+    labReceivedAt?: Date | any;
+    resultAt?: Date | any;
+    isQuizCompleted?: boolean;
+    labId?: string;
+    abnormalResults?: string;
+    failedTests?: string;
+    toFollow?: string;
+    createdAt?: Date | any;
+    updatedAt?: Date | any;
+    results?: IResultObject[];
+}
+
+interface IResultObject {
+    biomarkerShortName: string,
+    value: number,
+    unit: string,
+    toFollow?: string,
+    failedTests?: string,
+}
 
 const sexTypeToHl7Sex = {
     [SexTypes.male]: 'M',
@@ -64,7 +102,8 @@ export class Hl7FilesService {
         const pidSegment = message.getSegment('PID');
         const orcSegment = message.getSegment('ORC');
         const obrSegment = message.getSegment('OBR');
-        const obxSegment = message.getSegment('OBX');
+        const obxSegments = message.getSegments('OBX');
+        const results = this.parseObxSegmentToResultArrays(obxSegments);
 
         return {
             lab: message.header.getField(3),
@@ -81,14 +120,35 @@ export class Hl7FilesService {
             labId: obrSegment.getField(3),
             labReceivedAt: obrSegment.getField(6) && DateTime.fromFormat(obrSegment.getField(6), 'yyyyMMddHHmmss').toFormat('yyyy-MM-dd'),
             sampleAt: obrSegment.getField(14) && DateTime.fromFormat(obrSegment.getField(14), 'yyyyMMddHHmmss').toFormat('yyyy-MM-dd'),
-            failedTests: obxSegment && obxSegment.getField(5),
+            results: results,
+            failedTests: results
+                .filter(result => !!result.failedTests)
+                .map(result => result.failedTests)
+                .join(', '),
+            toFollow: results
+                .filter(result => !!result.toFollow)
+                .map(result => result.toFollow)
+                .join(', '),
             resultAt: undefined,
             email: undefined,
             isQuizCompleted: undefined,
             abnormalResults: undefined,
-            toFollow: undefined,
             orderId: undefined,
             testProductName: undefined,
         };
+    }
+
+    parseObxSegmentToResultArrays(obxSegments: Segment[]): IResultObject[] {
+        return obxSegments.map(obxSegment => ({
+            biomarkerShortName: obxSegment.getComponent(3, 1),
+            value: obxSegment.getField(5),
+            unit: obxSegment.getField(6),
+            toFollow: isNaN(obxSegment.getField(5))
+                ? `${obxSegment.getField(3)} due to ${obxSegment.getField(5)}`
+                : null,
+            failedTests: isNaN(obxSegment.getField(5))
+                ? `${obxSegment.getField(3)} ${obxSegment.getField(5)}`
+                : null,
+        }));
     }
 }

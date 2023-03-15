@@ -17,6 +17,9 @@ import { Hl7Service } from './hl7.service';
 import { modelProviders } from './models.provider';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
 import { Hl7FtpService } from './hl7-ftp.service';
+import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
+import { FiltersService } from '../../biomarkers/src/services/filters/filters.service';
+import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomarkers.service';
 
 @Module({
     imports: [
@@ -35,6 +38,9 @@ import { Hl7FtpService } from './hl7-ftp.service';
         FileHelper,
         S3Service,
         Hl7FtpService,
+        AdminsResultsService,
+        FiltersService,
+        UsersBiomarkersService,
         JwtStrategy,
         ...guardProviders,
         sequelizeProvider(entities),

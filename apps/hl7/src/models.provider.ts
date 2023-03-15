@@ -3,6 +3,13 @@ import { User } from '../../users/src/models';
 import { Hl7Object } from './models/hl7-object.entity';
 import { UserSample } from '../../samples/src/models/user-sample.entity';
 import { File } from '../../files/src/models/file.entity';
+import { Biomarker } from '../../biomarkers/src/models/biomarker.entity';
+import { UserResult } from '../../admins-results/src/models/user-result.entity';
+import { Recommendation } from '../../biomarkers/src/models/recommendations/recommendation.entity';
+import { UserRecommendation } from '../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
+import { Filter } from '../../biomarkers/src/models/filters/filter.entity';
+import { FilterRecommendation } from '../../biomarkers/src/models/recommendations/filter-recommendation.entity';
+import { FilterBulletList } from '../../biomarkers/src/models/filterBulletLists/filter-bullet-list.entity';
 
 export const modelProviders = [
     {
@@ -24,5 +31,33 @@ export const modelProviders = [
     {
         provide: 'FILE_MODEL',
         useValue: File,
+    },
+    {
+        provide: 'BIOMARKER_MODEL',
+        useValue: Biomarker,
+    },
+    {
+        provide: 'USER_RESULT_MODEL',
+        useValue: UserResult,
+    },
+    {
+        provide: 'RECOMMENDATION_MODEL',
+        useValue: Recommendation
+    },
+    {
+        provide: 'USER_RECOMMENDATION_MODEL',
+        useValue: UserRecommendation
+    },
+    {
+        provide: 'FILTER_MODEL',
+        useValue: Filter
+    },
+    {
+        provide: 'FILTER_RECOMMENDATION_MODEL',
+        useValue: FilterRecommendation
+    },
+    {
+        provide: 'FILTER_BULLET_LIST_MODEL',
+        useValue: FilterBulletList
     },
 ];

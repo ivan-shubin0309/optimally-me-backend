@@ -12,6 +12,10 @@ import { Hl7FtpService } from './hl7-ftp.service';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
 import { SAMPLE_CODE_FROM_RESULT_FILE, SAMPLE_CODE_FROM_STATUS_FILE } from '../../common/src/resources/hl7/hl7-constants';
 import axios from 'axios';
+import { DateTime } from 'luxon';
+import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
+import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomarkers.service';
+import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-types';
 
 @Injectable()
 export class Hl7Service extends BaseService<Hl7Object> {
@@ -22,6 +26,8 @@ export class Hl7Service extends BaseService<Hl7Object> {
         private readonly hl7FilesService: Hl7FilesService,
         private readonly filesService: FilesService,
         private readonly hl7FtpService: Hl7FtpService,
+        private readonly adminsResultsService: AdminsResultsService,
+        private readonly usersBiomarkersService: UsersBiomarkersService,
     ) { super(model); }
 
     async generateHl7ObjectsFromSamples(): Promise<void> {
@@ -213,9 +219,40 @@ export class Hl7Service extends BaseService<Hl7Object> {
                         resultFileId: createdFile.id,
                         status: bodyForUpdate.status,
                         failedTests: bodyForUpdate.failedTests,
+                        resultAt: DateTime.utc().toFormat('yyyy-MM-dd'),
                     });
 
                     await this.filesService.markFilesAsUsed([createdFile.id]);
+
+                    if (bodyForUpdate.results && bodyForUpdate.results.length) {
+                        const resultsMap = {};
+                        bodyForUpdate.results.forEach(result => { resultsMap[result.biomarkerShortName] = result; });
+
+                        const biomarkersList = await this.usersBiomarkersService.getList([
+                            { method: ['byShortName', bodyForUpdate.results.map(result => result.biomarkerShortName)] },
+                            { method: ['byType', BiomarkerTypes.blood] }
+                        ]);
+
+                        if (!biomarkersList.length) {
+                            return;
+                        }
+
+                        const resultsToCreate = [];
+                        const biomarkerIds = [];
+
+                        biomarkersList.forEach(biomarker => {
+                            biomarkerIds.push(biomarker.id);
+
+                            resultsToCreate.push({
+                                biomarkerId: biomarker.id,
+                                value: resultsMap[biomarker.shortName].value,
+                                date: DateTime.utc().toFormat('yyyy-MM-dd'),
+                                unitId: biomarker.unitId,
+                            });
+                        });
+
+                        await this.adminsResultsService.createUserResults(resultsToCreate, hl7Object.userId, biomarkerIds);
+                    }
                 })
             );
         }

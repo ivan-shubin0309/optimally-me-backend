@@ -10,6 +10,9 @@ import { UserRecommendation } from '../../biomarkers/src/models/userRecommendati
 import { UserSkinDiary } from './models/user-skin-diary.entity';
 import { UserQuiz } from '../../typeform/src/models/user-quiz.entity';
 import { RecommendationReaction } from '../../biomarkers/src/models/recommendationReactions/recommendation-reaction.entity';
+import { FilterRecommendation } from '../../biomarkers/src/models/recommendations/filter-recommendation.entity';
+import { Filter } from '../../biomarkers/src/models/filters/filter.entity';
+import { FilterBulletList } from '../../biomarkers/src/models/filterBulletLists/filter-bullet-list.entity';
 
 export const modelProviders = [
     {
@@ -59,5 +62,17 @@ export const modelProviders = [
     {
         provide: 'RECOMMENDATION_REACTION_MODEL',
         useValue: RecommendationReaction
+    },
+    {
+        provide: 'FILTER_RECOMMENDATION_MODEL',
+        useValue: FilterRecommendation
+    },
+    {
+        provide: 'FILTER_MODEL',
+        useValue: Filter
+    },
+    {
+        provide: 'FILTER_BULLET_LIST_MODEL',
+        useValue: FilterBulletList
     },
 ];
