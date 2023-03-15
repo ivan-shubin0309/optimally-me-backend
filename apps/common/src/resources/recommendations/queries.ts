@@ -6,5 +6,14 @@ export const countRecommendationBiomarkersQuery = `
         LEFT JOIN \`filters\`
         ON \`filterRecommendations\`.\`filterId\` = \`filters\`.\`id\`
     WHERE
-        \`filterRecommendations\`.\`recommendationId\` = \`recommendations\`.\`id\`
+        \`filterRecommendations\`.\`recommendationId\` = \`Recommendation\`.\`id\`
+`.replace(/\s+/ig, ' ').trim();
+
+export const minRecommendationOrderQuery = `
+    SELECT 
+        MIN(\`filterRecommendations\`.\`order\`)
+    FROM
+        \`filterRecommendations\`
+    WHERE
+        \`filterRecommendations\`.\`recommendationId\` = \`Recommendation\`.\`id\`
 `.replace(/\s+/ig, ' ').trim();
