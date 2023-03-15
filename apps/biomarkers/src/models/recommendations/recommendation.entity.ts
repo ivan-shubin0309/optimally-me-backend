@@ -1,6 +1,6 @@
 import { recommendationCategoryToString, RecommendationCategoryTypes } from '../../../../common/src/resources/recommendations/recommendation-category-types';
 import { Table, Column, Model, DataType, Scopes, BelongsToMany, HasMany, HasOne } from 'sequelize-typescript';
-import { Op } from 'sequelize';
+import { literal, Op } from 'sequelize';
 import { RecommendationActionTypes } from '../../../../common/src/resources/recommendations/recommendation-action-types';
 import { File } from '../../../../files/src/models/file.entity';
 import { RecommendationFile } from './recommendation-file.entity';
@@ -16,6 +16,8 @@ import { IdealTimeOfDayTypes } from '../../../../common/src/resources/recommenda
 import { Biomarker } from '../biomarker.entity';
 import { UserRecommendation } from '../userRecommendations/user-recommendation.entity';
 import { RecommendationReactionTypes } from '../../../../common/src/resources/recommendation-reactions/reaction-types';
+import sequelize from 'sequelize';
+import { countRecommendationBiomarkersQuery } from '../../../../common/src/resources/recommendations/queries';
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
@@ -137,6 +139,21 @@ import { RecommendationReactionTypes } from '../../../../common/src/resources/re
             },
         ]
     }),
+    orderByLiteral: (field: string, values: any[]) => ({
+        order: [literal(`FIELD(${field}, ${values.join(',')}) ASC`)]
+    }),
+    orderByPriority: (orderType) => ({
+        attributes: {
+            include: [
+                [sequelize.literal(`(${countRecommendationBiomarkersQuery})`), 'biomarkersCount']
+            ]
+        },
+        order: [
+            sequelize.literal(`IF(\`category\` = ${RecommendationCategoryTypes.doctor}, 1, 0) ${orderType}`),
+            sequelize.literal(`\`biomarkersCount\` ${orderType === 'desc' ? 'asc' : 'desc'}`),
+            ['orderValue', orderType]
+        ],
+    }),
 }))
 
 @Table({
@@ -202,6 +219,12 @@ export class Recommendation extends Model {
         defaultValue: false
     })
     isDeletable: boolean;
+
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: true,
+    })
+    orderValue: number;
 
     @BelongsToMany(() => File, () => RecommendationFile, 'recommendationId', 'fileId')
     files: File[];
