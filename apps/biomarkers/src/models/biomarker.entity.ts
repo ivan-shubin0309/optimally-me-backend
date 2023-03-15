@@ -163,7 +163,8 @@ import { HautAiMetricTypes } from 'apps/common/src/resources/haut-ai/haut-ai-met
                 }
             ]
         }
-    })
+    }),
+    byShortName: (shortName: string[]) => ({ where: { shortName } }),
 }))
 @Table({
     tableName: 'biomarkers',

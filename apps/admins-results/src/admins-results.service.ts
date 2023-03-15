@@ -1,17 +1,27 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Recommendation } from '../../biomarkers/src/models/recommendations/recommendation.entity';
-import { Repository } from 'sequelize-typescript';
+import { Repository, Sequelize } from 'sequelize-typescript';
 import { Transaction } from 'sequelize/types';
 import { BaseService } from '../../common/src/base/base.service';
 import { IUserResult, UserResult } from './models/user-result.entity';
-import { UserRecommendation } from 'apps/biomarkers/src/models/userRecommendations/user-recommendation.entity';
+import { UserRecommendation } from '../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
+import { CreateUserResultDto } from './models/create-user-result.dto';
+import { FilterRangeHelper } from '../../common/src/resources/filters/filter-range.helper';
+import { FiltersService } from '../../biomarkers/src/services/filters/filters.service';
+import { User } from '../../users/src/models';
+import { AgeHelper } from '../../common/src/resources/filters/age.helper';
+import { UsersService } from '../../users/src/users.service';
+import { UserRoles } from '../../common/src/resources/users';
 
 @Injectable()
 export class AdminsResultsService extends BaseService<UserResult> {
   constructor(
     @Inject('USER_RESULT_MODEL') protected model: Repository<UserResult>,
     @Inject('RECOMMENDATION_MODEL') private readonly recommendationModel: Repository<Recommendation>,
-    @Inject('USER_RECOMMENDATION_MODEL') private readonly userRecommendationModel: Repository<UserRecommendation>
+    @Inject('USER_RECOMMENDATION_MODEL') private readonly userRecommendationModel: Repository<UserRecommendation>,
+    @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
+    private readonly filtersService: FiltersService,
+    private readonly usersService: UsersService,
   ) { super(model); }
 
   create(body: IUserResult, transaction?: Transaction): Promise<UserResult> {
@@ -69,5 +79,74 @@ export class AdminsResultsService extends BaseService<UserResult> {
     await this.model
       .scope([{ method: ['byFilterId', filterIds] }])
       .update({ filterId: null }, { transaction } as any);
+  }
+
+  async createUserResults(results: CreateUserResultDto[], userId: User | number, biomarkerIds: number[]): Promise<void> {
+    let user;
+    if (typeof userId === 'number') {
+      user = await this.usersService.getOne([
+        { method: ['byId', userId] },
+        { method: ['byRoles', UserRoles.user] },
+        'withAdditionalField'
+      ]);
+    } else {
+      user = userId;
+    }
+
+    const specificUserFiltersMap = {};
+
+    if (user.additionalField) {
+      const specificUserFilters = await this.filtersService.getList([
+        {
+          method: [
+            'byBiomarkerIdsAndCharacteristics',
+            biomarkerIds,
+            {
+              sexType: user.additionalField.sex,
+              ageTypes: user.additionalField.dateOfBirth && AgeHelper.getAgeRanges(user.additionalField.dateOfBirth),
+              ethnicityType: user.additionalField.ethnicity,
+              otherFeature: user.additionalField.otherFeature
+            }
+          ]
+        }
+      ]);
+
+      specificUserFilters.forEach(filter => {
+        specificUserFiltersMap[filter.biomarkerId] = filter;
+      });
+    }
+
+    const filtersAllMap = {};
+    const filtersAll = await this.filtersService.getList([{ method: ['byBiomarkerIdAndAllFilter', biomarkerIds] }]);
+    filtersAll.forEach(filter => {
+      filtersAllMap[filter.biomarkerId] = filter;
+    });
+
+    const userResultsToCreate = results.map(result => {
+      let activeFilter, filterId, recommendationRange, deviation;
+
+      if (specificUserFiltersMap[result.biomarkerId]) {
+        activeFilter = specificUserFiltersMap[result.biomarkerId];
+      } else if (filtersAllMap[result.biomarkerId]) {
+        activeFilter = filtersAllMap[result.biomarkerId];
+      }
+
+      if (activeFilter) {
+        filterId = activeFilter.id;
+        recommendationRange = FilterRangeHelper.getRecommendationTypeByValue(activeFilter, result.value);
+      }
+
+      if (recommendationRange) {
+        deviation = FilterRangeHelper.calculateDeviation(activeFilter, recommendationRange, result.value);
+      }
+
+      return Object.assign({ userId: user.id, filterId, recommendationRange, deviation }, result);
+    });
+
+    await this.dbConnection.transaction(async transaction => {
+      const createdResults = await this.bulkCreate(userResultsToCreate, transaction);
+
+      await this.attachRecommendations(createdResults, user.id, transaction);
+    });
   }
 }
