@@ -39,6 +39,7 @@ export class UsersRecommendationsService extends BaseService<UserRecommendation>
             { method: ['withImpacts', ['withStudyLinks'], options?.biomarkerId] },
             { method: ['withFiles'] },
             { method: ['withUserReaction', userResult.userId, true] },
+            { method: ['withContradictions'] },
         ];
 
         if (options?.additionalScopes?.length) {
