@@ -14,6 +14,7 @@ import { Hl7ObjectStatuses } from '../../common/src/resources/hl7/hl7-object-sta
 import { PatchHl7ObjectStatusDto } from './models/patch-hl7-object-status.dto';
 import { Public } from '../../common/src/resources/common/public.decorator';
 import { JwtService } from '@nestjs/jwt';
+import { hl7SortingServerValues } from '../../common/src/resources/hl7/sorting-field-names';
 
 @ApiBearerAuth()
 @ApiTags('hl7')
@@ -54,6 +55,7 @@ export class Hl7Controller {
     @Get('/hl7-objects')
     async getHl7ObjectList(@Query() query: GetHl7ObjectListDto): Promise<Hl7ObjectsDto> {
         let hl7ObjectsList = [];
+        const orderBy = hl7SortingServerValues[query.orderBy];
         const scopes: any[] = [];
 
         if (query.search) {
@@ -89,7 +91,7 @@ export class Hl7Controller {
         if (count) {
             scopes.push(
                 { method: ['pagination', { limit: query.limit, offset: query.offset }] },
-                { method: ['orderBy', [[query.orderBy, query.orderType]]] },
+                { method: ['orderBy', [[orderBy, query.orderType]]] },
                 { method: ['withFiles'] }
             );
             hl7ObjectsList = await this.hl7Service.getList(scopes);
