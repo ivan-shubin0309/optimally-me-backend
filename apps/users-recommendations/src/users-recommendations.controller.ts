@@ -8,6 +8,7 @@ import { GetUserRecommendationsDto } from './models/get-user-recommendations.dto
 import { UsersRecommendationsService } from './users-recommendations.service';
 import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomarkers.service';
 import { UserRecommendationsListDto } from './models/user-recommendations-list.dto';
+import { userRecommendationsSortingServerValues } from 'apps/common/src/resources/recommendations/user-recommendations-field-names';
 
 @ApiBearerAuth()
 @ApiTags('users/recommendations')
@@ -25,6 +26,7 @@ export class UsersRecommendationsController {
     @Get()
     async getRecommendationsList(@Query() query: GetUserRecommendationsDto, @Request() req: Request & { user: SessionDataDto }): Promise<UserRecommendationsListDto> {
         let recommendationsList = [];
+        const orderScope = userRecommendationsSortingServerValues[query.orderBy](query.orderType);
 
         const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(req.user.userId, null, 1);
         const userRecommendations = await this.usersRecommendationsService.getList([
@@ -36,16 +38,19 @@ export class UsersRecommendationsController {
 
         const scopes: any[] = [
             { method: ['byId', recommendationIds] },
-            { method: ['withUserReaction', req.user.userId, true] },
+            { method: ['withUserReaction', req.user.userId, true] }
         ];
 
         const count = await this.usersRecommendationsService.getRecommendationCount(scopes);
 
         if (count) {
+            const orderedRecommendations = await this.usersRecommendationsService.getRecommendationList(scopes.concat([orderScope]));
+
             scopes.push(
                 { method: ['withFiles'] },
                 { method: ['withUserReaction', req.user.userId, true] },
                 { method: ['withUserRecommendation', lastResultIds] },
+                { method: ['orderByLiteral', 'id', orderedRecommendations.map(recommendation => recommendation.id)] },
             );
             recommendationsList = await this.usersRecommendationsService.getRecommendationList(scopes);
 
