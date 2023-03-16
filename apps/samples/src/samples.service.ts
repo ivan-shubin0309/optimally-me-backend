@@ -6,6 +6,7 @@ import { GenerateSamplesDto } from './models/generate-samples.dto';
 import { SampleHelper } from '../../common/src/resources/samples/sample-helper';
 import { SAMPLE_CODE_LENGTH } from '../../common/src/resources/samples/constants';
 import { UserSample } from './models/user-sample.entity';
+import { SAMPLE_PREFIX } from '../../common/src/resources/hl7/hl7-constants';
 
 @Injectable()
 export class SamplesService extends BaseService<Sample> {
@@ -22,7 +23,7 @@ export class SamplesService extends BaseService<Sample> {
 
         for (let i = 0; i <= body.quantity; i++) {
             arrayOfSamples.push({
-                sampleId: SampleHelper.generateSampleCode(SAMPLE_CODE_LENGTH),
+                sampleId: `${SAMPLE_PREFIX}${SampleHelper.generateSampleCode(SAMPLE_CODE_LENGTH)}`,
                 isActivated: false
             });
         }
