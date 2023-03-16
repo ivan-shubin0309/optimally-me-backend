@@ -1,12 +1,13 @@
-export const countRecommendationBiomarkersQuery = `
+export const countRecommendationBiomarkersQuery = (userResultIds: number[]) => `
     SELECT 
-        COUNT(\`filters\`.\`biomarkerId\`)
+        COUNT(\`userResults\`.\`biomarkerId\`)
     FROM
-        \`filterRecommendations\`
-        LEFT JOIN \`filters\`
-        ON \`filterRecommendations\`.\`filterId\` = \`filters\`.\`id\`
+        \`userRecommendations\`
+        INNER JOIN \`userResults\`
+        ON \`userRecommendations\`.\`userResultId\` = \`userResults\`.\`id\`
+            AND \`userResults\`.\`id\` IN (${userResultIds.join(', ')})
     WHERE
-        \`filterRecommendations\`.\`recommendationId\` = \`Recommendation\`.\`id\`
+        \`userRecommendations\`.\`recommendationId\` = \`Recommendation\`.\`id\`
 `.replace(/\s+/ig, ' ').trim();
 
 export const minRecommendationOrderQuery = `

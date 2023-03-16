@@ -142,10 +142,10 @@ import { countRecommendationBiomarkersQuery, minRecommendationOrderQuery } from 
     orderByLiteral: (field: string, values: any[]) => ({
         order: [literal(`FIELD(\`Recommendation\`.\`${field}\`, ${values.join(',')}) ASC`)]
     }),
-    orderByPriority: (orderType) => ({
+    orderByPriority: (orderType, userResultIds) => ({
         attributes: {
             include: [
-                [sequelize.literal(`(${countRecommendationBiomarkersQuery})`), 'biomarkersCount'],
+                [sequelize.literal(`(${countRecommendationBiomarkersQuery(userResultIds)})`), 'biomarkersCount'],
                 [sequelize.literal(`(${minRecommendationOrderQuery})`), 'orderValue'],
             ]
         },

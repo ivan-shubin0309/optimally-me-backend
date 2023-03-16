@@ -26,13 +26,14 @@ export class UsersRecommendationsController {
     @Get()
     async getRecommendationsList(@Query() query: GetUserRecommendationsDto, @Request() req: Request & { user: SessionDataDto }): Promise<UserRecommendationsListDto> {
         let recommendationsList = [];
-        const orderScope = userRecommendationsSortingServerValues[query.orderBy](query.orderType);
 
         const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(req.user.userId, null, 1);
         const userRecommendations = await this.usersRecommendationsService.getList([
             { method: ['byUserResultId', lastResultIds] },
             { method: ['byIsExcluded', false] }
         ]);
+
+        const orderScope = userRecommendationsSortingServerValues[query.orderBy](query.orderType, lastResultIds);
 
         const recommendationIds = userRecommendations.map(userRecommendation => userRecommendation.recommendationId);
 
