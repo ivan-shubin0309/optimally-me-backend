@@ -3,5 +3,5 @@ export const userRecommendationsSortingFieldNames = [
 ];
 
 export const userRecommendationsSortingServerValues = {
-    'priority': (orderType) => ({ method: ['orderByPriority', orderType] }),
+    'priority': (orderType, resultIds) => ({ method: ['orderByPriority', orderType, resultIds] }),
 };
