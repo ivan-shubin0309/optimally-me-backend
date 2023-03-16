@@ -9,6 +9,10 @@ import { appBuilder } from '../../common/src/utils/appBuilder/app-builder.provid
 let server: Handler;
 
 async function bootstrap(): Promise<Handler> {
+  if (process.env.NODE_ENV === 'prod') {
+    return;
+  }
+
   const app = await NestFactory.create(SwaggerAppModule);
   const configService = app.get(ConfigService);
 
