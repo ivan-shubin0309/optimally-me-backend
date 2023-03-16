@@ -91,7 +91,7 @@ export class Hl7FilesService {
         const obrSegment = message.addSegment(['OBR']);
         obrSegment.addField('1', 1);
         obrSegment.addField(hl7Object.sampleCode, 2);
-        obrSegment.addField(hl7Object.sampleCode, 3);
+        obrSegment.addField('OPME001', 3);
         obrSegment.addField('Normal', 5);
 
         return message.toString();

@@ -7,7 +7,6 @@ import { Readable } from 'stream';
 const HL7_BASE_REQUEST_PATH = '/HL7/HL7 Requests';
 const HL7_STATUS_PATH = '/HL7 Status';
 const HL7_RESULT_PATH = '/HL7 Results';
-const FILE_PREFIX = 'OPME';
 
 @Injectable()
 export class Hl7FtpService {
@@ -45,7 +44,7 @@ export class Hl7FtpService {
         const client = await this.getFtpClient();
 
         await client
-            .put(fileStream, `${HL7_BASE_REQUEST_PATH}/${FILE_PREFIX}-${fileName}.hl7`)
+            .put(fileStream, `${HL7_BASE_REQUEST_PATH}/${fileName}.hl7`)
             .catch(err => {
                 console.log(err.message);
                 throw new UnprocessableEntityException({
