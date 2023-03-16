@@ -15,138 +15,140 @@ import { UserRoles } from '../../common/src/resources/users';
 
 @Injectable()
 export class AdminsResultsService extends BaseService<UserResult> {
-  constructor(
-    @Inject('USER_RESULT_MODEL') protected model: Repository<UserResult>,
-    @Inject('RECOMMENDATION_MODEL') private readonly recommendationModel: Repository<Recommendation>,
-    @Inject('USER_RECOMMENDATION_MODEL') private readonly userRecommendationModel: Repository<UserRecommendation>,
-    @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
-    private readonly filtersService: FiltersService,
-    private readonly usersService: UsersService,
-  ) { super(model); }
+    constructor(
+        @Inject('USER_RESULT_MODEL') protected model: Repository<UserResult>,
+        @Inject('RECOMMENDATION_MODEL') private readonly recommendationModel: Repository<Recommendation>,
+        @Inject('USER_RECOMMENDATION_MODEL') private readonly userRecommendationModel: Repository<UserRecommendation>,
+        @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
+        private readonly filtersService: FiltersService,
+        private readonly usersService: UsersService,
+    ) { super(model); }
 
-  create(body: IUserResult, transaction?: Transaction): Promise<UserResult> {
-    return this.model.create({ ...body }, { transaction });
-  }
-
-  async bulkCreate(data: IUserResult[], transaction?: Transaction): Promise<UserResult[]> {
-    return this.model.bulkCreate(data as any, { transaction });
-  }
-
-  async attachRecommendations(userResults: UserResult[], userId: number, transaction?: Transaction, options?: { isAnyRecommendation: boolean }): Promise<void> {
-    const userRecommendationsToCreate = [];
-    const filteredUserResults = userResults.filter(userResult => userResult.filterId && userResult.recommendationRange);
-    const scopes = [];
-
-    if (!filteredUserResults.length) {
-      return;
+    create(body: IUserResult, transaction?: Transaction): Promise<UserResult> {
+        return this.model.create({ ...body }, { transaction });
     }
 
-    if (options?.isAnyRecommendation) {
-      scopes.push({ method: ['byFilterId', filteredUserResults.map(userResult => userResult.filterId)] });
-    } else {
-      scopes.push({ method: ['byFilterIdAndType', filteredUserResults.map(userResult => ({ filterId: userResult.filterId, type: userResult.recommendationRange }))] });
+    async bulkCreate(data: IUserResult[], transaction?: Transaction): Promise<UserResult[]> {
+        return this.model.bulkCreate(data as any, { transaction });
     }
 
-    const recommendations = await this.recommendationModel
-      .scope(scopes)
-      .findAll({ transaction });
+    async attachRecommendations(userResults: UserResult[], userId: number, transaction?: Transaction, options?: { isAnyRecommendation: boolean }): Promise<void> {
+        const userRecommendationsToCreate = [];
+        const filteredUserResults = userResults.filter(userResult => userResult.filterId && userResult.recommendationRange);
+        const scopes = [];
 
-    const userResultsMap = {};
-    filteredUserResults.forEach(userResult => {
-      userResultsMap[userResult.filterId] = userResult;
-    });
-
-    recommendations.forEach(recommendation => {
-      if (userResultsMap[recommendation.filterRecommendations[0].filterId]) {
-        userRecommendationsToCreate.push({
-          userId: userId,
-          recommendationId: recommendation.id,
-          userResultId: userResultsMap[recommendation.filterRecommendations[0].filterId].id
-        });
-      }
-    });
-
-    await this.userRecommendationModel.bulkCreate(userRecommendationsToCreate, { transaction });
-
-    if (recommendations.length) {
-      await this.recommendationModel
-        .scope([{ method: ['byId', recommendations.map(recommendation => recommendation.id)] }])
-        .update({ isDeletable: false }, { transaction } as any);
-    }
-  }
-
-  async dettachFilters(filterIds: number[], transaction?:Transaction): Promise<void> {
-    await this.model
-      .scope([{ method: ['byFilterId', filterIds] }])
-      .update({ filterId: null }, { transaction } as any);
-  }
-
-  async createUserResults(results: CreateUserResultDto[], userId: User | number, biomarkerIds: number[]): Promise<void> {
-    let user;
-    if (typeof userId === 'number') {
-      user = await this.usersService.getOne([
-        { method: ['byId', userId] },
-        { method: ['byRoles', UserRoles.user] },
-        'withAdditionalField'
-      ]);
-    } else {
-      user = userId;
-    }
-
-    const specificUserFiltersMap = {};
-
-    if (user.additionalField) {
-      const specificUserFilters = await this.filtersService.getList([
-        {
-          method: [
-            'byBiomarkerIdsAndCharacteristics',
-            biomarkerIds,
-            {
-              sexType: user.additionalField.sex,
-              ageTypes: user.additionalField.dateOfBirth && AgeHelper.getAgeRanges(user.additionalField.dateOfBirth),
-              ethnicityType: user.additionalField.ethnicity,
-              otherFeature: user.additionalField.otherFeature
-            }
-          ]
+        if (!filteredUserResults.length) {
+            return;
         }
-      ]);
 
-      specificUserFilters.forEach(filter => {
-        specificUserFiltersMap[filter.biomarkerId] = filter;
-      });
+        if (options?.isAnyRecommendation) {
+            scopes.push({ method: ['byFilterId', filteredUserResults.map(userResult => userResult.filterId)] });
+        } else {
+            scopes.push({ method: ['byFilterIdAndType', filteredUserResults.map(userResult => ({ filterId: userResult.filterId, type: userResult.recommendationRange }))] });
+        }
+
+        const recommendations = await this.recommendationModel
+            .scope(scopes)
+            .findAll({ transaction });
+
+        const userResultsMap = {};
+        filteredUserResults.forEach(userResult => {
+            userResultsMap[userResult.filterId] = userResult;
+        });
+
+        recommendations.forEach(recommendation => {
+            recommendation.filterRecommendations.forEach(filterRecommendation => {
+                if (userResultsMap[filterRecommendation.filterId]) {
+                    userRecommendationsToCreate.push({
+                        userId: userId,
+                        recommendationId: recommendation.id,
+                        userResultId: userResultsMap[filterRecommendation.filterId].id
+                    });
+                }
+            });
+        });
+
+        await this.userRecommendationModel.bulkCreate(userRecommendationsToCreate, { transaction });
+
+        if (recommendations.length) {
+            await this.recommendationModel
+                .scope([{ method: ['byId', recommendations.map(recommendation => recommendation.id)] }])
+                .update({ isDeletable: false }, { transaction } as any);
+        }
     }
 
-    const filtersAllMap = {};
-    const filtersAll = await this.filtersService.getList([{ method: ['byBiomarkerIdAndAllFilter', biomarkerIds] }]);
-    filtersAll.forEach(filter => {
-      filtersAllMap[filter.biomarkerId] = filter;
-    });
+    async dettachFilters(filterIds: number[], transaction?: Transaction): Promise<void> {
+        await this.model
+            .scope([{ method: ['byFilterId', filterIds] }])
+            .update({ filterId: null }, { transaction } as any);
+    }
 
-    const userResultsToCreate = results.map(result => {
-      let activeFilter, filterId, recommendationRange, deviation;
+    async createUserResults(results: CreateUserResultDto[], userId: User | number, biomarkerIds: number[]): Promise<void> {
+        let user;
+        if (typeof userId === 'number') {
+            user = await this.usersService.getOne([
+                { method: ['byId', userId] },
+                { method: ['byRoles', UserRoles.user] },
+                'withAdditionalField'
+            ]);
+        } else {
+            user = userId;
+        }
 
-      if (specificUserFiltersMap[result.biomarkerId]) {
-        activeFilter = specificUserFiltersMap[result.biomarkerId];
-      } else if (filtersAllMap[result.biomarkerId]) {
-        activeFilter = filtersAllMap[result.biomarkerId];
-      }
+        const specificUserFiltersMap = {};
 
-      if (activeFilter) {
-        filterId = activeFilter.id;
-        recommendationRange = FilterRangeHelper.getRecommendationTypeByValue(activeFilter, result.value);
-      }
+        if (user.additionalField) {
+            const specificUserFilters = await this.filtersService.getList([
+                {
+                    method: [
+                        'byBiomarkerIdsAndCharacteristics',
+                        biomarkerIds,
+                        {
+                            sexType: user.additionalField.sex,
+                            ageTypes: user.additionalField.dateOfBirth && AgeHelper.getAgeRanges(user.additionalField.dateOfBirth),
+                            ethnicityType: user.additionalField.ethnicity,
+                            otherFeature: user.additionalField.otherFeature
+                        }
+                    ]
+                }
+            ]);
 
-      if (recommendationRange) {
-        deviation = FilterRangeHelper.calculateDeviation(activeFilter, recommendationRange, result.value);
-      }
+            specificUserFilters.forEach(filter => {
+                specificUserFiltersMap[filter.biomarkerId] = filter;
+            });
+        }
 
-      return Object.assign({ userId: user.id, filterId, recommendationRange, deviation }, result);
-    });
+        const filtersAllMap = {};
+        const filtersAll = await this.filtersService.getList([{ method: ['byBiomarkerIdAndAllFilter', biomarkerIds] }]);
+        filtersAll.forEach(filter => {
+            filtersAllMap[filter.biomarkerId] = filter;
+        });
 
-    await this.dbConnection.transaction(async transaction => {
-      const createdResults = await this.bulkCreate(userResultsToCreate, transaction);
+        const userResultsToCreate = results.map(result => {
+            let activeFilter, filterId, recommendationRange, deviation;
 
-      await this.attachRecommendations(createdResults, user.id, transaction);
-    });
-  }
+            if (specificUserFiltersMap[result.biomarkerId]) {
+                activeFilter = specificUserFiltersMap[result.biomarkerId];
+            } else if (filtersAllMap[result.biomarkerId]) {
+                activeFilter = filtersAllMap[result.biomarkerId];
+            }
+
+            if (activeFilter) {
+                filterId = activeFilter.id;
+                recommendationRange = FilterRangeHelper.getRecommendationTypeByValue(activeFilter, result.value);
+            }
+
+            if (recommendationRange) {
+                deviation = FilterRangeHelper.calculateDeviation(activeFilter, recommendationRange, result.value);
+            }
+
+            return Object.assign({ userId: user.id, filterId, recommendationRange, deviation }, result);
+        });
+
+        await this.dbConnection.transaction(async transaction => {
+            const createdResults = await this.bulkCreate(userResultsToCreate, transaction);
+
+            await this.attachRecommendations(createdResults, user.id, transaction);
+        });
+    }
 }
