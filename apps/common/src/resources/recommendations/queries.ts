@@ -10,11 +10,14 @@ export const countRecommendationBiomarkersQuery = (userResultIds: number[]) => `
         \`userRecommendations\`.\`recommendationId\` = \`Recommendation\`.\`id\`
 `.replace(/\s+/ig, ' ').trim();
 
-export const minRecommendationOrderQuery = `
+export const minRecommendationOrderQuery = (userResultIds: number[]) => `
     SELECT 
         MIN(\`filterRecommendations\`.\`order\`)
     FROM
         \`filterRecommendations\`
-    WHERE
-        \`filterRecommendations\`.\`recommendationId\` = \`Recommendation\`.\`id\`
+            INNER JOIN
+        \`userResults\` ON \`filterRecommendations\`.\`filterId\` = \`userResults\`.\`filterId\`
+            AND \`userResults\`.\`id\` IN (${userResultIds.join(', ')})
+        WHERE
+            \`filterRecommendations\`.\`recommendationId\` = \`Recommendation\`.\`id\`
 `.replace(/\s+/ig, ' ').trim();
