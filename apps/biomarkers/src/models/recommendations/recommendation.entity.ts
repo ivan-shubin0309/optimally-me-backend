@@ -146,7 +146,7 @@ import { countRecommendationBiomarkersQuery, minRecommendationOrderQuery } from 
         attributes: {
             include: [
                 [sequelize.literal(`(${countRecommendationBiomarkersQuery(userResultIds)})`), 'biomarkersCount'],
-                [sequelize.literal(`(${minRecommendationOrderQuery})`), 'orderValue'],
+                [sequelize.literal(`(${minRecommendationOrderQuery(userResultIds)})`), 'orderValue'],
             ]
         },
         order: [
