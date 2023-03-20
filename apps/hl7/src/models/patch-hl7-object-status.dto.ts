@@ -7,6 +7,6 @@ export class PatchHl7ObjectStatusDto {
     @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(Hl7ObjectStatuses) })
     @IsNotEmpty()
     @IsNumber()
-    @IsEnum([Hl7ObjectStatuses.verified])
+    @IsEnum([Hl7ObjectStatuses.verified, Hl7ObjectStatuses.canceled])
     readonly status: number;
 }
