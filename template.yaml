@@ -623,6 +623,11 @@ Resources:
           Properties:
             Path: /hl7/webhook/results
             Method: ANY
+        Hl7ObjectsByIdResultsApi:
+          Type: Api
+          Properties:
+            Path: /hl7/hl7-objects/{id}/results
+            Method: ANY
 
   Hl7ObjectDataGeneratorFunction:
     Type: AWS::Serverless::Function

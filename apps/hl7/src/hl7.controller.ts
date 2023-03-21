@@ -15,6 +15,9 @@ import { PatchHl7ObjectStatusDto } from './models/patch-hl7-object-status.dto';
 import { Public } from '../../common/src/resources/common/public.decorator';
 import { JwtService } from '@nestjs/jwt';
 import { hl7SortingServerValues } from '../../common/src/resources/hl7/sorting-field-names';
+import { UserResultsDto } from '../../admins-results/src/models/user-results.dto';
+import { GetListDto } from '../../common/src/models/get-list.dto';
+import { UsersResultsService } from '../../users-results/src/users-results.service';
 
 @ApiBearerAuth()
 @ApiTags('hl7')
@@ -24,6 +27,7 @@ export class Hl7Controller {
         private readonly hl7Service: Hl7Service,
         private readonly translator: TranslatorService,
         private readonly jwtService: JwtService,
+        private readonly usersResultsService: UsersResultsService,
     ) { }
 
     @ApiResponse({ type: () => Hl7ObjectDto })
@@ -165,5 +169,33 @@ export class Hl7Controller {
 
         await this.hl7Service.checkForStatusFiles();
         await this.hl7Service.checkForResultFiles();
+    }
+
+    @ApiResponse({ type: () => UserResultsDto })
+    @ApiOperation({ summary: 'Get results by hl7 object id' })
+    @Roles(UserRoles.superAdmin)
+    @HttpCode(HttpStatus.OK)
+    @Get('/hl7-objects/:id/results')
+    async getResultsByHl7ObjectId(@Param() param: EntityByIdDto, @Query() query: GetListDto): Promise<UserResultsDto> {
+        const { limit, offset } = query;
+
+        let userResultsList = [];
+        const scopes: any[] = [
+            { method: ['byHl7ObjectId', param.id] }
+        ];
+
+        const count = await this.usersResultsService.getCount(scopes);
+
+        if (count) {
+            scopes.push(
+                { method: ['pagination', { limit, offset }] },
+                'withUnit',
+                'withBiomarker',
+                'withFilter',
+            );
+            userResultsList = await this.usersResultsService.getList(scopes);
+        }
+
+        return new UserResultsDto(userResultsList, PaginationHelper.buildPagination({ limit, offset }, count));
     }
 }

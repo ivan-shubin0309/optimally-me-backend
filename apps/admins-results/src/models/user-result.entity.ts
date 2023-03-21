@@ -113,6 +113,7 @@ export interface IUserResult {
             userId
         }
     }),
+    byHl7ObjectId: (hl7ObjectId) => ({ where: { hl7ObjectId } }),
 }))
 @Table({
     tableName: 'userResults',
