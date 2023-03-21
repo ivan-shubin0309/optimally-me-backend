@@ -4,6 +4,7 @@ import { Message, Parser, Segment } from 'simple-hl7';
 import { DateTime } from 'luxon';
 import { SexTypes } from '../../common/src/resources/filters/sex-types';
 import { Hl7ObjectStatuses } from 'apps/common/src/resources/hl7/hl7-object-statuses';
+import * as uuid from 'uuid';
 
 export interface IHl7Object {
     id?: number;
@@ -67,18 +68,19 @@ export class Hl7FilesService {
         mshSegment.addField('OM', 2);
         mshSegment.addField(hl7Object.lab, 3);
         mshSegment.addField(DateTime.fromJSDate(hl7Object.createdAt).toFormat('yyyyMMddHHmmss'), 5);
-        mshSegment.addField('OMG^019', 7);
-        mshSegment.addField(hl7Object.id, 8);
+        mshSegment.addField('OMG^O19^OMG_019', 7);
+        mshSegment.addField(uuid.v4(), 8);
         mshSegment.addField('P', 9);
         mshSegment.addField('2.4', 10);
         mshSegment.addField('1', 11);
         mshSegment.addField('GBR', 15);
         mshSegment.addField('ASCII', 16);
-        mshSegment.addField('ENG', 17);
+        mshSegment.addField('EN', 17);
 
         const pidSegment = message.addSegment(['PID']);
         pidSegment.addField('1', 1);
-        pidSegment.addField(hl7Object.userId, 3);
+        pidSegment.addField(hl7Object.userId, 2);
+        pidSegment.addField(hl7Object.sampleCode, 3);
         pidSegment.addField(`${hl7Object.lastName} ${hl7Object.firstName}`, 5);
         pidSegment.addField(DateTime.fromFormat(hl7Object.dateOfBirth, 'yyyy-MM-dd').toFormat('yyyyMMdd'), 7);
         pidSegment.addField(sexTypeToHl7Sex[hl7Object.sex], 8);
@@ -86,15 +88,15 @@ export class Hl7FilesService {
         const orcSegment = message.addSegment(['ORC']);
         orcSegment.addField('NW', 1);
         orcSegment.addField(hl7Object.sampleCode, 2);
-        orcSegment.addField(DateTime.fromJSDate(hl7Object.activatedAt).toFormat('yyyyMMddHHmmss'), 9);
+        orcSegment.addField(DateTime.fromFormat(hl7Object.activatedAt, 'yyyy-MM-dd').toFormat('yyyyMMddHHmmss'), 9);
 
         const obrSegment = message.addSegment(['OBR']);
         obrSegment.addField('1', 1);
         obrSegment.addField(hl7Object.sampleCode, 2);
-        obrSegment.addField('OPME001', 3);
+        obrSegment.addField('OPME001', 4);
         obrSegment.addField('Normal', 5);
 
-        return message.toString();
+        return message.toString().replace(/\n/g, '\r\n');
     }
 
     parseHl7FileToHl7Object(messageString: string): IHl7Object {
