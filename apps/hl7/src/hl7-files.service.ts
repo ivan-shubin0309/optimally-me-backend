@@ -65,7 +65,7 @@ export class Hl7FilesService {
         const message = new Message();
 
         const mshSegment = message.header;
-        mshSegment.addField('OM', 2);
+        mshSegment.addField('OPME', 2);
         mshSegment.addField(hl7Object.lab, 3);
         mshSegment.addField(DateTime.fromJSDate(hl7Object.createdAt).toFormat('yyyyMMddHHmmss'), 5);
         mshSegment.addField('OMG^O19^OMG_019', 7);
