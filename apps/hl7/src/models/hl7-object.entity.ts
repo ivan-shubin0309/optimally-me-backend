@@ -246,6 +246,13 @@ export class Hl7Object extends Model {
     })
     toFollow: string;
 
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    })
+    isCriticalResult: boolean;
+
     @BelongsTo(() => File, 'fileId')
     file: File;
 
