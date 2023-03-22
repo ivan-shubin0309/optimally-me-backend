@@ -24,6 +24,7 @@ export class UserResultDto extends BaseDto<UserResult> {
             ? new UserFilterDto(data.filter)
             : undefined;
         this.skinUserResultId = data.skinUserResultId;
+        this.hl7ObjectId = data.hl7ObjectId;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -61,4 +62,7 @@ export class UserResultDto extends BaseDto<UserResult> {
 
     @ApiProperty({ type: () => Number, required: false })
     readonly skinUserResultId: number;
+
+    @ApiProperty({ type: () => Number, required: false })
+    readonly hl7ObjectId: number;
 }

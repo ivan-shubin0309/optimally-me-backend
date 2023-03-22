@@ -7,6 +7,7 @@ import { Filter } from '../../../biomarkers/src/models/filters/filter.entity';
 import { RecommendationTypes } from '../../../common/src/resources/recommendations/recommendation-types';
 import { UserRecommendation } from '../../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
 import { SkinUserResult } from '../../../haut-ai/src/models/skin-user-result.entity';
+import { Hl7Object } from '../../../hl7/src/models/hl7-object.entity';
 
 export interface IUserResult {
     readonly value: number,
@@ -112,6 +113,7 @@ export interface IUserResult {
             userId
         }
     }),
+    byHl7ObjectId: (hl7ObjectId) => ({ where: { hl7ObjectId } }),
 }))
 @Table({
     tableName: 'userResults',
@@ -177,6 +179,13 @@ export class UserResult extends Model {
         allowNull: false,
     })
     skinUserResultId: number;
+
+    @ForeignKey(() => Hl7Object)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+    })
+    hl7ObjectId: number;
 
     @BelongsTo(() => Unit)
     unit: Unit;

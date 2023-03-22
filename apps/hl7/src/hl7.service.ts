@@ -248,6 +248,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
                                 value: resultsMap[biomarker.shortName].value,
                                 date: DateTime.utc().toFormat('yyyy-MM-dd'),
                                 unitId: biomarker.unitId,
+                                hl7ObjectId: hl7Object.id,
                             });
                         });
 

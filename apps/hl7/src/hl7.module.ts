@@ -20,6 +20,7 @@ import { Hl7FtpService } from './hl7-ftp.service';
 import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
 import { FiltersService } from '../../biomarkers/src/services/filters/filters.service';
 import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomarkers.service';
+import { UsersResultsService } from '../../users-results/src/users-results.service';
 
 @Module({
     imports: [
@@ -41,6 +42,7 @@ import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomark
         AdminsResultsService,
         FiltersService,
         UsersBiomarkersService,
+        UsersResultsService,
         JwtStrategy,
         ...guardProviders,
         sequelizeProvider(entities),
