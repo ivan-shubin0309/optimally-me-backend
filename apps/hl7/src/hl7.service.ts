@@ -148,29 +148,31 @@ export class Hl7Service extends BaseService<Hl7Object> {
             }
 
             await Promise.all(
-                hl7ObjectList.map(async hl7Object => {
-                    const awsFile = await this.filesService.prepareFile({ contentType: HL7_FILE_TYPE, type: InternalFileTypes.hl7 }, hl7Object.userId, InternalFileTypes[InternalFileTypes.hl7]);
-                    const [createdFile] = await this.filesService.createFilesInDb(hl7Object.userId, [awsFile]);
-
-                    const data = await this.hl7FtpService.downloadStatusFile(filesMap[hl7Object.sampleCode].name);
-                    await this.filesService.putFileToS3(data, awsFile, createdFile);
-
-                    const response = await axios.get(FileHelper.getInstance().buildBaseLink(createdFile));
-
-                    const bodyForUpdate = await this.hl7FilesService.parseHl7FileToHl7Object(response.data);
-
-                    await hl7Object.update({
-                        statusFileId: createdFile.id,
-                        status: bodyForUpdate.status,
-                        sampleAt: bodyForUpdate.sampleAt,
-                        labReceivedAt: bodyForUpdate.labReceivedAt,
-                        labId: bodyForUpdate.labId,
-                    });
-
-                    await this.filesService.markFilesAsUsed([createdFile.id]);
-                })
+                hl7ObjectList.map(hl7Object => this.loadHl7StatusFile(hl7Object, filesMap[hl7Object.sampleCode].name))
             );
         }
+    }
+
+    async loadHl7StatusFile(hl7Object: Hl7Object, fileName: string): Promise<void> {
+        const awsFile = await this.filesService.prepareFile({ contentType: HL7_FILE_TYPE, type: InternalFileTypes.hl7 }, hl7Object.userId, InternalFileTypes[InternalFileTypes.hl7]);
+        const [createdFile] = await this.filesService.createFilesInDb(hl7Object.userId, [awsFile]);
+
+        const data = await this.hl7FtpService.downloadStatusFile(fileName);
+        await this.filesService.putFileToS3(data, awsFile, createdFile);
+
+        const response = await axios.get(FileHelper.getInstance().buildBaseLink(createdFile));
+
+        const bodyForUpdate = await this.hl7FilesService.parseHl7FileToHl7Object(response.data);
+
+        await hl7Object.update({
+            statusFileId: createdFile.id,
+            status: bodyForUpdate.status,
+            sampleAt: bodyForUpdate.sampleAt,
+            labReceivedAt: bodyForUpdate.labReceivedAt,
+            labId: bodyForUpdate.labId,
+        });
+
+        await this.filesService.markFilesAsUsed([createdFile.id]);
     }
 
     async checkForResultFiles(): Promise<void> {
@@ -206,72 +208,97 @@ export class Hl7Service extends BaseService<Hl7Object> {
             }
 
             await Promise.all(
-                hl7ObjectList.map(async hl7Object => {
-                    let isCriticalResult = false;
-
-                    const awsFile = await this.filesService.prepareFile({ contentType: HL7_FILE_TYPE, type: InternalFileTypes.hl7 }, hl7Object.userId, InternalFileTypes[InternalFileTypes.hl7]);
-                    const [createdFile] = await this.filesService.createFilesInDb(hl7Object.userId, [awsFile]);
-
-                    const data = await this.hl7FtpService.downloadResultFile(filesMap[hl7Object.sampleCode].name);
-                    await this.filesService.putFileToS3(data, awsFile, createdFile);
-
-                    const response = await axios.get(FileHelper.getInstance().buildBaseLink(createdFile));
-
-                    const bodyForUpdate = await this.hl7FilesService.parseHl7FileToHl7Object(response.data);
-
-                    await hl7Object.update({
-                        resultFileId: createdFile.id,
-                        status: bodyForUpdate.status,
-                        failedTests: bodyForUpdate.failedTests,
-                        resultAt: DateTime.utc().toFormat('yyyy-MM-dd'),
-                    });
-
-                    await this.filesService.markFilesAsUsed([createdFile.id]);
-
-                    if (bodyForUpdate.results && bodyForUpdate.results.length) {
-                        const resultsMap = {};
-                        bodyForUpdate.results.forEach(result => { resultsMap[result.biomarkerShortName] = result; });
-
-                        const biomarkersList = await this.usersBiomarkersService.getList([
-                            { method: ['byShortName', bodyForUpdate.results.map(result => result.biomarkerShortName)] },
-                            { method: ['byType', BiomarkerTypes.blood] }
-                        ]);
-
-                        if (!biomarkersList.length) {
-                            return;
-                        }
-
-                        const resultsToCreate = [];
-                        const biomarkerIds = [];
-
-                        await Promise.all(
-                            biomarkersList.map(async biomarker => {
-                                const criticalRange = await this.hl7CriticalRangeModel
-                                    .scope([{ method: ['byNameAndValue', biomarker.shortName, resultsMap[biomarker.shortName].value] }])
-                                    .findOne();
-
-                                if (criticalRange) {
-                                    isCriticalResult = true;
-                                }
-
-                                biomarkerIds.push(biomarker.id);
-
-                                resultsToCreate.push({
-                                    biomarkerId: biomarker.id,
-                                    value: resultsMap[biomarker.shortName].value,
-                                    date: DateTime.utc().toFormat('yyyy-MM-dd'),
-                                    unitId: biomarker.unitId,
-                                    hl7ObjectId: hl7Object.id,
-                                });
-                            })
-                        );
-
-                        await this.adminsResultsService.createUserResults(resultsToCreate, hl7Object.userId, biomarkerIds);
-
-                        await hl7Object.update({ isCriticalResult });
-                    }
-                })
+                hl7ObjectList.map(hl7Object => this.loadHl7ResultFile(hl7Object, filesMap[hl7Object.sampleCode].name))
             );
         }
+    }
+
+    async loadHl7ResultFile(hl7Object: Hl7Object, fileName: string): Promise<void> {
+        let isCriticalResult = false;
+
+        const awsFile = await this.filesService.prepareFile({ contentType: HL7_FILE_TYPE, type: InternalFileTypes.hl7 }, hl7Object.userId, InternalFileTypes[InternalFileTypes.hl7]);
+        const [createdFile] = await this.filesService.createFilesInDb(hl7Object.userId, [awsFile]);
+
+        const data = await this.hl7FtpService.downloadResultFile(fileName);
+        await this.filesService.putFileToS3(data, awsFile, createdFile);
+
+        const response = await axios.get(FileHelper.getInstance().buildBaseLink(createdFile));
+
+        const bodyForUpdate = await this.hl7FilesService.parseHl7FileToHl7Object(response.data);
+
+        await hl7Object.update({
+            resultFileId: createdFile.id,
+            status: bodyForUpdate.status,
+            failedTests: bodyForUpdate.failedTests,
+            resultAt: DateTime.utc().toFormat('yyyy-MM-dd'),
+        });
+
+        await this.filesService.markFilesAsUsed([createdFile.id]);
+
+        if (bodyForUpdate.results && bodyForUpdate.results.length) {
+            const resultsMap = {};
+            bodyForUpdate.results.forEach(result => { resultsMap[result.biomarkerShortName] = result; });
+
+            const biomarkersList = await this.usersBiomarkersService.getList([
+                { method: ['byNameAndAlternativeName', bodyForUpdate.results.map(result => result.biomarkerShortName)] },
+                { method: ['byType', BiomarkerTypes.blood] }
+            ]);
+
+            if (!biomarkersList.length) {
+                return;
+            }
+
+            const resultsToCreate = [];
+            const biomarkerIds = [];
+
+            await Promise.all(
+                biomarkersList.map(async biomarker => {
+                    const criticalRange = await this.hl7CriticalRangeModel
+                        .scope([{ method: ['byNameAndValue', biomarker.shortName, resultsMap[biomarker.shortName].value] }])
+                        .findOne();
+
+                    if (criticalRange) {
+                        isCriticalResult = true;
+                    }
+
+                    biomarkerIds.push(biomarker.id);
+
+                    resultsToCreate.push({
+                        biomarkerId: biomarker.id,
+                        value: resultsMap[biomarker.shortName].value,
+                        date: DateTime.utc().toFormat('yyyy-MM-dd'),
+                        unitId: biomarker.unitId,
+                        hl7ObjectId: hl7Object.id,
+                    });
+                })
+            );
+
+            await this.adminsResultsService.createUserResults(resultsToCreate, hl7Object.userId, biomarkerIds);
+
+            await hl7Object.update({ isCriticalResult });
+        }
+    }
+
+    async findFileNameForHl7Object(hl7Object: Hl7Object): Promise<{ statusFile: string, resultFile: string }> {
+        const statusFileList = await this.hl7FtpService.getStatusFileList();
+        const resultFileList = await this.hl7FtpService.getResultFileList();
+
+        const statusFile = statusFileList.find((file) => {
+            const matches = SAMPLE_CODE_FROM_STATUS_FILE.exec(file.name);
+            if (matches?.length && matches[1] === hl7Object.sampleCode) {
+                return true;
+            }
+            return false;
+        });
+
+        const resultFile = resultFileList.find((file) => {
+            const matches = SAMPLE_CODE_FROM_RESULT_FILE.exec(file.name);
+            if (matches?.length && matches[1] === hl7Object.sampleCode) {
+                return true;
+            }
+            return false;
+        });
+
+        return { statusFile: statusFile && statusFile.name, resultFile: resultFile && resultFile.name };
     }
 }
