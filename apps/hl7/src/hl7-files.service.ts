@@ -96,7 +96,7 @@ export class Hl7FilesService {
         obrSegment.addField('OPME001', 4);
         obrSegment.addField('Normal', 5);
 
-        return message.toString().replace(/\n/g, '\r\n');
+        return message.toString().replace(/\n|\r\n|\r/g, '\r\n');
     }
 
     parseHl7FileToHl7Object(messageString: string): IHl7Object {
