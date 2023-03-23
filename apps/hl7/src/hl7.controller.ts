@@ -198,4 +198,37 @@ export class Hl7Controller {
 
         return new UserResultsDto(userResultsList, PaginationHelper.buildPagination({ limit, offset }, count));
     }
+
+    @ApiOperation({ summary: 'Reprocess hl7 files by hl7 object id' })
+    @Roles(UserRoles.superAdmin)
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @Patch('/hl7-objects/:id/results')
+    async patchResultsByHl7ObjectId(@Param() param: EntityByIdDto): Promise<void> {
+        const hl7Object = await this.hl7Service.getOne([{ method: ['byId', param.id] }]);
+
+        if (!hl7Object) {
+            throw new NotFoundException({
+                message: this.translator.translate('HL7_OBJECT_NOT_FOUND'),
+                errorCode: 'HL7_OBJECT_NOT_FOUND',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        if (hl7Object.status !== Hl7ObjectStatuses.error) {
+            throw new BadRequestException({
+                message: this.translator.translate('HL7_OBJECT_NOT_ERROR_STATUS'),
+                errorCode: 'HL7_OBJECT_NOT_ERROR_STATUS',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        const files = await this.hl7Service.findFileNameForHl7Object(hl7Object);
+
+        if (files.statusFile) {
+            await this.hl7Service.loadHl7StatusFile(hl7Object, files.statusFile);
+        }
+        if (files.resultFile) {
+            await this.hl7Service.loadHl7ResultFile(hl7Object, files.resultFile);
+        }
+    }
 }

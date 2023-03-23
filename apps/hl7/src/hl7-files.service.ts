@@ -81,7 +81,7 @@ export class Hl7FilesService {
         pidSegment.addField('1', 1);
         pidSegment.addField(hl7Object.userId, 2);
         pidSegment.addField(hl7Object.sampleCode, 3);
-        pidSegment.addField(`${hl7Object.lastName} ${hl7Object.firstName}`, 5);
+        pidSegment.addField(`${hl7Object.lastName}^${hl7Object.firstName}`, 5);
         pidSegment.addField(DateTime.fromFormat(hl7Object.dateOfBirth, 'yyyy-MM-dd').toFormat('yyyyMMdd'), 7);
         pidSegment.addField(sexTypeToHl7Sex[hl7Object.sex], 8);
 
@@ -96,7 +96,7 @@ export class Hl7FilesService {
         obrSegment.addField('OPME001', 4);
         obrSegment.addField('Normal', 5);
 
-        return message.toString().replace(/\n/g, '\r\n');
+        return message.toString().replace(/\n|\r\n|\r/g, '\r\n');
     }
 
     parseHl7FileToHl7Object(messageString: string): IHl7Object {
