@@ -142,7 +142,7 @@ export class Hl7FilesService {
 
     parseObxSegmentToResultArrays(obxSegments: Segment[]): IResultObject[] {
         return obxSegments.map(obxSegment => ({
-            biomarkerShortName: obxSegment.getComponent(3, 1),
+            biomarkerShortName: obxSegment.getComponent(3, 2),
             value: obxSegment.getField(5),
             unit: obxSegment.getField(6),
             toFollow: isNaN(obxSegment.getField(5))
