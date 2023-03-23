@@ -253,8 +253,19 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
             await Promise.all(
                 biomarkersList.map(async biomarker => {
+                    let biomarkerValue;
+
+                    if (resultsMap[biomarker.name]) {
+                        biomarkerValue = resultsMap[biomarker.name].value;
+                    } else if (resultsMap[biomarker.shortName]) {
+                        biomarkerValue = resultsMap[biomarker.shortName].value;
+                    } else {
+                        const alternativeName = biomarker.alternativeNames.find(altName => !!resultsMap[altName.name]);
+                        biomarkerValue = resultsMap[alternativeName.name].value;
+                    }
+
                     const criticalRange = await this.hl7CriticalRangeModel
-                        .scope([{ method: ['byNameAndValue', biomarker.shortName, resultsMap[biomarker.shortName].value] }])
+                        .scope([{ method: ['byNameAndValue', biomarker.shortName, biomarkerValue] }])
                         .findOne();
 
                     if (criticalRange) {
