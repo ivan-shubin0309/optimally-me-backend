@@ -29,6 +29,7 @@ export class Hl7ObjectDto extends BaseDto<Hl7Object> {
         this.abnormalResults = data.abnormalResults;
         this.failedTests = data.failedTests;
         this.toFollow = data.toFollow;
+        this.isCriticalResult = data.isCriticalResult;
         this.file = data.file
             ? new FileDto(data.file)
             : undefined;
@@ -99,6 +100,9 @@ export class Hl7ObjectDto extends BaseDto<Hl7Object> {
 
     @ApiProperty({ type: () => String, required: false })
     readonly toFollow: string;
+
+    @ApiProperty({ type: () => Boolean, required: false })
+    readonly isCriticalResult: boolean;
 
     @ApiProperty({ type: () => FileDto, required: false })
     readonly file: FileDto;

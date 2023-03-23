@@ -10,6 +10,7 @@ import { UserRecommendation } from '../../biomarkers/src/models/userRecommendati
 import { Filter } from '../../biomarkers/src/models/filters/filter.entity';
 import { FilterRecommendation } from '../../biomarkers/src/models/recommendations/filter-recommendation.entity';
 import { FilterBulletList } from '../../biomarkers/src/models/filterBulletLists/filter-bullet-list.entity';
+import { Hl7CriticalRange } from './models/hl7-critical-range.entity';
 
 export const modelProviders = [
     {
@@ -60,4 +61,8 @@ export const modelProviders = [
         provide: 'FILTER_BULLET_LIST_MODEL',
         useValue: FilterBulletList
     },
+    {
+        provide: 'HL7_CRITICAL_RANGE_MODEL',
+        useValue: Hl7CriticalRange
+    }
 ];

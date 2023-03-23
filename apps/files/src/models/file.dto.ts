@@ -4,10 +4,12 @@ import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { File } from './file.entity';
 import { FileStatuses } from '../../../common/src/resources/files/file-statuses';
 import { FileHelper } from 'apps/common/src/utils/helpers/file.helper';
+import { BaseDto } from 'apps/common/src/base/base.dto';
 
-export class FileDto {
+export class FileDto extends BaseDto<File> {
     constructor(file: File) {
-        this.id = file.id;
+        super(file);
+
         this.userId = file.userId;
         this.link = FileHelper
             .getInstance()
@@ -19,9 +21,6 @@ export class FileDto {
         this.status = file.status;
         this.bytes = file.bytes;
     }
-
-    @ApiProperty({ type: () => Number, required: true })
-    readonly id: number;
 
     @ApiProperty({ type: () => Number, required: true })
     readonly userId: number;

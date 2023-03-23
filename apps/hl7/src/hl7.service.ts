@@ -16,6 +16,7 @@ import { DateTime } from 'luxon';
 import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
 import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomarkers.service';
 import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-types';
+import { Hl7CriticalRange } from './models/hl7-critical-range.entity';
 
 @Injectable()
 export class Hl7Service extends BaseService<Hl7Object> {
@@ -28,6 +29,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
         private readonly hl7FtpService: Hl7FtpService,
         private readonly adminsResultsService: AdminsResultsService,
         private readonly usersBiomarkersService: UsersBiomarkersService,
+        @Inject('HL7_CRITICAL_RANGE_MODEL') private readonly hl7CriticalRangeModel: Repository<Hl7CriticalRange>
     ) { super(model); }
 
     async generateHl7ObjectsFromSamples(): Promise<void> {
@@ -205,6 +207,8 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
             await Promise.all(
                 hl7ObjectList.map(async hl7Object => {
+                    let isCriticalResult = false;
+
                     const awsFile = await this.filesService.prepareFile({ contentType: HL7_FILE_TYPE, type: InternalFileTypes.hl7 }, hl7Object.userId, InternalFileTypes[InternalFileTypes.hl7]);
                     const [createdFile] = await this.filesService.createFilesInDb(hl7Object.userId, [awsFile]);
 
@@ -240,19 +244,31 @@ export class Hl7Service extends BaseService<Hl7Object> {
                         const resultsToCreate = [];
                         const biomarkerIds = [];
 
-                        biomarkersList.forEach(biomarker => {
-                            biomarkerIds.push(biomarker.id);
+                        await Promise.all(
+                            biomarkersList.map(async biomarker => {
+                                const criticalRange = await this.hl7CriticalRangeModel
+                                    .scope([{ method: ['byNameAndValue', biomarker.shortName, resultsMap[biomarker.shortName].value] }])
+                                    .findOne();
 
-                            resultsToCreate.push({
-                                biomarkerId: biomarker.id,
-                                value: resultsMap[biomarker.shortName].value,
-                                date: DateTime.utc().toFormat('yyyy-MM-dd'),
-                                unitId: biomarker.unitId,
-                                hl7ObjectId: hl7Object.id,
-                            });
-                        });
+                                if (criticalRange) {
+                                    isCriticalResult = true;
+                                }
+
+                                biomarkerIds.push(biomarker.id);
+
+                                resultsToCreate.push({
+                                    biomarkerId: biomarker.id,
+                                    value: resultsMap[biomarker.shortName].value,
+                                    date: DateTime.utc().toFormat('yyyy-MM-dd'),
+                                    unitId: biomarker.unitId,
+                                    hl7ObjectId: hl7Object.id,
+                                });
+                            })
+                        );
 
                         await this.adminsResultsService.createUserResults(resultsToCreate, hl7Object.userId, biomarkerIds);
+
+                        await hl7Object.update({ isCriticalResult });
                     }
                 })
             );
