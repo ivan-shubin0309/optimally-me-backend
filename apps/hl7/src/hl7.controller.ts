@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Headers, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Query, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Headers, HttpCode, HttpStatus, Inject, NotFoundException, Param, Patch, Post, Query, UnauthorizedException } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TranslatorService } from 'nestjs-translator';
 import { Roles } from '../../common/src/resources/common/role.decorator';
@@ -18,6 +18,7 @@ import { hl7SortingServerValues } from '../../common/src/resources/hl7/sorting-f
 import { UserResultsDto } from '../../admins-results/src/models/user-results.dto';
 import { GetListDto } from '../../common/src/models/get-list.dto';
 import { UsersResultsService } from '../../users-results/src/users-results.service';
+import { Sequelize } from 'sequelize-typescript';
 
 @ApiBearerAuth()
 @ApiTags('hl7')
@@ -28,6 +29,7 @@ export class Hl7Controller {
         private readonly translator: TranslatorService,
         private readonly jwtService: JwtService,
         private readonly usersResultsService: UsersResultsService,
+        @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
     ) { }
 
     @ApiResponse({ type: () => Hl7ObjectDto })
@@ -221,6 +223,12 @@ export class Hl7Controller {
                 statusCode: HttpStatus.NOT_FOUND
             });
         }
+
+        await this.dbConnection.transaction(async transaction => {
+            await hl7Object.update({ status: Hl7ObjectStatuses.new }, { transaction });
+
+            await this.usersResultsService.removeResultsByObjectId(hl7Object.id, transaction);
+        });
 
         const files = await this.hl7Service.findFileNameForHl7Object(hl7Object);
 

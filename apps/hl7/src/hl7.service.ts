@@ -10,7 +10,7 @@ import { InternalFileTypes } from '../../common/src/resources/files/file-types';
 import { HL7_FILE_TYPE } from '../../common/src/resources/files/files-validation-rules';
 import { Hl7FtpService } from './hl7-ftp.service';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
-import { SAMPLE_CODE_FROM_RESULT_FILE, SAMPLE_CODE_FROM_STATUS_FILE } from '../../common/src/resources/hl7/hl7-constants';
+import { BIOMARKER_MAPPING_ERROR, OBX_FIELDS_NUMBER_ERROR, OBX_MIN_FIELDS_NUMBER, SAMPLE_CODE_FROM_RESULT_FILE, SAMPLE_CODE_FROM_STATUS_FILE, UNIT_MISMATCH_ERROR } from '../../common/src/resources/hl7/hl7-constants';
 import axios from 'axios';
 import { DateTime } from 'luxon';
 import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
@@ -140,7 +140,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
             const hl7ObjectList = await this.getList([
                 { method: ['bySampleCode', sampleCodesArray] },
-                { method: ['byStatusFileId', null] }
+                { method: ['byStatus', Hl7ObjectStatuses.new] }
             ]);
 
             if (!hl7ObjectList.length) {
@@ -200,7 +200,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
             const hl7ObjectList = await this.getList([
                 { method: ['bySampleCode', sampleCodesArray] },
-                { method: ['byResultFileId', null] }
+                { method: ['byStatus', Hl7ObjectStatuses.inProgress] }
             ]);
 
             if (!hl7ObjectList.length) {
@@ -214,7 +214,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
     }
 
     async loadHl7ResultFile(hl7Object: Hl7Object, fileName: string): Promise<void> {
-        let isCriticalResult = false;
+        let isCriticalResult = false, status;
 
         const awsFile = await this.filesService.prepareFile({ contentType: HL7_FILE_TYPE, type: InternalFileTypes.hl7 }, hl7Object.userId, InternalFileTypes[InternalFileTypes.hl7]);
         const [createdFile] = await this.filesService.createFilesInDb(hl7Object.userId, [awsFile]);
@@ -226,57 +226,69 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
         const bodyForUpdate = await this.hl7FilesService.parseHl7FileToHl7Object(response.data);
 
+        status = bodyForUpdate.status;
+
+        if (bodyForUpdate.results.length < OBX_MIN_FIELDS_NUMBER) {
+            status = Hl7ObjectStatuses.error;
+            bodyForUpdate.failedTests = `${OBX_FIELDS_NUMBER_ERROR},\n${bodyForUpdate.failedTests}`;
+        }
+
         await hl7Object.update({
             resultFileId: createdFile.id,
-            status: bodyForUpdate.status,
+            status,
             failedTests: bodyForUpdate.failedTests,
+            toFollow: bodyForUpdate.toFollow,
             resultAt: DateTime.utc().toFormat('yyyy-MM-dd'),
         });
 
         await this.filesService.markFilesAsUsed([createdFile.id]);
 
-        if (bodyForUpdate.results && bodyForUpdate.results.length) {
-            const resultsMap = {};
-            bodyForUpdate.results.forEach(result => { resultsMap[result.biomarkerShortName] = result; });
+        if (bodyForUpdate.results.length < OBX_MIN_FIELDS_NUMBER) {
+            return;
+        }
 
+        if (bodyForUpdate.results && bodyForUpdate.results.length) {
             const biomarkersList = await this.usersBiomarkersService.getList([
                 { method: ['byNameAndAlternativeName', bodyForUpdate.results.map(result => result.biomarkerShortName)] },
-                { method: ['byType', BiomarkerTypes.blood] }
+                { method: ['byType', BiomarkerTypes.blood] },
+                { method: ['withUnit'] },
             ]);
-
-            if (!biomarkersList.length) {
-                return;
-            }
 
             const resultsToCreate = [];
             const biomarkerIds = [];
 
             await Promise.all(
-                biomarkersList.map(async biomarker => {
-                    let biomarkerValue;
+                bodyForUpdate.results.map(async result => {
+                    const biomarker = biomarkersList.find(
+                        biomarker => result.biomarkerShortName === biomarker.name
+                            || result.biomarkerShortName === biomarker.shortName
+                            || biomarker.alternativeNames
+                                .map(altName => altName.name)
+                                .includes(result.biomarkerShortName)
+                    );
 
-                    if (resultsMap[biomarker.name]) {
-                        biomarkerValue = resultsMap[biomarker.name].value;
-                    } else if (resultsMap[biomarker.shortName]) {
-                        biomarkerValue = resultsMap[biomarker.shortName].value;
-                    } else {
-                        const alternativeName = biomarker.alternativeNames.find(altName => !!resultsMap[altName.name]);
-                        biomarkerValue = resultsMap[alternativeName.name].value;
+                    if (!biomarker) {
+                        bodyForUpdate.failedTests = `${BIOMARKER_MAPPING_ERROR} ${result.biomarkerShortName} OBX.3,\n${bodyForUpdate.failedTests}`;
+                        return;
                     }
 
                     const criticalRange = await this.hl7CriticalRangeModel
-                        .scope([{ method: ['byNameAndValue', biomarker.shortName, biomarkerValue] }])
+                        .scope([{ method: ['byNameAndValue', biomarker.shortName, result.value] }])
                         .findOne();
 
                     if (criticalRange) {
                         isCriticalResult = true;
                     }
 
+                    if (biomarker.unit.unit !== result.unit) {
+                        bodyForUpdate.failedTests = `${UNIT_MISMATCH_ERROR} ${result.biomarkerShortName} OBX.6 ${result.unit},\n${bodyForUpdate.failedTests}`;
+                    }
+
                     biomarkerIds.push(biomarker.id);
 
                     resultsToCreate.push({
                         biomarkerId: biomarker.id,
-                        value: biomarkerValue,
+                        value: result.value,
                         date: DateTime.utc().toFormat('yyyy-MM-dd'),
                         unitId: biomarker.unitId,
                         hl7ObjectId: hl7Object.id,
@@ -286,7 +298,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
             await this.adminsResultsService.createUserResults(resultsToCreate, hl7Object.userId, biomarkerIds);
 
-            await hl7Object.update({ isCriticalResult });
+            await hl7Object.update({ isCriticalResult, failedTests: bodyForUpdate.failedTests });
         }
     }
 
