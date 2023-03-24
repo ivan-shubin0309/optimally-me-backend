@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from 'apps/common/src/base/base.dto';
 import { SkinUserResultStatuses } from 'apps/common/src/resources/haut-ai/skin-user-result-statuses';
 import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
+import { FileDto } from 'apps/files/src/models/file.dto';
 import { SkinUserResult } from './skin-user-result.entity';
 
 export class SkinUserResultDto extends BaseDto<SkinUserResult> {
@@ -16,6 +17,9 @@ export class SkinUserResultDto extends BaseDto<SkinUserResult> {
         this.fileId = entity.fileId;
         this.perceivedAge = entity.perceivedAge;
         this.eyesAge = entity.eyesAge;
+        this.file = entity.file
+            ? new FileDto(entity.file)
+            : undefined;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -41,4 +45,7 @@ export class SkinUserResultDto extends BaseDto<SkinUserResult> {
 
     @ApiProperty({ type: () => Number, required: false })
     readonly eyesAge: number;
+
+    @ApiProperty({ type: () => FileDto, required: false })
+    readonly file: FileDto;
 }

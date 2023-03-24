@@ -1,5 +1,5 @@
 import { SkinUserResultStatuses } from '../../../common/src/resources/haut-ai/skin-user-result-statuses';
-import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Model, Scopes, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { UserHautAiField } from './user-haut-ai-field.entity';
 import { Op } from 'sequelize';
 import { File } from '../../../files/src/models/file.entity';
@@ -18,6 +18,15 @@ export interface ISkinUserResult {
     afterDate: (date: string) => ({ where: { createdAt: { [Op.gte]: date } } }),
     pagination: (query) => ({ limit: query.limit, offset: query.offset }),
     orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
+    withFile: () => ({
+        include: [
+            {
+                model: File,
+                as: 'file',
+                required: false,
+            },
+        ]
+    }),
 }))
 @Table({
     tableName: 'skinUserResults',
@@ -75,4 +84,7 @@ export class SkinUserResult extends Model {
         allowNull: true
     })
     eyesAge: number;
+
+    @BelongsTo(() => File, 'fileId')
+    file: File;
 }

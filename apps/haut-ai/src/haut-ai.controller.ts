@@ -239,7 +239,8 @@ export class HautAiController {
         if (count) {
             scopes.push(
                 { method: ['pagination', { limit: query.limit, offset: query.offset }] },
-                { method: ['orderBy', [['createdAt', 'desc']]] }
+                { method: ['orderBy', [['createdAt', 'desc']]] },
+                'withFile'
             );
 
             skinResults = await this.skinUserResultsService.getList(scopes);
