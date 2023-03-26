@@ -13,10 +13,10 @@ import {
   Get,
   NotFoundException,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from '../../common/src/resources/common/public.decorator';
 import { LoginUserDto } from '../../users/src/models';
-import { RefreshSessionDto, SessionDataDto } from '../../sessions/src/models';
+import { RefreshSessionDto, SessionDataDto, SessionDto } from '../../sessions/src/models';
 import { SessionsService } from '../../sessions/src/sessions.service';
 import { UserRoles } from '../../common/src/resources/users';
 import { UsersService } from '../../users/src/users.service';
@@ -35,6 +35,7 @@ import { UsersDevicesService } from '../../users-devices/src/users-devices.servi
 import { UserCodesService } from './user-codes.service';
 import { UserCodeDto } from './models/user-code.dto';
 import { GetUserSessionByCodeDto } from './models/get-user-session-by-code.dto';
+import { DateTime } from 'luxon';
 
 @ApiTags('sessions')
 @Controller('sessions')
@@ -82,7 +83,7 @@ export class SessionsController {
       lifeTime: body.lifeTime
     });
 
-    await this.userCodesService.generateCode(user.id, session.accessToken, session.refreshToken);
+    await this.userCodesService.generateCode(user.id, session.accessToken, session.refreshToken, session.expiresAt);
 
     return new UserSessionDto(session, user);
   }
@@ -143,7 +144,8 @@ export class SessionsController {
     return new ShopifyUrlDto(ShopifyUrlHelper.getSignInUrl(query.redirectUrl, this.configService.get('SHOPIFY_CUSTOMER_ID'), this.configService.get('SHOPIFY_IDP_IDENTIFIER'), accessToken));
   }
 
-  @ApiCreatedResponse({ type: () => UserCodeDto })
+  @ApiBearerAuth()
+  @ApiResponse({ type: () => UserCodeDto })
   @ApiOperation({ summary: 'Get code for login with qrcode' })
   @Get('/codes')
   async getLoginCode(@Request() req: Request & { user: SessionDataDto }): Promise<UserCodeDto> {
@@ -161,10 +163,35 @@ export class SessionsController {
   }
 
   @Public()
-  @ApiCreatedResponse({ type: () =>  })
+  @ApiResponse({ type: () => UserSessionDto })
   @ApiOperation({ summary: 'Get session by user code' })
   @Post('/codes')
-  async getUserSessionByCode(@Body() body: GetUserSessionByCodeDto): Promise<> {
+  async getUserSessionByCode(@Body() body: GetUserSessionByCodeDto): Promise<UserSessionDto> {
+    const userCode = await this.userCodesService.getOne([ { method: ['byCode', body.code] } ]);
 
+    if(!userCode) {
+      throw new NotFoundException({
+        message: this.translator.translate('USER_CODE_NOT_FOUND'),
+        errorCode: 'USER_CODE_NOT_FOUND',
+        statusCode: HttpStatus.NOT_FOUND
+      });
+    }
+
+    const user = await this.usersService.getOne([      
+      { method: ['byRoles', [UserRoles.user]] },
+      'withAdditionalField'
+    ]);
+
+    const sessionData = await this.sessionsService.findSession(userCode.sessionToken);
+
+    if(!sessionData) {
+      throw new NotFoundException({
+        message: this.translator.translate('SESSION_NOT_FOUND'),
+        errorCode: 'SESSION_NOT_FOUND',
+        statusCode: HttpStatus.NOT_FOUND
+      });
+    }
+
+    return new UserSessionDto(new SessionDto(userCode.sessionToken, userCode.refreshToken, DateTime.fromJSDate(userCode.expiresAt).valueOf()), user);
   }
 }

@@ -8,8 +8,9 @@ module.exports = {
         
         userId INTEGER NOT NULL, 
         code VARCHAR(255) UNIQUE NOT NULL,
-        sessionToken TEXT(5000) NOT NULL,
-        refreshToken TEXT(1000) NOT NULL,
+        sessionToken TEXT(1000) NOT NULL,
+        refreshToken TEXT(2000) NOT NULL,
+        expiresAt DATETIME NOT NULL,
 
         createdAt DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
         updatedAt DATETIME NULL DEFAULT CURRENT_TIMESTAMP,

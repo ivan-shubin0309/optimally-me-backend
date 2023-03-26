@@ -38,4 +38,10 @@ export class UserCode extends Model {
         allowNull: false
     })
     refreshToken: string;
+
+    @Column({
+        type: DataType.DATE,
+        allowNull: false
+    })
+    expiresAt: Date|any;
 }

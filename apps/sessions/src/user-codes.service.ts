@@ -11,9 +11,9 @@ export class UserCodesService extends BaseService<UserCode> {
         @Inject('USER_CODE_MODEL') protected readonly model: Repository<UserCode>,
     ) { super(model); }
 
-    async generateCode(userId: number, sessionToken: string, refreshToken: string): Promise<UserCode> {
+    async generateCode(userId: number, sessionToken: string, refreshToken: string, expiresAt: string|number): Promise<UserCode> {
         const code = CodeHelper.generateCode(USER_CODE_LENGTH);
-        const body = { userId, code, sessionToken, refreshToken };
+        const body = { userId, code, sessionToken, refreshToken, expiresAt };
         const userCode = await this.model
             .scope([{ method: ['byUserId', userId] }])
             .findOne();
