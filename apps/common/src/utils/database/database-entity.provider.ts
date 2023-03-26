@@ -47,6 +47,7 @@ import { WefitterVo2Max } from '../../../../wefitter/src/models/biometric-measur
 import { UserWidgetSetting } from '../../../../users-widgets/src/models/user-widget-setting.entity';
 import { Hl7Object } from '../../../../hl7/src/models/hl7-object.entity';
 import { Hl7CriticalRange } from '../../../../hl7/src/models/hl7-critical-range.entity';
+import { UserCode } from '../../../../sessions/src/models/user-code.entity';
 
 export const entities = [
     User,
@@ -98,4 +99,5 @@ export const entities = [
     UserWidgetSetting,
     Hl7Object,
     Hl7CriticalRange,
+    UserCode,
 ];

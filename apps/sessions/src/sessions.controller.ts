@@ -11,11 +11,12 @@ import {
   HttpCode,
   Query,
   Get,
+  NotFoundException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '../../common/src/resources/common/public.decorator';
 import { LoginUserDto } from '../../users/src/models';
-import { RefreshSessionDto } from '../../sessions/src/models';
+import { RefreshSessionDto, SessionDataDto } from '../../sessions/src/models';
 import { SessionsService } from '../../sessions/src/sessions.service';
 import { UserRoles } from '../../common/src/resources/users';
 import { UsersService } from '../../users/src/users.service';
@@ -31,6 +32,9 @@ import { RegistrationSteps } from '../../common/src/resources/users/registration
 import { AllowedRegistrationSteps } from '../../common/src/resources/common/registration-step.decorator';
 import { EnumHelper } from '../../common/src/utils/helpers/enum.helper';
 import { UsersDevicesService } from '../../users-devices/src/users-devices.service';
+import { UserCodesService } from './user-codes.service';
+import { UserCodeDto } from './models/user-code.dto';
+import { GetUserSessionByCodeDto } from './models/get-user-session-by-code.dto';
 
 @ApiTags('sessions')
 @Controller('sessions')
@@ -41,6 +45,7 @@ export class SessionsController {
     private readonly translator: TranslatorService,
     private readonly configService: ConfigService,
     private readonly usersDevicesService: UsersDevicesService,
+    private readonly userCodesService: UserCodesService,
   ) {}
 
   @Public()
@@ -76,6 +81,8 @@ export class SessionsController {
       isEmailVerified: !!user?.additionalField?.isEmailVerified,
       lifeTime: body.lifeTime
     });
+
+    await this.userCodesService.generateCode(user.id, session.accessToken, session.refreshToken);
 
     return new UserSessionDto(session, user);
   }
@@ -134,5 +141,30 @@ export class SessionsController {
     const accessToken = bearer.split(' ')[1];
 
     return new ShopifyUrlDto(ShopifyUrlHelper.getSignInUrl(query.redirectUrl, this.configService.get('SHOPIFY_CUSTOMER_ID'), this.configService.get('SHOPIFY_IDP_IDENTIFIER'), accessToken));
+  }
+
+  @ApiCreatedResponse({ type: () => UserCodeDto })
+  @ApiOperation({ summary: 'Get code for login with qrcode' })
+  @Get('/codes')
+  async getLoginCode(@Request() req: Request & { user: SessionDataDto }): Promise<UserCodeDto> {
+    const userCode = await this.userCodesService.getOne([ { method: ['byUserId', req.user.userId] } ]);
+
+    if(!userCode) {
+      throw new NotFoundException({
+        message: this.translator.translate('USER_CODE_NOT_FOUND'),
+        errorCode: 'USER_CODE_NOT_FOUND',
+        statusCode: HttpStatus.NOT_FOUND
+      });
+    }
+
+    return new UserCodeDto(userCode);
+  }
+
+  @Public()
+  @ApiCreatedResponse({ type: () =>  })
+  @ApiOperation({ summary: 'Get session by user code' })
+  @Post('/codes')
+  async getUserSessionByCode(@Body() body: GetUserSessionByCodeDto): Promise<> {
+
   }
 }
