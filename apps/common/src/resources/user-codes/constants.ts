@@ -1,1 +1,1 @@
-export const USER_CODE_LENGTH = 6;
+export const USER_CODE_LENGTH = 10;
