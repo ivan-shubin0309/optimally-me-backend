@@ -138,8 +138,21 @@ export class HautAiController {
     @Roles(UserRoles.user)
     @HttpCode(HttpStatus.OK)
     @Post('/face-skin-metrics/results')
-    async getImageResults(@Body() body: HautAiGetResultsDto): Promise<any> {
-        return this.userHautAiFieldsService.getImageResults(this.userHautAiFieldsService.getAccessToken(), body.subjectId, body.batchId, body.uploadedFileId);
+    async getImageResults(@Body() body: HautAiGetResultsDto, @Request() req: Request & { user: SessionDataDto }): Promise<any> {
+        const user = await this.usersSevice.getOne([
+            { method: ['byId', req.user.userId] },
+            { method: ['byRoles', UserRoles.user] },
+            'withHautAiField',
+        ]);
+
+        if (!user.hautAiField || !user.hautAiField?.hautAiSubjectId) {
+            throw new NotFoundException({
+                message: this.translator.translate('SKIN_RESULT_NOT_FOUND'),
+                errorCode: 'SKIN_RESULT_NOT_FOUND',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+        return this.userHautAiFieldsService.getImageResults(this.userHautAiFieldsService.getAccessToken(), user.hautAiField.hautAiSubjectId, body.batchId, body.uploadedFileId);
     }
 
     @ApiOperation({ summary: 'Load skin results' })
