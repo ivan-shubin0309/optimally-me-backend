@@ -177,7 +177,8 @@ export class SessionsController {
       });
     }
 
-    const user = await this.usersService.getOne([      
+    const user = await this.usersService.getOne([
+      { method: ['byUserId', userCode.userId] },      
       { method: ['byRoles', [UserRoles.user]] },
       'withAdditionalField'
     ]);
