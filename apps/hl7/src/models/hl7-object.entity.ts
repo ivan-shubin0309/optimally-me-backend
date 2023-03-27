@@ -97,6 +97,8 @@ import { File } from '../../../files/src/models/file.entity';
     }),
     byStatusFileId: (statusFileId) => ({ where: { statusFileId } }),
     byResultFileId: (resultFileId) => ({ where: { resultFileId } }),
+    byStatusFileAt: (statusFileAt) => ({ where: { statusFileAt } }),
+    byResultFileAt: (resultFileAt) => ({ where: { resultFileAt } }),
 }))
 @Table({
     tableName: 'hl7Objects',
