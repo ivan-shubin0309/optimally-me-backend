@@ -7,11 +7,12 @@ import { guardProviders } from '../../common/src/utils/guards/guard.provider';
 import { ConfigModule } from '../../common/src/utils/config/config.module';
 import { jwtModuleInstance } from '../../common/src/utils/jwt/jwt.module';
 import { sequelizeProvider } from '../../common/src/utils/database/database.provider';
-import { redisModuleInstance } from 'apps/common/src/utils/database/redis.provider';
+import { redisModuleInstance } from '../../common/src/utils/database/redis.provider';
 import { modelProviders } from './model.provider';
 import { translatorInstance } from '../../common/src/utils/translator/translator.provider';
 import { entities } from '../../common/src/utils/database/database-entity.provider';
 import { UsersDevicesService } from '../../users-devices/src/users-devices.service';
+import { UserCodesService } from './user-codes.service';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { UsersDevicesService } from '../../users-devices/src/users-devices.servi
     UsersService,
     JwtStrategy,
     UsersDevicesService,
+    UserCodesService,
     ...guardProviders,
     sequelizeProvider(entities),
     ...modelProviders
