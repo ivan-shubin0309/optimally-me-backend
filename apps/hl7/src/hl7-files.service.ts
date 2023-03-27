@@ -126,11 +126,11 @@ export class Hl7FilesService {
             failedTests: results
                 .filter(result => !!result.failedTests)
                 .map(result => result.failedTests)
-                .join(', '),
+                .join(',\n'),
             toFollow: results
                 .filter(result => !!result.toFollow)
                 .map(result => result.toFollow)
-                .join(', '),
+                .join(',\n'),
             resultAt: undefined,
             email: undefined,
             isQuizCompleted: undefined,
@@ -146,10 +146,10 @@ export class Hl7FilesService {
             value: obxSegment.getField(5),
             unit: obxSegment.getField(6),
             toFollow: isNaN(obxSegment.getField(5))
-                ? `${obxSegment.getField(3)} due to ${obxSegment.getField(5)}`
+                ? `${obxSegment.getComponent(3, 2)} due to ${obxSegment.getField(5)}`
                 : null,
             failedTests: isNaN(obxSegment.getField(5))
-                ? `${obxSegment.getField(3)} ${obxSegment.getField(5)}`
+                ? `${obxSegment.getComponent(3, 2)} ${obxSegment.getField(5)}`
                 : null,
         }));
     }
