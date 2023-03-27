@@ -253,6 +253,18 @@ export class Hl7Object extends Model {
     })
     isCriticalResult: boolean;
 
+    @Column({
+        type: DataType.DATE,
+        allowNull: true
+    })
+    statusFileAt: Date|any;
+
+    @Column({
+        type: DataType.DATE,
+        allowNull: true
+    })
+    resultFileAt: Date|any;
+
     @BelongsTo(() => File, 'fileId')
     file: File;
 

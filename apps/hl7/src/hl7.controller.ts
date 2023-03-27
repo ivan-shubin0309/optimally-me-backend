@@ -19,6 +19,7 @@ import { UserResultsDto } from '../../admins-results/src/models/user-results.dto
 import { GetListDto } from '../../common/src/models/get-list.dto';
 import { UsersResultsService } from '../../users-results/src/users-results.service';
 import { Sequelize } from 'sequelize-typescript';
+import { DateTime } from 'luxon';
 
 @ApiBearerAuth()
 @ApiTags('hl7')
@@ -121,7 +122,7 @@ export class Hl7Controller {
             });
         }
 
-        if (hl7Object.status !== Hl7ObjectStatuses.error) {
+        if (hl7Object.status !== Hl7ObjectStatuses.error && hl7Object.status !== Hl7ObjectStatuses.new) {
             throw new BadRequestException({
                 message: this.translator.translate('HL7_OBJECT_NOT_ERROR_STATUS'),
                 errorCode: 'HL7_OBJECT_NOT_ERROR_STATUS',
@@ -233,10 +234,10 @@ export class Hl7Controller {
         const files = await this.hl7Service.findFileNameForHl7Object(hl7Object);
 
         if (files.statusFile) {
-            await this.hl7Service.loadHl7StatusFile(hl7Object, files.statusFile);
+            await this.hl7Service.loadHl7StatusFile(hl7Object, files.statusFile, DateTime.fromJSDate(hl7Object.statusFileAt).toISO());
         }
         if (files.resultFile) {
-            await this.hl7Service.loadHl7ResultFile(hl7Object, files.resultFile);
+            await this.hl7Service.loadHl7ResultFile(hl7Object, files.resultFile, DateTime.fromJSDate(hl7Object.resultFileAt).toISO());
         }
     }
 }

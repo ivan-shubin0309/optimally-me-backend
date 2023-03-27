@@ -145,10 +145,10 @@ export class Hl7FilesService {
             biomarkerShortName: obxSegment.getComponent(3, 2),
             value: obxSegment.getField(5),
             unit: obxSegment.getField(6),
-            toFollow: isNaN(obxSegment.getField(5))
+            failedTests: isNaN(obxSegment.getField(5))
                 ? `${obxSegment.getComponent(3, 2)} due to ${obxSegment.getField(5)}`
                 : null,
-            failedTests: isNaN(obxSegment.getField(5))
+            toFollow: isNaN(obxSegment.getField(5))
                 ? `${obxSegment.getComponent(3, 2)} ${obxSegment.getField(5)}`
                 : null,
         }));
