@@ -6,12 +6,6 @@ export class HautAiGetResultsDto {
     @IsNotEmpty()
     @IsString()
     @MaxLength(255)
-    readonly subjectId: string;
-
-    @ApiProperty({ type: () => String, required: true })
-    @IsNotEmpty()
-    @IsString()
-    @MaxLength(255)
     readonly batchId: string;
 
     @ApiProperty({ type: () => String, required: true })
