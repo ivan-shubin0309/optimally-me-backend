@@ -36,7 +36,7 @@ export class UsersBiomarkersController {
     const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(req.user.userId, query.beforeDate, 1);
 
     const scopes: any[] = [
-      { method: ['byType', BiomarkerTypes.blood] },
+      { method: ['byType', query.biomarkerType] },
       { method: ['withLastResult', lastResultIds, query.isOnlyTested] },
       'onlyActive'
     ];
