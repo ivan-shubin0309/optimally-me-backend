@@ -145,10 +145,8 @@ export class AdminsResultsService extends BaseService<UserResult> {
             return Object.assign({ userId: user.id, filterId, recommendationRange, deviation }, result);
         });
 
-        await this.dbConnection.transaction(async transaction => {
-            const createdResults = await this.bulkCreate(userResultsToCreate, transaction);
+        const createdResults = await this.bulkCreate(userResultsToCreate);
 
-            await this.attachRecommendations(createdResults, user.id, transaction);
-        });
+        await this.attachRecommendations(createdResults, user.id);
     }
 }
