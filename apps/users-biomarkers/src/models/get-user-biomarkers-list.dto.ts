@@ -8,6 +8,7 @@ import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { RecommendationTypes } from '../../../common/src/resources/recommendations/recommendation-types';
 import { ParseBoolean } from '../../../common/src/resources/common/parse-boolean.decorator';
 import { NUMBER_OF_LAST_USER_RESULTS } from '../../../common/src/resources/usersBiomarkers/constants';
+import { BiomarkerTypes } from 'apps/common/src/resources/biomarkers/biomarker-types';
 
 export class GetUserBiomarkersListDto {
     @ApiProperty({ type: () => Number, required: true, default: 100 })
@@ -79,4 +80,13 @@ export class GetUserBiomarkersListDto {
     @Min(1)
     @Transform(({ value }) => Number(value))
     readonly maxResultsReturned: number = NUMBER_OF_LAST_USER_RESULTS;
+
+    @ApiProperty({ type: () => [Number], required: false, description: EnumHelper.toDescription(BiomarkerTypes), default: [BiomarkerTypes.blood] })
+    @IsOptional()
+    @IsArray()
+    @ArrayUnique()
+    @IsEnum([BiomarkerTypes.blood, BiomarkerTypes.skin], { each: true })
+    @Type(() => Number)
+    @Transform(({ value }) => typeof value === 'number' ? [value] : value)
+    readonly biomarkerType: number[] = [BiomarkerTypes.blood];
 }
