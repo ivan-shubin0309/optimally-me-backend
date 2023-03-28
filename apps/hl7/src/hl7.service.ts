@@ -10,7 +10,7 @@ import { InternalFileTypes } from '../../common/src/resources/files/file-types';
 import { HL7_FILE_TYPE } from '../../common/src/resources/files/files-validation-rules';
 import { Hl7FtpService } from './hl7-ftp.service';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
-import { BIOMARKER_MAPPING_ERROR, OBX_FIELDS_NUMBER_ERROR, OBX_MIN_FIELDS_NUMBER, SAMPLE_CODE_FROM_RESULT_FILE, SAMPLE_CODE_FROM_STATUS_FILE, UNIT_MISMATCH_ERROR } from '../../common/src/resources/hl7/hl7-constants';
+import { BIOMARKER_MAPPING_ERROR, OBJECT_ALREADY_PROCESSED_ERROR, OBX_FIELDS_NUMBER_ERROR, OBX_MIN_FIELDS_NUMBER, SAMPLE_CODE_FROM_RESULT_FILE, SAMPLE_CODE_FROM_STATUS_FILE, UNIT_MISMATCH_ERROR } from '../../common/src/resources/hl7/hl7-constants';
 import axios from 'axios';
 import { DateTime } from 'luxon';
 import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
@@ -132,7 +132,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
             slicedList.forEach(file => {
                 const matches = SAMPLE_CODE_FROM_STATUS_FILE.exec(file.name);
                 if (matches?.length) {
-                    filesMap[matches[1]] = file;
+                    filesMap[matches[2]] = file;
                 }
             });
 
@@ -148,12 +148,16 @@ export class Hl7Service extends BaseService<Hl7Object> {
             }
 
             await Promise.all(
-                hl7ObjectList.map(hl7Object => this.loadHl7StatusFile(hl7Object, filesMap[hl7Object.sampleCode].name))
+                hl7ObjectList.map(hl7Object => {
+                    const matches = SAMPLE_CODE_FROM_STATUS_FILE.exec(filesMap[hl7Object.sampleCode].name);
+                    const fileStatusAt = DateTime.fromFormat(matches[1], 'yyyyMMddHHmmss').toISO();
+                    return this.loadHl7StatusFile(hl7Object, filesMap[hl7Object.sampleCode].name, fileStatusAt);
+                })
             );
         }
     }
 
-    async loadHl7StatusFile(hl7Object: Hl7Object, fileName: string): Promise<void> {
+    async loadHl7StatusFile(hl7Object: Hl7Object, fileName: string, statusFileAt: string): Promise<void> {
         const awsFile = await this.filesService.prepareFile({ contentType: HL7_FILE_TYPE, type: InternalFileTypes.hl7 }, hl7Object.userId, InternalFileTypes[InternalFileTypes.hl7]);
         const [createdFile] = await this.filesService.createFilesInDb(hl7Object.userId, [awsFile]);
 
@@ -170,6 +174,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
             sampleAt: bodyForUpdate.sampleAt,
             labReceivedAt: bodyForUpdate.labReceivedAt,
             labId: bodyForUpdate.labId,
+            statusFileAt
         });
 
         await this.filesService.markFilesAsUsed([createdFile.id]);
@@ -189,12 +194,30 @@ export class Hl7Service extends BaseService<Hl7Object> {
             const slicedList = fileList.slice(i * step, (i + 1) * step);
             const filesMap = {};
 
-            slicedList.forEach(file => {
-                const matches = SAMPLE_CODE_FROM_RESULT_FILE.exec(file.name);
-                if (matches?.length) {
-                    filesMap[matches[1]] = file;
-                }
-            });
+            await Promise.all(
+                slicedList.map(async file => {
+                    const matches = SAMPLE_CODE_FROM_RESULT_FILE.exec(file.name);
+                    if (!matches) {
+                        return;
+                    }
+
+                    filesMap[matches[2]] = file;
+
+                    const fileDate = DateTime.fromFormat(matches[1], 'yyyyMMddHHmmss');
+                    const existingHl7Object = await this.getOne([
+                        { method: ['bySampleCode', matches[2]] },
+                        { method: ['byStatus', Hl7ObjectStatuses.verified] }
+                    ]);
+
+                    if (
+                        existingHl7Object
+                        && !existingHl7Object.toFollow 
+                        && !DateTime.fromJSDate(existingHl7Object.resultFileAt).equals(fileDate)
+                    ) {
+                        await existingHl7Object.update({ status: Hl7ObjectStatuses.error, toFollow: OBJECT_ALREADY_PROCESSED_ERROR });
+                    }
+                })
+            );
 
             const sampleCodesArray = Object.keys(filesMap);
 
@@ -208,12 +231,16 @@ export class Hl7Service extends BaseService<Hl7Object> {
             }
 
             await Promise.all(
-                hl7ObjectList.map(hl7Object => this.loadHl7ResultFile(hl7Object, filesMap[hl7Object.sampleCode].name))
+                hl7ObjectList.map(hl7Object => {
+                    const matches = SAMPLE_CODE_FROM_RESULT_FILE.exec(filesMap[hl7Object.sampleCode].name);
+                    const resultFileAt = DateTime.fromFormat(matches[1], 'yyyyMMddHHmmss').toISO();
+                    return this.loadHl7ResultFile(hl7Object, filesMap[hl7Object.sampleCode].name, resultFileAt);
+                })
             );
         }
     }
 
-    async loadHl7ResultFile(hl7Object: Hl7Object, fileName: string): Promise<void> {
+    async loadHl7ResultFile(hl7Object: Hl7Object, fileName: string, resultFileAt: string): Promise<void> {
         let isCriticalResult = false, status;
 
         const awsFile = await this.filesService.prepareFile({ contentType: HL7_FILE_TYPE, type: InternalFileTypes.hl7 }, hl7Object.userId, InternalFileTypes[InternalFileTypes.hl7]);
@@ -229,16 +256,15 @@ export class Hl7Service extends BaseService<Hl7Object> {
         status = bodyForUpdate.status;
 
         if (bodyForUpdate.results.length < OBX_MIN_FIELDS_NUMBER) {
-            status = Hl7ObjectStatuses.error;
-            bodyForUpdate.failedTests = `${OBX_FIELDS_NUMBER_ERROR},\n${bodyForUpdate.failedTests}`;
+            bodyForUpdate.toFollow = `${OBX_FIELDS_NUMBER_ERROR},\n${bodyForUpdate.toFollow}`;
         }
 
         await hl7Object.update({
             resultFileId: createdFile.id,
-            status,
             failedTests: bodyForUpdate.failedTests,
             toFollow: bodyForUpdate.toFollow,
             resultAt: DateTime.utc().toFormat('yyyy-MM-dd'),
+            resultFileAt
         });
 
         await this.filesService.markFilesAsUsed([createdFile.id]);
@@ -268,7 +294,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
                     );
 
                     if (!biomarker) {
-                        bodyForUpdate.failedTests = `${BIOMARKER_MAPPING_ERROR} ${result.biomarkerShortName} OBX.3,\n${bodyForUpdate.failedTests}`;
+                        bodyForUpdate.toFollow = `${BIOMARKER_MAPPING_ERROR} ${result.biomarkerShortName} OBX.3,\n${bodyForUpdate.toFollow}`;
                         return;
                     }
 
@@ -281,7 +307,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
                     }
 
                     if (biomarker.unit.unit !== result.unit) {
-                        bodyForUpdate.failedTests = `${UNIT_MISMATCH_ERROR} ${result.biomarkerShortName} OBX.6 ${result.unit},\n${bodyForUpdate.failedTests}`;
+                        bodyForUpdate.toFollow = `${UNIT_MISMATCH_ERROR} ${result.biomarkerShortName} OBX.6 ${result.unit},\n${bodyForUpdate.toFollow}`;
                     }
 
                     biomarkerIds.push(biomarker.id);
@@ -296,9 +322,13 @@ export class Hl7Service extends BaseService<Hl7Object> {
                 })
             );
 
+            if (bodyForUpdate.toFollow) {
+                status = Hl7ObjectStatuses.error;
+            }
+
             await this.adminsResultsService.createUserResults(resultsToCreate, hl7Object.userId, biomarkerIds);
 
-            await hl7Object.update({ isCriticalResult, failedTests: bodyForUpdate.failedTests });
+            await hl7Object.update({ isCriticalResult, toFollow: bodyForUpdate.toFollow, status });
         }
     }
 
@@ -308,7 +338,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
         const statusFile = statusFileList.find((file) => {
             const matches = SAMPLE_CODE_FROM_STATUS_FILE.exec(file.name);
-            if (matches?.length && matches[1] === hl7Object.sampleCode) {
+            if (matches?.length && matches[2] === hl7Object.sampleCode) {
                 return true;
             }
             return false;
@@ -316,7 +346,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
         const resultFile = resultFileList.find((file) => {
             const matches = SAMPLE_CODE_FROM_RESULT_FILE.exec(file.name);
-            if (matches?.length && matches[1] === hl7Object.sampleCode) {
+            if (matches?.length && matches[2] === hl7Object.sampleCode) {
                 return true;
             }
             return false;

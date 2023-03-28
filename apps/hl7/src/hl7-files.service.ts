@@ -109,19 +109,29 @@ export class Hl7FilesService {
 
         return {
             lab: message.header.getField(3),
-            createdAt: message.header.getField(5) && DateTime.fromFormat(message.header.getField(5), 'yyyyMMddHHmmss').toJSDate(),
+            createdAt: DateTime.fromFormat(message.header.getField(5), 'yyyyMMddHHmmss').isValid 
+                ? DateTime.fromFormat(message.header.getField(5), 'yyyyMMddHHmmss').toJSDate()
+                : null,
             id: message.header.getField(8),
             userId: pidSegment.getField(3),
             firstName: pidSegment.getField(5) && pidSegment.getField(5).split(' ')[1],
             lastName: pidSegment.getField(5) && pidSegment.getField(5).split(' ')[0],
-            dateOfBirth: pidSegment.getField(7) && DateTime.fromFormat(pidSegment.getField(7), 'yyyyMMdd').toFormat('yyyy-MM-dd'),
+            dateOfBirth: DateTime.fromFormat(pidSegment.getField(7), 'yyyyMMdd').isValid
+                ? DateTime.fromFormat(pidSegment.getField(7), 'yyyyMMdd').toFormat('yyyy-MM-dd')
+                : null,
             sex: pidSegment.getField(8) && hl7SexToSexType[pidSegment.getField(8)],
             sampleCode: orcSegment.getField(2),
             status: orcSegment.getField(5) && hl7FileStatusToHl7ObjectStatuses[orcSegment.getField(5)],
-            activatedAt: orcSegment.getField(9) && DateTime.fromFormat(orcSegment.getField(9), 'yyyyMMddHHmmss').toFormat('yyyy-MM-dd'),
+            activatedAt: DateTime.fromFormat(orcSegment.getField(9), 'yyyyMMddHHmmss').isValid
+                ? DateTime.fromFormat(orcSegment.getField(9), 'yyyyMMddHHmmss').toFormat('yyyy-MM-dd')
+                : null,
             labId: obrSegment.getField(3),
-            labReceivedAt: obrSegment.getField(6) && DateTime.fromFormat(obrSegment.getField(6), 'yyyyMMddHHmmss').toFormat('yyyy-MM-dd'),
-            sampleAt: obrSegment.getField(14) && DateTime.fromFormat(obrSegment.getField(14), 'yyyyMMddHHmmss').toFormat('yyyy-MM-dd'),
+            labReceivedAt: DateTime.fromFormat(obrSegment.getField(6), 'yyyyMMddHHmmss').isValid
+                ? DateTime.fromFormat(obrSegment.getField(6), 'yyyyMMddHHmmss').toFormat('yyyy-MM-dd')
+                : null,
+            sampleAt: DateTime.fromFormat(obrSegment.getField(14), 'yyyyMMddHHmmss').isValid
+                ? DateTime.fromFormat(obrSegment.getField(14), 'yyyyMMddHHmmss').toFormat('yyyy-MM-dd')
+                : null,
             results: results,
             failedTests: results
                 .filter(result => !!result.failedTests)
@@ -145,10 +155,10 @@ export class Hl7FilesService {
             biomarkerShortName: obxSegment.getComponent(3, 2),
             value: obxSegment.getField(5),
             unit: obxSegment.getField(6),
-            toFollow: isNaN(obxSegment.getField(5))
+            failedTests: isNaN(obxSegment.getField(5))
                 ? `${obxSegment.getComponent(3, 2)} due to ${obxSegment.getField(5)}`
                 : null,
-            failedTests: isNaN(obxSegment.getField(5))
+            toFollow: isNaN(obxSegment.getField(5))
                 ? `${obxSegment.getComponent(3, 2)} ${obxSegment.getField(5)}`
                 : null,
         }));

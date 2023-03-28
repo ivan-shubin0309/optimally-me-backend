@@ -97,6 +97,8 @@ import { File } from '../../../files/src/models/file.entity';
     }),
     byStatusFileId: (statusFileId) => ({ where: { statusFileId } }),
     byResultFileId: (resultFileId) => ({ where: { resultFileId } }),
+    byStatusFileAt: (statusFileAt) => ({ where: { statusFileAt } }),
+    byResultFileAt: (resultFileAt) => ({ where: { resultFileAt } }),
 }))
 @Table({
     tableName: 'hl7Objects',
@@ -252,6 +254,18 @@ export class Hl7Object extends Model {
         defaultValue: false,
     })
     isCriticalResult: boolean;
+
+    @Column({
+        type: DataType.DATE,
+        allowNull: true
+    })
+    statusFileAt: Date|any;
+
+    @Column({
+        type: DataType.DATE,
+        allowNull: true
+    })
+    resultFileAt: Date|any;
 
     @BelongsTo(() => File, 'fileId')
     file: File;
