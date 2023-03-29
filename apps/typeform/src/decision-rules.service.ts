@@ -70,7 +70,10 @@ export class DecisionRulesService {
                 biomarker.lastResult,
                 {
                     biomarkerId: biomarker.id,
-                    additionalScopes: [{ method: ['withUserRecommendation', biomarker.lastResult.id] }]
+                    additionalScopes: [
+                        { method: ['withUserRecommendation', biomarker.lastResult.id] }, 
+                        'withRecommendationTag'
+                    ]
                 }
             );
 
@@ -90,6 +93,7 @@ export class DecisionRulesService {
                 recommendations: recommendations.map(recommendation => ({
                     id: recommendation.userRecommendation.id,
                     name: recommendation.title,
+                    tag: recommendation.tag ? recommendation.tag.name : undefined,
                 })),
                 form_response: typeformQuizData,
             };
