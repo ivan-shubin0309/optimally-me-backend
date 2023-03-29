@@ -103,4 +103,12 @@ export class CreateRecommendationDto {
     @IsNumber({}, { each: true })
     @IsEnum(RecommendationContradictionTypes, { each: true })
     readonly contradictions: number[];
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    @IsString()
+    @MaxLength(recommendationValidationRules.tagNameMaxLength)
+    @MinLength(recommendationValidationRules.tagNameMinLength)    
+    @Transform(({ value }: TransformFnParams) => value?.trim())
+    readonly tagName: string;
 }

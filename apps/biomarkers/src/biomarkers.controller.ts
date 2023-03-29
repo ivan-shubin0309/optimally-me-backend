@@ -54,6 +54,8 @@ import { CreateSkinBiomarkerDto } from './models/create-skin-biomarker.dto';
 import { UpdateSkinBiomarkerDto } from './models/update-skin-biomarker.dto';
 import { GetRulesListDto } from './models/get-rules-list.dto';
 import { PatchSkinBiomarkerDto } from './models/patch-skin-biomarker.dto';
+import { GetRecommendationTagListDto } from './models/recommendationTags/get-recommendation-tag-list.dto';
+import { TagNamesListDto } from './models/recommendationTags/tag-names-list.dto';
 
 const RULE_PREFIX = 'rule';
 
@@ -701,5 +703,35 @@ export class BiomarkersController {
     }
 
     await biomarker.update({ isActive: body.isActive });
+  }
+
+  @ApiOperation({ summary: 'Get list of recommendation tags' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Roles(UserRoles.superAdmin)
+  @Get('/recommendations/tags')
+  async getRecommendationTags(@Query() query: GetRecommendationTagListDto): Promise<TagNamesListDto> {
+    const { limit, offset } = query;
+    let tagsList = [];
+
+    const scopes: any[] = [];
+
+    if (query.search) {
+      scopes.push({ method: ['search', query.search] });
+    }
+
+    const result = await this.recommendationsService.getTag(scopes.concat(['distinctNamesCount']));
+    const count = result ? result.get('counter') as number : 0;
+
+    if (count) {
+      scopes.push(
+        'distinctNames',
+        { method: ['pagination', { limit, offset }] },
+        { method: ['orderBy', [['name', 'desc']]] }
+      );
+
+      tagsList = await this.recommendationsService.getTags(scopes);
+    }
+
+    return new TagNamesListDto(tagsList, PaginationHelper.buildPagination({ limit, offset }, count));
   }
 }

@@ -18,6 +18,7 @@ import { UserRecommendation } from '../userRecommendations/user-recommendation.e
 import { RecommendationReactionTypes } from '../../../../common/src/resources/recommendation-reactions/reaction-types';
 import sequelize from 'sequelize';
 import { countRecommendationBiomarkersQuery, minRecommendationOrderQuery } from '../../../../common/src/resources/recommendations/queries';
+import { RecommendationTag } from '../recommendationTags/recommendation-tag.entity';
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
@@ -155,6 +156,15 @@ import { countRecommendationBiomarkersQuery, minRecommendationOrderQuery } from 
             sequelize.literal(`\`orderValue\` ${orderType === 'desc' ? 'asc' : 'desc'}`)
         ],
     }),
+    withRecommendationTag: () => ({
+        include: [
+            {
+                model: RecommendationTag,
+                as: 'tag',
+                required: false,
+            },
+        ]
+    }),
 }))
 
 @Table({
@@ -244,6 +254,9 @@ export class Recommendation extends Model {
 
     @HasOne(() => UserRecommendation, 'recommendationId')
     userRecommendation: UserRecommendation;
+
+    @HasOne(() => RecommendationTag, 'recommendationId')
+    tag: RecommendationTag;
 
     biomarkers: Biomarker[];
 }

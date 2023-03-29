@@ -17,6 +17,7 @@ import { ImpactStudyLink } from '../../models/recommendationImpacts/impact-study
 import { ImpactStudyLinkTypes } from '../../../../common/src/resources/recommendation-impacts/impact-study-link-types';
 import { RecommendationSkinType } from '../../models/recommendationSkinTypes/recommendation-skin-type.entity';
 import { RecommendationContradiction } from '../../models/recommendationContradictions/recommendation-contradiction.entity';
+import { RecommendationTag } from '../../models/recommendationTags/recommendation-tag.entity';
 
 @Injectable()
 export class RecommendationsService extends BaseService<Recommendation> {
@@ -29,6 +30,7 @@ export class RecommendationsService extends BaseService<Recommendation> {
     @Inject('RECOMMENDATION_SKIN_TYPE_MODEL') readonly recommendationSkinTypeModel: Repository<RecommendationSkinType>,
     @Inject('RECOMMENDATION_CONTRADICTION_MODEL') readonly recommendationContradictionModel: Repository<RecommendationContradiction>,
     readonly filesService: FilesService,
+    @Inject('RECOMMENDATION_TAG_MODEL') readonly recommendationTagModel: Repository<RecommendationTag>,
   ) { super(model); }
 
   async create(body: CreateRecommendationDto, user: SessionDataDto): Promise<Recommendation> {
@@ -54,7 +56,8 @@ export class RecommendationsService extends BaseService<Recommendation> {
     return this.getOne(
       [
         { method: ['byId', createdRecommendation.id] },
-        'withFiles'
+        'withFiles',
+        'withRecommendationTag'
       ],
       null,
       { isIncludeAll: true }
@@ -88,6 +91,14 @@ export class RecommendationsService extends BaseService<Recommendation> {
       if (recommendation.contradictions && recommendation.contradictions.length) {
         deletePromises.push(
           this.recommendationContradictionModel
+            .scope([{ method: ['byRecommendationId', recommendation.id] }])
+            .destroy({ transaction }),
+        );
+      }
+
+      if (recommendation.tag) {
+        deletePromises.push(
+          this.recommendationTagModel
             .scope([{ method: ['byRecommendationId', recommendation.id] }])
             .destroy({ transaction }),
         );
@@ -196,7 +207,7 @@ export class RecommendationsService extends BaseService<Recommendation> {
       .findOne({ transaction });
 
     if (options?.isIncludeAll && recommendation) {
-      const [impacts, skinTypes, contradictions] = await Promise.all([
+      const [impacts, skinTypes, contradictions, tag] = await Promise.all([
         this.recommendationImpactModel
           .scope([{ method: ['byRecommendationId', recommendation.id] }, 'withBiomarker', 'withStudyLinks'])
           .findAll({ transaction }),
@@ -206,6 +217,9 @@ export class RecommendationsService extends BaseService<Recommendation> {
         this.recommendationContradictionModel
           .scope([{ method: ['byRecommendationId', recommendation.id] }])
           .findAll({ transaction }),
+        this.recommendationTagModel
+          .scope([{ method: ['byRecommendationId', recommendation.id] }])
+          .findOne({ transaction }),
       ]);
 
       recommendation.setDataValue('impacts', impacts);
@@ -214,6 +228,8 @@ export class RecommendationsService extends BaseService<Recommendation> {
       recommendation.skinTypes = skinTypes;
       recommendation.setDataValue('contradictions', contradictions);
       recommendation.contradictions = contradictions;
+      recommendation.setDataValue('tag', tag);
+      recommendation.tag = tag;
     }
 
     return recommendation;
@@ -244,6 +260,10 @@ export class RecommendationsService extends BaseService<Recommendation> {
       const contradictionsToCreate: any[] = body.contradictions.map(contradiction => ({ recommendationId, contradictionType: contradiction }));
 
       await this.recommendationContradictionModel.bulkCreate(contradictionsToCreate, { transaction });
+    }
+
+    if (body.tagName) {
+      await this.recommendationTagModel.create({ recommendationId, name: body.tagName }, { transaction });
     }
   }
 
@@ -300,5 +320,17 @@ export class RecommendationsService extends BaseService<Recommendation> {
     }
 
     return recommendationList;
+  }
+
+  getTag(scopes: any[], transaction?: Transaction): Promise<RecommendationTag> {
+    return this.recommendationTagModel
+      .scope(scopes)
+      .findOne({ transaction });
+  }
+
+  getTags(scopes: any[], transaction?: Transaction): Promise<RecommendationTag[]> {
+    return this.recommendationTagModel
+      .scope(scopes)
+      .findAll({ transaction });
   }
 }
