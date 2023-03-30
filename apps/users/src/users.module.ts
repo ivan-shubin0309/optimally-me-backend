@@ -14,6 +14,7 @@ import { entities } from '../../common/src/utils/database/database-entity.provid
 import { WefitterService } from '../../wefitter/src/wefitter.service';
 import { VerificationsService } from '../../verifications/src/verifications.service';
 import { MailerService } from '../../common/src/resources/mailer/mailer.service';
+import { UserCodesService } from '../../sessions/src/user-codes.service';
 
 @Module({
     imports: [
@@ -28,6 +29,7 @@ import { MailerService } from '../../common/src/resources/mailer/mailer.service'
         SessionsService,
         VerificationsService,
         MailerService,
+        UserCodesService,
         JwtStrategy,
         ...guardProviders,
         sequelizeProvider(entities),

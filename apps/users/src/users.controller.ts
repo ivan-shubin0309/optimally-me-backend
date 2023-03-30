@@ -29,6 +29,7 @@ import { UserSessionDto } from './models/user-session.dto';
 import { CreateUserAdditionalFieldDto } from './models/create-user-additional-field.dto';
 import { SessionsService } from '../../sessions/src/sessions.service';
 import { EnumHelper } from '../../common/src/utils/helpers/enum.helper';
+import { UserCodesService } from '../../sessions/src/user-codes.service';
 
 @ApiTags('users')
 @Controller('users')
@@ -41,6 +42,7 @@ export class UsersController {
         private readonly verificationsService: VerificationsService,
         private readonly mailerService: MailerService,
         private readonly sessionsService: SessionsService,
+        private readonly userCodesService: UserCodesService,
     ) {}
 
     @Roles(UserRoles.user)
@@ -131,6 +133,8 @@ export class UsersController {
             registrationStep: user.additionalField.registrationStep,
             isEmailVerified: user.additionalField.isEmailVerified,
         });
+
+        await this.userCodesService.generateCode(user.id, session.accessToken, session.refreshToken, session.expiresAt);
 
         return new UserSessionDto(session, user);
     }

@@ -4,6 +4,7 @@ import { Repository } from 'sequelize-typescript';
 import { BaseService } from '../../common/src/base/base.service';
 import { UserCode } from './models/user-code.entity';
 import { USER_CODE_LENGTH } from '../../common/src/resources/user-codes/constants';
+import { ScopeOptions } from 'sequelize';
 
 @Injectable()
 export class UserCodesService extends BaseService<UserCode> {
@@ -21,5 +22,11 @@ export class UserCodesService extends BaseService<UserCode> {
             return userCode.update(body);
         }
         return this.model.create(body);
+    }
+
+    async destroy(scopes: ScopeOptions[]): Promise<void> {
+        await this.model
+            .scope(scopes)
+            .destroy();
     }
 }
