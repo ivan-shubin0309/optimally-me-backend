@@ -117,7 +117,7 @@ export class SkinUserResultsService extends BaseService<SkinUserResult> {
 
             const lastSensitiveSkinQuiz = await this.userQuizesService.getOne(
                 [
-                    { metho: ['byUserId', userId] },
+                    { method: ['byUserId', userId] },
                     { method: ['orderBy', [['submittedAt', 'desc']]] }
                 ],
                 transaction
