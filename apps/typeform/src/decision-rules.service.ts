@@ -8,6 +8,7 @@ import { RecommendationTypes } from '../../common/src/resources/recommendations/
 import { UsersRecommendationsService } from '../../users-recommendations/src/users-recommendations.service';
 import { Sequelize } from 'sequelize-typescript';
 import { Transaction } from 'sequelize/types';
+import { ScopeOptions } from 'sequelize';
 
 interface IRuleData {
     customer: {
@@ -56,7 +57,7 @@ export class DecisionRulesService {
 
     async updateUserRecommendations(userId: number, typeformQuizData: any, transaction: Transaction): Promise<void> {
         const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(userId, DateTime.utc().toFormat('yyyy-MM-dd'), 1);
-        const biomarkerScopes = [
+        const biomarkerScopes: ScopeOptions[] = [
             { method: ['byType', [BiomarkerTypes.blood, BiomarkerTypes.skin]] },
             { method: ['withLastResult', lastResultIds, true] }
         ];
