@@ -34,6 +34,9 @@ export class RecommendationDto extends BaseRecommendationDto {
         this.contradictions = entity.contradictions && entity.contradictions.length
             ? entity.contradictions.map(contradiction => new RecommendationContradictionDto(contradiction))
             : undefined;
+        this.tagName = entity.tag 
+            ? entity.tag.name
+            : undefined;
     }
 
     @ApiProperty({ type: () => FileDto, required: false })
@@ -53,4 +56,7 @@ export class RecommendationDto extends BaseRecommendationDto {
 
     @ApiProperty({ type: () => [RecommendationContradictionDto], required: false })
     readonly contradictions: RecommendationContradictionDto[];
+
+    @ApiProperty({ type: () => String, required: false })
+    readonly tagName: string;
 }

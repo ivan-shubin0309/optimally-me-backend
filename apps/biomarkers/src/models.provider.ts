@@ -24,6 +24,7 @@ import { UserRecommendation } from './models/userRecommendations/user-recommenda
 import { RecommendationSkinType } from './models/recommendationSkinTypes/recommendation-skin-type.entity';
 import { RecommendationContradiction } from './models/recommendationContradictions/recommendation-contradiction.entity';
 import { UserResult } from '../../admins-results/src/models/user-result.entity';
+import { RecommendationTag } from './models/recommendationTags/recommendation-tag.entity';
 
 export const modelProviders = [
     {
@@ -129,6 +130,10 @@ export const modelProviders = [
     {
         provide: 'USER_RESULT_MODEL',
         useValue: UserResult
+    },
+    {
+        provide: 'RECOMMENDATION_TAG_MODEL',
+        useValue: RecommendationTag
     }
 ];
 

@@ -230,6 +230,11 @@ Resources:
           Properties:
             Path: /biomarkers/{id}
             Method: ANY
+        BiomarkersRecommendationsTagsApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/recommendations/tags
+            Method: ANY
 
   WefitterFunction:
     Type: AWS::Serverless::Function
