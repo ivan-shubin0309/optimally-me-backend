@@ -100,6 +100,8 @@ export class SessionsController {
     await this.sessionsService.destroy(user.userId, accessToken);
 
     await this.usersDevicesService.removeDeviceBySessionId(user.sessionId);
+
+    await this.userCodesService.destroy([{ method: ['byUserId', user.userId] }]);
   }
 
   @Public()
@@ -129,6 +131,8 @@ export class SessionsController {
     }
 
     const session = await this.sessionsService.refresh(body.refreshToken);
+
+    await this.userCodesService.generateCode(user.id, session.accessToken, session.refreshToken, session.expiresAt);
 
     return new UserSessionDto(session, user);
   }

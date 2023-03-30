@@ -5,12 +5,13 @@ import { UserWefitterHeartrateSummary } from '../../wefitter/src/models/wefitter
 import { UserWefitterSleepSummary } from '../../wefitter/src/models/wefitter-sleep-summary.entity';
 import { UserAdditionalField } from './models/user-additional-field.entity';
 import { VerificationToken } from '../../verifications/src/models/verification-token.entity';
-import { WefitterBloodPressure } from 'apps/wefitter/src/models/biometric-measurements/wefitter-blood-pressure.entity';
-import { WefitterBloodSugar } from 'apps/wefitter/src/models/biometric-measurements/wefitter-blood-sugar.entity';
-import { WefitterDiastolicBloodPressure } from 'apps/wefitter/src/models/biometric-measurements/wefitter-diastolic-blood-pressure.entity';
-import { WefitterSystolicBloodPressure } from 'apps/wefitter/src/models/biometric-measurements/wefitter-systolic-blood-pressure.entity';
-import { WefitterVo2Max } from 'apps/wefitter/src/models/biometric-measurements/wefitter-vo2-max.entity';
-import { WefitterHrvSleep } from 'apps/wefitter/src/models/biometric-measurements/wefitter-hrv-sleep.entity';
+import { WefitterBloodPressure } from '../../wefitter/src/models/biometric-measurements/wefitter-blood-pressure.entity';
+import { WefitterBloodSugar } from '../../wefitter/src/models/biometric-measurements/wefitter-blood-sugar.entity';
+import { WefitterDiastolicBloodPressure } from '../../wefitter/src/models/biometric-measurements/wefitter-diastolic-blood-pressure.entity';
+import { WefitterSystolicBloodPressure } from '../../wefitter/src/models/biometric-measurements/wefitter-systolic-blood-pressure.entity';
+import { WefitterVo2Max } from '../../wefitter/src/models/biometric-measurements/wefitter-vo2-max.entity';
+import { WefitterHrvSleep } from '../../wefitter/src/models/biometric-measurements/wefitter-hrv-sleep.entity';
+import { UserCode } from '../../sessions/src/models/user-code.entity';
 
 export const modelProviders = [
     {
@@ -64,5 +65,9 @@ export const modelProviders = [
     {
         provide: 'WEFITTER_HRV_SLEEP',
         useValue: WefitterHrvSleep
+    },
+    {
+        provide: 'USER_CODE_MODEL',
+        useValue: UserCode
     }
 ];
