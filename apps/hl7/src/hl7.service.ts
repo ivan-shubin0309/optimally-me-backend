@@ -327,6 +327,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
             if (bodyForUpdate.toFollow) {
                 status = Hl7ObjectStatuses.error;
                 await hl7Object.update({ toFollow: bodyForUpdate.toFollow, status });
+                return;
             }
 
             await this.adminsResultsService.createUserResults(resultsToCreate, hl7Object.userId, biomarkerIds);
