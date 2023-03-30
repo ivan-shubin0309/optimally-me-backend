@@ -22,6 +22,7 @@ import { SessionDataDto } from '../../sessions/src/models';
 import { PatchFilesDto } from './models/patch-files.dto';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import { FilesDto } from './models/files.dto';
+import { ScopeOptions } from 'sequelize';
 
 @ApiBearerAuth()
 @ApiTags('files')
@@ -57,7 +58,7 @@ export class FilesController {
   @Roles(UserRoles.superAdmin, UserRoles.user)
   @Patch('')
   async patchFileStatuses(@Body() body: PatchFilesDto): Promise<FilesDto> {
-    const scopes = [{ method: ['byId', body.fileIds] }];
+    const scopes: ScopeOptions[] = [{ method: ['byId', body.fileIds] }];
     let files = await this.filesService.getList(scopes);
 
     if (files.length !== body.fileIds.length) {

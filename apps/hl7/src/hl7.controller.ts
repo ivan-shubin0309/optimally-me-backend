@@ -20,6 +20,7 @@ import { GetListDto } from '../../common/src/models/get-list.dto';
 import { UsersResultsService } from '../../users-results/src/users-results.service';
 import { Sequelize } from 'sequelize-typescript';
 import { DateTime } from 'luxon';
+import { ScopeOptions } from 'sequelize';
 
 @ApiBearerAuth()
 @ApiTags('hl7')
@@ -39,7 +40,7 @@ export class Hl7Controller {
     @HttpCode(HttpStatus.OK)
     @Get('/hl7-objects/:sampleCode')
     async getHl7ObjectBySampleCode(@Param() param: GetHl7ObjectBySampleCodeDto): Promise<Hl7ObjectDto> {
-        const scopes = [
+        const scopes: ScopeOptions[] = [
             { method: ['bySampleCode', param.sampleCode] }
         ];
         const hl7Object = await this.hl7Service.getOne(scopes);

@@ -1,7 +1,7 @@
 import { HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'sequelize-typescript';
 import { TranslatorService } from 'nestjs-translator';
-import { Transaction } from 'sequelize';
+import { ScopeOptions, Transaction } from 'sequelize';
 import { BaseService } from '../../common/src/base/base.service';
 import { UserRecommendation } from '../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
 import { Recommendation } from '../../biomarkers/src/models/recommendations/recommendation.entity';
@@ -20,7 +20,7 @@ export class UsersRecommendationsService extends BaseService<UserRecommendation>
     ) { super(model); }
 
     async getRecommendationListByUserResult(userResult: UserResult, options: { biomarkerId: number, additionalScopes?: any[], isExcluded?: boolean }): Promise<Recommendation[]> {
-        const scopesForUserRecommendations = [
+        const scopesForUserRecommendations: ScopeOptions[] = [
             { method: ['byUserResultId', userResult.id] },
         ];
 

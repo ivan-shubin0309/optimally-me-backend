@@ -1,8 +1,7 @@
 import { Attributes, Model, Transaction } from 'sequelize/types';
 import { Repository } from 'sequelize-typescript';
 import { Directions } from '../resources/common/cursor-pagination';
-import { Op } from 'sequelize';
-import { FindOptions } from 'sequelize';
+import { Op, FindOptions, ScopeOptions } from 'sequelize';
 
 export interface ICursorPaginationOptions {
     readonly cursorValue: number,
@@ -33,25 +32,25 @@ export class BaseService<T extends Model> {
         this.model = model;
     }
 
-    getList(scopes = [], transaction?: Transaction): Promise<T[]> {
+    getList(scopes: string | ScopeOptions | readonly (string | ScopeOptions)[] = [], transaction?: Transaction): Promise<T[]> {
         return this.model
             .scope(scopes)
             .findAll({ transaction });
     }
 
-    getCount(scopes = [], transaction?: Transaction): Promise<number> {
+    getCount(scopes: string | ScopeOptions | readonly (string | ScopeOptions)[] = [], transaction?: Transaction): Promise<number> {
         return this.model
             .scope(scopes)
             .count({ transaction });
     }
 
-    getOne(scopes = [], transaction?: Transaction): Promise<T> {
+    getOne(scopes: string | ScopeOptions | readonly (string | ScopeOptions)[] = [], transaction?: Transaction): Promise<T> {
         return this.model
             .scope(scopes)
             .findOne({ transaction });
     }
 
-    getCountWithCursorPagination(scopes: any[] = [], options?: ICursorPaginationOptions): Promise<number> {
+    getCountWithCursorPagination(scopes: string | ScopeOptions | readonly (string | ScopeOptions)[] = [], options?: ICursorPaginationOptions): Promise<number> {
         const paginationOptions = this.patchCursorPaginationOptions(options);
         const cursorColumn = options.cursorKey
             ? options.cursorKey
@@ -62,7 +61,7 @@ export class BaseService<T extends Model> {
             .count({ ...paginationOptions, distinct: true, col: cursorColumn });
     }
 
-    async getListWithCursorPagination(scopes: any[] = [], options?: ICursorPaginationOptions): Promise<T[]> {
+    async getListWithCursorPagination(scopes: string | ScopeOptions | readonly (string | ScopeOptions)[] = [], options?: ICursorPaginationOptions): Promise<T[]> {
         const query = this.patchCursorPaginationOptions(options);
 
         const reverse = options.reverse

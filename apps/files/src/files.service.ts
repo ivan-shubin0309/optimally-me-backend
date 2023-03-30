@@ -13,6 +13,7 @@ import { rules } from '../../common/src/resources/files/files-validation-rules';
 import { adminRoles } from '../../common/src/resources/users';
 import * as uuid from 'uuid';
 import { FILE_PREFIX } from '../../common/src/resources/files/constants';
+import { ScopeOptions } from 'sequelize';
 
 interface IAwsFile {
     acl?: string,
@@ -48,7 +49,7 @@ export class FilesService extends BaseService<File> {
     }
 
     async checkCanUse(fileId: number, type: FileTypes, transaction?: Transaction, isUsed = true): Promise<File> {
-        const scopes = [
+        const scopes: ScopeOptions[] = [
             { method: ['byId', fileId] },
             { method: ['byType', type] }
         ];
