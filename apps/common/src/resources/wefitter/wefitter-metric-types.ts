@@ -20,7 +20,7 @@ export enum WefitterMetricTypes {
 
 export const metricTypeToFieldName = {
     [WefitterMetricTypes.steps]: 'steps',
-    [WefitterMetricTypes.caloriesBurned]: 'bmrCalories',
+    [WefitterMetricTypes.caloriesBurned]: 'calories',
     [WefitterMetricTypes.timeAsleep]: 'totalTimeInSleep',
     [WefitterMetricTypes.sleepScore]: 'sleepScore',
     [WefitterMetricTypes.avgHeartRate]: 'average',
