@@ -22,7 +22,7 @@ import { fn, col } from 'sequelize';
 export class RecommendationTag extends Model {
     @ForeignKey(() => Recommendation)
     @Column({
-        type: DataType.NUMBER,
+        type: DataType.INTEGER,
         allowNull: false,
     })
     recommendationId: number;
