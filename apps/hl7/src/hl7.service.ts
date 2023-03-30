@@ -257,6 +257,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
         if (bodyForUpdate.results.length < OBX_MIN_FIELDS_NUMBER) {
             bodyForUpdate.toFollow = `${OBX_FIELDS_NUMBER_ERROR},\n${bodyForUpdate.toFollow}`;
+            status = Hl7ObjectStatuses.error;
         }
 
         await hl7Object.update({
@@ -264,7 +265,8 @@ export class Hl7Service extends BaseService<Hl7Object> {
             failedTests: bodyForUpdate.failedTests,
             toFollow: bodyForUpdate.toFollow,
             resultAt: DateTime.utc().toFormat('yyyy-MM-dd'),
-            resultFileAt
+            resultFileAt,
+            status
         });
 
         await this.filesService.markFilesAsUsed([createdFile.id]);
@@ -324,11 +326,12 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
             if (bodyForUpdate.toFollow) {
                 status = Hl7ObjectStatuses.error;
+                await hl7Object.update({ toFollow: bodyForUpdate.toFollow, status });
             }
 
             await this.adminsResultsService.createUserResults(resultsToCreate, hl7Object.userId, biomarkerIds);
 
-            await hl7Object.update({ isCriticalResult, toFollow: bodyForUpdate.toFollow, status });
+            await hl7Object.update({ isCriticalResult });
         }
     }
 
