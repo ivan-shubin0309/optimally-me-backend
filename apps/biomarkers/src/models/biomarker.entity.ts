@@ -126,14 +126,22 @@ import { HautAiMetricTypes } from 'apps/common/src/resources/haut-ai/haut-ai-met
     bySex: (sex: BiomarkerSexTypes) => ({ where: { sex } }),
     searchByNames: (searchString) => ({
         where: {
-            [Op.or]: [
-                { name: { [Op.like]: `%${searchString}%` } },
-                { label: { [Op.like]: `%${searchString}%` } },
-                { shortName: { [Op.like]: `%${searchString}%` } },
-                { isActive: true },
+            [Op.and]: [
                 {
-                    isActive: false,
-                    '$lastResult.id$': { [Op.ne]: null }
+                    [Op.or]: [
+                        { name: { [Op.like]: `%${searchString}%` } },
+                        { label: { [Op.like]: `%${searchString}%` } },
+                        { shortName: { [Op.like]: `%${searchString}%` } }
+                    ]
+                },
+                {
+                    [Op.or]: [
+                        { isActive: true },
+                        {
+                            isActive: false,
+                            '$lastResult.id$': { [Op.ne]: null }
+                        }
+                    ]
                 }
             ]
         }
@@ -141,27 +149,37 @@ import { HautAiMetricTypes } from 'apps/common/src/resources/haut-ai/haut-ai-met
     byRecommendationRange: (range: RecommendationTypes[]) => ({ where: { '$lastResult.recommendationRange$': range } }),
     searchByResult: (searchString) => ({
         where: {
-            [Op.or]: [
-                { name: { [Op.like]: `%${searchString}%` } },
-                { '$lastResult.date$': { [Op.like]: `%${searchString}%` } },
-                { '$lastResult.value$': { [Op.like]: `%${searchString}%` } },
-                { isActive: true },
+            [Op.and]: [
                 {
-                    isActive: false,
-                    '$lastResult.id$': { [Op.ne]: null }
+                    [Op.or]: [
+                        { name: { [Op.like]: `%${searchString}%` } },
+                        { '$lastResult.date$': { [Op.like]: `%${searchString}%` } },
+                        { '$lastResult.value$': { [Op.like]: `%${searchString}%` } },
+                    ]
+                },
+                {
+                    [Op.or]: [
+                        { isActive: true },
+                        {
+                            isActive: false,
+                            '$lastResult.id$': { [Op.ne]: null }
+                        }
+                    ]
                 }
             ]
         }
     }),
     onlyActive: () => ({
         where: {
-            [Op.or]: [
-                { isActive: true },
-                {
-                    isActive: false,
-                    '$lastResult.id$': { [Op.ne]: null }
-                }
-            ]
+            [Op.and]: [{
+                [Op.or]: [
+                    { isActive: true },
+                    {
+                        isActive: false,
+                        '$lastResult.id$': { [Op.ne]: null }
+                    }
+                ]
+            }]
         }
     }),
     byNameAndAlternativeName: (queryString: string[]) => ({
@@ -173,10 +191,17 @@ import { HautAiMetricTypes } from 'apps/common/src/resources/haut-ai/haut-ai-met
             },
         ],
         where: {
-            [Op.or]: [
-                { name: queryString },
-                { shortName: queryString },
-                { '$alternativeNames.name$': queryString },
+            [Op.and]: [
+                {
+                    [Op.or]: [
+                        { name: queryString },
+                        { shortName: queryString },
+                        { '$alternativeNames.name$': queryString },
+                    ]
+                },
+                {
+                    isActive: true
+                }
             ]
         },
     }),
