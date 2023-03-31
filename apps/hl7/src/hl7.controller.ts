@@ -131,6 +131,17 @@ export class Hl7Controller {
             });
         }
 
+        if (body.status === Hl7ObjectStatuses.verified && hl7Object.status === Hl7ObjectStatuses.error) {
+            const files = await this.hl7Service.findFileNameForHl7Object(hl7Object);
+
+            if (files.resultFile) {
+                await hl7Object.update({ status: Hl7ObjectStatuses.new });
+
+                await this.hl7Service.loadHl7ResultFile(hl7Object, files.resultFile, DateTime.fromJSDate(hl7Object.resultFileAt).toISO(), { isForce: true });
+
+                return;
+            } 
+        }
         await hl7Object.update({ status: body.status });
     }
 
