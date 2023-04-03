@@ -138,11 +138,10 @@ export class Hl7Controller {
                 await hl7Object.update({ status: Hl7ObjectStatuses.new });
 
                 await this.hl7Service.loadHl7ResultFile(hl7Object, files.resultFile, DateTime.fromJSDate(hl7Object.resultFileAt).toISO(), { isForce: true });
-
-                return;
-            } 
+            } else {
+                await hl7Object.update({ status: body.status });
+            }
         }
-        await hl7Object.update({ status: body.status });
     }
 
     @Public()
