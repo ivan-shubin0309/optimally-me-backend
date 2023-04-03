@@ -42,6 +42,7 @@ interface IResultObject {
     unit: string,
     toFollow?: string,
     failedTests?: string,
+    isError: boolean,
 }
 
 const sexTypeToHl7Sex = {
@@ -161,6 +162,7 @@ export class Hl7FilesService {
             toFollow: isNaN(obxSegment.getField(5))
                 ? `${obxSegment.getComponent(3, 2)} ${obxSegment.getField(5)}`
                 : null,
+            isError: isNaN(obxSegment.getField(5)),
         }));
     }
 }

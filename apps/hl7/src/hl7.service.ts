@@ -240,7 +240,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
         }
     }
 
-    async loadHl7ResultFile(hl7Object: Hl7Object, fileName: string, resultFileAt: string): Promise<void> {
+    async loadHl7ResultFile(hl7Object: Hl7Object, fileName: string, resultFileAt: string, options = { isForce: false }): Promise<void> {
         let isCriticalResult = false, status;
 
         const awsFile = await this.filesService.prepareFile({ contentType: HL7_FILE_TYPE, type: InternalFileTypes.hl7 }, hl7Object.userId, InternalFileTypes[InternalFileTypes.hl7]);
@@ -257,7 +257,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
         if (bodyForUpdate.results.length < OBX_MIN_FIELDS_NUMBER) {
             bodyForUpdate.toFollow = `${OBX_FIELDS_NUMBER_ERROR},\n${bodyForUpdate.toFollow}`;
-            status = Hl7ObjectStatuses.error;
+            status = options.isForce ? Hl7ObjectStatuses.verified : Hl7ObjectStatuses.error;
         }
 
         await hl7Object.update({
@@ -325,9 +325,10 @@ export class Hl7Service extends BaseService<Hl7Object> {
             );
 
             if (bodyForUpdate.toFollow) {
-                status = Hl7ObjectStatuses.error;
+                status = options.isForce ? Hl7ObjectStatuses.verified : Hl7ObjectStatuses.error;
                 await hl7Object.update({ toFollow: bodyForUpdate.toFollow, status });
-                return;
+
+                if (!options.isForce) { return; }
             }
 
             await this.adminsResultsService.createUserResults(resultsToCreate, hl7Object.userId, biomarkerIds);
