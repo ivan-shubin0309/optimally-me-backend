@@ -4,6 +4,7 @@ import { SexTypes } from '../../../common/src/resources/filters/sex-types';
 import { User } from '../../../users/src/models';
 import { literal, Op } from 'sequelize';
 import { File } from '../../../files/src/models/file.entity';
+import { OtherFeatureTypes } from '../../../common/src/resources/filters/other-feature-types';
 
 @Scopes(() => ({
     bySampleCode: (sampleCode: string) => ({ where: { sampleCode } }),
@@ -265,6 +266,12 @@ export class Hl7Object extends Model {
         allowNull: true
     })
     resultFileAt: Date|any;
+
+    @Column({
+        type: DataType.TINYINT,
+        allowNull: true
+    })
+    otherFeature: OtherFeatureTypes;
 
     @BelongsTo(() => File, 'fileId')
     file: File;

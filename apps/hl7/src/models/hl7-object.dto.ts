@@ -5,6 +5,7 @@ import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { BaseDto } from '../../../common/src/base/base.dto';
 import { Hl7Object } from './hl7-object.entity';
 import { FileDto } from '../../../files/src/models/file.dto';
+import { OtherFeatureTypes } from '../../../common/src/resources/filters/other-feature-types';
 
 export class Hl7ObjectDto extends BaseDto<Hl7Object> {
     constructor(data: Hl7Object) {
@@ -30,6 +31,7 @@ export class Hl7ObjectDto extends BaseDto<Hl7Object> {
         this.failedTests = data.failedTests;
         this.toFollow = data.toFollow;
         this.isCriticalResult = data.isCriticalResult;
+        this.otherFeature = data.otherFeature;
         this.file = data.file
             ? new FileDto(data.file)
             : undefined;
@@ -103,6 +105,9 @@ export class Hl7ObjectDto extends BaseDto<Hl7Object> {
 
     @ApiProperty({ type: () => Boolean, required: false })
     readonly isCriticalResult: boolean;
+
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(OtherFeatureTypes) })
+    readonly otherFeature: number;
 
     @ApiProperty({ type: () => FileDto, required: false })
     readonly file: FileDto;

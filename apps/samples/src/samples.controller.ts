@@ -12,6 +12,7 @@ import { CheckSampleIdDto } from './models/check-sample-id.dto';
 import { ActivateSampleDto } from './models/activate-sample.dto';
 import { SessionDataDto } from '../../sessions/src/models';
 import { Public } from '../../common/src/resources/common/public.decorator';
+import { SampleDto } from './models/sample.dto';
 
 @ApiTags('samples')
 @Controller('samples')
@@ -79,9 +80,10 @@ export class SamplesController {
     @Roles(UserRoles.user)
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ summary: 'Activate sample by sampleId' })
+    @ApiResponse({ type: () => SampleDto })
     @Post(':sampleId')
-    async activateSample(@Param() params: ActivateSampleDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
-        const sample = await this.samplesService.getOne([
+    async activateSample(@Param() params: ActivateSampleDto, @Request() req: Request & { user: SessionDataDto }): Promise<SampleDto> {
+        let sample = await this.samplesService.getOne([
             { method: ['byIsActivated', false] },
             { method: ['bySampleId', params.sampleId] }
         ]);
@@ -95,5 +97,9 @@ export class SamplesController {
         }
 
         await this.samplesService.activateSample(sample.id, req.user.userId);
+
+        sample = await sample.reload();
+
+        return new SampleDto(sample);
     }
 }
