@@ -200,6 +200,11 @@ Resources:
           Properties:
             Path: /biomarkers/recommendations
             Method: ANY
+        BiomarkersRecommendationsTagsApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/recommendations/tags
+            Method: ANY
         RecommendationByIdApi:
           Type: Api
           Properties:
@@ -229,11 +234,6 @@ Resources:
           Type: Api
           Properties:
             Path: /biomarkers/{id}
-            Method: ANY
-        BiomarkersRecommendationsTagsApi:
-          Type: Api
-          Properties:
-            Path: /biomarkers/recommendations/tags
             Method: ANY
 
   WefitterFunction:
