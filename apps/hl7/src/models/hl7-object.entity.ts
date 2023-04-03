@@ -2,7 +2,7 @@ import { Hl7ObjectStatuses } from '../../../common/src/resources/hl7/hl7-object-
 import { Table, Column, Model, Scopes, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { SexTypes } from '../../../common/src/resources/filters/sex-types';
 import { User } from '../../../users/src/models';
-import { Op } from 'sequelize';
+import { literal, Op } from 'sequelize';
 import { File } from '../../../files/src/models/file.entity';
 
 @Scopes(() => ({
@@ -11,8 +11,7 @@ import { File } from '../../../files/src/models/file.entity';
     search: (searchString: string) => ({
         where: {
             [Op.or]: [
-                { firstName: { [Op.like]: `%${searchString}%` } },
-                { lastName: { [Op.like]: `%${searchString}%` } },
+                literal(`CONCAT(\`Hl7Object\`.\`firstName\`, ' ', \`Hl7Object\`.\`lastName\`) LIKE '%${searchString}%'`),
                 { email: { [Op.like]: `%${searchString}%` } },
                 { sampleCode: { [Op.like]: `%${searchString}%` } },
                 { lab: { [Op.like]: `%${searchString}%` } },
