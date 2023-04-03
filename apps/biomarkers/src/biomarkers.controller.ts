@@ -458,7 +458,8 @@ export class BiomarkersController {
   }
 
   @ApiOperation({ summary: 'Get list of recommendation tags' })
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiResponse({ type: () => TagNamesListDto })
+  @HttpCode(HttpStatus.OK)
   @Roles(UserRoles.superAdmin)
   @Get('/recommendations/tags')
   async getRecommendationTags(@Query() query: GetRecommendationTagListDto): Promise<TagNamesListDto> {
