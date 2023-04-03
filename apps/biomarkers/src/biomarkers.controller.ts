@@ -457,6 +457,36 @@ export class BiomarkersController {
     return biomarkerDto;
   }
 
+  @ApiOperation({ summary: 'Get list of recommendation tags' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Roles(UserRoles.superAdmin)
+  @Get('/recommendations/tags')
+  async getRecommendationTags(@Query() query: GetRecommendationTagListDto): Promise<TagNamesListDto> {
+    const { limit, offset } = query;
+    let tagsList = [];
+
+    const scopes: any[] = [];
+
+    if (query.search) {
+      scopes.push({ method: ['search', query.search] });
+    }
+
+    const result = await this.recommendationsService.getTag(scopes.concat(['distinctNamesCount']));
+    const count = result ? result.get('counter') as number : 0;
+
+    if (count) {
+      scopes.push(
+        'distinctNames',
+        { method: ['pagination', { limit, offset }] },
+        { method: ['orderBy', [['name', 'desc']]] }
+      );
+
+      tagsList = await this.recommendationsService.getTags(scopes);
+    }
+
+    return new TagNamesListDto(tagsList, PaginationHelper.buildPagination({ limit, offset }, count));
+  }
+
   @ApiCreatedResponse({ type: () => RecommendationDto })
   @ApiOperation({ summary: 'Archive recommendation' })
   @Roles(UserRoles.superAdmin)
@@ -703,35 +733,5 @@ export class BiomarkersController {
     }
 
     await biomarker.update({ isActive: body.isActive });
-  }
-
-  @ApiOperation({ summary: 'Get list of recommendation tags' })
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @Roles(UserRoles.superAdmin)
-  @Get('/recommendations/tags')
-  async getRecommendationTags(@Query() query: GetRecommendationTagListDto): Promise<TagNamesListDto> {
-    const { limit, offset } = query;
-    let tagsList = [];
-
-    const scopes: any[] = [];
-
-    if (query.search) {
-      scopes.push({ method: ['search', query.search] });
-    }
-
-    const result = await this.recommendationsService.getTag(scopes.concat(['distinctNamesCount']));
-    const count = result ? result.get('counter') as number : 0;
-
-    if (count) {
-      scopes.push(
-        'distinctNames',
-        { method: ['pagination', { limit, offset }] },
-        { method: ['orderBy', [['name', 'desc']]] }
-      );
-
-      tagsList = await this.recommendationsService.getTags(scopes);
-    }
-
-    return new TagNamesListDto(tagsList, PaginationHelper.buildPagination({ limit, offset }, count));
   }
 }
