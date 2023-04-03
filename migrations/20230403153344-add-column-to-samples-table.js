@@ -3,15 +3,15 @@
 module.exports = {
   async up(queryInterface) {
     return queryInterface.sequelize.query(`
-      ALTER TABLE hl7Objects
-        ADD COLUMN userOtherFeature TINYINT NULL;
+      ALTER TABLE samples
+        ADD COLUMN testKitType TINYINT NULL;
     `);
   },
 
   async down(queryInterface) {
     return queryInterface.sequelize.query(`
-      ALTER TABLE hl7Objects
-        DROP COLUMN userOtherFeature;
+      ALTER TABLE samples
+        DROP COLUMN testKitType;
     `);
   }
 };

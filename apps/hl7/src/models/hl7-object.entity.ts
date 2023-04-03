@@ -271,7 +271,7 @@ export class Hl7Object extends Model {
         type: DataType.TINYINT,
         allowNull: true
     })
-    otherFeature: OtherFeatureTypes;
+    userOtherFeature: OtherFeatureTypes;
 
     @BelongsTo(() => File, 'fileId')
     file: File;

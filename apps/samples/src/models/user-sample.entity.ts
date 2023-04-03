@@ -1,6 +1,7 @@
 import { User } from '../../../users/src/models';
 import { Table, Column, Model, Scopes, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { Sample } from './sample.entity';
+import { OtherFeatureTypes } from '../../../common/src/resources/filters/other-feature-types';
 
 @Scopes(() => ({
     byId: (id: number) => ({ where: { id } }),
@@ -51,6 +52,12 @@ export class UserSample extends Model {
         defaultValue: false,
     })
     isHl7ObjectGenerated: boolean;
+
+    @Column({
+        type: DataType.TINYINT,
+        allowNull: true,
+    })
+    userOtherFeature: OtherFeatureTypes;
 
     @BelongsTo(() => User, 'userId')
     user: User;

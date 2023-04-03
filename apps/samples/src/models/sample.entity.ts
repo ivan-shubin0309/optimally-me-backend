@@ -1,4 +1,5 @@
 import { Table, Column, Model, Scopes, DataType } from 'sequelize-typescript';
+import { TestKitTypes } from '../../../common/src/resources/hl7/test-kit-types';
 
 @Scopes(() => ({
     byId: (id: number) => ({ where: { id } }),
@@ -24,4 +25,10 @@ export class Sample extends Model {
         allowNull: false
     })
     isActivated: boolean;
+
+    @Column({
+        type: DataType.TINYINT,
+        allowNull: false
+    })
+    testKitType: TestKitTypes;
 }

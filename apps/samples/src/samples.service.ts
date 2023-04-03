@@ -7,6 +7,8 @@ import { SampleHelper } from '../../common/src/resources/samples/sample-helper';
 import { SAMPLE_CODE_LENGTH } from '../../common/src/resources/samples/constants';
 import { UserSample } from './models/user-sample.entity';
 import { SAMPLE_PREFIX } from '../../common/src/resources/hl7/hl7-constants';
+import { TestKitTypes } from '../../common/src/resources/hl7/test-kit-types';
+import { OtherFeatureTypes } from '../../common/src/resources/filters/other-feature-types';
 
 @Injectable()
 export class SamplesService extends BaseService<Sample> {
@@ -33,13 +35,20 @@ export class SamplesService extends BaseService<Sample> {
         }
     }
 
-    async activateSample(sampleId: number, userId: number): Promise<void> {
+    async activateSample(sampleId: number, userId: number, userOtherFeature: OtherFeatureTypes): Promise<void> {
         await this.dbConnection.transaction(async transaction => {
             await Promise.all([
                 this.model
                     .scope([{ method: ['byId', sampleId] }])
-                    .update({ isActivated: true }, { transaction } as any),
-                this.userSampleModel.create({ sampleId, userId }, { transaction })
+                    .update({ 
+                        isActivated: true,
+                        testKitType: TestKitTypes.femaleHormones //TO DO remove on fulfillment center integration
+                    }, { transaction } as any),
+                this.userSampleModel.create({ 
+                    sampleId, 
+                    userId,
+                    userOtherFeature
+                }, { transaction })
             ]);
         });
     }

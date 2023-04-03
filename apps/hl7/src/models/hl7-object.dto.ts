@@ -31,7 +31,7 @@ export class Hl7ObjectDto extends BaseDto<Hl7Object> {
         this.failedTests = data.failedTests;
         this.toFollow = data.toFollow;
         this.isCriticalResult = data.isCriticalResult;
-        this.otherFeature = data.otherFeature;
+        this.userOtherFeature = data.userOtherFeature;
         this.file = data.file
             ? new FileDto(data.file)
             : undefined;
@@ -107,7 +107,7 @@ export class Hl7ObjectDto extends BaseDto<Hl7Object> {
     readonly isCriticalResult: boolean;
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(OtherFeatureTypes) })
-    readonly otherFeature: number;
+    readonly userOtherFeature: number;
 
     @ApiProperty({ type: () => FileDto, required: false })
     readonly file: FileDto;
