@@ -14,6 +14,7 @@ import { SessionDataDto } from '../../sessions/src/models';
 import { Public } from '../../common/src/resources/common/public.decorator';
 import { SampleDto } from './models/sample.dto';
 import { ActivateSampleBodyDto } from './models/activate-sample-body.dto';
+import { TestKitTypes } from 'apps/common/src/resources/hl7/test-kit-types';
 
 @ApiTags('samples')
 @Controller('samples')
@@ -96,6 +97,14 @@ export class SamplesController {
             throw new NotFoundException({
                 message: this.translator.translate('SAMPLE_NOT_FOUND'),
                 errorCode: 'SAMPLE_NOT_FOUND',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        if (sample.testKitType === TestKitTypes.femaleHormones && !body.otherFeature) {
+            throw new NotFoundException({
+                message: this.translator.translate('OTHER_FEATURE_REQUIRED'),
+                errorCode: 'OTHER_FEATURE_REQUIRED',
                 statusCode: HttpStatus.NOT_FOUND
             });
         }

@@ -12,6 +12,7 @@ import { User } from '../../users/src/models';
 import { AgeHelper } from '../../common/src/resources/filters/age.helper';
 import { UsersService } from '../../users/src/users.service';
 import { UserRoles } from '../../common/src/resources/users';
+import { OtherFeatureTypes } from '../../common/src/resources/filters/other-feature-types';
 
 @Injectable()
 export class AdminsResultsService extends BaseService<UserResult> {
@@ -83,7 +84,7 @@ export class AdminsResultsService extends BaseService<UserResult> {
             .update({ filterId: null }, { transaction } as any);
     }
 
-    async createUserResults(results: CreateUserResultDto[], userId: User | number, biomarkerIds: number[]): Promise<void> {
+    async createUserResults(results: CreateUserResultDto[], userId: User | number, biomarkerIds: number[], options?: { otherFeature: OtherFeatureTypes }): Promise<void> {
         let user;
         if (typeof userId === 'number') {
             user = await this.usersService.getOne([
@@ -107,7 +108,7 @@ export class AdminsResultsService extends BaseService<UserResult> {
                             sexType: user.additionalField.sex,
                             ageTypes: user.additionalField.dateOfBirth && AgeHelper.getAgeRanges(user.additionalField.dateOfBirth),
                             ethnicityType: user.additionalField.ethnicity,
-                            otherFeature: user.additionalField.otherFeature
+                            otherFeature: options?.otherFeature || user.additionalField.otherFeature
                         }
                     ]
                 }
