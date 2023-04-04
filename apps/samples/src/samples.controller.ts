@@ -111,7 +111,9 @@ export class SamplesController {
 
         await this.samplesService.activateSample(sample.id, req.user.userId, body.otherFeature);
 
-        sample = await sample.reload();
+        sample = await this.samplesService.getOne([
+            { method: ['bySampleId', params.sampleId] }
+        ]);
 
         return new SampleDto(sample);
     }

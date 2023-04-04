@@ -26,7 +26,8 @@ export class SamplesService extends BaseService<Sample> {
         for (let i = 0; i <= body.quantity; i++) {
             arrayOfSamples.push({
                 sampleId: `${SAMPLE_PREFIX}${SampleHelper.generateSampleCode(SAMPLE_CODE_LENGTH)}`,
-                isActivated: false
+                isActivated: false,
+                testKitType: TestKitTypes.femaleHormones //TO DO remove on fulfillment center integration
             });
         }
 
