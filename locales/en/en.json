@@ -49,5 +49,6 @@
     "DATA_SYNC_NOTIFICATION_BODY": "Please go to the app to synchronize the data",
     "RECOMMENDATION_LINKED_TO_USER_RESULT": "Recommendation is linked to user result",
     "HL7_OBJECT_NOT_FOUND": "HL7 object not found",
-    "HL7_OBJECT_NOT_ERROR_STATUS": "HL7 object has not error status"
+    "HL7_OBJECT_NOT_ERROR_STATUS": "HL7 object has not error status",
+    "OTHER_FEATURE_REQUIRED": "otherFeature field required for test kit type - female hormones"
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Query, Request } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Query, Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserRoles } from '../../common/src/resources/users';
 import { Roles } from '../../common/src/resources/common/role.decorator';
@@ -12,6 +12,9 @@ import { CheckSampleIdDto } from './models/check-sample-id.dto';
 import { ActivateSampleDto } from './models/activate-sample.dto';
 import { SessionDataDto } from '../../sessions/src/models';
 import { Public } from '../../common/src/resources/common/public.decorator';
+import { SampleDto } from './models/sample.dto';
+import { ActivateSampleBodyDto } from './models/activate-sample-body.dto';
+import { TestKitTypes } from 'apps/common/src/resources/hl7/test-kit-types';
 
 @ApiTags('samples')
 @Controller('samples')
@@ -59,8 +62,9 @@ export class SamplesController {
     @Public()
     @HttpCode(HttpStatus.OK)
     @ApiOperation({ summary: 'Check sample id' })
+    @ApiResponse({ type: () => SampleDto })
     @Get('/sampleId')
-    async checkSampleId(@Query() query: CheckSampleIdDto): Promise<void> {
+    async checkSampleId(@Query() query: CheckSampleIdDto): Promise<SampleDto> {
         const sample = await this.samplesService.getOne([
             { method: ['byIsActivated', false] },
             { method: ['bySampleId', query.sampleId] }
@@ -73,15 +77,18 @@ export class SamplesController {
                 statusCode: HttpStatus.NOT_FOUND
             });
         }
+
+        return new SampleDto(sample);
     }
 
     @ApiBearerAuth()
     @Roles(UserRoles.user)
-    @HttpCode(HttpStatus.NO_CONTENT)
+    @HttpCode(HttpStatus.OK)
     @ApiOperation({ summary: 'Activate sample by sampleId' })
+    @ApiResponse({ type: () => SampleDto })
     @Post(':sampleId')
-    async activateSample(@Param() params: ActivateSampleDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
-        const sample = await this.samplesService.getOne([
+    async activateSample(@Param() params: ActivateSampleDto, @Body() body: ActivateSampleBodyDto, @Request() req: Request & { user: SessionDataDto }): Promise<SampleDto> {
+        let sample = await this.samplesService.getOne([
             { method: ['byIsActivated', false] },
             { method: ['bySampleId', params.sampleId] }
         ]);
@@ -94,6 +101,20 @@ export class SamplesController {
             });
         }
 
-        await this.samplesService.activateSample(sample.id, req.user.userId);
+        if (sample.testKitType === TestKitTypes.femaleHormones && !body.otherFeature) {
+            throw new NotFoundException({
+                message: this.translator.translate('OTHER_FEATURE_REQUIRED'),
+                errorCode: 'OTHER_FEATURE_REQUIRED',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        await this.samplesService.activateSample(sample.id, req.user.userId, body.otherFeature);
+
+        sample = await this.samplesService.getOne([
+            { method: ['bySampleId', params.sampleId] }
+        ]);
+
+        return new SampleDto(sample);
     }
 }

@@ -73,6 +73,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
                     sex: userSample.user.additionalField.sex,
                     activatedAt: userSample.createdAt,
                     isQuizCompleted: userSample.user.additionalField.isSelfAssesmentQuizCompleted,
+                    userOtherFeature: userSample.userOtherFeature,
                 }));
 
                 await this.model.bulkCreate(objectsToCreate, { transaction } as any);
@@ -331,7 +332,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
                 if (!options.isForce) { return; }
             }
 
-            await this.adminsResultsService.createUserResults(resultsToCreate, hl7Object.userId, biomarkerIds);
+            await this.adminsResultsService.createUserResults(resultsToCreate, hl7Object.userId, biomarkerIds, { otherFeature: hl7Object.userOtherFeature });
 
             await hl7Object.update({ isCriticalResult });
         }
