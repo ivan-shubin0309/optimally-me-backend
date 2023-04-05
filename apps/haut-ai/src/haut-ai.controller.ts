@@ -57,15 +57,6 @@ export class HautAiController {
             'withAdditionalField'
         ]);
 
-        if (body.feelingType && body.notes) {
-            await this.userSkinDiariesService.create({
-                userId: user.id,
-                feelingType: body.feelingType,
-                isWearingMakeUp: body.isWearingMakeUp,
-                notes: body.notes,
-            });
-        }
-
         if (!user?.additionalField?.skinType && !body.skinType) {
             throw new BadRequestException({
                 message: this.translator.translate('SKIN_TYPE_IS_EMPTY'),
@@ -127,6 +118,16 @@ export class HautAiController {
             userHautAiFieldId: user.hautAiField.id,
             fileId: body.fileId
         });
+
+        if (body.feelingType && body.notes) {
+            await this.userSkinDiariesService.create({
+                userId: user.id,
+                skinUserResultId: skinResult.id,
+                feelingType: body.feelingType,
+                isWearingMakeUp: body.isWearingMakeUp,
+                notes: body.notes,
+            });
+        }
 
         result.skinResultId = skinResult.id;
 
@@ -253,7 +254,8 @@ export class HautAiController {
             scopes.push(
                 { method: ['pagination', { limit: query.limit, offset: query.offset }] },
                 { method: ['orderBy', [['createdAt', 'desc']]] },
-                'withFile'
+                'withFile',
+                'withSkinDiary',
             );
 
             skinResults = await this.skinUserResultsService.getList(scopes);

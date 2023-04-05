@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from 'apps/common/src/base/base.dto';
-import { SkinUserResultStatuses } from 'apps/common/src/resources/haut-ai/skin-user-result-statuses';
-import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
-import { FileDto } from 'apps/files/src/models/file.dto';
+import { BaseDto } from '../../../common/src/base/base.dto';
+import { SkinUserResultStatuses } from '../../../common/src/resources/haut-ai/skin-user-result-statuses';
+import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
+import { FileDto } from '../../../files/src/models/file.dto';
 import { SkinUserResult } from './skin-user-result.entity';
+import { UserSkinDiaryDto } from './user-skin-diary.dto';
 
 export class SkinUserResultDto extends BaseDto<SkinUserResult> {
     constructor(entity: SkinUserResult) {
@@ -19,6 +20,9 @@ export class SkinUserResultDto extends BaseDto<SkinUserResult> {
         this.eyesAge = entity.eyesAge;
         this.file = entity.file
             ? new FileDto(entity.file)
+            : undefined;
+        this.skinDiary = entity.skinDiary
+            ? new UserSkinDiaryDto(entity.skinDiary)
             : undefined;
     }
 
@@ -48,4 +52,7 @@ export class SkinUserResultDto extends BaseDto<SkinUserResult> {
 
     @ApiProperty({ type: () => FileDto, required: false })
     readonly file: FileDto;
+
+    @ApiProperty({ type: () => UserSkinDiaryDto, required: false })
+    readonly skinDiary: UserSkinDiaryDto;
 }
