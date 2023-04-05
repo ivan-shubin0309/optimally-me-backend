@@ -5,7 +5,7 @@ import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { allowedFeatureTypes } from '../../../common/src/resources/samples/allowed-feature-types';
 
 export class ActivateSampleBodyDto {
-    @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(OtherFeatureTypes) })
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(OtherFeatureTypes) })
     @IsOptional()
     @IsNumber()
     @IsEnum(allowedFeatureTypes)
