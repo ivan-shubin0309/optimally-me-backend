@@ -27,6 +27,8 @@ import { UserResultsDto } from '../../admins-results/src/models/user-results.dto
 import { GetResultsBySkinResultDto } from './models/get-results-by-skin-result.dto';
 import { hautAiResultOrderScope } from '../../common/src/resources/haut-ai/result-order-types';
 import { UserSkinDiariesService } from './user-skin-diaries.service';
+import { UserSkinDiaryDto } from './models/user-skin-diary.dto';
+import { PatchSkinDiaryNoteDto } from './models/patch-skin-diary-note.dto';
 
 @ApiBearerAuth()
 @ApiTags('haut-ai')
@@ -283,6 +285,30 @@ export class HautAiController {
         }
 
         await skinDiary.destroy();
+    }
+
+    @ApiOperation({ summary: 'Change skin diary note by id' })
+    @ApiResponse({ type: () => UserSkinDiaryDto })
+    @Roles(UserRoles.user)
+    @HttpCode(HttpStatus.OK)
+    @Patch('/face-skin-metrics/skin-results/skin-diaries/:id/notes')
+    async patchSkinDiaryNote(@Param() param: EntityByIdDto, @Body() body: PatchSkinDiaryNoteDto, @Request() req: Request & { user: SessionDataDto }): Promise<UserSkinDiaryDto> {
+        let skinDiary = await this.userSkinDiariesService.getOne([
+            { method: ['byId', param.id] },
+            { method: ['byUserId', req.user.userId] }
+        ]);
+
+        if (!skinDiary) {
+            throw new UnprocessableEntityException({
+                message: this.translator.translate('SKIN_DIARY_NOT_FOUND'),
+                errorCode: 'SKIN_DIARY_NOT_FOUND',
+                statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+            });
+        }
+
+        skinDiary = await skinDiary.update({ notes: body.notes });
+
+        return new UserSkinDiaryDto(skinDiary);
     }
 
     @ApiOperation({ summary: 'Get results by skin result id' })
