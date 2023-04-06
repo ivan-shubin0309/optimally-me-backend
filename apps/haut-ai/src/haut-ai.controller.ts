@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Query, Request, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Query, Request, UnprocessableEntityException } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FileTypes } from '../../common/src/resources/files/file-types';
 import { FilesService } from '../../files/src/files.service';
@@ -262,6 +262,27 @@ export class HautAiController {
         }
 
         return new SkinResultListDto(skinResults, PaginationHelper.buildPagination({ limit: query.limit, offset: query.offset }, count));
+    }    
+    
+    @ApiOperation({ summary: 'Delete skin diary by id' })
+    @Roles(UserRoles.user)
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @Delete('/face-skin-metrics/skin-results/skin-diaries/:id')
+    async removeSkinDiaryById(@Param() param: EntityByIdDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
+        const skinDiary = await this.userSkinDiariesService.getOne([
+            { method: ['byId', param.id] },
+            { method: ['byUserId', req.user.userId] }
+        ]);
+
+        if (!skinDiary) {
+            throw new UnprocessableEntityException({
+                message: this.translator.translate('SKIN_DIARY_NOT_FOUND'),
+                errorCode: 'SKIN_DIARY_NOT_FOUND',
+                statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+            });
+        }
+
+        await skinDiary.destroy();
     }
 
     @ApiOperation({ summary: 'Get results by skin result id' })

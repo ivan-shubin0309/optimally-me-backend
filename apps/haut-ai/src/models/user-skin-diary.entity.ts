@@ -13,6 +13,7 @@ export interface ISkinUserResult {
 
 @Scopes(() => ({
     byUserId: (userId: number) => ({ where: { userId } }),
+    byId: (id: number) => ({ where: { id } }),
 }))
 @Table({
     tableName: 'userSkinDiaries',
