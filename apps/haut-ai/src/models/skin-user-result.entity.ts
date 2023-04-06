@@ -1,8 +1,9 @@
 import { SkinUserResultStatuses } from '../../../common/src/resources/haut-ai/skin-user-result-statuses';
-import { Table, Column, Model, Scopes, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Table, Column, Model, Scopes, DataType, ForeignKey, BelongsTo, HasOne } from 'sequelize-typescript';
 import { UserHautAiField } from './user-haut-ai-field.entity';
 import { Op } from 'sequelize';
 import { File } from '../../../files/src/models/file.entity';
+import { UserSkinDiary } from './user-skin-diary.entity';
 
 export interface ISkinUserResult {
     userHautAiFieldId: number;
@@ -23,6 +24,15 @@ export interface ISkinUserResult {
             {
                 model: File,
                 as: 'file',
+                required: false,
+            },
+        ]
+    }),
+    withSkinDiary: () => ({
+        include: [
+            {
+                model: UserSkinDiary,
+                as: 'skinDiary',
                 required: false,
             },
         ]
@@ -87,4 +97,7 @@ export class SkinUserResult extends Model {
 
     @BelongsTo(() => File, 'fileId')
     file: File;
+
+    @HasOne(() => UserSkinDiary, 'skinUserResultId')
+    skinDiary: UserSkinDiary;
 }

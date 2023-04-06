@@ -1,6 +1,7 @@
 import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
 import { User } from '../../../users/src/models';
 import { FeelingTypes } from '../../../common/src/resources/haut-ai/feeling-types';
+import { SkinUserResult } from './skin-user-result.entity';
 
 export interface ISkinUserResult {
     userHautAiFieldId: number;
@@ -25,6 +26,13 @@ export class UserSkinDiary extends Model {
         allowNull: false
     })
     userId: number;
+
+    @ForeignKey(() => SkinUserResult)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: true
+    })
+    skinUserResultId: number;
 
     @Column({
         type: DataType.TINYINT,
