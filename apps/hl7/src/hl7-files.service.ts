@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 import { SexTypes } from '../../common/src/resources/filters/sex-types';
 import { Hl7ObjectStatuses } from '../../common/src/resources/hl7/hl7-object-statuses';
 import * as uuid from 'uuid';
-import { PID_3_SAMPLE_PREFIX } from '../../common/src/resources/hl7/hl7-constants';
+import { PID_3_USER_PREFIX, USER_ID_FROM_PID_3 } from '../../common/src/resources/hl7/hl7-constants';
 
 export interface IHl7Object {
     id?: number;
@@ -82,7 +82,7 @@ export class Hl7FilesService {
         const pidSegment = message.addSegment(['PID']);
         pidSegment.addField('1', 1);
         pidSegment.addField(hl7Object.userId, 2);
-        pidSegment.addField(`${PID_3_SAMPLE_PREFIX}${hl7Object.sampleCode}`, 3);
+        pidSegment.addField(`${PID_3_USER_PREFIX}${hl7Object.userId}`, 3);
         pidSegment.addField(`${hl7Object.lastName}^${hl7Object.firstName}`, 5);
         pidSegment.addField(DateTime.fromFormat(hl7Object.dateOfBirth, 'yyyy-MM-dd').toFormat('yyyyMMdd'), 7);
         pidSegment.addField(sexTypeToHl7Sex[hl7Object.sex], 8);
@@ -109,13 +109,15 @@ export class Hl7FilesService {
         const obxSegments = message.getSegments('OBX');
         const results = this.parseObxSegmentToResultArrays(obxSegments);
 
+        const matches = USER_ID_FROM_PID_3.exec(pidSegment.getField(3));
+
         return {
             lab: message.header.getField(2),
             createdAt: DateTime.fromFormat(message.header.getField(5), 'yyyyMMddHHmmss').isValid 
                 ? DateTime.fromFormat(message.header.getField(5), 'yyyyMMddHHmmss').toJSDate()
                 : null,
             id: message.header.getField(8),
-            userId: pidSegment.getField(3),
+            userId: matches && parseInt(matches[1]),
             firstName: pidSegment.getField(5) && pidSegment.getField(5).split(' ')[1],
             lastName: pidSegment.getField(5) && pidSegment.getField(5).split(' ')[0],
             dateOfBirth: DateTime.fromFormat(pidSegment.getField(7), 'yyyyMMdd').isValid
