@@ -3,8 +3,9 @@ import { Hl7Object } from './models/hl7-object.entity';
 import { Message, Parser, Segment } from 'simple-hl7';
 import { DateTime } from 'luxon';
 import { SexTypes } from '../../common/src/resources/filters/sex-types';
-import { Hl7ObjectStatuses } from 'apps/common/src/resources/hl7/hl7-object-statuses';
+import { Hl7ObjectStatuses } from '../../common/src/resources/hl7/hl7-object-statuses';
 import * as uuid from 'uuid';
+import { PID_3_SAMPLE_PREFIX } from '../../common/src/resources/hl7/hl7-constants';
 
 export interface IHl7Object {
     id?: number;
@@ -81,7 +82,7 @@ export class Hl7FilesService {
         const pidSegment = message.addSegment(['PID']);
         pidSegment.addField('1', 1);
         pidSegment.addField(hl7Object.userId, 2);
-        pidSegment.addField(hl7Object.sampleCode, 3);
+        pidSegment.addField(`${PID_3_SAMPLE_PREFIX}${hl7Object.sampleCode}`, 3);
         pidSegment.addField(`${hl7Object.lastName}^${hl7Object.firstName}`, 5);
         pidSegment.addField(DateTime.fromFormat(hl7Object.dateOfBirth, 'yyyy-MM-dd').toFormat('yyyyMMdd'), 7);
         pidSegment.addField(sexTypeToHl7Sex[hl7Object.sex], 8);
