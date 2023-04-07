@@ -55,7 +55,8 @@ export class UsersResultsController {
                 { method: ['pagination', { limit, offset }] },
                 { method: ['orderBy', [['date', 'desc']]] },
                 'withUnit',
-                'withBiomarker'
+                'withBiomarker',
+                'withHl7Object',
             );
             userResultsList = await this.usersResultsService.getList(scopes);
         }
