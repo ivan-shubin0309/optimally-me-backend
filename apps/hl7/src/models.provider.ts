@@ -11,6 +11,7 @@ import { Filter } from '../../biomarkers/src/models/filters/filter.entity';
 import { FilterRecommendation } from '../../biomarkers/src/models/recommendations/filter-recommendation.entity';
 import { FilterBulletList } from '../../biomarkers/src/models/filterBulletLists/filter-bullet-list.entity';
 import { Hl7CriticalRange } from './models/hl7-critical-range.entity';
+import { Hl7FileError } from './models/hl7-file-error.entity';
 
 export const modelProviders = [
     {
@@ -64,5 +65,9 @@ export const modelProviders = [
     {
         provide: 'HL7_CRITICAL_RANGE_MODEL',
         useValue: Hl7CriticalRange
-    }
+    },
+    {
+        provide: 'HL7_FILE_ERROR_MODEL',
+        useValue: Hl7FileError
+    },
 ];

@@ -21,6 +21,7 @@ import { AdminsResultsService } from '../../admins-results/src/admins-results.se
 import { FiltersService } from '../../biomarkers/src/services/filters/filters.service';
 import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomarkers.service';
 import { UsersResultsService } from '../../users-results/src/users-results.service';
+import { MailerService } from '../../common/src/resources/mailer/mailer.service';
 
 @Module({
     imports: [
@@ -43,6 +44,7 @@ import { UsersResultsService } from '../../users-results/src/users-results.servi
         FiltersService,
         UsersBiomarkersService,
         UsersResultsService,
+        MailerService,
         JwtStrategy,
         ...guardProviders,
         sequelizeProvider(entities),

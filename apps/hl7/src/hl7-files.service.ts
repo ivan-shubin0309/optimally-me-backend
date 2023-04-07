@@ -109,7 +109,7 @@ export class Hl7FilesService {
         const results = this.parseObxSegmentToResultArrays(obxSegments);
 
         return {
-            lab: message.header.getField(3),
+            lab: message.header.getField(2),
             createdAt: DateTime.fromFormat(message.header.getField(5), 'yyyyMMddHHmmss').isValid 
                 ? DateTime.fromFormat(message.header.getField(5), 'yyyyMMddHHmmss').toJSDate()
                 : null,

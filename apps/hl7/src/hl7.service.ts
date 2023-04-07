@@ -10,13 +10,17 @@ import { InternalFileTypes } from '../../common/src/resources/files/file-types';
 import { HL7_FILE_TYPE } from '../../common/src/resources/files/files-validation-rules';
 import { Hl7FtpService } from './hl7-ftp.service';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
-import { BIOMARKER_MAPPING_ERROR, OBJECT_ALREADY_PROCESSED_ERROR, OBX_FIELDS_NUMBER_ERROR, OBX_MIN_FIELDS_NUMBER, SAMPLE_CODE_FROM_RESULT_FILE, SAMPLE_CODE_FROM_STATUS_FILE, UNIT_MISMATCH_ERROR } from '../../common/src/resources/hl7/hl7-constants';
+import { BIOMARKER_MAPPING_ERROR, INVALID_SAMPLE_ID_ERROR, OBJECT_ALREADY_PROCESSED_ERROR, OBX_FIELDS_NUMBER_ERROR, OBX_MIN_FIELDS_NUMBER, SAMPLE_CODE_FROM_RESULT_FILE, SAMPLE_CODE_FROM_STATUS_FILE, UNIT_MISMATCH_ERROR } from '../../common/src/resources/hl7/hl7-constants';
 import axios from 'axios';
 import { DateTime } from 'luxon';
 import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
 import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomarkers.service';
 import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-types';
 import { Hl7CriticalRange } from './models/hl7-critical-range.entity';
+import { MailerService } from '../../common/src/resources/mailer/mailer.service';
+import { UsersService } from '../../users/src/users.service';
+import { UserRoles } from '../../common/src/resources/users';
+import { Hl7FileError } from './models/hl7-file-error.entity';
 
 @Injectable()
 export class Hl7Service extends BaseService<Hl7Object> {
@@ -29,7 +33,10 @@ export class Hl7Service extends BaseService<Hl7Object> {
         private readonly hl7FtpService: Hl7FtpService,
         private readonly adminsResultsService: AdminsResultsService,
         private readonly usersBiomarkersService: UsersBiomarkersService,
-        @Inject('HL7_CRITICAL_RANGE_MODEL') private readonly hl7CriticalRangeModel: Repository<Hl7CriticalRange>
+        @Inject('HL7_CRITICAL_RANGE_MODEL') private readonly hl7CriticalRangeModel: Repository<Hl7CriticalRange>,
+        private readonly mailerService: MailerService,
+        private readonly usersService: UsersService,
+        @Inject('HL7_FILE_ERROR_MODEL') private readonly hl7FileErrorModel: Repository<Hl7FileError>,
     ) { super(model); }
 
     async generateHl7ObjectsFromSamples(): Promise<void> {
@@ -206,12 +213,46 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
                     const fileDate = DateTime.fromFormat(matches[1], 'yyyyMMddHHmmss');
                     const existingHl7Object = await this.getOne([
-                        { method: ['bySampleCode', matches[2]] },
-                        { method: ['byStatus', Hl7ObjectStatuses.verified] }
+                        { method: ['bySampleCode', matches[2]] }
                     ]);
+
+                    const hl7FileError = await this.hl7FileErrorModel
+                        .scope([{ method: ['byFileName', file.name] }])
+                        .findOne();
+
+                    if (!existingHl7Object && !hl7FileError) {
+                        const rawFile = await this.hl7FtpService.downloadResultFile(file.name);
+                        const parsedFile = await this.hl7FilesService.parseHl7FileToHl7Object(rawFile.toString());
+                        const user = await this.usersService.getOne([{ method: ['byId', parsedFile.userId] }]);
+                        if (user) {
+                            const lastHl7Object = await this.getOne([
+                                { method: ['byUserId', user.id] },
+                                { method: ['orderBy', [['createdAt', 'desc']]] }
+                            ]);
+                            await lastHl7Object.update({ status: Hl7ObjectStatuses.error, toFollow: `${INVALID_SAMPLE_ID_ERROR} - ${matches[2]}` });
+                        } else {
+                            const superAdmins = await this.usersService.getList([{ method: ['byRoles', UserRoles.superAdmin] }]);
+                            await Promise.all(
+                                superAdmins.map(superAdmin => 
+                                    this.mailerService.sendAdminSampleIdError(
+                                        superAdmin, 
+                                        {
+                                            sampleId: matches[2],
+                                            customerId: parsedFile.userId,
+                                            resultAt: fileDate.toISO(),
+                                            labName: parsedFile.lab,
+                                            rawFile: rawFile.toString()
+                                        }
+                                    )
+                                )
+                            );
+                        }
+                        await this.hl7FileErrorModel.create({ fileName: file.name });
+                    }
 
                     if (
                         existingHl7Object
+                        && existingHl7Object.status === Hl7ObjectStatuses.verified
                         && !existingHl7Object.toFollow 
                         && !DateTime.fromJSDate(existingHl7Object.resultFileAt).equals(fileDate)
                     ) {
