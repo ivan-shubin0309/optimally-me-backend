@@ -6,6 +6,7 @@ import { BaseDto } from '../../../common/src/base/base.dto';
 import { UserResultBiomarkerDto } from './user-result-biomarker.dto';
 import { UserResult } from './user-result.entity';
 import { UserFilterDto } from 'apps/biomarkers/src/models/filters/user-filter.dto';
+import { OtherFeatureTypes } from 'apps/common/src/resources/filters/other-feature-types';
 
 export class UserResultDto extends BaseDto<UserResult> {
     constructor(data: UserResult) {
@@ -25,6 +26,9 @@ export class UserResultDto extends BaseDto<UserResult> {
             : undefined;
         this.skinUserResultId = data.skinUserResultId;
         this.hl7ObjectId = data.hl7ObjectId;
+        this.otherFeature = data.hl7Object 
+            ? data.hl7Object.userOtherFeature
+            : undefined;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -65,4 +69,7 @@ export class UserResultDto extends BaseDto<UserResult> {
 
     @ApiProperty({ type: () => Number, required: false })
     readonly hl7ObjectId: number;
+
+    @ApiProperty({ type: ()=> Number, required: false, description: EnumHelper.toDescription(OtherFeatureTypes) })
+    readonly otherFeature: number;
 }

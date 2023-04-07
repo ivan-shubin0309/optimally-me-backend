@@ -114,6 +114,15 @@ export interface IUserResult {
         }
     }),
     byHl7ObjectId: (hl7ObjectId) => ({ where: { hl7ObjectId } }),
+    withHl7Object: () => ({
+        include: [
+            {
+                model: Hl7Object,
+                as: 'hl7Object',
+                required: false,
+            },
+        ]
+    }),
 }))
 @Table({
     tableName: 'userResults',
@@ -201,4 +210,7 @@ export class UserResult extends Model {
 
     @BelongsTo(() => SkinUserResult, 'skinUserResultId')
     skinUserResult: SkinUserResult;
+
+    @BelongsTo(() => Hl7Object, 'hl7ObjectId')
+    hl7Object: Hl7Object;
 }
