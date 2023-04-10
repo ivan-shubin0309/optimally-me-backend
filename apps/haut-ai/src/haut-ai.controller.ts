@@ -37,7 +37,7 @@ export class HautAiController {
     constructor(
         private readonly userHautAiFieldsService: UserHautAiFieldsService,
         private readonly filesService: FilesService,
-        private readonly usersSevice: UsersService,
+        private readonly usersService: UsersService,
         private readonly skinUserResultsService: SkinUserResultsService,
         private readonly translator: TranslatorService,
         private readonly usersResultsService: UsersResultsService,
@@ -52,7 +52,7 @@ export class HautAiController {
     async uploadImageToFaceApp(@Body() body: PostImageToHautAiDto, @Request() req: Request & { user: SessionDataDto }): Promise<HautAiUploadedPhotoDto> {
         const file = await this.filesService.checkCanUse(body.fileId, FileTypes.mirrorMirror, null, true);
 
-        const user = await this.usersSevice.getOne([
+        const user = await this.usersService.getOne([
             { method: ['byId', req.user.userId] },
             { method: ['byRoles', UserRoles.user] },
             'withHautAiField',
@@ -142,7 +142,7 @@ export class HautAiController {
     @HttpCode(HttpStatus.OK)
     @Post('/face-skin-metrics/results')
     async getImageResults(@Body() body: HautAiGetResultsDto, @Request() req: Request & { user: SessionDataDto }): Promise<any> {
-        const user = await this.usersSevice.getOne([
+        const user = await this.usersService.getOne([
             { method: ['byId', req.user.userId] },
             { method: ['byRoles', UserRoles.user] },
             'withHautAiField',
@@ -163,7 +163,7 @@ export class HautAiController {
     @HttpCode(HttpStatus.NO_CONTENT)
     @Patch('/face-skin-metrics/skin-results/:id')
     async loadSkinResults(@Param() params: EntityByIdDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
-        const user = await this.usersSevice.getOne([
+        const user = await this.usersService.getOne([
             { method: ['byId', req.user.userId] },
             { method: ['byRoles', UserRoles.user] },
             'withHautAiField',
@@ -238,7 +238,7 @@ export class HautAiController {
 
         const scopes: any[] = [];
 
-        const user = await this.usersSevice.getOne([
+        const user = await this.usersService.getOne([
             { method: ['byId', req.user.userId] },
             { method: ['byRoles', UserRoles.user] },
             'withHautAiField'

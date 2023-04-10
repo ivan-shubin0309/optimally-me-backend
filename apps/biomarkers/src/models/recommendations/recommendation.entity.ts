@@ -165,6 +165,13 @@ import { RecommendationTag } from '../recommendationTags/recommendation-tag.enti
             },
         ]
     }),
+    bySkinType: (skinType) => ({
+        where: {
+            id: {
+                [Op.notIn]: literal(`(SELECT DISTINCT \`recommendationId\` FROM \`recommendationSkinTypes\` WHERE \`recommendationSkinTypes\`.\`skinType\` = ${skinType} AND \`recommendationSkinTypes\`.\`isIdealSkinType\` IS FALSE)`)
+            }
+        }
+    })
 }))
 
 @Table({

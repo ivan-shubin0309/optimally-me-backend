@@ -15,6 +15,8 @@ import { AdminsResultsService } from '../../admins-results/src/admins-results.se
 import { TypeformService } from '../../typeform/src/typeform.service';
 import { UserQuizesService } from '../../typeform/src/user-quizes.service';
 import { DecisionRulesService } from 'apps/typeform/src/decision-rules.service';
+import { UsersService } from 'apps/users/src/users.service';
+import { UserRoles } from 'apps/common/src/resources/users';
 
 @Injectable()
 export class SkinUserResultsService extends BaseService<SkinUserResult> {
@@ -27,6 +29,7 @@ export class SkinUserResultsService extends BaseService<SkinUserResult> {
         private readonly typeformService: TypeformService,
         private readonly userQuizesService: UserQuizesService,
         private readonly decisionRulesService: DecisionRulesService,
+        private readonly usersService: UsersService,
     ) { super(model); }
 
     create(body: ISkinUserResult, transaction?: Transaction): Promise<SkinUserResult> {
@@ -34,6 +37,13 @@ export class SkinUserResultsService extends BaseService<SkinUserResult> {
     }
 
     async saveResults(results: any[], skinResult: SkinUserResult, userId: number): Promise<void> {
+        const user = await this.usersService.getOne([
+            { method: ['byId', userId] },
+            { method: ['byRoles', UserRoles.user] },
+            'withHautAiField',
+            'withAdditionalField'
+        ]);
+
         const filteredResults: { value: number, type: HautAiMetricTypes | string, createdAt: string }[] = results
             .filter(result => !!techNamesToMetricTypes[result?.result?.algorithm_tech_name])
             .map(result => ({
@@ -113,7 +123,7 @@ export class SkinUserResultsService extends BaseService<SkinUserResult> {
 
             const createdResults = await this.userResultModel.bulkCreate(resultsToCreate as any, { transaction });
 
-            await this.adminsResultsService.attachRecommendations(createdResults, userId, transaction, { isAnyRecommendation: true });
+            await this.adminsResultsService.attachRecommendations(createdResults, userId, transaction, { isAnyRecommendation: true, skinType: user.additionalField.skinType });
 
             const lastSensitiveSkinQuiz = await this.userQuizesService.getOne(
                 [

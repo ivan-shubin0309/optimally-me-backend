@@ -13,6 +13,7 @@ import { AgeHelper } from '../../common/src/resources/filters/age.helper';
 import { UsersService } from '../../users/src/users.service';
 import { UserRoles } from '../../common/src/resources/users';
 import { OtherFeatureTypes } from '../../common/src/resources/filters/other-feature-types';
+import { SkinTypes } from '../../common/src/resources/filters/skin-types';
 
 @Injectable()
 export class AdminsResultsService extends BaseService<UserResult> {
@@ -33,7 +34,7 @@ export class AdminsResultsService extends BaseService<UserResult> {
         return this.model.bulkCreate(data as any, { transaction });
     }
 
-    async attachRecommendations(userResults: UserResult[], userId: number, transaction?: Transaction, options?: { isAnyRecommendation: boolean }): Promise<void> {
+    async attachRecommendations(userResults: UserResult[], userId: number, transaction?: Transaction, options?: { isAnyRecommendation: boolean, skinType: SkinTypes }): Promise<void> {
         const userRecommendationsToCreate = [];
         const filteredUserResults = userResults.filter(userResult => userResult.filterId && userResult.recommendationRange);
         const scopes = [];
@@ -44,6 +45,9 @@ export class AdminsResultsService extends BaseService<UserResult> {
 
         if (options?.isAnyRecommendation) {
             scopes.push({ method: ['byFilterId', filteredUserResults.map(userResult => userResult.filterId)] });
+            if (options.skinType) {
+                scopes.push({ method: ['bySkinType', options.skinType] });
+            }
         } else {
             scopes.push({ method: ['byFilterIdAndType', filteredUserResults.map(userResult => ({ filterId: userResult.filterId, type: userResult.recommendationRange }))] });
         }
