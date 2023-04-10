@@ -121,7 +121,7 @@ export class HautAiController {
             fileId: body.fileId
         });
 
-        if (body.feelingType && body.notes) {
+        if (body.feelingType || body.notes || body.isWearingMakeUp) {
             await this.userSkinDiariesService.create({
                 userId: user.id,
                 skinUserResultId: skinResult.id,
