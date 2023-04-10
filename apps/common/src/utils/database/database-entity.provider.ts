@@ -49,6 +49,7 @@ import { Hl7Object } from '../../../../hl7/src/models/hl7-object.entity';
 import { Hl7CriticalRange } from '../../../../hl7/src/models/hl7-critical-range.entity';
 import { UserCode } from '../../../../sessions/src/models/user-code.entity';
 import { RecommendationTag } from '../../../../biomarkers/src/models/recommendationTags/recommendation-tag.entity';
+import { Hl7FileError } from '../../../../hl7/src/models/hl7-file-error.entity';
 
 export const entities = [
     User,
@@ -102,4 +103,5 @@ export const entities = [
     Hl7CriticalRange,
     UserCode,
     RecommendationTag,
+    Hl7FileError,
 ];

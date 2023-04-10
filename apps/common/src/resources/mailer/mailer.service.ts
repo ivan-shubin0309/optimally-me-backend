@@ -94,4 +94,26 @@ export class MailerService {
             user.email
         );
     }
+
+    async sendAdminSampleIdError(user: User, options: {sampleId: string, resultAt: string, labName: string, customerId: number, rawFile: string}): Promise<void> {
+        const link = `${this.configService.get('ADMIN_FRONTEND_BASE_URL')}/app/customer-results`;
+
+        return this.sendEmail(
+            this.translatorService.translate('ADMIN_EMAIL_SAMPLE_ID_ERROR_BODY', {
+                replace:
+                {
+                    sampleId: options.sampleId, 
+                    resultAt: options.resultAt,
+                    labName: options.labName,
+                    customerId: options.customerId.toString(),
+                    rawFile: options.rawFile,
+                    link
+                }
+            }),
+            this.translatorService.translate('ADMIN_EMAIL_SAMPLE_ID_ERROR_SUBJECT', {
+                replace: { sampleId: options.sampleId, resultAt: options.resultAt }
+            }),
+            user.email
+        );
+    }
 }
