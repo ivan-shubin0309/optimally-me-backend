@@ -81,7 +81,7 @@ export function getSpecificFiltersQuery(biomarkerIds: number[], options: ISpecif
             OR \`filterEthnicitiesCount\`.\`counter\` != ${EnumHelper.toCollection(EthnicityTypes).length}
             OR \`filterOtherFeaturesCount\`.\`counter\` != ${EnumHelper.toCollection(OtherFeatureTypes).length})
             AND ${orderValue} != 0
-        ORDER BY \`orderValue\`, \`priority\` DESC
+        ORDER BY \`orderValue\` DESC, \`priority\` DESC
     `;
 
     return `
