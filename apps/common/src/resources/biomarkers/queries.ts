@@ -90,10 +90,11 @@ export function getSpecificFiltersQuery(biomarkerIds: number[], options: ISpecif
         FROM (
             SELECT
                 \`orderedFilters\`.\`id\` as \`id\`,
-                \`orderedFilters\`.\`biomarkerId\` as \`biomarkerId\`
+                \`orderedFilters\`.\`biomarkerId\` as \`biomarkerId\`,
+                ROW_NUMBER() OVER (PARTITION BY \`orderedFilters\`.\`biomarkerId\` ORDER BY \`orderedFilters\`.\`orderValue\` DESC , \`orderedFilters\`.\`priority\` DESC) as \`rowOrder\`
             FROM (${orderedFilters}) as \`orderedFilters\`
-            GROUP BY \`orderedFilters\`.\`biomarkerId\`
         ) as \`biomarkerFilters\`
+        WHERE \`biomarkerFilters\`.\`rowOrder\` <= 1
     `.replace(/\s+/ig, ' ').trim();
 } 
 
