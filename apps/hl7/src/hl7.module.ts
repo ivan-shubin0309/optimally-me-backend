@@ -22,6 +22,7 @@ import { FiltersService } from '../../biomarkers/src/services/filters/filters.se
 import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomarkers.service';
 import { UsersResultsService } from '../../users-results/src/users-results.service';
 import { MailerService } from '../../common/src/resources/mailer/mailer.service';
+import { Hl7ErrorNotificationsService } from '../../hl7-error-notifications/src/hl7-error-notifications.service';
 
 @Module({
     imports: [
@@ -45,6 +46,7 @@ import { MailerService } from '../../common/src/resources/mailer/mailer.service'
         UsersBiomarkersService,
         UsersResultsService,
         MailerService,
+        Hl7ErrorNotificationsService,
         JwtStrategy,
         ...guardProviders,
         sequelizeProvider(entities),

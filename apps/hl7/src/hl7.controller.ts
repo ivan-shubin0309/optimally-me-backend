@@ -21,6 +21,7 @@ import { UsersResultsService } from '../../users-results/src/users-results.servi
 import { Sequelize } from 'sequelize-typescript';
 import { DateTime } from 'luxon';
 import { ScopeOptions } from 'sequelize';
+import { Hl7ErrorNotificationsService } from '../../hl7-error-notifications/src/hl7-error-notifications.service';
 
 @ApiBearerAuth()
 @ApiTags('hl7')
@@ -32,6 +33,7 @@ export class Hl7Controller {
         private readonly jwtService: JwtService,
         private readonly usersResultsService: UsersResultsService,
         @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
+        private readonly hl7ErrorNotificationsService: Hl7ErrorNotificationsService,
     ) { }
 
     @ApiResponse({ type: () => Hl7ObjectDto })
@@ -137,6 +139,8 @@ export class Hl7Controller {
             if (files.resultFile) {
                 await hl7Object.update({ status: Hl7ObjectStatuses.new });
 
+                await this.hl7ErrorNotificationsService.resolveAllErrors(hl7Object.id);
+
                 await this.hl7Service.loadHl7ResultFile(hl7Object, files.resultFile, DateTime.fromJSDate(hl7Object.resultFileAt).toISO(), { isForce: true });
             } else {
                 await hl7Object.update({ status: body.status });
@@ -240,6 +244,8 @@ export class Hl7Controller {
             await hl7Object.update({ status: Hl7ObjectStatuses.new }, { transaction });
 
             await this.usersResultsService.removeResultsByObjectId(hl7Object.id, transaction);
+
+            await this.hl7ErrorNotificationsService.resolveAllErrors(hl7Object.id, transaction);
         });
 
         const files = await this.hl7Service.findFileNameForHl7Object(hl7Object);

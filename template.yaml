@@ -674,3 +674,17 @@ Resources:
           Type: Schedule
           Properties:
             Schedule: cron(00 * * * ? *)
+
+  Hl7ErrorNotificationsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/hl7-error-notifications/src/main.handler
+      Description: 
+      Events:
+        Hl7NotificationsApi:
+          Type: Api
+          Properties:
+            Path: /hl7/notifications
+            Method: ANY

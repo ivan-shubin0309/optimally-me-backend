@@ -23,6 +23,7 @@
 .PHONY: build-Hl7Function
 .PHONY: build-Hl7ObjectDataGeneratorFunction
 .PHONY: build-Hl7ResultFunction
+.PHONY: build-Hl7ErrorNotificationsFunction
 
 
 build-RuntimeDependenciesLayer:
@@ -113,3 +114,6 @@ build-Hl7ObjectDataGeneratorFunction:
 
 build-Hl7ResultFunction:
 	$(MAKE) HANDLER=apps/hl7-result-cron/src/main.ts ENTITY=hl7-result-cron build-lambda-common
+
+build-Hl7ErrorNotificationsFunction:
+	$(MAKE) HANDLER=apps/hl7-error-notifications/src/main.ts ENTITY=hl7-error-notifications build-lambda-common
