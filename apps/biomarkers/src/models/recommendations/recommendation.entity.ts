@@ -171,7 +171,10 @@ import { RecommendationTag } from '../recommendationTags/recommendation-tag.enti
                 model: RecommendationSkinType,
                 as: 'skinTypes',
                 required: true,
-                where: { skinType }
+                where: { 
+                    skinType,
+                    isIdealSkinType: true
+                }
             },
         ]
     }),
