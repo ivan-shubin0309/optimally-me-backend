@@ -324,10 +324,6 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
             await Promise.all(
                 bodyForUpdate.results.map(async result => {
-                    if (isNaN(result.value)) {
-                        return;
-                    }
-
                     const biomarker = biomarkersList.find(
                         biomarker => result.biomarkerShortName === biomarker.name
                             || result.biomarkerShortName === biomarker.shortName
@@ -353,6 +349,10 @@ export class Hl7Service extends BaseService<Hl7Object> {
                     if (biomarker.unit.unit !== result.unit) {
                         const errorMessage = `${UNIT_MISMATCH_ERROR} ${result.biomarkerShortName} OBX.6 ${result.unit}`;
                         bodyForUpdate.toFollow = `${errorMessage},\n${bodyForUpdate.toFollow}`;
+                    }
+
+                    if (isNaN(result.value)) {
+                        return;
                     }
 
                     biomarkerIds.push(biomarker.id);
