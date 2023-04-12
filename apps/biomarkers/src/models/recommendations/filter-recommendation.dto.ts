@@ -1,32 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
-import { BaseDto } from '../../../../common/src/base/base.dto';
-import { RecommendationTypes } from '../../../../common/src/resources/recommendations/recommendation-types';
+import { BaseFilterRecommendationDto } from './base-filter-recommendation.dto';
 import { FilterRecommendation } from './filter-recommendation.entity';
 import { RecommendationDto } from './recommendation.dto';
 
 
-export class FilterRecommendationDto extends BaseDto<FilterRecommendation>{
+export class FilterRecommendationDto extends BaseFilterRecommendationDto {
     constructor(entity: FilterRecommendation) {
         super(entity);
-        this.filterId = entity.filterId;
-        this.recommendationId = entity.recommendationId;
-        this.order = entity.order;
-        this.type = entity.type;
         this.recommendation = entity.recommendation && new RecommendationDto(entity.recommendation);
     }
-
-    @ApiProperty({ type: () => Number, required: true })
-    filterId: number;
-
-    @ApiProperty({ type: () => Number, required: true })
-    recommendationId: number;
-
-    @ApiProperty({ type: () => Number, required: true })
-    order: number;
-
-    @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(RecommendationTypes) })
-    type: number;
 
     @ApiProperty({ type: () => RecommendationDto, required: true })
     recommendation: RecommendationDto;
