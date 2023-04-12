@@ -2,8 +2,9 @@ import { Message, Parser, Segment } from 'simple-hl7';
 import { DateTime } from 'luxon';
 
 function parseHl7FileToHl7Object() {
-    const message = (new Parser()).parse('MSH|^~\&|PATH|County Pathology||Optimally Me Ltd|20230406093003||ORU^R01|1734963|P|2.4|||AL|AL|GBR|ASCII|EN|||\rPID|1||OPMETEST13^^^^||samsung^test^^^^^MASTER||19780101|M|||^^^^||||||||||||||||||||\rPV1||O|Optimally Me Ltd||||||||||||||||||||||||||||||||||||||||||||||||||\rORC|SC|OPMETEST13|F270794||CM||||20230406093003|\rOBR|1|OPMETEST13|F270794|PATH^Pathology results^ASET pathology||20230405144521|20230406093003|||||||||||Battery|||||||F|||');
+    const message = (new Parser()).parse('MSH|^~\&|PATH|County Pathology||Optimally Me Ltd|20230313144113||ORU^R01|1704526|P|2.4|||AL|AL|GBR|ASCII|EN|||\rPID|1||OPME_Test_00002^^^^||Patient^Test^^^^^MASTER||19781124|M|||^^^^||||||||||||||||||||\rPV1||O|Optimally Me Ltd||||||||||||||||||||||||||||||||||||||||||||||||||\rORC|SC|OPME-A1B2C3v2|F260235||CM||||20230313144113|\rOBR|1|OPME-A1B2C3v2|F260235|PATH^Pathology results^ASET pathology||20230313132832|20230313144113|||||||20230313060000|V|||Report|||||||F|||\rOBX|1|ST|BILI^Total Bilirubin^ASET pathology^Biochemistry^1^0||1.0|umol/L|<24||||F|||||');
     const pidSegment = message.getSegment('PID');
+    const obxSegments = message.getSegments('OBX');
 
     //console.log(message);
     return {
@@ -21,8 +22,9 @@ function parseHl7FileToHl7Object() {
         abnormalResults: undefined,
         orderId: undefined,
         testProductName: undefined,
+        results: obxSegments[0].fields.length
     };
 }
 
 const parsedFile = parseHl7FileToHl7Object();
-console.log(parsedFile.lab);
+console.log(parsedFile);

@@ -301,11 +301,6 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
         status = bodyForUpdate.status;
 
-        if (bodyForUpdate.results.length < OBX_MIN_FIELDS_NUMBER) {
-            bodyForUpdate.toFollow = `${OBX_FIELDS_NUMBER_ERROR},\n${bodyForUpdate.toFollow}`;
-            status = options.isForce ? Hl7ObjectStatuses.verified : Hl7ObjectStatuses.error;
-        }
-
         await hl7Object.update({
             resultFileId: createdFile.id,
             failedTests: bodyForUpdate.failedTests,
@@ -316,10 +311,6 @@ export class Hl7Service extends BaseService<Hl7Object> {
         });
 
         await this.filesService.markFilesAsUsed([createdFile.id]);
-
-        if (bodyForUpdate.results.length < OBX_MIN_FIELDS_NUMBER) {
-            return;
-        }
 
         if (bodyForUpdate.results && bodyForUpdate.results.length) {
             const biomarkersList = await this.usersBiomarkersService.getList([
