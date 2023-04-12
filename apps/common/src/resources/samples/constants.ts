@@ -1,1 +1,1 @@
-export const SAMPLE_CODE_LENGTH = 11;
+export const SAMPLE_CODE_LENGTH = 10;
