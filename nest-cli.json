@@ -233,6 +233,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/hl7-result-cron/tsconfig.app.json"
       }
+    },
+    "hl7-error-notifications": {
+      "type": "application",
+      "root": "apps/hl7-error-notifications",
+      "entryFile": "main",
+      "sourceRoot": "apps/hl7-error-notifications/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/hl7-error-notifications/tsconfig.app.json"
+      }
     }
   }
 }

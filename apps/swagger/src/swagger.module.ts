@@ -19,6 +19,7 @@ import { UsersDevicesModule } from '../../users-devices/src/users-devices.module
 import { UsersWidgetsModule } from '../../users-widgets/src/users-widgets.module';
 import { UsersRecommendationsModule } from '../../users-recommendations/src/users-recommendations.module';
 import { Hl7Module } from '../../hl7/src/hl7.module';
+import { Hl7ErrorNotificationsModule } from '../../hl7-error-notifications/src/hl7-error-notifications.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { Hl7Module } from '../../hl7/src/hl7.module';
     UsersWidgetsModule,
     UsersRecommendationsModule,
     Hl7Module,
+    Hl7ErrorNotificationsModule,
   ]
 })
 export class SwaggerAppModule { }

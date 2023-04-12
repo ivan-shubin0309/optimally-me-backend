@@ -21,6 +21,7 @@ import { MailerService } from '../../common/src/resources/mailer/mailer.service'
 import { UsersService } from '../../users/src/users.service';
 import { UserRoles } from '../../common/src/resources/users';
 import { Hl7FileError } from './models/hl7-file-error.entity';
+import { Hl7ErrorNotificationsService } from '../../hl7-error-notifications/src/hl7-error-notifications.service';
 
 @Injectable()
 export class Hl7Service extends BaseService<Hl7Object> {
@@ -37,6 +38,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
         private readonly mailerService: MailerService,
         private readonly usersService: UsersService,
         @Inject('HL7_FILE_ERROR_MODEL') private readonly hl7FileErrorModel: Repository<Hl7FileError>,
+        private readonly hl7ErrorNotificationsService: Hl7ErrorNotificationsService,
     ) { super(model); }
 
     async generateHl7ObjectsFromSamples(): Promise<void> {
@@ -230,6 +232,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
                                 { method: ['orderBy', [['createdAt', 'desc']]] }
                             ]);
                             await lastHl7Object.update({ status: Hl7ObjectStatuses.error, toFollow: `${INVALID_SAMPLE_ID_ERROR} - ${matches[2]}` });
+                            await this.hl7ErrorNotificationsService.create({ message: `${INVALID_SAMPLE_ID_ERROR} - ${matches[2]}`, hl7ObjectId: lastHl7Object.id });
                         } else {
                             const superAdmins = await this.usersService.getList([{ method: ['byRoles', UserRoles.superAdmin] }]);
                             await Promise.all(
@@ -257,6 +260,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
                         && !DateTime.fromJSDate(existingHl7Object.resultFileAt).equals(fileDate)
                     ) {
                         await existingHl7Object.update({ status: Hl7ObjectStatuses.error, toFollow: OBJECT_ALREADY_PROCESSED_ERROR });
+                        await this.hl7ErrorNotificationsService.create({ message: OBJECT_ALREADY_PROCESSED_ERROR, hl7ObjectId: existingHl7Object.id });
                     }
                 })
             );
@@ -338,7 +342,8 @@ export class Hl7Service extends BaseService<Hl7Object> {
                     );
 
                     if (!biomarker) {
-                        bodyForUpdate.toFollow = `${BIOMARKER_MAPPING_ERROR} ${result.biomarkerShortName} OBX.3,\n${bodyForUpdate.toFollow}`;
+                        const errorMessage = `${BIOMARKER_MAPPING_ERROR} ${result.biomarkerShortName} OBX.3`;
+                        bodyForUpdate.toFollow = `${errorMessage},\n${bodyForUpdate.toFollow}`;
                         return;
                     }
 
@@ -351,7 +356,8 @@ export class Hl7Service extends BaseService<Hl7Object> {
                     }
 
                     if (biomarker.unit.unit !== result.unit) {
-                        bodyForUpdate.toFollow = `${UNIT_MISMATCH_ERROR} ${result.biomarkerShortName} OBX.6 ${result.unit},\n${bodyForUpdate.toFollow}`;
+                        const errorMessage = `${UNIT_MISMATCH_ERROR} ${result.biomarkerShortName} OBX.6 ${result.unit}`;
+                        bodyForUpdate.toFollow = `${errorMessage},\n${bodyForUpdate.toFollow}`;
                     }
 
                     biomarkerIds.push(biomarker.id);
@@ -370,7 +376,13 @@ export class Hl7Service extends BaseService<Hl7Object> {
                 status = options.isForce ? Hl7ObjectStatuses.verified : Hl7ObjectStatuses.error;
                 await hl7Object.update({ toFollow: bodyForUpdate.toFollow, status });
 
-                if (!options.isForce) { return; }
+                if (!options.isForce) {
+                    const notificationsToCreate = bodyForUpdate.toFollow
+                        .split('\n')
+                        .map(errorMessage => ({ message: errorMessage, hl7ObjectId: hl7Object.id }));
+                    await this.hl7ErrorNotificationsService.bulkCreate(notificationsToCreate);
+                    return;
+                }
             }
 
             await this.adminsResultsService.createUserResults(resultsToCreate, hl7Object.userId, biomarkerIds, { otherFeature: hl7Object.userOtherFeature });
