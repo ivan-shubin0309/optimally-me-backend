@@ -324,6 +324,10 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
             await Promise.all(
                 bodyForUpdate.results.map(async result => {
+                    if (isNaN(result.value)) {
+                        return;
+                    }
+
                     const biomarker = biomarkersList.find(
                         biomarker => result.biomarkerShortName === biomarker.name
                             || result.biomarkerShortName === biomarker.shortName
