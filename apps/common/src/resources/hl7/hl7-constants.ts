@@ -15,3 +15,5 @@ export const BIOMARKER_MAPPING_ERROR = 'Unable to map to biomarker';
 export const OBJECT_ALREADY_PROCESSED_ERROR = 'Test object already processed';
 
 export const INVALID_SAMPLE_ID_ERROR = 'Invalid Sample ID';
+
+export const INVALID_CUSTOMER_ID = 'Invalid Customer ID';
