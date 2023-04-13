@@ -68,8 +68,7 @@ export class UserAdditionalField extends Model {
 
     @Column({
         type: DataType.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
+        allowNull: true
     })
     isSensitiveSkin: boolean;
 
