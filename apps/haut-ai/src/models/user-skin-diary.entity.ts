@@ -43,8 +43,7 @@ export class UserSkinDiary extends Model {
 
     @Column({
         type: DataType.TINYINT,
-        allowNull: false,
-        defaultValue: false
+        allowNull: true
     })
     isWearingMakeUp: boolean;
 
