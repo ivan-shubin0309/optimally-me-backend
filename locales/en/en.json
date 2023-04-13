@@ -53,5 +53,5 @@
     "OTHER_FEATURE_REQUIRED": "otherFeature field required for test kit type - female hormones",
     "SKIN_DIARY_NOT_FOUND": "Skin diary with specified id is not found",
     "ADMIN_EMAIL_SAMPLE_ID_ERROR_SUBJECT": "OptimallyMe - Invalid Sample ID ${sampleId} error for ${resultAt}",
-    "ADMIN_EMAIL_SAMPLE_ID_ERROR_BODY": "Dear Administrator, Optimally Me received a new error result from ${labName} Date: ${resultAt} Sample Id: ${sampleId} Customer Id: ${customerId} The content of HL7 result file below:<br> ${rawFile} <br><br> Click here ${link} to navigate to the Admin Portal<br><br>Best wishes, Optimally Me team"
+    "ADMIN_EMAIL_SAMPLE_ID_ERROR_BODY": "Dear Administrator,<br>Optimally Me received a new error result from ${labName}<br>Date: ${resultAt}<br>Sample Id: ${sampleId}<br>Customer Id: ${customerId}<br><br>The content of HL7 result file below:<br>${rawFile}<br><br>Click here ${link} to navigate to the Admin Portal<br><br>Best wishes,<br>Optimally Me team"
 }
