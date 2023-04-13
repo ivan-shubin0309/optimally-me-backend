@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 import { SexTypes } from '../../common/src/resources/filters/sex-types';
 import { Hl7ObjectStatuses } from '../../common/src/resources/hl7/hl7-object-statuses';
 import * as uuid from 'uuid';
-import { PID_3_USER_PREFIX, USER_ID_FROM_PID_3 } from '../../common/src/resources/hl7/hl7-constants';
+import { OBX_FIELDS_NUMBER_ERROR, OBX_MIN_FIELDS_NUMBER, PID_3_USER_PREFIX, USER_ID_FROM_PID_3 } from '../../common/src/resources/hl7/hl7-constants';
 
 export interface IHl7Object {
     id?: number;
@@ -155,17 +155,27 @@ export class Hl7FilesService {
     }
 
     parseObxSegmentToResultArrays(obxSegments: Segment[]): IResultObject[] {
-        return obxSegments.map(obxSegment => ({
-            biomarkerShortName: obxSegment.getComponent(3, 1),
-            value: obxSegment.getField(5),
-            unit: obxSegment.getField(6),
-            failedTests: isNaN(obxSegment.getField(5))
-                ? `${obxSegment.getComponent(3, 2)} due to ${obxSegment.getField(5)}`
-                : null,
-            toFollow: isNaN(obxSegment.getField(5))
+        return obxSegments.map(obxSegment => {
+            let toFollow = isNaN(obxSegment.getField(5))
                 ? `${obxSegment.getComponent(3, 2)} ${obxSegment.getField(5)}`
-                : null,
-            isError: isNaN(obxSegment.getField(5)),
-        }));
+                : null;
+
+            if (obxSegment.fields.length < OBX_MIN_FIELDS_NUMBER) {
+                toFollow = toFollow
+                    ? `${OBX_FIELDS_NUMBER_ERROR},\n${toFollow}`
+                    : OBX_FIELDS_NUMBER_ERROR;
+            }
+
+            return {
+                biomarkerShortName: obxSegment.getComponent(3, 1),
+                value: obxSegment.getField(5),
+                unit: obxSegment.getField(6),
+                failedTests: isNaN(obxSegment.getField(5))
+                    ? `${obxSegment.getComponent(3, 2)} due to ${obxSegment.getField(5)}`
+                    : null,
+                toFollow,
+                isError: isNaN(obxSegment.getField(5)),
+            };
+        });
     }
 }
