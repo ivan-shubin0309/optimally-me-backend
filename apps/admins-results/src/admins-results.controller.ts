@@ -98,9 +98,7 @@ export class AdminsResultsController {
       });
     }
 
-    const biomarkerIds = body.results.map(result => result.biomarkerId);
-
-    await this.adminsResultsService.createUserResults(body.results, user, biomarkerIds);
+    await this.adminsResultsService.createUserResults(body.results, user);
   }
 
   @ApiResponse({ type: () => UserResultsDto })

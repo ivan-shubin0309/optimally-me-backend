@@ -1,5 +1,23 @@
 export interface ITypeformAnswer { questionId: string, questionText: string, answerType: string, answerText: string }
 
+class DataParser {
+    static number(answer: { type: string, number: number, field: any }): number {
+        return answer?.number;
+    }
+
+    static boolean(answer: { type: string, boolean: boolean, field: any }): boolean {
+        return answer?.boolean;
+    }
+
+    static choice(answer: { type: string, choice: { label: string }, field: any }): string {
+        return answer?.choice?.label;
+    }
+
+    static choices(answer: { type: string, choice: { labels: string[] }, field: any }): string {
+        return answer?.choice?.labels?.join(', ');
+    }
+}
+
 export class TypeformHelper {
     static getQuizName(body: any): string {
         return body?.form_response?.definition?.title;
@@ -23,12 +41,10 @@ export class TypeformHelper {
 
         bodyAnswers.forEach(answer => {
             const result: any = {};
-            if (answer.type === 'choice') {
-                result.answerText = answer?.choice?.label;
-            } else if (answer.type === 'email') {
-                result.answerText = answer?.email;
+            if (DataParser[answer.type]) {
+                result.answerText = DataParser[answer.type](answer);
             } else {
-                result.answerText = answer?.text;
+                result.answerText = null;
             }
 
             result.questionId = answer?.field?.id;

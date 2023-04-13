@@ -88,8 +88,11 @@ export class AdminsResultsService extends BaseService<UserResult> {
             .update({ filterId: null }, { transaction } as any);
     }
 
-    async createUserResults(results: CreateUserResultDto[], userId: User | number, biomarkerIds: number[], options?: { otherFeature: OtherFeatureTypes }): Promise<void> {
+    async createUserResults(results: CreateUserResultDto[], userId: User | number, options?: { otherFeature: OtherFeatureTypes }): Promise<void> {
         let user;
+
+        const biomarkerIds = results.map(result => result.biomarkerId);
+
         if (typeof userId === 'number') {
             user = await this.usersService.getOne([
                 { method: ['byId', userId] },
