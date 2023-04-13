@@ -10,7 +10,7 @@ import { InternalFileTypes } from '../../common/src/resources/files/file-types';
 import { HL7_FILE_TYPE } from '../../common/src/resources/files/files-validation-rules';
 import { Hl7FtpService } from './hl7-ftp.service';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
-import { BIOMARKER_MAPPING_ERROR, INVALID_SAMPLE_ID_ERROR, OBJECT_ALREADY_PROCESSED_ERROR, OBX_FIELDS_NUMBER_ERROR, OBX_MIN_FIELDS_NUMBER, SAMPLE_CODE_FROM_RESULT_FILE, SAMPLE_CODE_FROM_STATUS_FILE, UNIT_MISMATCH_ERROR } from '../../common/src/resources/hl7/hl7-constants';
+import { BIOMARKER_MAPPING_ERROR, INVALID_CUSTOMER_ID, INVALID_SAMPLE_ID_ERROR, OBJECT_ALREADY_PROCESSED_ERROR, OBX_FIELDS_NUMBER_ERROR, OBX_MIN_FIELDS_NUMBER, SAMPLE_CODE_FROM_RESULT_FILE, SAMPLE_CODE_FROM_STATUS_FILE, UNIT_MISMATCH_ERROR } from '../../common/src/resources/hl7/hl7-constants';
 import axios from 'axios';
 import { DateTime } from 'luxon';
 import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
@@ -241,7 +241,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
                                         superAdmin, 
                                         {
                                             sampleId: matches[2],
-                                            customerId: parsedFile.userId,
+                                            customerId: parsedFile.userId || INVALID_CUSTOMER_ID,
                                             resultAt: fileDate.toISO(),
                                             labName: parsedFile.lab,
                                             rawFile: rawFile.toString()

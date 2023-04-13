@@ -95,7 +95,7 @@ export class MailerService {
         );
     }
 
-    async sendAdminSampleIdError(user: User, options: {sampleId: string, resultAt: string, labName: string, customerId: number, rawFile: string}): Promise<void> {
+    async sendAdminSampleIdError(user: User, options: { sampleId: string, resultAt: string, labName: string, customerId: number | string, rawFile: string }): Promise<void> {
         const link = `${this.configService.get('ADMIN_FRONTEND_BASE_URL')}/app/customer-results`;
 
         return this.sendEmail(
