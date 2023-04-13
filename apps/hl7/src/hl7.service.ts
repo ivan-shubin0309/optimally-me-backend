@@ -320,7 +320,6 @@ export class Hl7Service extends BaseService<Hl7Object> {
             ]);
 
             const resultsToCreate = [];
-            const biomarkerIds = [];
 
             await Promise.all(
                 bodyForUpdate.results.map(async result => {
@@ -355,8 +354,6 @@ export class Hl7Service extends BaseService<Hl7Object> {
                         return;
                     }
 
-                    biomarkerIds.push(biomarker.id);
-
                     resultsToCreate.push({
                         biomarkerId: biomarker.id,
                         value: result.value,
@@ -377,7 +374,9 @@ export class Hl7Service extends BaseService<Hl7Object> {
                 }
             }
 
-            await this.adminsResultsService.createUserResults(resultsToCreate, hl7Object.userId, biomarkerIds, { otherFeature: hl7Object.userOtherFeature });
+            if (resultsToCreate.length) {
+                await this.adminsResultsService.createUserResults(resultsToCreate, hl7Object.userId, { otherFeature: hl7Object.userOtherFeature });
+            }
 
             await hl7Object.update({ isCriticalResult });
         }
