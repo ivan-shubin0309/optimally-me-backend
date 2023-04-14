@@ -28,6 +28,8 @@ import { Op } from 'sequelize';
             }
         ]
     }),
+    byUserId: (userId) => ({ where: { userId } }),
+    byToken: (token) => ({ where: { token } }),
 }))
 @Table({
     tableName: 'userDevices',
