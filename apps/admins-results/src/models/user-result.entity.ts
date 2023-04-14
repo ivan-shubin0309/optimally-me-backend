@@ -123,6 +123,18 @@ export interface IUserResult {
             },
         ]
     }),
+    byBiomarkerType: (biomarkerType) => ({
+        include: [
+            {
+                model: Biomarker,
+                as: 'biomarker',
+                required: true,
+                where: {
+                    type: biomarkerType
+                }
+            },
+        ]
+    })
 }))
 @Table({
     tableName: 'userResults',

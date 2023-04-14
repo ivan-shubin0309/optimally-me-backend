@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import { IsInt, IsOptional, Max, Min } from 'class-validator';
+import { BiomarkerTypes } from '../../../common/src/resources/biomarkers/biomarker-types';
+import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
+import { Transform, Type } from 'class-transformer';
+import { ArrayUnique, IsArray, IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
 
 export class GetDatesListDto {
     @ApiProperty({ type: () => Number, required: true, default: 100 })
@@ -22,4 +24,13 @@ export class GetDatesListDto {
     @Min(0)
     @Transform(({ value }) => Number(value))
     readonly biomarkerId: number;
+
+    @ApiProperty({ type: () => [Number], required: false, description: EnumHelper.toDescription(BiomarkerTypes), default: [BiomarkerTypes.blood] })
+    @IsOptional()
+    @IsArray()
+    @ArrayUnique()
+    @IsEnum([BiomarkerTypes.blood, BiomarkerTypes.skin], { each: true })
+    @Type(() => Number)
+    @Transform(({ value }) => typeof value === 'number' ? [value] : value)
+    readonly biomarkerType: number[] = [BiomarkerTypes.blood];
 }

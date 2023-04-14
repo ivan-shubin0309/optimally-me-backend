@@ -109,6 +109,7 @@ export class UsersBiomarkersController {
     let datesList = [];
 
     const scopes: any[] = [
+      { method: ['byBiomarkerType', query.biomarkerType] },
       { method: ['byUserId', req.user.userId] },
     ];
 
