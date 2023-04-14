@@ -26,11 +26,18 @@ export class UsersDevicesController {
     @Roles(UserRoles.user)
     @Post()
     async saveNotificationToken(@Body() body: PostDeviceTokenDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
-        await this.usersDevicesService.create({
-            userId: req.user.userId,
-            sessionId: req.user.sessionId,
-            token: body.token
-        });
+        const userDevice = await this.usersDevicesService.getOne([
+            { method: ['byUserId', req.user.userId] },
+            { method: ['byToken', body.token] }
+        ]);
+
+        if (!userDevice) {
+            await this.usersDevicesService.create({
+                userId: req.user.userId,
+                sessionId: req.user.sessionId,
+                token: body.token
+            });
+        }
     }
 
     @Public()
