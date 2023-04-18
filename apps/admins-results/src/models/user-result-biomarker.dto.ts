@@ -3,6 +3,7 @@ import { Biomarker } from '../../../biomarkers/src/models/biomarker.entity';
 import { BaseDto } from '../../../common/src/base/base.dto';
 import { BiomarkerTypes } from '../../../common/src/resources/biomarkers/biomarker-types';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
+import { HautAiMetricTypes } from '../../../common/src/resources/haut-ai/haut-ai-metric-types';
 
 export class UserResultBiomarkerDto extends BaseDto<Biomarker> {
     constructor(entity: Biomarker) {
@@ -13,6 +14,7 @@ export class UserResultBiomarkerDto extends BaseDto<Biomarker> {
         this.unitId = entity.unitId;
         this.isDeleted = entity.isDeleted;
         this.ruleId = entity.templateId;
+        this.hautAiMetricType = entity.hautAiMetricType;
     }
 
     @ApiProperty({ type: () => String, required: true })
@@ -32,4 +34,7 @@ export class UserResultBiomarkerDto extends BaseDto<Biomarker> {
 
     @ApiProperty({ type: () => Number, required: false })
     ruleId: number;
+
+    @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(HautAiMetricTypes) })
+    hautAiMetricType: number;
 }
