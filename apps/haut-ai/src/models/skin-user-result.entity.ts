@@ -37,6 +37,16 @@ export interface ISkinUserResult {
             },
         ]
     }),
+    byDate: (startDate?: string, endDate?: string) => {
+        const opAnd = [];
+        if (startDate) {
+            opAnd.push({ [Op.gte]: startDate });
+        }
+        if (endDate) {
+            opAnd.push({ [Op.lte]: endDate });
+        }
+        return { where: { createdAt: { [Op.and]: opAnd } } };
+    },
 }))
 @Table({
     tableName: 'skinUserResults',
