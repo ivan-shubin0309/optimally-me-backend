@@ -229,10 +229,14 @@ export class UsersResultsController {
             });
         }
 
-        filter = await this.filtersService.getOne([
-            { method: ['byId', filter.id] },
-            'withBiomarker'
-        ]);
+        filter = await this.filtersService.getOne(
+            [
+                { method: ['byId', filter.id] },
+                'withBiomarker'
+            ],
+            null,
+            { isIncludeAll: true }
+        );
 
         return new FilterWithBiomarkerDto(filter);
     }
