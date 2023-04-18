@@ -131,7 +131,8 @@ export interface IUserResult {
                 required: true,
                 where: {
                     type: biomarkerType
-                }
+                },
+                attributes: []
             },
         ]
     })
