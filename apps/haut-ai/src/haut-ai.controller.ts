@@ -250,6 +250,10 @@ export class HautAiController {
 
         scopes.push({ method: ['byUserHautAiFieldId', user.hautAiField.id] });
 
+        if (query.startDate || query.endDate) {
+            scopes.push({ method: ['byDate', query.startDate, query.endDate] });
+        }
+
         count = await this.skinUserResultsService.getCount(scopes);
 
         if (count) {
