@@ -55,8 +55,7 @@ export interface IUserResult {
         group: ['biomarkerId']
     }),
     distinctDates: () => ({
-        exclude: ['id'],
-        attributes: [[fn('DISTINCT', col('date')), 'date']],
+        group: ['date']
     }),
     distinctDatesCount: () => ({
         attributes: [[fn('COUNT', fn('DISTINCT', col('date'))), 'counter']],
