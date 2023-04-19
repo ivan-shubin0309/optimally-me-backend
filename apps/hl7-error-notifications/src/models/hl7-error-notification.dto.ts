@@ -9,6 +9,9 @@ export class Hl7ErrorNotificationDto extends BaseDto<Hl7ErrorNotification> {
         this.hl7ObjectId = entity.hl7ObjectId;
         this.message = entity.message;
         this.isResolved = entity.get('isResolved');
+        this.sampleCode = entity.hl7Object
+            ? entity.hl7Object.sampleCode
+            : undefined;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -19,4 +22,7 @@ export class Hl7ErrorNotificationDto extends BaseDto<Hl7ErrorNotification> {
 
     @ApiProperty({ type: () => Boolean, required: true })
     readonly isResolved: boolean;
+
+    @ApiProperty({ type: () => String, required: false })
+    readonly sampleCode: string;
 }

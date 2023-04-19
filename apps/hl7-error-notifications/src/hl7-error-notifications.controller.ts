@@ -16,11 +16,11 @@ export class Hl7ErrorNotificationsController {
     ) { }
 
     @ApiResponse({ type: () => Hl7ErrorNotificationsDto })
-    @ApiOperation({ summary: 'Get hl7 object by sample code' })
+    @ApiOperation({ summary: 'Get hl7 error notifications' })
     @Roles(UserRoles.superAdmin)
     @HttpCode(HttpStatus.OK)
     @Get()
-    async getHl7ObjectBySampleCode(@Query() query: GetHl7ErrorNotificationListDto): Promise<Hl7ErrorNotificationsDto> {
+    async getHl7ObjectNotifications(@Query() query: GetHl7ErrorNotificationListDto): Promise<Hl7ErrorNotificationsDto> {
         let hl7ObjectsList = [];
         const scopes: any[] = [];
 
