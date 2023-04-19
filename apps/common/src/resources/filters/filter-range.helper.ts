@@ -75,7 +75,7 @@ export class FilterRangeHelper {
             }
         });
 
-        const resultRange = ranges.find(range => value > range.min && value <= range.max);
+        const resultRange = ranges.find((range, index) => index ? (value > range.min && value <= range.max) : (value >= range.min && value <= range.max));
 
         return resultRange && resultRange.type;
     }
