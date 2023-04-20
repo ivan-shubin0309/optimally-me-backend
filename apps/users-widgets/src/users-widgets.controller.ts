@@ -92,9 +92,9 @@ export class UsersWidgetsController {
         await this.dbConnection.transaction(async transaction => {
             const dataSourcesList = await this.usersWidgetDataSourcesService.getList(
                 [
-                { method: ['byUserId', req.user.userId] }
-            ],
-            transaction
+                    { method: ['byUserId', req.user.userId] }
+                ],
+                transaction
             );
             await Promise.all(
                 body.data.map(async dataSource => {
@@ -108,12 +108,12 @@ export class UsersWidgetsController {
                         });
                     }
 
-                    const dataSourceFromList = dataSourcesList.find(entity => entity.source === dataSource.source);
+                    const dataSourceFromList = dataSourcesList.find(entity => entity.metricType === WefitterMetricTypes[dataSource.metricName]);
 
                     if (dataSourceFromList) {
-                        dataSourceFromList.update({ source: dataSource.source }, { transaction });
+                        await dataSourceFromList.update({ source: dataSource.source }, { transaction });
                     } else {
-                        await this.usersWidgetDataSourcesService.create({ source: dataSource.source, metricType: WefitterMetricTypes[dataSource.metricName] }, transaction);
+                        await this.usersWidgetDataSourcesService.create({ source: dataSource.source, metricType: WefitterMetricTypes[dataSource.metricName], userId: req.user.userId }, transaction);
                     }
                 })
             );

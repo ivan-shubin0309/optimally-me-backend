@@ -11,6 +11,7 @@ export class UserWidgetDataSourceDto extends BaseDto<UserWidgetDataSource> {
         this.userId = entity.userId;
         this.source = entity.source;
         this.metricType = entity.metricType;
+        this.metricName = WefitterMetricTypes[entity.metricType];
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -21,4 +22,7 @@ export class UserWidgetDataSourceDto extends BaseDto<UserWidgetDataSource> {
 
     @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(WefitterMetricTypes) })
     readonly metricType: number;
+
+    @ApiProperty({ type: () => Number, required: true })
+    readonly metricName: string;
 }

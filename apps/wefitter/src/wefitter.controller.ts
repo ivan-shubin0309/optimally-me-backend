@@ -256,6 +256,17 @@ export class WefitterController {
             ],
             body.data.source
         );
+
+        if (body.data.heart_rate_summary) {
+            await this.usersWidgetDataSourcesService.setDefaultSourceIfNotExist(
+                user.userId,
+                [
+                    WefitterMetricTypes.avgHeartRate
+                ],
+                body.data.source
+            );
+        }
+
         return {};
     }
 
@@ -334,7 +345,7 @@ export class WefitterController {
         if (measurementTypeToMetricType[body.data.measurement_type]) {
             await this.usersWidgetDataSourcesService.setDefaultSourceIfNotExist(
                 user.userId,
-                measurementTypeToMetricType[body.data.measurement_type],
+                [measurementTypeToMetricType[body.data.measurement_type]],
                 body.data.source
             );
         }
@@ -378,7 +389,7 @@ export class WefitterController {
     @HttpCode(HttpStatus.OK)
     @Roles(UserRoles.user)
     @Get('/results/sources')
-    async getSourcesByMetricName(@Request() req: Request & { user: SessionDataDto }, query: GetWefitterSourcesListDto): Promise<WefitterSourcesListDto> {
+    async getSourcesByMetricName(@Request() req: Request & { user: SessionDataDto }, @Query() query: GetWefitterSourcesListDto): Promise<WefitterSourcesListDto> {
         const sources: string[] = await this.wefitterService.getSourcesByMetricType(req.user.userId, WefitterMetricTypes[query.metricName]);
 
         const results = wefitterSources.map(wefitterSource => ({ isAvailable: sources.includes(wefitterSource), source: wefitterSource }));

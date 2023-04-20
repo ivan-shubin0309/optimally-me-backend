@@ -27,7 +27,7 @@ export class UsersWidgetDataSourcesService extends BaseService<UserWidgetDataSou
         await this.model.bulkCreate(metricTypesToCreateFrom.map(metricType => ({ metricType, userId, source })), { transaction });
     }
 
-    async create(body: { metricType: WefitterMetricTypes, source: string }, transaction?: Transaction): Promise<UserWidgetDataSource> {
-        await this.model.create(body, { transaction });
+    async create(body: { metricType: WefitterMetricTypes, source: string, userId: number }, transaction?: Transaction): Promise<UserWidgetDataSource> {
+        return this.model.create(body, { transaction });
     }
 }

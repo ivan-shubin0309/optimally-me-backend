@@ -1,4 +1,4 @@
-import { IsNotEmpty, ValidateNested } from 'class-validator';
+import { ArrayNotEmpty, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { ArrayDistinct } from '../../../common/src/resources/common/array-distinct.decorator';
@@ -7,9 +7,9 @@ import { ArrayPropertyCombinationDistinct } from 'apps/common/src/resources/comm
 
 export class PatchWidgetDataSourcesDto {
     @ApiProperty({ type: () => [PatchWidgetDataSourceDto], required: true })
-    @IsNotEmpty()
+    @ArrayNotEmpty()
     @ArrayPropertyCombinationDistinct(['source', 'metricName'])
-    @ArrayDistinct('source')
+    @ArrayDistinct('metricName')
     @ValidateNested()
     @Type(() => PatchWidgetDataSourceDto)
     readonly data: PatchWidgetDataSourceDto[];
