@@ -34,6 +34,7 @@ export class Hl7ErrorNotificationsController {
             scopes.push(
                 { method: ['pagination', { limit: query.limit, offset: query.offset }] },
                 { method: ['orderBy', [['createdAt', 'desc']]] },
+                { method: ['withHl7Object'] },
             );
             hl7ObjectsList = await this.hl7ErrorNotificationsService.getList(scopes);
         }
