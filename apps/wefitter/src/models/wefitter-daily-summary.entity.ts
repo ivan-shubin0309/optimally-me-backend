@@ -54,6 +54,13 @@ import { metricTypeToFieldName, WefitterMetricTypes } from '../../../common/src/
     },
     withDailySummary: () => ({}),
     bySource: (source) => ({ where: { source } }),
+    sourceCount: () => ({
+        attributes: [
+            'source',
+            [fn('COUNT', '*'), 'counter']
+        ],
+        group: ['source']
+    }),
 }))
 @Table({
     tableName: 'userWefitterDailySummary',

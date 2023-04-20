@@ -1,3 +1,4 @@
+import { UserWidgetDataSource } from '../../users-widgets/src/models/user-widget-data-source.entity';
 import { UserAdditionalField } from '../../users/src/models/user-additional-field.entity';
 import { User } from '../../users/src/models/user.entity';
 import { WefitterBloodPressure } from './models/biometric-measurements/wefitter-blood-pressure.entity';
@@ -59,5 +60,9 @@ export const modelProviders = [
     {
         provide: 'WEFITTER_HRV_SLEEP',
         useValue: WefitterHrvSleep
-    }
+    },
+    {
+        provide: 'USER_WIDGET_DATA_SOURCE_MODEL',
+        useValue: UserWidgetDataSource
+    },
 ];

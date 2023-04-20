@@ -40,6 +40,13 @@ import { DateTime } from 'luxon';
     bySource: (source) => ({ where: { source } }),
     byTimestamp: (timestamp) => ({ where: { timestamp } }),
     byId: (id) => ({ where: { id } }),
+    sourceCount: () => ({
+        attributes: [
+            'source',
+            [fn('COUNT', '*'), 'counter']
+        ],
+        group: ['source']
+    }),
 }))
 @Table({
     tableName: 'wefitterBloodPressure',

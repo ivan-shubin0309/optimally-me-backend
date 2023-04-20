@@ -51,6 +51,7 @@ import { UserCode } from '../../../../sessions/src/models/user-code.entity';
 import { RecommendationTag } from '../../../../biomarkers/src/models/recommendationTags/recommendation-tag.entity';
 import { Hl7FileError } from '../../../../hl7/src/models/hl7-file-error.entity';
 import { Hl7ErrorNotification } from '../../../../hl7-error-notifications/src/models/hl7-error-notification.entity';
+import { UserWidgetDataSource } from '../../../../users-widgets/src/models/user-widget-data-source.entity';
 
 export const entities = [
     User,
@@ -106,4 +107,5 @@ export const entities = [
     RecommendationTag,
     Hl7FileError,
     Hl7ErrorNotification,
+    UserWidgetDataSource,
 ];

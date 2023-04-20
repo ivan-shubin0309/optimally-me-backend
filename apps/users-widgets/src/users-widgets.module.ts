@@ -12,6 +12,7 @@ import { UsersService } from '../../users/src/users.service';
 import { modelProviders } from './models.provider';
 import { UsersWidgetsController } from './users-widgets.controller';
 import { UsersWidgetSettingsService } from './users-widget-settings.service';
+import { WefitterService } from '../../wefitter/src/wefitter.service';
 
 @Module({
     imports: [
@@ -25,6 +26,7 @@ import { UsersWidgetSettingsService } from './users-widget-settings.service';
         UsersWidgetSettingsService,
         SessionsService,
         UsersService,
+        WefitterService,
         JwtStrategy,
         ...guardProviders,
         sequelizeProvider(entities),

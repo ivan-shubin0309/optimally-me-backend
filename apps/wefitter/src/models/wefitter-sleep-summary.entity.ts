@@ -49,6 +49,13 @@ import { DateTime } from 'luxon';
     },
     withDailySummary: () => ({}),
     bySource: (source) => ({ where: { source } }),
+    sourceCount: () => ({
+        attributes: [
+            'source',
+            [fn('COUNT', '*'), 'counter']
+        ],
+        group: ['source']
+    }),
 }))
 @Table({
     tableName: 'userWefitterSleepSummary',
