@@ -1,6 +1,6 @@
 import { RecommendationTypes } from '../recommendations/recommendation-types';
 
-export function getLastUserResultsForEachBiomarker(userId: number, numberOfLastRecords: number, beforeDate?: string): string {
+export function getLastUserResultsForEachBiomarker(userId: number, numberOfLastRecords: number, afterDate?: string, beforeDate?: string): string {
     return `
         SELECT
             \`orderedUserResults\`.\`id\` as \`id\`
@@ -11,6 +11,7 @@ export function getLastUserResultsForEachBiomarker(userId: number, numberOfLastR
             FROM \`userResults\`
             WHERE \`userResults\`.\`userId\`=${userId}
             ${beforeDate ? `AND \`userResults\`.\`date\`<='${beforeDate}'` : ''}
+            ${afterDate ? `AND \`userResults\`.\`date\`>='${afterDate}'` : ''}
         ) as \`orderedUserResults\`
         WHERE \`orderedUserResults\`.\`orderValue\` <= ${numberOfLastRecords}
     `.replace(/\s+/ig, ' ').trim();
