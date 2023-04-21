@@ -14,7 +14,7 @@ import {
     Response,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { WefitterService } from './wefitter.service';
+import { WefitterService, measurementTypeToMetricType } from './wefitter.service';
 import { Roles } from '../../common/src/resources/common/role.decorator';
 import { UserRoles } from '../../common/src/resources/users';
 import { TranslatorService } from 'nestjs-translator';
@@ -39,6 +39,11 @@ import { GetWefitterResultsDto } from './models/get-wefitter-results.dto';
 import { WefitterMetricResultsDto } from './models/wefitter-metric-results.dto';
 import { WefitterMetricNamesDto } from './models/wefitter-metric-names.dto';
 import { ProfileWefitterBiometricMeasurementDto } from './models/biometric-measurements/profile-wefitter-biometric-measurement.dto';
+import { UsersWidgetDataSourcesService } from '../../users-widgets/src/users-widget-data-sources.service';
+import { WefitterMetricTypes } from '../../common/src/resources/wefitter/wefitter-metric-types';
+import { WefitterSourcesListDto } from './models/wefitter-sources-list.dto';
+import { GetWefitterSourcesListDto } from './models/get-wefitter-sources-list.dto';
+import { wefitterSources } from 'apps/common/src/resources/wefitter/wefitter-sources';
 
 @ApiTags('wefitter')
 @Controller('wefitter')
@@ -48,6 +53,7 @@ export class WefitterController {
         private readonly usersService: UsersService,
         private readonly translator: TranslatorService,
         private readonly configService: ConfigService,
+        private readonly usersWidgetDataSourcesService: UsersWidgetDataSourcesService,
     ) {}
 
     @Roles(UserRoles.user)
@@ -242,6 +248,25 @@ export class WefitterController {
         }
 
         await this.wefitterService.saveDailySummaryData(user.userId, body.data);
+        await this.usersWidgetDataSourcesService.setDefaultSourceIfNotExist(
+            user.userId,
+            [
+                WefitterMetricTypes.steps,
+                WefitterMetricTypes.caloriesBurned
+            ],
+            body.data.source
+        );
+
+        if (body.data.heart_rate_summary) {
+            await this.usersWidgetDataSourcesService.setDefaultSourceIfNotExist(
+                user.userId,
+                [
+                    WefitterMetricTypes.avgHeartRate
+                ],
+                body.data.source
+            );
+        }
+
         return {};
     }
 
@@ -261,6 +286,13 @@ export class WefitterController {
         }
 
         await this.wefitterService.saveHeartrateSummaryData(user.userId, body.data);
+        await this.usersWidgetDataSourcesService.setDefaultSourceIfNotExist(
+            user.userId,
+            [
+                WefitterMetricTypes.avgHeartRate
+            ],
+            body.data.source
+        );
     }
 
     @Public()
@@ -279,6 +311,18 @@ export class WefitterController {
         }
 
         await this.wefitterService.saveSleepSummaryData(user.userId, body.data);
+        await this.usersWidgetDataSourcesService.setDefaultSourceIfNotExist(
+            user.userId,
+            [
+                WefitterMetricTypes.timeAsleep,
+                WefitterMetricTypes.sleepScore,
+                WefitterMetricTypes.awake,
+                WefitterMetricTypes.light,
+                WefitterMetricTypes.deep,
+                WefitterMetricTypes.rem
+            ],
+            body.data.source
+        );
     }
 
     @Public()
@@ -297,6 +341,14 @@ export class WefitterController {
         }
 
         await this.wefitterService.saveBiometricMeasurement(user.userId, body.data);
+
+        if (measurementTypeToMetricType[body.data.measurement_type]) {
+            await this.usersWidgetDataSourcesService.setDefaultSourceIfNotExist(
+                user.userId,
+                [measurementTypeToMetricType[body.data.measurement_type]],
+                body.data.source
+            );
+        }
     }
 
     @ApiBearerAuth()
@@ -329,5 +381,19 @@ export class WefitterController {
         const result: string[] = await this.wefitterService.getAvailableMetricNames(req.user.userId);
 
         return new WefitterMetricNamesDto(result);
+    }
+
+    @ApiBearerAuth()
+    @ApiResponse({ type: () => WefitterSourcesListDto })
+    @ApiOperation({ summary: 'Get wefitter available source names' })
+    @HttpCode(HttpStatus.OK)
+    @Roles(UserRoles.user)
+    @Get('/results/sources')
+    async getSourcesByMetricName(@Request() req: Request & { user: SessionDataDto }, @Query() query: GetWefitterSourcesListDto): Promise<WefitterSourcesListDto> {
+        const sources: string[] = await this.wefitterService.getSourcesByMetricType(req.user.userId, WefitterMetricTypes[query.metricName]);
+
+        const results = wefitterSources.map(wefitterSource => ({ isAvailable: sources.includes(wefitterSource), source: wefitterSource }));
+
+        return new WefitterSourcesListDto(results);
     }
 }

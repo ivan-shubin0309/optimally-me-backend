@@ -12,6 +12,7 @@ import { SessionsService } from '../../sessions/src/sessions.service';
 import { redisModuleInstance } from '../../common/src/utils/database/redis.provider';
 import { translatorInstance } from '../../common/src/utils/translator/translator.provider';
 import { entities } from '../../common/src/utils/database/database-entity.provider';
+import { UsersWidgetDataSourcesService } from '../../users-widgets/src/users-widget-data-sources.service';
 
 @Module({
     imports: [
@@ -23,6 +24,7 @@ import { entities } from '../../common/src/utils/database/database-entity.provid
     providers: [
         WefitterService,
         UsersService,
+        UsersWidgetDataSourcesService,
         SessionsService,
         JwtStrategy,
         ...guardProviders,

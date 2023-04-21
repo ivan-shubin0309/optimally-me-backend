@@ -59,6 +59,15 @@ const measurementTypeToModelName = {
     'vo2 max': 'wefitterVo2MaxModel',
 };
 
+export const measurementTypeToMetricType = {
+    'blood pressure': WefitterMetricTypes.bloodPressure,
+    'glucose': WefitterMetricTypes.bloodSugar,
+    'systolic bp': WefitterMetricTypes.systolicBloodPressure,
+    'diastolic bp': WefitterMetricTypes.diastolicBloodPressure,
+    'hrv': WefitterMetricTypes.hrvSleep,
+    'vo2 max': WefitterMetricTypes.vo2max,
+};
+
 interface IMappedWefitterMetric { model: Repository<Model>, fieldName: string, metricEnum: WefitterMetricTypes }
 
 @Injectable()
@@ -527,5 +536,21 @@ export class WefitterService {
         } else {
             await model.create(dataForCreate, { transaction });
         }
+    }
+
+    async getSourcesByMetricType(userId: number, metricType: WefitterMetricTypes, transaction?: Transaction): Promise<string[]> {
+        const currentModel = this[`${metricTypeToModelName[metricType]}`];
+        if (!currentModel) {
+            return;
+        }
+
+        const sourcesCount = await currentModel
+            .scope([
+                { method: ['byUserId', userId] },
+                { method: ['sourceCount'] }
+            ])
+            .findAll({ transaction });
+
+        return sourcesCount.map(source => source.get('source'));
     }
 }

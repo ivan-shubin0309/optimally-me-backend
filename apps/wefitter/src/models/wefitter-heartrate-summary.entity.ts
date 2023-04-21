@@ -75,6 +75,13 @@ import { DateTime } from 'luxon';
         ],
     }),
     bySource: (source) => ({ where: { source } }),
+    sourceCount: () => ({
+        attributes: [
+            'source',
+            [fn('COUNT', '*'), 'counter']
+        ],
+        group: ['source']
+    }),
 }))
 @Table({
     tableName: 'userWefitterHeartrateSummary',

@@ -299,6 +299,11 @@ Resources:
           Properties:
             Path: /wefitter/results/metric-names
             Method: ANY
+        WefitterResultsSourcesApi:
+          Type: Api
+          Properties:
+            Path: /wefitter/results/sources
+            Method: ANY
         WefitterResultsApi:
           Type: Api
           Properties:
@@ -594,6 +599,11 @@ Resources:
           Type: Api
           Properties:
             Path: /users/widgets/device-data-settings
+            Method: ANY
+        UsersWidgetsDeviceDataSourcesApi:
+          Type: Api
+          Properties:
+            Path: /users/widgets/data-sources
             Method: ANY
 
   UsersRecommendationsFunction:
