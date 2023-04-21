@@ -68,8 +68,8 @@ export class UsersBiomarkersService extends BaseService<Biomarker> {
         });
     }
 
-    async getLastResultIdsByDate(userId: number, beforeDate: string, numberOfLastRecords: number): Promise<number[]> {
-        const results = await this.dbConnection.query(getLastUserResultsForEachBiomarker(userId, numberOfLastRecords, beforeDate), { model: UserResult });
+    async getLastResultIdsByDate(userId: number, dateFilter: { afterDate?: string, beforeDate: string }, numberOfLastRecords: number): Promise<number[]> {
+        const results = await this.dbConnection.query(getLastUserResultsForEachBiomarker(userId, numberOfLastRecords, dateFilter?.afterDate, dateFilter?.beforeDate), { model: UserResult });
 
         return results.map(result => result.get('id'));
     }

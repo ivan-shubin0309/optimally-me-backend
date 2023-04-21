@@ -2,7 +2,6 @@ import { Controller, Get, Query, Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../../common/src/resources/common/role.decorator';
 import { UserRoles } from '../../common/src/resources/users';
-import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-types';
 import { SessionDataDto } from '../../sessions/src/models';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
 import { UsersBiomarkersService } from './users-biomarkers.service';
@@ -33,7 +32,11 @@ export class UsersBiomarkersController {
     const { limit, offset } = query;
     let biomarkersList = [], rangeCounters;
 
-    const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(req.user.userId, query.beforeDate, 1);
+    const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(
+      req.user.userId,
+      { afterDate: query.afterDate, beforeDate: query.beforeDate },
+      1
+    );
 
     const scopes: any[] = [
       { method: ['byType', query.biomarkerType] },
@@ -82,7 +85,11 @@ export class UsersBiomarkersController {
 
       rangeCounters = await this.usersBiomarkersService.getBiomarkerRangeCounters(lastResultIds, scopes);
 
-      const lastResultsIds = await this.usersBiomarkersService.getLastResultIdsByDate(req.user.userId, query.beforeDate, query.maxResultsReturned);
+      const lastResultsIds = await this.usersBiomarkersService.getLastResultIdsByDate(
+        req.user.userId,
+        { afterDate: query.afterDate, beforeDate: query.beforeDate },
+        query.maxResultsReturned
+      );
 
       scopes.push(
         { method: ['withLastResults', lastResultsIds, true, false, ['withFilter']] },

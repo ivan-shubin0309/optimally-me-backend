@@ -56,7 +56,7 @@ export class DecisionRulesService {
     }
 
     async updateUserRecommendations(userId: number, typeformQuizData: any, transaction: Transaction): Promise<void> {
-        const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(userId, DateTime.utc().toFormat('yyyy-MM-dd'), 1);
+        const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(userId, { beforeDate: DateTime.utc().toFormat('yyyy-MM-dd') }, 1);
         const biomarkerScopes: ScopeOptions[] = [
             { method: ['byType', [BiomarkerTypes.blood, BiomarkerTypes.skin]] },
             { method: ['withLastResult', lastResultIds, true] }

@@ -35,6 +35,11 @@ export class GetUserBiomarkersListDto {
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsOnlyDate()
+    readonly afterDate: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    @IsOnlyDate()
     readonly beforeDate: string;
 
     @ApiProperty({ type: () => String, required: false, default: 'deviation', description: userBiomarkersOrderTypes.join(', ') })
