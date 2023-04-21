@@ -20,6 +20,7 @@ import { UsersWidgetsModule } from '../../users-widgets/src/users-widgets.module
 import { UsersRecommendationsModule } from '../../users-recommendations/src/users-recommendations.module';
 import { Hl7Module } from '../../hl7/src/hl7.module';
 import { Hl7ErrorNotificationsModule } from '../../hl7-error-notifications/src/hl7-error-notifications.module';
+import { UsersHl7Module } from '../../users-hl7/src/users-hl7.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { Hl7ErrorNotificationsModule } from '../../hl7-error-notifications/src/h
     UsersRecommendationsModule,
     Hl7Module,
     Hl7ErrorNotificationsModule,
+    UsersHl7Module,
   ]
 })
 export class SwaggerAppModule { }

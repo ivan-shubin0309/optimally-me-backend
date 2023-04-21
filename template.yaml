@@ -698,3 +698,17 @@ Resources:
           Properties:
             Path: /hl7/notifications
             Method: ANY
+
+  UsersHl7Function:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/users-hl7/src/main.handler
+      Description:
+      Events:
+        UsersHl7ObjectsApi:
+          Type: Api
+          Properties:
+            Path: /users/hl7-objects
+            Method: ANY

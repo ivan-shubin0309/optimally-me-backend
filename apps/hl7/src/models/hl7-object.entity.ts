@@ -99,6 +99,7 @@ import { OtherFeatureTypes } from '../../../common/src/resources/filters/other-f
     byResultFileId: (resultFileId) => ({ where: { resultFileId } }),
     byStatusFileAt: (statusFileAt) => ({ where: { statusFileAt } }),
     byResultFileAt: (resultFileAt) => ({ where: { resultFileAt } }),
+    byUserId: (userId) => ({ where: { userId } }),
 }))
 @Table({
     tableName: 'hl7Objects',

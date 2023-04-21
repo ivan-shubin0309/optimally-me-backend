@@ -242,6 +242,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/hl7-error-notifications/tsconfig.app.json"
       }
+    },
+    "users-hl7": {
+      "type": "application",
+      "root": "apps/users-hl7",
+      "entryFile": "main",
+      "sourceRoot": "apps/users-hl7/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/users-hl7/tsconfig.app.json"
+      }
     }
   }
 }
