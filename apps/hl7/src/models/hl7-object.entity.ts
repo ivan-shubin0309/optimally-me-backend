@@ -93,6 +93,11 @@ import { OtherFeatureTypes } from '../../../common/src/resources/filters/other-f
                 as: 'resultFile',
                 required: false,
             },
+            {
+                model: File,
+                as: 'pdfResultFile',
+                required: false,
+            },
         ]
     }),
     byStatusFileId: (statusFileId) => ({ where: { statusFileId } }),
@@ -100,6 +105,7 @@ import { OtherFeatureTypes } from '../../../common/src/resources/filters/other-f
     byStatusFileAt: (statusFileAt) => ({ where: { statusFileAt } }),
     byResultFileAt: (resultFileAt) => ({ where: { resultFileAt } }),
     byUserId: (userId) => ({ where: { userId } }),
+    byPdfResultFileId: (pdfResultFileId) => ({ where: { pdfResultFileId } }),
 }))
 @Table({
     tableName: 'hl7Objects',
@@ -117,23 +123,30 @@ export class Hl7Object extends Model {
     @ForeignKey(() => File)
     @Column({
         type: DataType.INTEGER,
-        allowNull: false
+        allowNull: true
     })
     fileId: number;
 
     @ForeignKey(() => File)
     @Column({
         type: DataType.INTEGER,
-        allowNull: false
+        allowNull: true
     })
     statusFileId: number;
 
     @ForeignKey(() => File)
     @Column({
         type: DataType.INTEGER,
-        allowNull: false
+        allowNull: true
     })
     resultFileId: number;
+
+    @ForeignKey(() => File)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: true
+    })
+    pdfResultFileId: number;
 
     @Column({
         type: DataType.STRING,
@@ -269,6 +282,12 @@ export class Hl7Object extends Model {
     resultFileAt: Date|any;
 
     @Column({
+        type: DataType.DATE,
+        allowNull: true
+    })
+    pdfResultFileAt: Date | any;
+
+    @Column({
         type: DataType.TINYINT,
         allowNull: true
     })
@@ -282,4 +301,7 @@ export class Hl7Object extends Model {
 
     @BelongsTo(() => File, 'resultFileId')
     resultFile: File;
+
+    @BelongsTo(() => File, 'pdfResultFileId')
+    pdfResultFile: File;
 }

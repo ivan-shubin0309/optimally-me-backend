@@ -41,6 +41,9 @@ export class Hl7ObjectDto extends BaseDto<Hl7Object> {
         this.resultFile = data.resultFile
             ? new FileDto(data.resultFile)
             : undefined;
+        this.pdfResultFile = data.pdfResultFile
+            ? new FileDto(data.pdfResultFile)
+            : undefined;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -117,4 +120,7 @@ export class Hl7ObjectDto extends BaseDto<Hl7Object> {
 
     @ApiProperty({ type: () => FileDto, required: false })
     readonly resultFile: FileDto;
+
+    @ApiProperty({ type: () => FileDto, required: false })
+    readonly pdfResultFile: FileDto;
 }
