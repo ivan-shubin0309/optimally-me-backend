@@ -31,7 +31,12 @@ export class UsersDevicesController {
             { method: ['byToken', body.token] }
         ]);
 
-        if (!userDevice) {
+        if (userDevice) {
+            userDevice.update({
+                sessionId: req.user.sessionId,
+                token: body.token
+            });
+        } else {
             await this.usersDevicesService.create({
                 userId: req.user.userId,
                 sessionId: req.user.sessionId,
