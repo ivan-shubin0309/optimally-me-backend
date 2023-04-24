@@ -369,7 +369,15 @@ export class Hl7Service extends BaseService<Hl7Object> {
                 await hl7Object.update({ toFollow: bodyForUpdate.toFollow, status });
 
                 if (!options.isForce) {
-                    await this.hl7ErrorNotificationsService.create({ message: bodyForUpdate.toFollow, hl7ObjectId: hl7Object.id });
+                    const errorsCount = bodyForUpdate.toFollow
+                        ? bodyForUpdate.toFollow.split('\n').length
+                        : 0;
+
+                    await this.hl7ErrorNotificationsService.create({
+                        message: bodyForUpdate.toFollow,
+                        hl7ObjectId: hl7Object.id,
+                        isMultipleError: errorsCount > 1
+                    });
                     return;
                 }
             }

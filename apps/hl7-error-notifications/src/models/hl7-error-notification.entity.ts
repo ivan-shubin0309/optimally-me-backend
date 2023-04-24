@@ -48,6 +48,18 @@ export class Hl7ErrorNotification extends Model {
     })
     isResolved: boolean;
 
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+        get() {
+            return typeof this.getDataValue('isMultipleError') === 'object' || typeof this.getDataValue('isMultipleError') === 'undefined'
+                ? this.getDataValue('isMultipleError')
+                : !!this.getDataValue('isMultipleError');
+        },
+    })
+    isMultipleError: boolean;
+
     @BelongsTo(() => Hl7Object, 'hl7ObjectId')
     hl7Object: Hl7Object;
 }

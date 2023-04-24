@@ -7,6 +7,7 @@ import { Transaction } from 'sequelize';
 interface ICreateHl7ErrorNotification {
     readonly hl7ObjectId: number;
     readonly message: string;
+    readonly isMultipleError?: boolean;
 }
 
 @Injectable()
