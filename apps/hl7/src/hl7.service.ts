@@ -7,10 +7,10 @@ import { Hl7ObjectStatuses } from '../../common/src/resources/hl7/hl7-object-sta
 import { Hl7FilesService } from './hl7-files.service';
 import { FilesService } from '../../files/src/files.service';
 import { InternalFileTypes } from '../../common/src/resources/files/file-types';
-import { HL7_FILE_TYPE } from '../../common/src/resources/files/files-validation-rules';
+import { HL7_FILE_TYPE, PDF_CONTENT_TYPE } from '../../common/src/resources/files/files-validation-rules';
 import { Hl7FtpService } from './hl7-ftp.service';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
-import { BIOMARKER_MAPPING_ERROR, INVALID_CUSTOMER_ID, INVALID_SAMPLE_ID_ERROR, OBJECT_ALREADY_PROCESSED_ERROR, OBX_FIELDS_NUMBER_ERROR, OBX_MIN_FIELDS_NUMBER, SAMPLE_CODE_FROM_RESULT_FILE, SAMPLE_CODE_FROM_STATUS_FILE, UNIT_MISMATCH_ERROR } from '../../common/src/resources/hl7/hl7-constants';
+import { BIOMARKER_MAPPING_ERROR, INVALID_CUSTOMER_ID, INVALID_SAMPLE_ID_ERROR, OBJECT_ALREADY_PROCESSED_ERROR, SAMPLE_CODE_FROM_PDF_RESULT_FILE, SAMPLE_CODE_FROM_RESULT_FILE, SAMPLE_CODE_FROM_STATUS_FILE, UNIT_MISMATCH_ERROR } from '../../common/src/resources/hl7/hl7-constants';
 import axios from 'axios';
 import { DateTime } from 'luxon';
 import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
@@ -411,5 +411,65 @@ export class Hl7Service extends BaseService<Hl7Object> {
         });
 
         return { statusFile: statusFile && statusFile.name, resultFile: resultFile && resultFile.name };
+    }
+
+    async checkForPdfResultsFiles(): Promise<void> {
+        const fileList = await this.hl7FtpService.getPdfResultsFileList();
+
+        if (!fileList.length) {
+            return;
+        }
+
+        const step = 1000;
+        const iterations = Math.ceil(fileList.length / step);
+
+        for (let i = 0; i < iterations; i++) {
+            const slicedList = fileList.slice(i * step, (i + 1) * step);
+            const filesMap = {};
+
+            slicedList.forEach(file => {
+                const matches = SAMPLE_CODE_FROM_PDF_RESULT_FILE.exec(file.name);
+                if (matches?.length) {
+                    filesMap[matches[1]] = file;
+
+                    console.log(matches[1]);
+                }
+                console.log(file.name);
+            });
+
+            const sampleCodesArray = Object.keys(filesMap);
+
+            const hl7ObjectList = await this.getList([
+                { method: ['bySampleCode', sampleCodesArray] },
+                { method: ['byPdfResultFileId', null] }
+            ]);
+
+            if (!hl7ObjectList.length) {
+                continue;
+            }
+
+            await Promise.all(
+                hl7ObjectList.map(hl7Object => {
+                    const matches = SAMPLE_CODE_FROM_PDF_RESULT_FILE.exec(filesMap[hl7Object.sampleCode].name);
+                    const pdfResultAt = DateTime.fromFormat(matches[2], 'yyyyMMddHHmmss').toISO();
+                    return this.loadPdfResultFile(hl7Object, filesMap[hl7Object.sampleCode].name, pdfResultAt);
+                })
+            );
+        }
+    }
+
+    async loadPdfResultFile(hl7Object: Hl7Object, fileName: string, pdfResultFileAt: string): Promise<void> {
+        const awsFile = await this.filesService.prepareFile({ contentType: PDF_CONTENT_TYPE, type: InternalFileTypes.hl7 }, hl7Object.userId, InternalFileTypes[InternalFileTypes.hl7]);
+        const [createdFile] = await this.filesService.createFilesInDb(hl7Object.userId, [awsFile]);
+
+        const data = await this.hl7FtpService.downloadPdfResultsFile(fileName);
+        await this.filesService.putFileToS3(data, awsFile, createdFile);
+
+        await hl7Object.update({
+            pdfResultFileId: createdFile.id,
+            pdfResultFileAt
+        });
+
+        await this.filesService.markFilesAsUsed([createdFile.id]);
     }
 }

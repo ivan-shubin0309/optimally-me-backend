@@ -7,6 +7,7 @@ import { Readable } from 'stream';
 const HL7_BASE_REQUEST_PATH = '/HL7/HL7 Requests';
 const HL7_STATUS_PATH = '/HL7 Status';
 const HL7_RESULT_PATH = '/HL7 Results';
+const PDF_RESULTS_PATH = '/PDF Results';
 
 @Injectable()
 export class Hl7FtpService {
@@ -69,6 +70,10 @@ export class Hl7FtpService {
         return this.getFileList(`${HL7_RESULT_PATH}/`);
     }
 
+    getPdfResultsFileList(): Promise<ClientSftp.FileInfo[]> {
+        return this.getFileList(`${PDF_RESULTS_PATH}/`);
+    }
+
     private async downloadFile(fullPath: string): Promise<string | Buffer | NodeJS.WritableStream> {
         const client = await this.getFtpClient();
 
@@ -81,5 +86,9 @@ export class Hl7FtpService {
 
     downloadResultFile(fileName: string): Promise<string | Buffer | NodeJS.WritableStream> {
         return this.downloadFile(`${HL7_RESULT_PATH}/${fileName}`);
+    }
+
+    downloadPdfResultsFile(fileName: string): Promise<string | Buffer | NodeJS.WritableStream> {
+        return this.downloadFile(`${PDF_RESULTS_PATH}/${fileName}`);
     }
 }

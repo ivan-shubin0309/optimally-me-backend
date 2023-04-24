@@ -187,6 +187,7 @@ export class Hl7Controller {
 
         await this.hl7Service.checkForStatusFiles();
         await this.hl7Service.checkForResultFiles();
+        await this.hl7Service.checkForPdfResultsFiles();
     }
 
     @ApiResponse({ type: () => UserResultsDto })

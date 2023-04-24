@@ -5,6 +5,8 @@ export const SAMPLE_CODE_FROM_RESULT_FILE = new RegExp(`^(\\d{14})_(${SAMPLE_PRE
 export const PID_3_USER_PREFIX = 'OPME-C';
 export const USER_ID_FROM_PID_3 = new RegExp(`^${PID_3_USER_PREFIX}([0-9]{1,})`);
 
+export const SAMPLE_CODE_FROM_PDF_RESULT_FILE = new RegExp(`^[A-Za-z ]{1,}\\.${PID_3_USER_PREFIX}[0-9]{1,}\\.(${SAMPLE_PREFIX}[A-Z0-9]{6})\\.[A-Za-z]{1,}\\.[A-Za-z]{1,}\\.(\\d{14})\\.pdf$`);
+
 export const OBX_MIN_FIELDS_NUMBER = 11;
 export const OBX_FIELDS_NUMBER_ERROR = 'OBX does not contain correct number of fields';
 
