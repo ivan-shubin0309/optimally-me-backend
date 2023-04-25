@@ -52,6 +52,7 @@ import { RecommendationTag } from '../../../../biomarkers/src/models/recommendat
 import { Hl7FileError } from '../../../../hl7/src/models/hl7-file-error.entity';
 import { Hl7ErrorNotification } from '../../../../hl7-error-notifications/src/models/hl7-error-notification.entity';
 import { UserWidgetDataSource } from '../../../../users-widgets/src/models/user-widget-data-source.entity';
+import { UserKlaviyo } from '../../../../klaviyo/src/models/user-klaviyo.entity';
 
 export const entities = [
     User,
@@ -108,4 +109,5 @@ export const entities = [
     Hl7FileError,
     Hl7ErrorNotification,
     UserWidgetDataSource,
+    UserKlaviyo,
 ];

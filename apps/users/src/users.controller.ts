@@ -30,6 +30,9 @@ import { CreateUserAdditionalFieldDto } from './models/create-user-additional-fi
 import { SessionsService } from '../../sessions/src/sessions.service';
 import { EnumHelper } from '../../common/src/utils/helpers/enum.helper';
 import { UserCodesService } from '../../sessions/src/user-codes.service';
+import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
+import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
+import { KlaviyoEventTypes } from '../../common/src/resources/klaviyo/klaviyo-event-types';
 
 @ApiTags('users')
 @Controller('users')
@@ -43,6 +46,8 @@ export class UsersController {
         private readonly mailerService: MailerService,
         private readonly sessionsService: SessionsService,
         private readonly userCodesService: UserCodesService,
+        private readonly klaviyoModelService: KlaviyoModelService,
+        private readonly klaviyoService: KlaviyoService,
     ) {}
 
     @Roles(UserRoles.user)
@@ -119,9 +124,12 @@ export class UsersController {
                 },
                 { transaction }
             );
-        });
 
-        user = await user.reload();
+            user = await user.reload();
+
+            await this.klaviyoModelService.getKlaviyoProfile(user, transaction);
+            await this.klaviyoService.createEvent(user.email, KlaviyoEventTypes.accountCreated, ''); //TO DO add source
+        });
 
         const accessToken = bearer.split(' ')[1];
 

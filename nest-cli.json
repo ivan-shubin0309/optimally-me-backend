@@ -251,6 +251,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/users-hl7/tsconfig.app.json"
       }
+    },
+    "klaviyo": {
+      "type": "application",
+      "root": "apps/klaviyo",
+      "entryFile": "main",
+      "sourceRoot": "apps/klaviyo/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/klaviyo/tsconfig.app.json"
+      }
     }
   }
 }

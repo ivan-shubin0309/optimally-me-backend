@@ -7,6 +7,8 @@ import { UserResult } from '../../admins-results/src/models/user-result.entity';
 import { UserRecommendation } from '../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
 import { Recommendation } from '../../biomarkers/src/models/recommendations/recommendation.entity';
 import { RecommendationReaction } from '../../biomarkers/src/models/recommendationReactions/recommendation-reaction.entity';
+import { Hl7Object } from '../../hl7/src/models/hl7-object.entity';
+import { UserKlaviyo } from '../../klaviyo/src/models/user-klaviyo.entity';
 
 export const modelProviders = [
     {
@@ -45,4 +47,12 @@ export const modelProviders = [
         provide: 'RECOMMENDATION_REACTION_MODEL',
         useValue: RecommendationReaction
     },
+    {
+        provide: 'HL7_OBJECT_MODEL',
+        useValue: Hl7Object
+    },
+    {
+        provide: 'USER_KLAVIYO_MODEL',
+        useValue: UserKlaviyo
+    }
 ];

@@ -15,6 +15,8 @@ import { WefitterService } from '../../wefitter/src/wefitter.service';
 import { VerificationsService } from '../../verifications/src/verifications.service';
 import { MailerService } from '../../common/src/resources/mailer/mailer.service';
 import { UserCodesService } from '../../sessions/src/user-codes.service';
+import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
+import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
 
 @Module({
     imports: [
@@ -30,6 +32,8 @@ import { UserCodesService } from '../../sessions/src/user-codes.service';
         VerificationsService,
         MailerService,
         UserCodesService,
+        KlaviyoModelService,
+        KlaviyoService,
         JwtStrategy,
         ...guardProviders,
         sequelizeProvider(entities),
