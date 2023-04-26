@@ -617,7 +617,8 @@ export class WefitterService {
         const sourcesCount = await currentModel
             .scope([
                 { method: ['byUserId', userId] },
-                { method: ['sourceCount'] }
+                { method: ['sourceCount'] },
+                { method: ['byFieldName', metricTypeToFieldName[metricType]] }
             ])
             .findAll({ transaction });
 
