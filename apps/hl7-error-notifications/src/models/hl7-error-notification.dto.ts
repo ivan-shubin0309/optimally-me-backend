@@ -12,6 +12,7 @@ export class Hl7ErrorNotificationDto extends BaseDto<Hl7ErrorNotification> {
         this.sampleCode = entity.hl7Object
             ? entity.hl7Object.sampleCode
             : undefined;
+        this.isMultipleError = entity.get('isMultipleError');
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -25,4 +26,7 @@ export class Hl7ErrorNotificationDto extends BaseDto<Hl7ErrorNotification> {
 
     @ApiProperty({ type: () => String, required: false })
     readonly sampleCode: string;
+
+    @ApiProperty({ type: () => Boolean, required: true })
+    readonly isMultipleError: boolean;
 }
