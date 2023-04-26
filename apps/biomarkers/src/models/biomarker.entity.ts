@@ -9,7 +9,7 @@ import { UserResult } from '../../../admins-results/src/models/user-result.entit
 import { OrderValueQuery } from '../../../common/src/resources/usersBiomarkers/queries';
 import { BiomarkerSexTypes } from '../../../common/src/resources/biomarkers/biomarker-sex-types';
 import { RecommendationTypes } from '../../../common/src/resources/recommendations/recommendation-types';
-import { HautAiMetricTypes } from 'apps/common/src/resources/haut-ai/haut-ai-metric-types';
+import { HautAiMetricTypes } from '../../../common/src/resources/haut-ai/haut-ai-metric-types';
 
 @Scopes(() => ({
     byId: (id) => ({ where: { id } }),
