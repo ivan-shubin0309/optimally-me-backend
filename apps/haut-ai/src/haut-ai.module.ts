@@ -25,7 +25,9 @@ import { DecisionRulesService } from '../../typeform/src/decision-rules.service'
 import { UserQuizesService } from '../../typeform/src/user-quizes.service';
 import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomarkers.service';
 import { UsersRecommendationsService } from '../../users-recommendations/src/users-recommendations.service';
-import { FiltersService } from 'apps/biomarkers/src/services/filters/filters.service';
+import { FiltersService } from '../../biomarkers/src/services/filters/filters.service';
+import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
+import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
 
 @Module({
   imports: [
@@ -53,6 +55,8 @@ import { FiltersService } from 'apps/biomarkers/src/services/filters/filters.ser
     UsersRecommendationsService,
     SessionsService,
     UserSkinDiariesService,
+    KlaviyoModelService,
+    KlaviyoService,
     JwtStrategy,
     ...guardProviders,
     sequelizeProvider(entities),

@@ -2,6 +2,7 @@ import { HttpStatus, Injectable, UnprocessableEntityException } from '@nestjs/co
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import axios from 'axios';
 import { DateTime } from 'luxon';
+import { KlaviyoEventTypes } from '../../common/src/resources/klaviyo/klaviyo-event-types';
 
 export interface IKlaviyoCreateProfile {
     type: 'profile',
@@ -25,6 +26,16 @@ export interface IKlaviyoCreateProfile {
         },
         properties?: { [key: string]: string | boolean | null }
     }
+}
+
+export interface IKitActivatedEventProperties {
+    sampleId: string,
+    testName: string,
+    isFemaleCycleStatusRequired: boolean,
+    femaleCycleStatus: string,
+    labProfileId: string,
+    expiryDate: string,
+    activationDate: string,
 }
 
 const KLAVIYO_BASE_URL = 'https://a.klaviyo.com/api';
@@ -52,11 +63,21 @@ export class KlaviyoService {
 
         try {
             const response = await axios.post(url, body, { headers: this.getHeaders() });
-            return response.data;
+
+            console.log(JSON.stringify(response.data));
+
+            return response.data.data;
         } catch (err) {
+            let message = err.message;
             console.log(err.message);
+            if (err?.response?.data?.errors) {
+                console.log(JSON.stringify(err.response.data.errors));
+                message = err.response.data.errors
+                    .map(error => error.detail)
+                    .join('. ');
+            }
             throw new UnprocessableEntityException({
-                message: err.message,
+                message: message,
                 errorCode: 'KLAVIYO_CREATE_PROFILE_ERROR',
                 statusCode: HttpStatus.UNPROCESSABLE_ENTITY
             });
@@ -74,11 +95,19 @@ export class KlaviyoService {
 
         try {
             const response = await axios.patch(url, body, { headers: this.getHeaders() });
-            return response.data;
+            console.log(JSON.stringify(response.data));
+            return response.data.data;
         } catch (err) {
+            let message = err.message;
             console.log(err.message);
+            if (err?.response?.data?.errors) {
+                console.log(JSON.stringify(err.response.data.errors));
+                message = err.response.data.errors
+                    .map(error => error.detail)
+                    .join('. ');
+            }
             throw new UnprocessableEntityException({
-                message: err.message,
+                message: message,
                 errorCode: 'KLAVIYO_CREATE_PROFILE_ERROR',
                 statusCode: HttpStatus.UNPROCESSABLE_ENTITY
             });
@@ -86,23 +115,32 @@ export class KlaviyoService {
     }
 
     async getProfile(email: string): Promise<IKlaviyoCreateProfile & { id: string, [key: string]: any }> {
-        const url = `${KLAVIYO_BASE_URL}/profiles/?filter=equals(email,"${email}")&page[size]=1`;
+        const url = `${KLAVIYO_BASE_URL}/profiles/?filter=equals(email,${encodeURIComponent(`"${email}"`)})&page[size]=1`;
 
         try {
             const response = await axios.get(url, { headers: this.getHeaders() });
 
-            return response.data.length ? response.data[0] : null;
+            console.log(JSON.stringify(response.data));
+
+            return response.data?.data?.length ? response.data.data[0] : null;
         } catch (err) {
+            let message = err.message;
             console.log(err.message);
+            if (err?.response?.data?.errors) {
+                console.log(JSON.stringify(err.response.data.errors));
+                message = err.response.data.errors
+                    .map(error => error.detail)
+                    .join('. ');
+            }
             throw new UnprocessableEntityException({
-                message: err.message,
+                message: message,
                 errorCode: 'KLAVIYO_GET_PROFILE_ERROR',
                 statusCode: HttpStatus.UNPROCESSABLE_ENTITY
             });
         }
     }
 
-    async createEvent(email: string, eventName: string, source: string): Promise<void> {
+    async createEvent(email: string, eventName: string, properties: { [key: string]: string | boolean }): Promise<void> {
         const url = `${KLAVIYO_BASE_URL}/events/`;
         const body = {
             data: {
@@ -112,10 +150,7 @@ export class KlaviyoService {
                     metric: {
                         name: eventName
                     },
-                    properties: {
-                        Source: source,
-                        Date_Created: DateTime.utc().toFormat('yyyy-MM-dd')
-                    },
+                    properties,
                     time: DateTime.utc().toISO()
                 }
             }
@@ -124,12 +159,47 @@ export class KlaviyoService {
         try {
             await axios.post(url, body, { headers: this.getHeaders() });
         } catch (err) {
+            let message = err.message;
             console.log(err.message);
+            if (err?.response?.data?.errors) {
+                console.log(JSON.stringify(err.response.data.errors));
+                message = err.response.data.errors
+                    .map(error => error.detail)
+                    .join('. ');
+            }
             throw new UnprocessableEntityException({
-                message: err.message,
+                message: message,
                 errorCode: 'KLAVIYO_CREATE_EVENT_ERROR',
                 statusCode: HttpStatus.UNPROCESSABLE_ENTITY
             });
         }
+    }
+
+    createAccountEvent(email: string, source: string): Promise<void> {
+        return this.createEvent(
+            email,
+            KlaviyoEventTypes.accountCreated,
+            {
+                Source: source,
+                Date_Created: DateTime.utc().toFormat('yyyy-MM-dd')
+            }
+        );
+    }
+
+    testKitActivatedEvent(email: string, properties: IKitActivatedEventProperties): Promise<void> {
+        return this.createEvent(
+            email,
+            KlaviyoEventTypes.kitActivated,
+            {
+                Sample_Id: properties.sampleId,
+                Test_Name: properties.testName,
+                Test_Category: 'Blood',
+                Requires_Female_Cycle_Status: properties.isFemaleCycleStatusRequired,
+                Female_Cycle_Status: properties.femaleCycleStatus,
+                Lab_Profile_Id: properties.labProfileId,
+                Expiry_Date: properties.expiryDate,
+                Activation_Date: properties.activationDate
+            },
+        );
     }
 }

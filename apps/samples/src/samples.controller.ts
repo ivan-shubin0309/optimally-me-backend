@@ -14,7 +14,13 @@ import { SessionDataDto } from '../../sessions/src/models';
 import { Public } from '../../common/src/resources/common/public.decorator';
 import { SampleDto } from './models/sample.dto';
 import { ActivateSampleBodyDto } from './models/activate-sample-body.dto';
-import { TestKitTypes } from 'apps/common/src/resources/hl7/test-kit-types';
+import { TestKitTypes } from '../../common/src/resources/hl7/test-kit-types';
+import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
+import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
+import { UsersService } from '../../users/src/users.service';
+import { DateTime } from 'luxon';
+import { OtherFeatureTypes } from '../../common/src/resources/filters/other-feature-types';
+import { LAB_ID } from '../../common/src/resources/hl7/hl7-constants';
 
 @ApiTags('samples')
 @Controller('samples')
@@ -22,6 +28,9 @@ export class SamplesController {
     constructor(
         private readonly samplesService: SamplesService,
         private readonly translator: TranslatorService,
+        private readonly klaviyoModelService: KlaviyoModelService,
+        private readonly klaviyoService: KlaviyoService,
+        private readonly usersService: UsersService,
     ) { }
 
     @ApiBearerAuth()
@@ -114,6 +123,41 @@ export class SamplesController {
         sample = await this.samplesService.getOne([
             { method: ['bySampleId', params.sampleId] }
         ]);
+
+        const user = await this.usersService.getOne([{ method: ['byId', req.user.userId] }]);
+
+        const klaviyoProfile = await this.klaviyoModelService.getKlaviyoProfile(user);
+        await this.klaviyoService.patchProfile(
+            {
+                type: 'profile',
+                attributes: {
+                    properties: {
+                        Blood_Last_Activation_Date: DateTime.utc().toFormat('yyyy-MM-dd'),
+                        Blood_Last_Activated_Sample_ID: sample.sampleId,
+                        Blood_Last_Activated_Test_Name: '', //TO DO on fulfillment center integration
+                        Last_Female_Cycle_Status: sample.testKitType === TestKitTypes.femaleHormones
+                            ? OtherFeatureTypes[body.otherFeature]
+                            : null,
+                    }
+                }
+            },
+            klaviyoProfile.klaviyoUserId
+        );
+
+        await this.klaviyoService.testKitActivatedEvent(
+            user.email,
+            {
+                sampleId: sample.sampleId,
+                testName: '', //TO DO on fulfillment center integration
+                isFemaleCycleStatusRequired: sample.testKitType === TestKitTypes.femaleHormones,
+                femaleCycleStatus: sample.testKitType === TestKitTypes.femaleHormones
+                    ? OtherFeatureTypes[body.otherFeature]
+                    : null,
+                labProfileId: LAB_ID,
+                expiryDate: '', //TO DO on fulfillment center integration
+                activationDate: DateTime.utc().toFormat('yyyy-MM-dd')
+            }
+        );
 
         return new SampleDto(sample);
     }

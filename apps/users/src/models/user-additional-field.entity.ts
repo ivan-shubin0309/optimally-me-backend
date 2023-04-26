@@ -5,6 +5,7 @@ import { EthnicityTypes } from '../../../common/src/resources/filters/ethnicity-
 import { OtherFeatureTypes } from '../../../common/src/resources/filters/other-feature-types';
 import { RegistrationSteps } from '../../../common/src/resources/users/registration-steps';
 import { SkinTypes } from '../../../common/src/resources/filters/skin-types';
+import { RegistrationSources } from '../../../common/src/resources/users/registration-sources';
 
 @Scopes(() => ({
     byUserId: (userId: number) => ({ where: { userId } }),
@@ -85,4 +86,10 @@ export class UserAdditionalField extends Model {
         defaultValue: false,
     })
     isSelfAssesmentQuizCompleted: boolean;
+
+    @Column({
+        type: DataType.TINYINT,
+        allowNull: true
+    })
+    registrationSource: RegistrationSources;
 }
