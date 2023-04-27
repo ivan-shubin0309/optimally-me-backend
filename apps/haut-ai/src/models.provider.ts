@@ -15,6 +15,7 @@ import { Filter } from '../../biomarkers/src/models/filters/filter.entity';
 import { FilterBulletList } from '../../biomarkers/src/models/filterBulletLists/filter-bullet-list.entity';
 import { Hl7Object } from '../../hl7/src/models/hl7-object.entity';
 import { UserKlaviyo } from '../../klaviyo/src/models/user-klaviyo.entity';
+import { UserTag } from '../../users-tags/src/models/user-tag.entity';
 
 export const modelProviders = [
     {
@@ -84,5 +85,9 @@ export const modelProviders = [
     {
         provide: 'USER_KLAVIYO_MODEL',
         useValue: UserKlaviyo
+    },
+    {
+        provide: 'USER_TAG_MODEL',
+        useValue: UserTag
     }
 ];

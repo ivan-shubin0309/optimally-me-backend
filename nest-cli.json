@@ -260,6 +260,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/klaviyo/tsconfig.app.json"
       }
+    },
+    "users-tags": {
+      "type": "application",
+      "root": "apps/users-tags",
+      "entryFile": "main",
+      "sourceRoot": "apps/users-tags/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/users-tags/tsconfig.app.json"
+      }
     }
   }
 }

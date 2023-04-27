@@ -19,6 +19,7 @@ import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomark
 import { UsersRecommendationsService } from '../../users-recommendations/src/users-recommendations.service';
 import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
 import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
+import { UsersTagsService } from '../../users-tags/src/users-tags.service';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
     UserQuizAnswersService,
     KlaviyoModelService,
     KlaviyoService,
+    UsersTagsService,
     ...guardProviders,
     sequelizeProvider(entities),
     ...modelProviders
