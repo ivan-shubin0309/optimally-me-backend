@@ -14,6 +14,7 @@ import { WefitterHrvSleep } from '../../wefitter/src/models/biometric-measuremen
 import { UserCode } from '../../sessions/src/models/user-code.entity';
 import { Hl7Object } from '../../hl7/src/models/hl7-object.entity';
 import { UserKlaviyo } from '../../klaviyo/src/models/user-klaviyo.entity';
+import { UserWidgetDataSource } from '../../users-widgets/src/models/user-widget-data-source.entity';
 
 export const modelProviders = [
     {
@@ -79,5 +80,9 @@ export const modelProviders = [
     {
         provide: 'USER_KLAVIYO_MODEL',
         useValue: UserKlaviyo
-    }
+    },
+    {
+        provide: 'USER_WIDGET_DATA_SOURCE_MODEL',
+        useValue: UserWidgetDataSource
+    },
 ];
