@@ -17,6 +17,8 @@ import { UserQuizesService } from './user-quizes.service';
 import { DecisionRulesService } from './decision-rules.service';
 import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomarkers.service';
 import { UsersRecommendationsService } from '../../users-recommendations/src/users-recommendations.service';
+import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
+import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { UsersRecommendationsService } from '../../users-recommendations/src/use
     JwtStrategy,
     UserQuizesService,
     UserQuizAnswersService,
+    KlaviyoModelService,
+    KlaviyoService,
     ...guardProviders,
     sequelizeProvider(entities),
     ...modelProviders

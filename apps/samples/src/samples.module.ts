@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
+import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
 import { JwtStrategy } from '../../common/src/strategies/jwt.strategy';
 import { ConfigModule } from '../../common/src/utils/config/config.module';
 import { entities } from '../../common/src/utils/database/database-entity.provider';
@@ -25,6 +27,8 @@ import { SamplesService } from './samples.service';
     SamplesService,
     UsersService,
     SessionsService,
+    KlaviyoModelService,
+    KlaviyoService,
     JwtStrategy,
     ...guardProviders,
     sequelizeProvider(entities),

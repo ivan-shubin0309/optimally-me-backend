@@ -13,6 +13,8 @@ import { RecommendationReaction } from '../../biomarkers/src/models/recommendati
 import { FilterRecommendation } from '../../biomarkers/src/models/recommendations/filter-recommendation.entity';
 import { Filter } from '../../biomarkers/src/models/filters/filter.entity';
 import { FilterBulletList } from '../../biomarkers/src/models/filterBulletLists/filter-bullet-list.entity';
+import { Hl7Object } from '../../hl7/src/models/hl7-object.entity';
+import { UserKlaviyo } from '../../klaviyo/src/models/user-klaviyo.entity';
 
 export const modelProviders = [
     {
@@ -75,4 +77,12 @@ export const modelProviders = [
         provide: 'FILTER_BULLET_LIST_MODEL',
         useValue: FilterBulletList
     },
+    {
+        provide: 'HL7_OBJECT_MODEL',
+        useValue: Hl7Object
+    },
+    {
+        provide: 'USER_KLAVIYO_MODEL',
+        useValue: UserKlaviyo
+    }
 ];

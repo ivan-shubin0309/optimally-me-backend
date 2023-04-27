@@ -30,6 +30,10 @@ import { CreateUserAdditionalFieldDto } from './models/create-user-additional-fi
 import { SessionsService } from '../../sessions/src/sessions.service';
 import { EnumHelper } from '../../common/src/utils/helpers/enum.helper';
 import { UserCodesService } from '../../sessions/src/user-codes.service';
+import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
+import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
+import { registrationSourceClientValue } from '../../common/src/resources/users/registration-sources';
+import { SexClientValues } from '../../common/src/resources/filters/sex-types';
 
 @ApiTags('users')
 @Controller('users')
@@ -43,6 +47,8 @@ export class UsersController {
         private readonly mailerService: MailerService,
         private readonly sessionsService: SessionsService,
         private readonly userCodesService: UserCodesService,
+        private readonly klaviyoModelService: KlaviyoModelService,
+        private readonly klaviyoService: KlaviyoService,
     ) {}
 
     @Roles(UserRoles.user)
@@ -103,11 +109,12 @@ export class UsersController {
     @ApiOperation({ summary: 'Finish user registration' })
     @Post('profile')
     async finishRegistration(@Request() req, @Body() body: CreateUserAdditionalFieldDto, @Headers('Authorization') bearer): Promise<UserSessionDto> {
-        let user = await this.usersService.getOne([
+        const scopes: any[] = [
             { method: ['byId', req.user.userId] },
             { method: ['byRoles', UserRoles.user] },
             'withAdditionalField'
-        ]);
+        ];
+        let user = await this.usersService.getOne(scopes);
 
         await this.dbConnection.transaction(async transaction => {
             await user.update({ firstName: body.firstName, lastName: body.lastName }, { transaction });
@@ -119,9 +126,32 @@ export class UsersController {
                 },
                 { transaction }
             );
+
+            user = await this.usersService.getOne(scopes, transaction);
+
+            const klaviyoProfile = await this.klaviyoModelService.getKlaviyoProfile(user, transaction);
+            await this.klaviyoService.patchProfile(
+                {
+                    type: 'profile',
+                    attributes: {
+                        first_name: body.firstName,
+                        last_name: body.lastName,
+                        properties: {
+                            Accepts_Marketing: true,
+                            Gender: SexClientValues[body.sex],
+                            Date_of_Birth: body.dateOfBirth,
+                            Self_Assessment_Quiz_Completed: false,
+                        }
+                    }
+                },
+                klaviyoProfile.klaviyoUserId
+            );
         });
 
-        user = await user.reload();
+        await this.klaviyoService.createAccountEvent(
+            user.email,
+            registrationSourceClientValue[user.additionalField.registrationSource]
+        );
 
         const accessToken = bearer.split(' ')[1];
 

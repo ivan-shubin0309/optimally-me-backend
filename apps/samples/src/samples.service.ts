@@ -43,7 +43,6 @@ export class SamplesService extends BaseService<Sample> {
                     .scope([{ method: ['byId', sampleId] }])
                     .update({ 
                         isActivated: true,
-                        testKitType: TestKitTypes.femaleHormones //TO DO remove on fulfillment center integration
                     }, { transaction } as any),
                 this.userSampleModel.create({ 
                     sampleId, 

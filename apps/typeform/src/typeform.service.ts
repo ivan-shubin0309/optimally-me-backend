@@ -7,11 +7,15 @@ import { User } from '../../users/src/models';
 import { NOT_SENSITIVE_SKIN_ANSWER, SENSITIVE_SKIN_QUESTION } from '../../common/src/resources/typeform/typeform-quiz-types';
 import { UserQuiz } from './models/user-quiz.entity';
 import axios from 'axios';
+import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
+import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
 
 @Injectable()
 export class TypeformService {
     constructor(
         private readonly configService: ConfigService,
+        private readonly klaviyoService: KlaviyoService,
+        private readonly klavitoModelService: KlaviyoModelService,
     ) { }
 
     private getHeaders(): Record<string, string | number | boolean> {
@@ -39,6 +43,9 @@ export class TypeformService {
 
     async saveSelfAssesmentQuizParameters(answers: ITypeformAnswer[], user: User, transaction?: Transaction): Promise<void> {
         await user.additionalField.update({ isSelfAssesmentQuizCompleted: true }, { transaction });
+
+        const klaviyoProfile = await this.klavitoModelService.getKlaviyoProfile(user, transaction);
+        await this.klaviyoService.patchProfile({ type: 'profile', attributes: { properties: { Self_Assessment_Quiz_Completed: true } } }, klaviyoProfile.klaviyoUserId);
     }
 
     async getFormResponse(userQuiz: UserQuiz): Promise<any> {

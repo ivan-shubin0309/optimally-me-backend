@@ -10,7 +10,7 @@ import { InternalFileTypes } from '../../common/src/resources/files/file-types';
 import { HL7_FILE_TYPE, PDF_CONTENT_TYPE } from '../../common/src/resources/files/files-validation-rules';
 import { Hl7FtpService } from './hl7-ftp.service';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
-import { BIOMARKER_MAPPING_ERROR, INVALID_CUSTOMER_ID, INVALID_SAMPLE_ID_ERROR, OBJECT_ALREADY_PROCESSED_ERROR, SAMPLE_CODE_FROM_PDF_RESULT_FILE, SAMPLE_CODE_FROM_RESULT_FILE, SAMPLE_CODE_FROM_STATUS_FILE, UNIT_MISMATCH_ERROR } from '../../common/src/resources/hl7/hl7-constants';
+import { BIOMARKER_MAPPING_ERROR, INVALID_CUSTOMER_ID, INVALID_SAMPLE_ID_ERROR, LAB_ID, OBJECT_ALREADY_PROCESSED_ERROR, SAMPLE_CODE_FROM_PDF_RESULT_FILE, SAMPLE_CODE_FROM_RESULT_FILE, SAMPLE_CODE_FROM_STATUS_FILE, UNIT_MISMATCH_ERROR } from '../../common/src/resources/hl7/hl7-constants';
 import axios from 'axios';
 import { DateTime } from 'luxon';
 import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
@@ -72,7 +72,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
                 const objectsToCreate = userSamples.map(userSample => ({
                     userId: userSample.userId,
-                    lab: 'County_Pathology',
+                    lab: LAB_ID,
                     sampleCode: userSample.sample.sampleId,
                     status: Hl7ObjectStatuses.new,
                     email: userSample.user.email,

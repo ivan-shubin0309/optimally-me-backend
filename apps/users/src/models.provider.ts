@@ -12,6 +12,8 @@ import { WefitterSystolicBloodPressure } from '../../wefitter/src/models/biometr
 import { WefitterVo2Max } from '../../wefitter/src/models/biometric-measurements/wefitter-vo2-max.entity';
 import { WefitterHrvSleep } from '../../wefitter/src/models/biometric-measurements/wefitter-hrv-sleep.entity';
 import { UserCode } from '../../sessions/src/models/user-code.entity';
+import { Hl7Object } from '../../hl7/src/models/hl7-object.entity';
+import { UserKlaviyo } from '../../klaviyo/src/models/user-klaviyo.entity';
 
 export const modelProviders = [
     {
@@ -69,5 +71,13 @@ export const modelProviders = [
     {
         provide: 'USER_CODE_MODEL',
         useValue: UserCode
+    },
+    {
+        provide: 'HL7_OBJECT_MODEL',
+        useValue: Hl7Object
+    },
+    {
+        provide: 'USER_KLAVIYO_MODEL',
+        useValue: UserKlaviyo
     }
 ];
