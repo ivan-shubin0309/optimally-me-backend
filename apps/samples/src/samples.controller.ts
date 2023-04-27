@@ -124,7 +124,10 @@ export class SamplesController {
             { method: ['bySampleId', params.sampleId] }
         ]);
 
-        const user = await this.usersService.getOne([{ method: ['byId', req.user.userId] }]);
+        const user = await this.usersService.getOne([
+            { method: ['byId', req.user.userId] },
+            'withAdditionalField'
+        ]);
 
         const klaviyoProfile = await this.klaviyoModelService.getKlaviyoProfile(user);
         await this.klaviyoService.patchProfile(

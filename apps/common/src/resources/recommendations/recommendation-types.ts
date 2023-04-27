@@ -7,3 +7,13 @@ export enum RecommendationTypes {
     high = 6,
     criticalHigh = 7,
 }
+
+export const recommendationTypesClientValues = {
+    [RecommendationTypes.criticalLow]: 'Critical Low',
+    [RecommendationTypes.criticalHigh]: 'Critical High',
+    [RecommendationTypes.high]: 'High',
+    [RecommendationTypes.low]: 'Low',
+    [RecommendationTypes.subOptimal]: 'Borderline',
+    [RecommendationTypes.supraOptimal]: 'Borderline',
+    [RecommendationTypes.optimal]: 'Optimal'
+};

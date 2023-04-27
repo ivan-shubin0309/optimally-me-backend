@@ -23,6 +23,8 @@ import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomark
 import { UsersResultsService } from '../../users-results/src/users-results.service';
 import { MailerService } from '../../common/src/resources/mailer/mailer.service';
 import { Hl7ErrorNotificationsService } from '../../hl7-error-notifications/src/hl7-error-notifications.service';
+import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
+import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
 
 @Module({
     imports: [
@@ -47,6 +49,8 @@ import { Hl7ErrorNotificationsService } from '../../hl7-error-notifications/src/
         UsersResultsService,
         MailerService,
         Hl7ErrorNotificationsService,
+        KlaviyoModelService,
+        KlaviyoService,
         JwtStrategy,
         ...guardProviders,
         sequelizeProvider(entities),

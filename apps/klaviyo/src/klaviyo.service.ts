@@ -38,6 +38,33 @@ export interface IKitActivatedEventProperties {
     activationDate: string,
 }
 
+export interface ISampleReceivedEventProperties {
+    sampleId: string,
+    testName: string,
+    labProfileId: string,
+    receivedDate: string,
+    activationDate: string,
+}
+
+interface IResultsReadyEventProperties {
+    sampleId: string,
+    testName: string,
+    labProfileId: string,
+    activationDate: string,
+    resultsDate: string,
+    isResultsFailed: boolean,
+    resultsFailedReasons: string[],
+}
+
+interface IBadResultsEventProperties {
+    sampleId: string,
+    testName: string,
+    labProfileId: string,
+    activationDate: string,
+    resultsDate: string,
+    badResults: { biomarkerName: string, range: string }[]
+}
+
 const KLAVIYO_BASE_URL = 'https://a.klaviyo.com/api';
 const REVISION = '2023-02-22';
 
@@ -140,7 +167,7 @@ export class KlaviyoService {
         }
     }
 
-    async createEvent(email: string, eventName: string, properties: { [key: string]: string | boolean }): Promise<void> {
+    async createEvent(email: string, eventName: string, properties: { [key: string]: any | any[] }): Promise<void> {
         const url = `${KLAVIYO_BASE_URL}/events/`;
         const body = {
             data: {
@@ -199,6 +226,57 @@ export class KlaviyoService {
                 Lab_Profile_Id: properties.labProfileId,
                 Expiry_Date: properties.expiryDate,
                 Activation_Date: properties.activationDate
+            },
+        );
+    }
+
+    sampleReceivedEvent(email: string, properties: ISampleReceivedEventProperties): Promise<void> {
+        return this.createEvent(
+            email,
+            KlaviyoEventTypes.sampleReceived,
+            {
+                Sample_Id: properties.sampleId,
+                Test_Name: properties.testName,
+                Test_Category: 'Blood',
+                Lab_Profile_Id: properties.labProfileId,
+                Received_Date: properties.receivedDate,
+                Activation_Date: properties.activationDate
+            },
+        );
+    }
+
+    resultsReadyEvent(email: string, properties: IResultsReadyEventProperties): Promise<void> {
+        return this.createEvent(
+            email,
+            KlaviyoEventTypes.resultsReady,
+            {
+                Sample_Id: properties.sampleId,
+                Test_Name: properties.testName,
+                Test_Category: 'Blood',
+                Lab_Profile_Id: properties.labProfileId,
+                Activation_Date: properties.activationDate,
+                Results_Date: properties.resultsDate,
+                Results_Failed: properties.isResultsFailed,
+                Results_Failed_Reason: properties.resultsFailedReasons,
+            },
+        );
+    }
+
+    badResultsEvent(email: string, properties: IBadResultsEventProperties): Promise<void> {
+        return this.createEvent(
+            email,
+            KlaviyoEventTypes.badResults,
+            {
+                Sample_Id: properties.sampleId,
+                Test_Name: properties.testName,
+                Test_Category: 'Blood',
+                Lab_Profile_Id: properties.labProfileId,
+                Activation_Date: properties.activationDate,
+                Results_Date: properties.resultsDate,
+                Bad_Results: properties.badResults.map(badResult => ({
+                    biomarker_name: badResult.biomarkerName,
+                    range: badResult.range
+                }))
             },
         );
     }
