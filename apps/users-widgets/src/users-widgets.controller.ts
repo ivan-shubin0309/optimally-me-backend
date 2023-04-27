@@ -71,7 +71,7 @@ export class UsersWidgetsController {
     }
 
     @ApiResponse({ type: () => UserWidgetDataSourcesDto })
-    @ApiOperation({ summary: 'Get data active sources' })
+    @ApiOperation({ summary: 'Get active data sources' })
     @Roles(UserRoles.user)
     @HttpCode(HttpStatus.OK)
     @Get('data-sources')
@@ -84,7 +84,7 @@ export class UsersWidgetsController {
     }
 
     @ApiResponse({ type: () => UserWidgetDataSourcesDto })
-    @ApiOperation({ summary: 'Get data active sources' })
+    @ApiOperation({ summary: 'Set active data sources' })
     @Roles(UserRoles.user)
     @HttpCode(HttpStatus.OK)
     @Patch('data-sources')

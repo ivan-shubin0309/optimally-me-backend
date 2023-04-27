@@ -23,7 +23,7 @@ import { WefitterResultAveragesDto } from './models/wefitter-result-averages.dto
 import { GetWefitterResultsDto } from './models/get-wefitter-results.dto';
 import { WefitterMetricResultsDto } from './models/wefitter-metric-results.dto';
 import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
-import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
+import { EnumHelper } from '../../common/src/utils/helpers/enum.helper';
 import { WefitterBiometricMeasurementDto } from './models/biometric-measurements/wefitter-biometric-measurement.dto';
 import { WefitterBloodPressure } from './models/biometric-measurements/wefitter-blood-pressure.entity';
 import { WefitterBloodSugar } from './models/biometric-measurements/wefitter-blood-sugar.entity';
@@ -31,6 +31,7 @@ import { WefitterDiastolicBloodPressure } from './models/biometric-measurements/
 import { WefitterSystolicBloodPressure } from './models/biometric-measurements/wefitter-systolic-blood-pressure.entity';
 import { WefitterVo2Max } from './models/biometric-measurements/wefitter-vo2-max.entity';
 import { WefitterHrvSleep } from './models/biometric-measurements/wefitter-hrv-sleep.entity';
+import { UsersWidgetDataSourcesService } from '../../users-widgets/src/users-widget-data-sources.service';
 
 const metricTypeToModelName = {
     [WefitterMetricTypes.steps]: 'userWefitterDailySummary',
@@ -95,6 +96,7 @@ export class WefitterService {
         @Inject('WEFITTER_SYSTOLIC_BLOOD_PRESSURE') private wefitterSystolicBloodPressureModel: Repository<WefitterSystolicBloodPressure>,
         @Inject('WEFITTER_VO2_MAX') private wefitterVo2MaxModel: Repository<WefitterVo2Max>,
         @Inject('WEFITTER_HRV_SLEEP') private wefitterHrvSleepModel: Repository<WefitterHrvSleep>,
+        private readonly usersWidgetDataSourcesService: UsersWidgetDataSourcesService,
     ) {
         this.redisClient = redisService.getClient();
         this.baseUrl = this.configService.get('WEFITTER_API_URL');
@@ -241,8 +243,36 @@ export class WefitterService {
                 .update(dailySummaryBody, { transaction } as any);
         }
 
+        const metricsArray = [];
+
+        if (data[metricTypeToFieldName[WefitterMetricTypes.steps]]) {
+            metricsArray.push(WefitterMetricTypes.steps);
+        }
+
+        if (data[metricTypeToFieldName[WefitterMetricTypes.caloriesBurned]]) {
+            metricsArray.push(WefitterMetricTypes.caloriesBurned);
+        }
+
+        if (metricsArray.length) {
+            await this.usersWidgetDataSourcesService.setDefaultSourceIfNotExist(
+                userId,
+                metricsArray,
+                data.source
+            );
+        }
+
         if (data.heart_rate_summary) {
             await this.createOrUpdateHeartrateSummary(userId, data.heart_rate_summary, data.source, dailySummary, transaction);
+
+            if (data.heart_rate_summary[metricTypeToFieldName[WefitterMetricTypes.avgHeartRate]]) {
+                await this.usersWidgetDataSourcesService.setDefaultSourceIfNotExist(
+                    userId,
+                    [
+                        WefitterMetricTypes.avgHeartRate
+                    ],
+                    data.source
+                );
+            }
         }
     }
 
@@ -286,6 +316,16 @@ export class WefitterService {
 
     async saveHeartrateSummaryData(userId: number, data: WefitterHeartRateDto, transaction?: Transaction): Promise<void> {
         await this.createOrUpdateHeartrateSummary(userId, data, data.source, null, transaction);
+
+        if (data[metricTypeToFieldName[WefitterMetricTypes.avgHeartRate]]) {
+            await this.usersWidgetDataSourcesService.setDefaultSourceIfNotExist(
+                userId,
+                [
+                    WefitterMetricTypes.avgHeartRate
+                ],
+                data.source
+            );
+        }
     }
 
     async saveSleepSummaryData(userId: number, data: WefitterSleepDto, transaction?: Transaction): Promise<void> {
@@ -319,6 +359,36 @@ export class WefitterService {
             await this.userWefitterSleepSummary.create(sleepSummaryBody, { transaction });
         } else {
             await sleepSummary.update(sleepSummaryBody, { transaction });
+        }
+
+        const metricsArray = [];
+
+        if (data[metricTypeToFieldName[WefitterMetricTypes.timeAsleep]]) {
+            metricsArray.push(WefitterMetricTypes.timeAsleep);
+        }
+
+        if (data[metricTypeToFieldName[WefitterMetricTypes.sleepScore]]) {
+            metricsArray.push(WefitterMetricTypes.sleepScore);
+        }
+        if (data[metricTypeToFieldName[WefitterMetricTypes.awake]]) {
+            metricsArray.push(WefitterMetricTypes.awake);
+        }
+        if (data[metricTypeToFieldName[WefitterMetricTypes.light]]) {
+            metricsArray.push(WefitterMetricTypes.light);
+        }
+        if (data[metricTypeToFieldName[WefitterMetricTypes.deep]]) {
+            metricsArray.push(WefitterMetricTypes.deep);
+        }
+        if (data[metricTypeToFieldName[WefitterMetricTypes.rem]]) {
+            metricsArray.push(WefitterMetricTypes.rem);
+        }
+
+        if (metricsArray.length) {
+            await this.usersWidgetDataSourcesService.setDefaultSourceIfNotExist(
+                userId,
+                metricsArray,
+                data.source
+            );
         }
     }
 
@@ -389,7 +459,7 @@ export class WefitterService {
         }
         const scopes: any[] = [
             { method: ['byUserId', userId] },
-            { method: ['byFieldName', modelDataObject.fieldName] }
+            { method: ['byFieldName', modelDataObject.fieldName, true] }
         ];
 
         if (query.startDate || query.endDate) {
@@ -547,7 +617,8 @@ export class WefitterService {
         const sourcesCount = await currentModel
             .scope([
                 { method: ['byUserId', userId] },
-                { method: ['sourceCount'] }
+                { method: ['sourceCount'] },
+                { method: ['byFieldName', metricTypeToFieldName[metricType]] }
             ])
             .findAll({ transaction });
 

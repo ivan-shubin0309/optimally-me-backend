@@ -248,24 +248,6 @@ export class WefitterController {
         }
 
         await this.wefitterService.saveDailySummaryData(user.userId, body.data);
-        await this.usersWidgetDataSourcesService.setDefaultSourceIfNotExist(
-            user.userId,
-            [
-                WefitterMetricTypes.steps,
-                WefitterMetricTypes.caloriesBurned
-            ],
-            body.data.source
-        );
-
-        if (body.data.heart_rate_summary) {
-            await this.usersWidgetDataSourcesService.setDefaultSourceIfNotExist(
-                user.userId,
-                [
-                    WefitterMetricTypes.avgHeartRate
-                ],
-                body.data.source
-            );
-        }
 
         return {};
     }
@@ -286,13 +268,6 @@ export class WefitterController {
         }
 
         await this.wefitterService.saveHeartrateSummaryData(user.userId, body.data);
-        await this.usersWidgetDataSourcesService.setDefaultSourceIfNotExist(
-            user.userId,
-            [
-                WefitterMetricTypes.avgHeartRate
-            ],
-            body.data.source
-        );
     }
 
     @Public()
@@ -311,18 +286,6 @@ export class WefitterController {
         }
 
         await this.wefitterService.saveSleepSummaryData(user.userId, body.data);
-        await this.usersWidgetDataSourcesService.setDefaultSourceIfNotExist(
-            user.userId,
-            [
-                WefitterMetricTypes.timeAsleep,
-                WefitterMetricTypes.sleepScore,
-                WefitterMetricTypes.awake,
-                WefitterMetricTypes.light,
-                WefitterMetricTypes.deep,
-                WefitterMetricTypes.rem
-            ],
-            body.data.source
-        );
     }
 
     @Public()
