@@ -13,6 +13,7 @@ import { FilterBulletList } from '../../biomarkers/src/models/filterBulletLists/
 import { Hl7CriticalRange } from './models/hl7-critical-range.entity';
 import { Hl7FileError } from './models/hl7-file-error.entity';
 import { Hl7ErrorNotification } from '../../hl7-error-notifications/src/models/hl7-error-notification.entity';
+import { UserKlaviyo } from '../../klaviyo/src/models/user-klaviyo.entity';
 
 export const modelProviders = [
     {
@@ -74,5 +75,9 @@ export const modelProviders = [
     {
         provide: 'HL7_ERROR_NOTIFICATION_MODEL',
         useValue: Hl7ErrorNotification
-    }
+    },
+    {
+        provide: 'USER_KLAVIYO_MODEL',
+        useValue: UserKlaviyo
+    },
 ];

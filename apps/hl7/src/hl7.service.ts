@@ -22,6 +22,10 @@ import { UsersService } from '../../users/src/users.service';
 import { UserRoles } from '../../common/src/resources/users';
 import { Hl7FileError } from './models/hl7-file-error.entity';
 import { Hl7ErrorNotificationsService } from '../../hl7-error-notifications/src/hl7-error-notifications.service';
+import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
+import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
+import { recommendationTypesToRangeTypes, UserBiomarkerRangeTypes } from '../../common/src/resources/usersBiomarkers/user-biomarker-range-types';
+import { recommendationTypesClientValues } from '../../common/src/resources/recommendations/recommendation-types';
 
 @Injectable()
 export class Hl7Service extends BaseService<Hl7Object> {
@@ -39,6 +43,8 @@ export class Hl7Service extends BaseService<Hl7Object> {
         private readonly usersService: UsersService,
         @Inject('HL7_FILE_ERROR_MODEL') private readonly hl7FileErrorModel: Repository<Hl7FileError>,
         private readonly hl7ErrorNotificationsService: Hl7ErrorNotificationsService,
+        private readonly klaviyoModelService: KlaviyoModelService,
+        private readonly klaviyoService: KlaviyoService,
     ) { super(model); }
 
     async generateHl7ObjectsFromSamples(): Promise<void> {
@@ -188,6 +194,23 @@ export class Hl7Service extends BaseService<Hl7Object> {
         });
 
         await this.filesService.markFilesAsUsed([createdFile.id]);
+
+        const user = await this.usersService.getOne([
+            { method: ['byId', hl7Object.userId] },
+            'withAdditionalField'
+        ]);
+
+        await this.klaviyoModelService.getKlaviyoProfile(user);
+        await this.klaviyoService.sampleReceivedEvent(
+            user.email,
+            {
+                sampleId: hl7Object.sampleCode,
+                testName: hl7Object.testProductName,
+                labProfileId: LAB_ID,
+                activationDate: hl7Object.activatedAt,
+                receivedDate: hl7Object.labReceivedAt
+            }
+        );
     }
 
     async checkForResultFiles(): Promise<void> {
@@ -226,11 +249,15 @@ export class Hl7Service extends BaseService<Hl7Object> {
                         const rawFile = await this.hl7FtpService.downloadResultFile(file.name);
                         const parsedFile = await this.hl7FilesService.parseHl7FileToHl7Object(rawFile.toString());
                         const user = await this.usersService.getOne([{ method: ['byId', parsedFile.userId] }]);
+                        let lastHl7Object;
                         if (user) {
-                            const lastHl7Object = await this.getOne([
+                            lastHl7Object = await this.getOne([
                                 { method: ['byUserId', user.id] },
                                 { method: ['orderBy', [['createdAt', 'desc']]] }
                             ]);
+                        }
+
+                        if (lastHl7Object) {
                             await lastHl7Object.update({ status: Hl7ObjectStatuses.error, toFollow: `${INVALID_SAMPLE_ID_ERROR} - ${matches[2]}` });
                             await this.hl7ErrorNotificationsService.create({ message: `${INVALID_SAMPLE_ID_ERROR} - ${matches[2]}`, hl7ObjectId: lastHl7Object.id });
                         } else {
@@ -386,7 +413,52 @@ export class Hl7Service extends BaseService<Hl7Object> {
                 await this.adminsResultsService.createUserResults(resultsToCreate, hl7Object.userId, { otherFeature: hl7Object.userOtherFeature });
             }
 
+            const user = await this.usersService.getOne([
+                { method: ['byId', hl7Object.userId] },
+                'withAdditionalField'
+            ]);
+
             await hl7Object.update({ isCriticalResult });
+
+            await this.klaviyoModelService.getKlaviyoProfile(user);
+            await this.klaviyoService.resultsReadyEvent(
+                user.email,
+                {
+                    sampleId: hl7Object.sampleCode,
+                    testName: hl7Object.testProductName,
+                    labProfileId: LAB_ID,
+                    activationDate: hl7Object.activatedAt,
+                    resultsDate: hl7Object.resultAt,
+                    isResultsFailed: !!bodyForUpdate.toFollow,
+                    resultsFailedReasons: bodyForUpdate.toFollow.split(',\n'),
+                }
+            );
+
+            const userResults = await this.adminsResultsService.getList([
+                { method: ['byUserId', hl7Object.userId] },
+                { method: ['withBiomarker'] }
+            ]);
+
+            const badUserResults = userResults.filter(userResult =>
+                recommendationTypesToRangeTypes[userResult.recommendationRange] !== UserBiomarkerRangeTypes.optimal
+            );
+
+            if (badUserResults.length) {
+                await this.klaviyoService.badResultsEvent(
+                    user.email,
+                    {
+                        sampleId: hl7Object.sampleCode,
+                        testName: hl7Object.testProductName,
+                        labProfileId: LAB_ID,
+                        activationDate: hl7Object.activatedAt,
+                        resultsDate: hl7Object.resultAt,
+                        badResults: badUserResults.map(userResult => ({
+                            biomarkerName: userResult.biomarker.name,
+                            range: recommendationTypesClientValues[userResult.recommendationRange]
+                        }))
+                    }
+                );
+            }
         }
     }
 
