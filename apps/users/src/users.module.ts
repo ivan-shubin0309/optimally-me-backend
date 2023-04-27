@@ -17,6 +17,7 @@ import { MailerService } from '../../common/src/resources/mailer/mailer.service'
 import { UserCodesService } from '../../sessions/src/user-codes.service';
 import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
 import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
+import { UsersWidgetDataSourcesService } from '../../users-widgets/src/users-widget-data-sources.service';
 
 @Module({
     imports: [
@@ -28,6 +29,7 @@ import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
     providers: [
         UsersService,
         WefitterService,
+        UsersWidgetDataSourcesService,
         SessionsService,
         VerificationsService,
         MailerService,
