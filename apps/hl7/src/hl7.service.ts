@@ -418,6 +418,10 @@ export class Hl7Service extends BaseService<Hl7Object> {
                 'withAdditionalField'
             ]);
 
+            if (!user.additionalField.isUserVerified) {
+                await user.additionalField.update({ isUserVerified: true });
+            }
+
             await hl7Object.update({ isCriticalResult });
 
             await this.klaviyoModelService.getKlaviyoProfile(user);
