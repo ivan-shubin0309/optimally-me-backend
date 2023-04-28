@@ -9,6 +9,7 @@ import { UsersRecommendationsService } from '../../users-recommendations/src/use
 import { Sequelize } from 'sequelize-typescript';
 import { Transaction } from 'sequelize/types';
 import { ScopeOptions } from 'sequelize';
+import { UsersTagsService } from '../../users-tags/src/users-tags.service';
 
 interface IRuleData {
     customer: {
@@ -47,6 +48,7 @@ export class DecisionRulesService {
         private readonly usersBiomarkersService: UsersBiomarkersService,
         private readonly userRecommendationsService: UsersRecommendationsService,
         @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
+        private readonly usersTagsService: UsersTagsService,
     ) {
         this.solver = new Solver(configService.get('DECISION_RULES_SOLVER_API_KEY'));
     }
@@ -82,10 +84,16 @@ export class DecisionRulesService {
                 return null;
             }
 
+            const userTags = await this.usersTagsService.getList([
+                { method: ['byUserId', userId] },
+                { method: ['byType', 'text'] },
+                { method: ['byValue', 'True'] }
+            ], transaction);
+
             const payload: IRuleData = {
                 customer: {
                     id: userId,
-                    attributes: []
+                    attributes: userTags.map(userTag => userTag.key)
                 },
                 biomarkerResult: {
                     value: biomarker.lastResult.value,

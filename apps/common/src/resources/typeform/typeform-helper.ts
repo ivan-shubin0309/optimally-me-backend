@@ -68,4 +68,12 @@ export class TypeformHelper {
     static getSubmittedAt(body: any): string {
         return body?.form_response?.submitted_at;
     }
+
+    static getVariables(body: any): { key: string, type: string, value: string | number }[] {
+        return body?.form_response?.variables?.map(variable => ({
+            key: variable.key,
+            type: variable.type,
+            value: variable[variable.type]
+        }));
+    }
 }

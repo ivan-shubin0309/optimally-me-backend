@@ -74,13 +74,15 @@ export class TypeformController {
                 transaction
             );
 
+            const variables = TypeformHelper.getVariables(body);
+
             const answers = TypeformHelper.getAnswers(body);
             console.log(JSON.stringify(answers));
             const answersToCreate = answers.map(answer => Object.assign({ userId: user.id, quizId: userQuiz.id }, answer));
 
             await this.userQuizAnswersService.bulkCreate(answersToCreate, transaction);
 
-            await this.typeformService.saveSensitiveQuizParameters(answers, user, transaction);
+            await this.typeformService.saveSensitiveQuizParameters(user, variables, transaction);
 
             await this.decisionRulesService.updateUserRecommendations(user.id, body.form_response, transaction);
         });
@@ -136,13 +138,15 @@ export class TypeformController {
                 transaction
             );
 
+            const variables = TypeformHelper.getVariables(body);
+
             const answers = TypeformHelper.getAnswers(body);
             console.log(JSON.stringify(answers));
             const answersToCreate = answers.map(answer => Object.assign({ userId: user.id, quizId: userQuiz.id }, answer));
 
             await this.userQuizAnswersService.bulkCreate(answersToCreate, transaction);
 
-            await this.typeformService.saveSelfAssesmentQuizParameters(answers, user, transaction);
+            await this.typeformService.saveSelfAssesmentQuizParameters(variables, user, transaction);
 
             await this.decisionRulesService.updateUserRecommendations(user.id, body.form_response, transaction);
         });

@@ -28,6 +28,7 @@ import { UsersRecommendationsService } from '../../users-recommendations/src/use
 import { FiltersService } from '../../biomarkers/src/services/filters/filters.service';
 import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
 import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
+import { UsersTagsService } from '../../users-tags/src/users-tags.service';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
     TypeformService,
     UserQuizesService,
     DecisionRulesService,
+    UsersTagsService,
     UsersBiomarkersService,
     UsersRecommendationsService,
     SessionsService,
