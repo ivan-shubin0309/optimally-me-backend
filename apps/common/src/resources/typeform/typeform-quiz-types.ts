@@ -3,5 +3,5 @@ export enum TypeformQuizType {
     selfAssesment = 2,
 }
 
-export const SENSITIVE_SKIN_QUESTION = 'How sensitive is your skin? Does it turn red or itch after sun exposure or when you use certain products?';
+export const SENSITIVE_SKIN_ATTRIBUTE = 'skin_sensitive';
 export const NOT_SENSITIVE_SKIN_ANSWER = 'My skin is not sensitive';

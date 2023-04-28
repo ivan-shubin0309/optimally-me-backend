@@ -53,6 +53,7 @@ import { Hl7FileError } from '../../../../hl7/src/models/hl7-file-error.entity';
 import { Hl7ErrorNotification } from '../../../../hl7-error-notifications/src/models/hl7-error-notification.entity';
 import { UserWidgetDataSource } from '../../../../users-widgets/src/models/user-widget-data-source.entity';
 import { UserKlaviyo } from '../../../../klaviyo/src/models/user-klaviyo.entity';
+import { UserTag } from '../../../../users-tags/src/models/user-tag.entity';
 
 export const entities = [
     User,
@@ -110,4 +111,5 @@ export const entities = [
     Hl7ErrorNotification,
     UserWidgetDataSource,
     UserKlaviyo,
+    UserTag,
 ];

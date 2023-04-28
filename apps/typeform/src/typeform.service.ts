@@ -3,7 +3,7 @@ import { ConfigService } from '../../common/src/utils/config/config.service';
 import * as crypto from 'crypto';
 import { Transaction } from 'sequelize/types';
 import { User } from '../../users/src/models';
-import { SENSITIVE_SKIN_QUESTION, TypeformQuizType } from '../../common/src/resources/typeform/typeform-quiz-types';
+import { SENSITIVE_SKIN_ATTRIBUTE, TypeformQuizType } from '../../common/src/resources/typeform/typeform-quiz-types';
 import { UserQuiz } from './models/user-quiz.entity';
 import axios from 'axios';
 import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
@@ -36,7 +36,7 @@ export class TypeformService {
     }
 
     async saveSensitiveQuizParameters(user: User, variables: { key: string, type: string, value: string | number }[], transaction?: Transaction): Promise<void> {
-        const sensivitiveSkin = variables.find(variable => variable.key === SENSITIVE_SKIN_QUESTION);
+        const sensivitiveSkin = variables.find(variable => variable.key === SENSITIVE_SKIN_ATTRIBUTE);
         const isSensitiveSkin = sensivitiveSkin.value === 'True';
 
         await user.additionalField.update({ isSensitiveSkin }, { transaction });
@@ -48,6 +48,7 @@ export class TypeformService {
             value: variable.value,
             quizType: TypeformQuizType.sensitiveSkin,
         }));
+        await this.usersTagsService.remove(user.id, [{ method: ['byQuizType', TypeformQuizType.sensitiveSkin] }]);
         await this.usersTagsService.bulkCreate(tagsToCreate, transaction);
     }
 
@@ -64,6 +65,7 @@ export class TypeformService {
             value: variable.value,
             quizType: TypeformQuizType.selfAssesment,
         }));
+        await this.usersTagsService.remove(user.id, [{ method: ['byQuizType', TypeformQuizType.selfAssesment] }], transaction);
         await this.usersTagsService.bulkCreate(tagsToCreate, transaction);
     }
 

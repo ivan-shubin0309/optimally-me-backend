@@ -22,4 +22,13 @@ export class UsersTagsService extends BaseService<UserTag> {
     bulkCreate(body: ICreateUserTag[], transaction?: Transaction): Promise<UserTag[]> {
         return this.model.bulkCreate(body as any[], { transaction });
     }
+
+    async remove(userId: number, scopes: any[], transaction?: Transaction): Promise<void> {
+        await this.model
+            .scope([
+                { method: ['byUserId', userId] },
+                ...scopes
+            ])
+            .destroy({ transaction });
+    }
 }

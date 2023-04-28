@@ -84,14 +84,16 @@ export class DecisionRulesService {
                 return null;
             }
 
-            const userTags = await this.usersTagsService.getList([{ method: ['byUserId', userId] }]);
+            const userTags = await this.usersTagsService.getList([
+                { method: ['byUserId', userId] },
+                { method: ['byType', 'text'] },
+                { method: ['byValue', 'True'] }
+            ], transaction);
 
             const payload: IRuleData = {
                 customer: {
                     id: userId,
-                    attributes: userTags.map(userTag => ({
-
-                    }))
+                    attributes: userTags.map(userTag => userTag.key)
                 },
                 biomarkerResult: {
                     value: biomarker.lastResult.value,

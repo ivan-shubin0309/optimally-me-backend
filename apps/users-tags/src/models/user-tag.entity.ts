@@ -4,6 +4,9 @@ import { TypeformQuizType } from '../../../common/src/resources/typeform/typefor
 
 @Scopes(() => ({
     byUserId: (userId: number) => ({ where: { userId } }),
+    byType: (type) => ({ where: { type } }),
+    byValue: (value) => ({ where: { value } }),
+    byQuizType: (quizType) => ({ where: { quizType } }),
 }))
 @Table({
     tableName: 'userTags',
