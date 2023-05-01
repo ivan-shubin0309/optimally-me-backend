@@ -92,7 +92,7 @@ export class SamplesController {
         }
 
         if (!sample.testKitType) {
-            [sampleStatus] = await this.fulfillmentCenterService.getSamplesStatus([sample.sampleId]);
+            [sampleStatus] = await this.fulfillmentCenterService.getSampleStatus(sample.sampleId);
         }
 
         return new SampleDto(sample, { isFemaleLifecycleRequired: sampleStatus?.require_female_cycle_status });

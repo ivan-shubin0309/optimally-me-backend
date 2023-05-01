@@ -92,7 +92,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
                     userOtherFeature: userSample.userOtherFeature,
                     labId: userSample.sample.labProfileId,
                     testProductName: userSample.sample.productName,
-
+                    orderId: userSample.sample.orderId,
                 }));
 
                 await this.model.bulkCreate(objectsToCreate, { transaction } as any);

@@ -39,12 +39,11 @@ export class FulfillmentCenterService {
         return headers;
     }
 
-    async getSamplesStatus(sampleIds: string[]): Promise<IFulfillmentCenterSample[]> {
-        const url = `${FULFILLMENT_CENTER_BASE_URL}/sample_id_status`;
-        const params = { sampleIds };
+    async getSampleStatus(sampleId: string): Promise<IFulfillmentCenterSample[]> {
+        const url = `${FULFILLMENT_CENTER_BASE_URL}/sample_id_status/${sampleId}`;
 
         try {
-            const response = await axios.get(url, { params, headers: this.getHeaders() });
+            const response = await axios.get(url, { headers: this.getHeaders() });
 
             console.log(JSON.stringify(response.data));
 
@@ -63,7 +62,7 @@ export class FulfillmentCenterService {
 
     async signatureVerify(sampleId: string, signature: string): Promise<void> {
         const hash = crypto
-            .createHash('md5', this.configService.get('SHOPIFY_WEBHOOK_SECRET'))
+            .createHash('md5')
             .update(`${sampleId}${this.configService.get('FULFILLMENT_CENTER_API_KEY')}`)
             .digest('hex');
 

@@ -40,7 +40,7 @@ export class SamplesService extends BaseService<Sample> {
     }
 
     async activateSample(sample: Sample, userId: number, userOtherFeature: OtherFeatureTypes): Promise<void> {
-        const [sampleStatus] = await this.fulfillmentCenterService.getSamplesStatus([sample.sampleId]);
+        const [sampleStatus] = await this.fulfillmentCenterService.getSampleStatus(sample.sampleId);
 
         if (sampleStatus && sampleStatus.require_female_cycle_status && !userOtherFeature) {
             throw new BadRequestException({

@@ -18,28 +18,23 @@ export class FulfillmentCenterController {
     @HttpCode(HttpStatus.NO_CONTENT)
     @Public()
     @Post()
-    async sampleStatusesWebhook(@Body() body: PostSampleStatusDto[]): Promise<void> {
-        const [firstItem] = body;
-        await this.fulfillmentCenterService.signatureVerify(firstItem.sample_id, firstItem.signature);
+    async sampleStatusesWebhook(@Body() body: PostSampleStatusDto): Promise<void> {
+        await this.fulfillmentCenterService.signatureVerify(body.sample_id, body.signature);
 
-        const promises = body.map(async (data) => {
-            const sample = await this.samplesService.getOne([{ method: ['bySampleId', data.sample_id] }]);
+        const sample = await this.samplesService.getOne([{ method: ['bySampleId', body.sample_id] }]);
 
             if (sample) {
                 await sample.update({
-                    productName: data?.product_name,
-                    labName: data?.lab_name,
-                    labProfileId: data?.lab_profile_id,
-                    orderSource: data?.order_source,
-                    orderId: data?.order_id,
-                    expireAt: data?.expiry_date,
-                    testKitType: data?.require_female_cycle_status
+                    productName: body?.product_name,
+                    labName: body?.lab_name,
+                    labProfileId: body?.lab_profile_id,
+                    orderSource: body?.order_source,
+                    orderId: body?.order_id,
+                    expireAt: body?.expiry_date,
+                    testKitType: body?.require_female_cycle_status
                         ? TestKitTypes.femaleHormones
                         : TestKitTypes.default
                 });
             }
-        });
-
-        await Promise.all(promises);
     }
 }
