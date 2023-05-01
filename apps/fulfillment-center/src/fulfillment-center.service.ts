@@ -1,6 +1,7 @@
-import { HttpStatus, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { ForbiddenException, HttpStatus, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import axios from 'axios';
+import * as crypto from 'crypto';
 
 interface IFulfillmentCenterSample {
     sample_id: string,
@@ -40,10 +41,10 @@ export class FulfillmentCenterService {
 
     async getSamplesStatus(sampleIds: string[]): Promise<IFulfillmentCenterSample[]> {
         const url = `${FULFILLMENT_CENTER_BASE_URL}/sample_id_status`;
-        const body = { sampleIds };
+        const params = { sampleIds };
 
         try {
-            const response = await axios.post(url, body, { headers: this.getHeaders() });
+            const response = await axios.get(url, { params, headers: this.getHeaders() });
 
             console.log(JSON.stringify(response.data));
 
@@ -51,9 +52,25 @@ export class FulfillmentCenterService {
         } catch (err) {
             const message = err.message;
             console.log(err.message);
+            console.log(err?.response?.data && JSON.stringify(err?.response?.data));
             throw new UnprocessableEntityException({
                 message: message,
                 errorCode: 'FULFILLMENT_CENTER_GET_SAMPLES_ERROR',
+                statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+            });
+        }
+    }
+
+    async signatureVerify(sampleId: string, signature: string): Promise<void> {
+        const hash = crypto
+            .createHash('md5', this.configService.get('SHOPIFY_WEBHOOK_SECRET'))
+            .update(`${sampleId}${this.configService.get('FULFILLMENT_CENTER_API_KEY')}`)
+            .digest('hex');
+
+        if (hash !== signature) {
+            throw new ForbiddenException({
+                message: 'FULFILLMENT_CENTER_SIGNATURE_NOT_VERIFIED',
+                errorCode: 'FULFILLMENT_CENTER_SIGNATURE_NOT_VERIFIED',
                 statusCode: HttpStatus.UNPROCESSABLE_ENTITY
             });
         }

@@ -83,4 +83,9 @@ export class PostSampleStatusDto {
     @IsOptional()
     @IsString()
     readonly outbound_tracking_id: string;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    @IsString()
+    readonly signature: string;
 }
