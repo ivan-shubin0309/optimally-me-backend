@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { SamplesService } from '../../samples/src/samples.service';
 import { JwtStrategy } from '../../common/src/strategies/jwt.strategy';
 import { ConfigModule } from '../../common/src/utils/config/config.module';
 import { entities } from '../../common/src/utils/database/database-entity.provider';
@@ -25,6 +26,7 @@ import { modelProviders } from './models.provider';
         FulfillmentCenterService,
         SessionsService,
         UsersService,
+        SamplesService,
         JwtStrategy,
         ...guardProviders,
         sequelizeProvider(entities),

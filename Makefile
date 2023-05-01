@@ -25,6 +25,7 @@
 .PHONY: build-Hl7ResultFunction
 .PHONY: build-Hl7ErrorNotificationsFunction
 .PHONY: build-UsersHl7Function
+.PHONY: build-FulfillmentCenterFunction
 
 
 build-RuntimeDependenciesLayer:
@@ -121,3 +122,6 @@ build-Hl7ErrorNotificationsFunction:
 
 build-UsersHl7Function:
 	$(MAKE) HANDLER=apps/users-hl7/src/main.ts ENTITY=users-hl7 build-lambda-common
+
+build-FulfillmentCenterFunction:
+	$(MAKE) HANDLER=apps/fulfillment-center/src/main.ts ENTITY=fulfillment-center build-lambda-common

@@ -21,6 +21,7 @@ import { UsersRecommendationsModule } from '../../users-recommendations/src/user
 import { Hl7Module } from '../../hl7/src/hl7.module';
 import { Hl7ErrorNotificationsModule } from '../../hl7-error-notifications/src/hl7-error-notifications.module';
 import { UsersHl7Module } from '../../users-hl7/src/users-hl7.module';
+import { FulfillmentCenterModule } from '../../fulfillment-center/src/fulfillment-center.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { UsersHl7Module } from '../../users-hl7/src/users-hl7.module';
     Hl7Module,
     Hl7ErrorNotificationsModule,
     UsersHl7Module,
+    FulfillmentCenterModule,
   ]
 })
 export class SwaggerAppModule { }

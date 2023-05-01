@@ -14,6 +14,7 @@ import { UsersService } from '../../users/src/users.service';
 import { modelProviders } from './models.provider';
 import { SamplesController } from './samples.controller';
 import { SamplesService } from './samples.service';
+import { FulfillmentCenterService } from '../../fulfillment-center/src/fulfillment-center.service';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { SamplesService } from './samples.service';
     SessionsService,
     KlaviyoModelService,
     KlaviyoService,
+    FulfillmentCenterService,
     JwtStrategy,
     ...guardProviders,
     sequelizeProvider(entities),

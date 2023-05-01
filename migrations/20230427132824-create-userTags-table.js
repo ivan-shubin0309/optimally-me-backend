@@ -7,7 +7,7 @@ module.exports = {
         id INTEGER AUTO_INCREMENT,
         
         userId INTEGER NOT NULL,
-        key VARCHAR(255) NOT NULL,
+        \`key\` VARCHAR(255) NOT NULL,
         \`type\` VARCHAR(255) NOT NULL,
         value VARCHAR(255) NOT NULL,
         quizType TINYINT NOT NULL,
