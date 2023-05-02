@@ -10,7 +10,7 @@ import { InternalFileTypes } from '../../common/src/resources/files/file-types';
 import { HL7_FILE_TYPE, PDF_CONTENT_TYPE } from '../../common/src/resources/files/files-validation-rules';
 import { Hl7FtpService } from './hl7-ftp.service';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
-import { BIOMARKER_MAPPING_ERROR, INVALID_CUSTOMER_ID, INVALID_SAMPLE_ID_ERROR, LAB_ID, OBJECT_ALREADY_PROCESSED_ERROR, SAMPLE_CODE_FROM_PDF_RESULT_FILE, SAMPLE_CODE_FROM_RESULT_FILE, SAMPLE_CODE_FROM_STATUS_FILE, UNIT_MISMATCH_ERROR } from '../../common/src/resources/hl7/hl7-constants';
+import { BIOMARKER_MAPPING_ERROR, INVALID_CUSTOMER_ID, INVALID_SAMPLE_ID_ERROR, OBJECT_ALREADY_PROCESSED_ERROR, SAMPLE_CODE_FROM_PDF_RESULT_FILE, SAMPLE_CODE_FROM_RESULT_FILE, SAMPLE_CODE_FROM_STATUS_FILE, UNIT_MISMATCH_ERROR } from '../../common/src/resources/hl7/hl7-constants';
 import axios from 'axios';
 import { DateTime } from 'luxon';
 import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
@@ -26,6 +26,7 @@ import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
 import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
 import { recommendationTypesToRangeTypes, UserBiomarkerRangeTypes } from '../../common/src/resources/usersBiomarkers/user-biomarker-range-types';
 import { recommendationTypesClientValues } from '../../common/src/resources/recommendations/recommendation-types';
+import { hl7LabNames } from 'apps/common/src/resources/hl7/hl7-lab-names';
 
 @Injectable()
 export class Hl7Service extends BaseService<Hl7Object> {
@@ -78,7 +79,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
                 const objectsToCreate = userSamples.map(userSample => ({
                     userId: userSample.userId,
-                    lab: LAB_ID,
+                    lab: hl7LabNames[userSample.sample.labName],
                     sampleCode: userSample.sample.sampleId,
                     status: Hl7ObjectStatuses.new,
                     email: userSample.user.email,
@@ -89,6 +90,9 @@ export class Hl7Service extends BaseService<Hl7Object> {
                     activatedAt: userSample.createdAt,
                     isQuizCompleted: userSample.user.additionalField.isSelfAssesmentQuizCompleted,
                     userOtherFeature: userSample.userOtherFeature,
+                    labId: userSample.sample.labProfileId,
+                    testProductName: userSample.sample.productName,
+                    orderId: userSample.sample.orderId,
                 }));
 
                 await this.model.bulkCreate(objectsToCreate, { transaction } as any);
@@ -206,7 +210,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
             {
                 sampleId: hl7Object.sampleCode,
                 testName: hl7Object.testProductName,
-                labProfileId: LAB_ID,
+                labProfileId: hl7Object.labId,
                 activationDate: hl7Object.activatedAt,
                 receivedDate: hl7Object.labReceivedAt
             }
@@ -430,7 +434,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
                 {
                     sampleId: hl7Object.sampleCode,
                     testName: hl7Object.testProductName,
-                    labProfileId: LAB_ID,
+                    labProfileId: hl7Object.labId,
                     activationDate: hl7Object.activatedAt,
                     resultsDate: hl7Object.resultAt,
                     isResultsFailed: !!bodyForUpdate.toFollow,
@@ -453,7 +457,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
                     {
                         sampleId: hl7Object.sampleCode,
                         testName: hl7Object.testProductName,
-                        labProfileId: LAB_ID,
+                        labProfileId: hl7Object.labId,
                         activationDate: hl7Object.activatedAt,
                         resultsDate: hl7Object.resultAt,
                         badResults: badUserResults.map(userResult => ({

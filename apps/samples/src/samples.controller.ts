@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Query, Request } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Query, Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserRoles } from '../../common/src/resources/users';
 import { Roles } from '../../common/src/resources/common/role.decorator';
@@ -20,7 +20,8 @@ import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
 import { UsersService } from '../../users/src/users.service';
 import { DateTime } from 'luxon';
 import { OtherFeatureTypes } from '../../common/src/resources/filters/other-feature-types';
-import { LAB_ID } from '../../common/src/resources/hl7/hl7-constants';
+import { hl7LabNames } from '../../common/src/resources/hl7/hl7-lab-names';
+import { FulfillmentCenterService } from '../../fulfillment-center/src/fulfillment-center.service';
 
 @ApiTags('samples')
 @Controller('samples')
@@ -31,6 +32,7 @@ export class SamplesController {
         private readonly klaviyoModelService: KlaviyoModelService,
         private readonly klaviyoService: KlaviyoService,
         private readonly usersService: UsersService,
+        private readonly fulfillmentCenterService: FulfillmentCenterService,
     ) { }
 
     @ApiBearerAuth()
@@ -74,6 +76,8 @@ export class SamplesController {
     @ApiResponse({ type: () => SampleDto })
     @Get('/sampleId')
     async checkSampleId(@Query() query: CheckSampleIdDto): Promise<SampleDto> {
+        let sampleStatus;
+
         const sample = await this.samplesService.getOne([
             { method: ['byIsActivated', false] },
             { method: ['bySampleId', query.sampleId] }
@@ -87,7 +91,11 @@ export class SamplesController {
             });
         }
 
-        return new SampleDto(sample);
+        if (!sample.testKitType) {
+            [sampleStatus] = await this.fulfillmentCenterService.getSampleStatus(sample.sampleId);
+        }
+
+        return new SampleDto(sample, { isFemaleLifecycleRequired: sampleStatus?.require_female_cycle_status });
     }
 
     @ApiBearerAuth()
@@ -110,15 +118,7 @@ export class SamplesController {
             });
         }
 
-        if (sample.testKitType === TestKitTypes.femaleHormones && !body.otherFeature) {
-            throw new NotFoundException({
-                message: this.translator.translate('OTHER_FEATURE_REQUIRED'),
-                errorCode: 'OTHER_FEATURE_REQUIRED',
-                statusCode: HttpStatus.NOT_FOUND
-            });
-        }
-
-        await this.samplesService.activateSample(sample.id, req.user.userId, body.otherFeature);
+        await this.samplesService.activateSample(sample, req.user.userId, body.otherFeature);
 
         sample = await this.samplesService.getOne([
             { method: ['bySampleId', params.sampleId] }
@@ -137,7 +137,7 @@ export class SamplesController {
                     properties: {
                         Blood_Last_Activation_Date: DateTime.utc().toFormat('yyyy-MM-dd'),
                         Blood_Last_Activated_Sample_ID: sample.sampleId,
-                        Blood_Last_Activated_Test_Name: '', //TO DO on fulfillment center integration
+                        Blood_Last_Activated_Test_Name: sample.productName,
                         Last_Female_Cycle_Status: sample.testKitType === TestKitTypes.femaleHormones
                             ? OtherFeatureTypes[body.otherFeature]
                             : null,
@@ -151,13 +151,13 @@ export class SamplesController {
             user.email,
             {
                 sampleId: sample.sampleId,
-                testName: '', //TO DO on fulfillment center integration
+                testName: sample.productName,
                 isFemaleCycleStatusRequired: sample.testKitType === TestKitTypes.femaleHormones,
                 femaleCycleStatus: sample.testKitType === TestKitTypes.femaleHormones
                     ? OtherFeatureTypes[body.otherFeature]
                     : null,
-                labProfileId: LAB_ID,
-                expiryDate: '', //TO DO on fulfillment center integration
+                labProfileId: hl7LabNames[sample.labProfileId],
+                expiryDate: sample.expireAt,
                 activationDate: DateTime.utc().toFormat('yyyy-MM-dd')
             }
         );

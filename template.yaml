@@ -712,3 +712,17 @@ Resources:
           Properties:
             Path: /users/hl7-objects
             Method: ANY
+
+  FulfillmentCenterFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/fulfillment-center/src/main.handler
+      Description:
+      Events:
+        UsersHl7ObjectsApi:
+          Type: Api
+          Properties:
+            Path: /sirane
+            Method: ANY
