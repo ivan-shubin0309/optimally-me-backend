@@ -19,6 +19,8 @@ export class FulfillmentCenterController {
     @Public()
     @Post()
     async sampleStatusesWebhook(@Body() body: PostSampleStatusDto): Promise<void> {
+        console.log(JSON.stringify(body));
+
         await this.fulfillmentCenterService.signatureVerify(body.sample_id, body.signature);
 
         const sample = await this.samplesService.getOne([{ method: ['bySampleId', body.sample_id] }]);
