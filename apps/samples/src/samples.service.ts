@@ -43,7 +43,7 @@ export class SamplesService extends BaseService<Sample> {
         if (!sample.testKitType) {
             const [sampleStatus] = await this.fulfillmentCenterService.getSampleStatus(sample.sampleId);
 
-            if (!sampleStatus || !sampleStatus.sample_id) {
+            if (!sampleStatus || !sampleStatus.product_name) {
                 throw new BadRequestException({
                     message: this.translator.translate('FULFILLMENT_CENTER_SAMPLE_NOT_FOUND'),
                     errorCode: 'FULFILLMENT_CENTER_SAMPLE_NOT_FOUND',
@@ -52,7 +52,6 @@ export class SamplesService extends BaseService<Sample> {
             }
 
             await sample.update({
-                isActivated: true,
                 productName: sampleStatus?.product_name,
                 labName: sampleStatus?.lab_name,
                 labProfileId: sampleStatus?.lab_profile_id,
@@ -73,10 +72,17 @@ export class SamplesService extends BaseService<Sample> {
             });
         }
 
-        await this.userSampleModel.create({
-            sampleId: sample.id,
-            userId,
-            userOtherFeature
+        await this.dbConnection.transaction(async transaction => {
+            await Promise.all([
+                sample.update({
+                    isActivated: true,
+                }, { transaction }),
+                this.userSampleModel.create({
+                    sampleId: sample.id,
+                    userId,
+                    userOtherFeature
+                }, { transaction })
+            ]);
         });
     }
 }
