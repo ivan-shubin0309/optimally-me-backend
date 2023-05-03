@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '../../utils/config/config.service';
 import { User } from '../../../../users/src/models';
 import { TranslatorService } from 'nestjs-translator';
-import { SendEmailCommand, SES } from '@aws-sdk/client-ses';
+import { SES } from '@aws-sdk/client-ses';
 import { SesMessageParamsDto } from './models/ses-message-params.dto';
 import { SesMessageBodyDto } from './models/ses-message-body.dto';
 import { SesMessageBaseParamDto } from './models/ses-message-base-param.dto';
@@ -128,9 +128,7 @@ export class MailerService {
         return this.sendMail({
             to: [user.email],
             templateData: {
-                title: this.translatorService.translate('ADMIN_EMAIL_SAMPLE_ID_ERROR_SUBJECT', {
-                    replace: { sampleId: options.sampleId, resultAt: options.resultAt }
-                }),
+                title: this.translatorService.translate('ADMIN_EMAIL_SAMPLE_ID_ERROR_TITLE'),
                 body: this.translatorService.translate('ADMIN_EMAIL_SAMPLE_ID_ERROR_BODY', {
                     replace: {
                         sampleId: options.sampleId,
