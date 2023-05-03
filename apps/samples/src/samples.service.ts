@@ -40,9 +40,32 @@ export class SamplesService extends BaseService<Sample> {
     }
 
     async activateSample(sample: Sample, userId: number, userOtherFeature: OtherFeatureTypes): Promise<void> {
-        const [sampleStatus] = await this.fulfillmentCenterService.getSampleStatus(sample.sampleId);
+        if (!sample.testKitType) {
+            const [sampleStatus] = await this.fulfillmentCenterService.getSampleStatus(sample.sampleId);
 
-        if (sampleStatus && sampleStatus.require_female_cycle_status && !userOtherFeature) {
+            if (!sampleStatus || !sampleStatus.sample_id) {
+                throw new BadRequestException({
+                    message: this.translator.translate('FULFILLMENT_CENTER_SAMPLE_NOT_FOUND'),
+                    errorCode: 'FULFILLMENT_CENTER_SAMPLE_NOT_FOUND',
+                    statusCode: HttpStatus.BAD_REQUEST
+                });
+            }
+
+            await sample.update({
+                isActivated: true,
+                productName: sampleStatus?.product_name,
+                labName: sampleStatus?.lab_name,
+                labProfileId: sampleStatus?.lab_profile_id,
+                orderSource: sampleStatus?.order_source,
+                orderId: sampleStatus?.order_id,
+                expireAt: sampleStatus?.expiry_date,
+                testKitType: sampleStatus?.require_female_cycle_status
+                    ? TestKitTypes.femaleHormones
+                    : TestKitTypes.default
+            });
+        }
+
+        if (sample.testKitType === TestKitTypes.femaleHormones && !userOtherFeature) {
             throw new BadRequestException({
                 message: this.translator.translate('OTHER_FEATURE_REQUIRED'),
                 errorCode: 'OTHER_FEATURE_REQUIRED',
@@ -50,28 +73,10 @@ export class SamplesService extends BaseService<Sample> {
             });
         }
 
-        await this.dbConnection.transaction(async transaction => {
-            await Promise.all([
-                this.model
-                    .scope([{ method: ['byId', sample.id] }])
-                    .update({ 
-                        isActivated: true,
-                        productName: sampleStatus?.product_name,
-                        labName: sampleStatus?.lab_name,
-                        labProfileId: sampleStatus?.lab_profile_id,
-                        orderSource: sampleStatus?.order_source,
-                        orderId: sampleStatus?.order_id,
-                        expireAt: sampleStatus?.expiry_date,
-                        testKitType: sampleStatus?.require_female_cycle_status
-                            ? TestKitTypes.femaleHormones
-                            : TestKitTypes.default
-                    }, { transaction } as any),
-                this.userSampleModel.create({ 
-                    sampleId: sample.id, 
-                    userId,
-                    userOtherFeature
-                }, { transaction })
-            ]);
+        await this.userSampleModel.create({
+            sampleId: sample.id,
+            userId,
+            userOtherFeature
         });
     }
 }

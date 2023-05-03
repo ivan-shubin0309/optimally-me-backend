@@ -156,7 +156,7 @@ export class SamplesController {
                 femaleCycleStatus: sample.testKitType === TestKitTypes.femaleHormones
                     ? OtherFeatureTypes[body.otherFeature]
                     : null,
-                labProfileId: hl7LabNames[sample.labProfileId],
+                labProfileId: sample.labProfileId,
                 expiryDate: sample.expireAt,
                 activationDate: DateTime.utc().toFormat('yyyy-MM-dd')
             }

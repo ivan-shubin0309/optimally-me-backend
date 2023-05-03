@@ -52,8 +52,8 @@ export class Hl7ObjectDto extends BaseDto<Hl7Object> {
     @ApiProperty({ type: () => String, required: false })
     readonly lab: string;
 
-    @ApiProperty({ type: () => Number, required: false })
-    readonly orderId: number;
+    @ApiProperty({ type: () => String, required: false })
+    readonly orderId: string;
 
     @ApiProperty({ type: () => String, required: false })
     readonly testProductName: string;

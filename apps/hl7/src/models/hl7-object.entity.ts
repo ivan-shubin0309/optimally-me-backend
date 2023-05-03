@@ -155,10 +155,10 @@ export class Hl7Object extends Model {
     lab: string;
 
     @Column({
-        type: DataType.INTEGER,
+        type: DataType.STRING,
         allowNull: true
     })
-    orderId: number;
+    orderId: string;
 
     @Column({
         type: DataType.STRING,
