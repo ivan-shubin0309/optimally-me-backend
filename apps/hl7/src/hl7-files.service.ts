@@ -95,7 +95,7 @@ export class Hl7FilesService {
         const obrSegment = message.addSegment(['OBR']);
         obrSegment.addField('1', 1);
         obrSegment.addField(hl7Object.sampleCode, 2);
-        obrSegment.addField(hl7Object.labId, 4);
+        obrSegment.addField(hl7Object.labId || '', 4);
         obrSegment.addField('Normal', 5);
 
         return message.toString().replace(/\n|\r\n|\r/g, '\r\n');
