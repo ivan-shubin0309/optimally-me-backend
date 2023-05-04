@@ -278,6 +278,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/fulfillment-center/tsconfig.app.json"
       }
+    },
+    "additional-authentications": {
+      "type": "application",
+      "root": "apps/additional-authentications",
+      "entryFile": "main",
+      "sourceRoot": "apps/additional-authentications/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/additional-authentications/tsconfig.app.json"
+      }
     }
   }
 }

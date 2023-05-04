@@ -6,6 +6,7 @@ import { SexTypes } from '../../../common/src/resources/filters/sex-types';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { UserAdditionalField } from './user-additional-field.entity';
 import { SkinTypes } from '../../../common/src/resources/filters/skin-types';
+import { AdditionalAuthenticationTypes } from '../../../common/src/resources/users-mfa-devices/additional-authentication-types';
 
 export class UserAdditionalFieldDto {
     constructor(additionalField: UserAdditionalField) {
@@ -20,6 +21,7 @@ export class UserAdditionalFieldDto {
         this.skinType = additionalField.skinType;
         this.isSensitiveSkin = additionalField.isSensitiveSkin;
         this.isSelfAssesmentQuizCompleted = additionalField.isSelfAssesmentQuizCompleted;
+        this.additionalAuthenticationType = additionalField.additionalAuthenticationType;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -54,4 +56,7 @@ export class UserAdditionalFieldDto {
 
     @ApiProperty({ type: () => Boolean, required: true })
     readonly isSelfAssesmentQuizCompleted: boolean;
+
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(AdditionalAuthenticationTypes) })
+    readonly additionalAuthenticationType: number;
 }

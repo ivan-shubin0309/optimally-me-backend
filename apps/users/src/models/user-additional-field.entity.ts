@@ -6,6 +6,7 @@ import { OtherFeatureTypes } from '../../../common/src/resources/filters/other-f
 import { RegistrationSteps } from '../../../common/src/resources/users/registration-steps';
 import { SkinTypes } from '../../../common/src/resources/filters/skin-types';
 import { RegistrationSources } from '../../../common/src/resources/users/registration-sources';
+import { AdditionalAuthenticationTypes } from '../../../common/src/resources/users-mfa-devices/additional-authentication-types';
 
 @Scopes(() => ({
     byUserId: (userId: number) => ({ where: { userId } }),
@@ -92,4 +93,10 @@ export class UserAdditionalField extends Model {
         allowNull: true
     })
     registrationSource: RegistrationSources;
+
+    @Column({
+        type: DataType.TINYINT,
+        allowNull: true
+    })
+    additionalAuthenticationType: AdditionalAuthenticationTypes;
 }
