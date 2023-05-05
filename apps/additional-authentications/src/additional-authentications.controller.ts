@@ -68,14 +68,6 @@ export class AdditionalAuthenticationsController {
 
         const decoded = await this.verificationsService.decodeToken(verificationToken.token, 'VERIFICATION_LINK_EXPIRED');
 
-        if (decoded.data.sessionId !== req.user.sessionId) {
-            throw new NotFoundException({
-                message: this.translator.translate('SESSION_ID_INVALID'),
-                errorCode: 'SESSION_ID_INVALID',
-                statusCode: HttpStatus.NOT_FOUND
-            });
-        }
-
         const user = await this.usersService.getOne([
             { method: ['byId', verificationToken.userId] },
             { method: ['byRoles', [UserRoles.user]] }
