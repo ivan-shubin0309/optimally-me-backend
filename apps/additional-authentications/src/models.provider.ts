@@ -1,6 +1,6 @@
 import { UserAdditionalField } from '../../users/src/models/user-additional-field.entity';
 import { User } from '../../users/src/models';
-import { UserMfaDevice } from './models/user-mfa-device.entity';
+import { UserVerifiedDevice } from './models/user-verified-device.entity';
 
 export const modelProviders = [
     {
@@ -12,7 +12,7 @@ export const modelProviders = [
         useValue: UserAdditionalField,
     },
     {
-        provide: 'USER_MFA_DEVICE_MODEL',
-        useValue: UserMfaDevice,
+        provide: 'USER_VERIFIED_DEVICE_MODEL',
+        useValue: UserVerifiedDevice,
     },
 ];

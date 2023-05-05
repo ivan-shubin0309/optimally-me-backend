@@ -14,7 +14,8 @@ import { Op } from 'sequelize';
         where: {
             createdAt: { [Op.gte]: date }
         }
-    })
+    }),
+    byCode: (code) => ({ where: { code } }),
 }))
 @Table({
     tableName: 'verificationTokens',
@@ -41,6 +42,12 @@ export class VerificationToken extends Model {
         allowNull: false
     })
     token: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true,
+    })
+    code: string;
 
     @Column({
         type: DataType.BOOLEAN,

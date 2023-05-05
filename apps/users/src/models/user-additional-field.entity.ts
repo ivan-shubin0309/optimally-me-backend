@@ -93,10 +93,4 @@ export class UserAdditionalField extends Model {
         allowNull: true
     })
     registrationSource: RegistrationSources;
-
-    @Column({
-        type: DataType.TINYINT,
-        allowNull: true
-    })
-    additionalAuthenticationType: AdditionalAuthenticationTypes;
 }

@@ -54,6 +54,7 @@ import { Hl7ErrorNotification } from '../../../../hl7-error-notifications/src/mo
 import { UserWidgetDataSource } from '../../../../users-widgets/src/models/user-widget-data-source.entity';
 import { UserKlaviyo } from '../../../../klaviyo/src/models/user-klaviyo.entity';
 import { UserTag } from '../../../../users-tags/src/models/user-tag.entity';
+import { UserVerifiedDevice } from '../../../../additional-authentications/src/models/user-verified-device.entity';
 
 export const entities = [
     User,
@@ -112,4 +113,5 @@ export const entities = [
     UserWidgetDataSource,
     UserKlaviyo,
     UserTag,
+    UserVerifiedDevice,
 ];

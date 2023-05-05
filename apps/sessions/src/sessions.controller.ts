@@ -36,6 +36,9 @@ import { UserCodesService } from './user-codes.service';
 import { UserCodeDto } from './models/user-code.dto';
 import { GetUserSessionByCodeDto } from './models/get-user-session-by-code.dto';
 import { DateTime } from 'luxon';
+import { SessionDynamicParamsDto } from './models/session-dynamic-params.dto';
+import { AdditionalAuthenticationsService } from '../../additional-authentications/src/additional-authentications.service';
+import { IsNotRequiredAdditionalAuthentication } from '../../common/src/resources/common/is-not-required-additional-authentication.decorator';
 
 @ApiTags('sessions')
 @Controller('sessions')
@@ -47,6 +50,7 @@ export class SessionsController {
     private readonly configService: ConfigService,
     private readonly usersDevicesService: UsersDevicesService,
     private readonly userCodesService: UserCodesService,
+    private readonly additionalAuthenticationsService: AdditionalAuthenticationsService,
   ) {}
 
   @Public()
@@ -75,19 +79,33 @@ export class SessionsController {
       });
     }
 
-    const session = await this.sessionsService.create(user.id, {
-      role: user.role,
-      email: user.email,
-      registrationStep: user?.additionalField?.registrationStep || RegistrationSteps.profileSetup,
-      isEmailVerified: !!user?.additionalField?.isEmailVerified,
-      lifeTime: body.lifeTime
-    });
+    const session = await this.sessionsService.create(
+      user.id,
+      {
+        role: user.role,
+        email: user.email,
+        registrationStep: user?.additionalField?.registrationStep || RegistrationSteps.profileSetup,
+        isEmailVerified: !!user?.additionalField?.isEmailVerified,
+        lifeTime: body.lifeTime
+      },
+      {
+        isDeviceVerified: false,
+        additionalAuthenticationType: user.additionalAuthenticationType,
+      }
+    );
+
+    const cachedSession = await this.sessionsService.findSession(session.accessToken);
+
+    if (user.additionalAuthenticationType) {
+      await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, user.additionalAuthenticationType, cachedSession.sessionId);
+    }
 
     await this.userCodesService.generateCode(user.id, session.accessToken, session.refreshToken, session.expiresAt);
 
     return new UserSessionDto(session, user);
   }
 
+  @IsNotRequiredAdditionalAuthentication()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Destroy session' })
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -198,5 +216,14 @@ export class SessionsController {
     }
 
     return new UserSessionDto(new SessionDto(userCode.sessionToken, userCode.refreshToken, DateTime.fromJSDate(userCode.expiresAt).valueOf()), user);
+  }
+
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ type: () => SessionDynamicParamsDto })
+  @ApiOperation({ summary: 'Get session dynamic params' })
+  @Roles(UserRoles.user)
+  @Get('/dynamic-params')
+  async getSessionDynamicParams(@Request() req: Request & { user: SessionDataDto & { [key: string]: any } }): Promise<SessionDynamicParamsDto> {
+    return new SessionDynamicParamsDto(req.user.userId);
   }
 }

@@ -16,5 +16,5 @@ export class PostAuthenticationMethodDto {
     @IsString()
     @MaxLength(255)
     @Transform(({ value }: TransformFnParams) => value?.trim())
-    readonly deviceToken: string;
+    readonly deviceId: string;
 }

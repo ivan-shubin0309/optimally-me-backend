@@ -96,6 +96,11 @@ Resources:
           Properties:
             Path: /sessions/codes
             Method: ANY
+        DynamicParamsApi:
+          Type: Api
+          Properties:
+            Path: /sessions/dynamic-params
+            Method: ANY
 
   UsersFunction:
     Type: AWS::Serverless::Function

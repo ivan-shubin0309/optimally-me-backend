@@ -34,6 +34,7 @@ import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
 import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
 import { registrationSourceClientValue } from '../../common/src/resources/users/registration-sources';
 import { SexClientValues } from '../../common/src/resources/filters/sex-types';
+import { IsNotRequiredAdditionalAuthentication } from '../../common/src/resources/common/is-not-required-additional-authentication.decorator';
 
 @ApiTags('users')
 @Controller('users')
@@ -51,6 +52,7 @@ export class UsersController {
         private readonly klaviyoService: KlaviyoService,
     ) {}
 
+    @IsNotRequiredAdditionalAuthentication()
     @Roles(UserRoles.user)
     @ApiBearerAuth()
     @AllowedRegistrationSteps(
@@ -95,7 +97,7 @@ export class UsersController {
         });
 
         const token = await this.verificationsService.generateToken({ userId: createdUser.id }, EMAIL_TOKEN_EXPIRE);
-        await this.verificationsService.saveToken(createdUser.id, token, TokenTypes.email, true);
+        await this.verificationsService.saveToken(createdUser.id, token, TokenTypes.email, { isExpirePreviousTokens: true });
 
         await this.mailerService.sendUserVerificationEmail(createdUser, token, body.queryString);
 

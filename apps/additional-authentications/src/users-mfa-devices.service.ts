@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Repository } from 'sequelize-typescript';
 import { BaseService } from '../../common/src/base/base.service';
-import { UserMfaDevice } from './models/user-mfa-device.entity';
+import { UserVerifiedDevice } from './models/user-verified-device.entity';
 
 @Injectable()
-export class UsersMfaDevicesService extends BaseService<UserMfaDevice> {
+export class UsersVerifiedDevicesService extends BaseService<UserVerifiedDevice> {
     constructor(
-        @Inject('USER_MFA_DEVICE_MODEL') protected model: Repository<UserMfaDevice>,
+        @Inject('USER_VERIFIED_DEVICE_MODEL') protected model: Repository<UserVerifiedDevice>,
     ) { super(model); }
 }
 

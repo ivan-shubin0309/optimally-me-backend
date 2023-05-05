@@ -3,11 +3,13 @@
 module.exports = {
   up(queryInterface) {
     return queryInterface.sequelize.query(`
-      CREATE TABLE IF NOT EXISTS userMfaDevices (
+      CREATE TABLE IF NOT EXISTS userVerifiedDevices (
         id INTEGER AUTO_INCREMENT,
         
         userId INTEGER NOT NULL,
+        deviceId VARCHAR(255) NOT NULL,
         deviceToken VARCHAR(255) NOT NULL,
+        isMfaDevice BOOLEAN NOT NULL DEFAULT FALSE,
 
         createdAt DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
         updatedAt DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
@@ -16,6 +18,6 @@ module.exports = {
       ) ENGINE=INNODB CHARACTER SET=UTF8MB4 COLLATE UTF8MB4_UNICODE_CI;`);
   },
   down(queryInterface) {
-    return queryInterface.sequelize.query('DROP TABLE IF EXISTS userMfaDevices;');
+    return queryInterface.sequelize.query('DROP TABLE IF EXISTS userVerifiedDevices;');
   }
 };

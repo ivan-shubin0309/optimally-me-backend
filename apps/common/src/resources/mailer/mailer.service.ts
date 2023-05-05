@@ -146,4 +146,18 @@ export class MailerService {
             templateName: EmailTemplates.BASE_EMAIL_TEMPLATE.NAME,
         });
     }
+
+    async sendEmailFactorAuthenticationEmail(user: User, code: string): Promise<void> {
+        return this.sendMail({
+            to: [user.email],
+            templateData: {
+                title: this.translatorService.translate('USER_EMAIL_FACTOR_AUTH_SUBJECT'),
+                body: this.translatorService.translate('USER_EMAIL_FACTOR_AUTH_TEXT', {
+                    replace: { code, firstName: user.firstName, lastName: user.lastName }
+                }),
+                subject: this.translatorService.translate('USER_EMAIL_FACTOR_AUTH_SUBJECT')
+            },
+            templateName: EmailTemplates.BASE_EMAIL_TEMPLATE.NAME,
+        });
+    }
 }

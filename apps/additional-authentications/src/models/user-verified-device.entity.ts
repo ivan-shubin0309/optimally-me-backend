@@ -7,11 +7,11 @@ import { User } from '../../../users/src/models';
     byDeviceToken: (deviceToken) => ({ where: { deviceToken } }),
 }))
 @Table({
-    tableName: 'userMfaDevices',
+    tableName: 'userVerifiedDevices',
     timestamps: true,
     underscored: false
 })
-export class UserMfaDevice extends Model {
+export class UserVerifiedDevice extends Model {
     @ForeignKey(() => User)
     @Column({
         type: DataType.INTEGER,
@@ -23,7 +23,20 @@ export class UserMfaDevice extends Model {
         type: DataType.STRING,
         allowNull: false,
     })
+    deviceId: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: false,
+    })
     deviceToken: string;
+
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    })
+    isMfaDevice: boolean;
 
     @BelongsTo(() => User, 'userId')
     user: User;
