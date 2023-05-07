@@ -12,7 +12,7 @@ import { UsersService } from '../../users/src/users.service';
 import { AdditionalAuthenticationsController } from './additional-authentications.controller';
 import { AdditionalAuthenticationsService } from './additional-authentications.service';
 import { modelProviders } from './models.provider';
-import { UsersVerifiedDevicesService } from './users-mfa-devices.service';
+import { UsersVerifiedDevicesService } from './users-verified-devices.service';
 
 @Module({
     imports: [

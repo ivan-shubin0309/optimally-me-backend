@@ -1,5 +1,6 @@
-import { IsNotEmpty, IsOptional, IsEmail } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsEmail, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform, TransformFnParams } from 'class-transformer';
 
 export class LoginUserDto {
     @ApiProperty({ type: () => String, required: true })
@@ -14,4 +15,10 @@ export class LoginUserDto {
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
     readonly lifeTime: number;
+
+    @ApiProperty({ type: () => String, required: false })
+    @IsOptional()
+    @MaxLength(255)
+    @Transform(({ value }: TransformFnParams) => value?.trim())
+    readonly deviceId: string;
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Headers, HttpCode, HttpStatus, Inject, NotFoundException, Patch, Post, Query, Request } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Headers, HttpCode, HttpStatus, Inject, NotFoundException, Patch, Post, Query, Request, UnprocessableEntityException } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SessionDataDto } from '../../sessions/src/models';
 import { Roles } from '../../common/src/resources/common/role.decorator';
@@ -68,6 +68,28 @@ export class AdditionalAuthenticationsController {
 
         const decoded = await this.verificationsService.decodeToken(verificationToken.token, 'VERIFICATION_LINK_EXPIRED');
 
+        if (
+            decoded.data.authenticationMethod === AdditionalAuthenticationTypes.email
+            && decoded.data.sessionId !== req.user.sessionId
+        ) {
+            throw new UnprocessableEntityException({
+                message: this.translator.translate('SESSION_ID_INVALID'),
+                errorCode: 'SESSION_ID_INVALID',
+                statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+            });
+        }
+
+        if (
+            decoded.data.authenticationMethod === AdditionalAuthenticationTypes.mfa
+            && decoded.data.deviceId !== req.user.deviceId
+        ) {
+            throw new BadRequestException({
+                message: this.translator.translate('DEVICE_NOT_MFA'),
+                errorCode: 'DEVICE_NOT_MFA',
+                statusCode: HttpStatus.BAD_REQUEST
+            });
+        }
+
         const user = await this.usersService.getOne([
             { method: ['byId', verificationToken.userId] },
             { method: ['byRoles', [UserRoles.user]] }
@@ -105,11 +127,26 @@ export class AdditionalAuthenticationsController {
 
         const decoded = await this.verificationsService.decodeToken(verificationToken.token, 'CODE_IS_EXPIRED');
 
-        if (decoded.data.sessionId !== req.user.sessionId) {
-            throw new NotFoundException({
+        if (
+            decoded.data.authenticationMethod === AdditionalAuthenticationTypes.email
+            && decoded.data.sessionId !== req.user.sessionId
+        ) {
+            throw new UnprocessableEntityException({
                 message: this.translator.translate('SESSION_ID_INVALID'),
                 errorCode: 'SESSION_ID_INVALID',
-                statusCode: HttpStatus.NOT_FOUND
+                statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+            });
+        }
+
+
+        if (
+            decoded.data.authenticationMethod === AdditionalAuthenticationTypes.mfa
+            && decoded.data.deviceId !== req.user.deviceId
+        ) {
+            throw new BadRequestException({
+                message: this.translator.translate('DEVICE_NOT_MFA'),
+                errorCode: 'DEVICE_NOT_MFA',
+                statusCode: HttpStatus.BAD_REQUEST
             });
         }
     }

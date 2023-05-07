@@ -5,6 +5,8 @@ import { User } from '../../../users/src/models';
     byId: (id) => ({ where: { id } }),
     byUserId: (userId) => ({ where: { userId } }),
     byDeviceToken: (deviceToken) => ({ where: { deviceToken } }),
+    byIsMfaDevice: (isMfaDevice) => ({ where: { isMfaDevice } }),
+    byDeviceId: (deviceId) => ({ where: { deviceId } }),
 }))
 @Table({
     tableName: 'userVerifiedDevices',

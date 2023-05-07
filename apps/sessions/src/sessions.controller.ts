@@ -39,6 +39,7 @@ import { DateTime } from 'luxon';
 import { SessionDynamicParamsDto } from './models/session-dynamic-params.dto';
 import { AdditionalAuthenticationsService } from '../../additional-authentications/src/additional-authentications.service';
 import { IsNotRequiredAdditionalAuthentication } from '../../common/src/resources/common/is-not-required-additional-authentication.decorator';
+import { UsersVerifiedDevicesService } from '../../additional-authentications/src/users-verified-devices.service';
 
 @ApiTags('sessions')
 @Controller('sessions')
@@ -51,6 +52,7 @@ export class SessionsController {
     private readonly usersDevicesService: UsersDevicesService,
     private readonly userCodesService: UserCodesService,
     private readonly additionalAuthenticationsService: AdditionalAuthenticationsService,
+    private readonly usersVerifiedDevicesService: UsersVerifiedDevicesService,
   ) {}
 
   @Public()
@@ -58,6 +60,7 @@ export class SessionsController {
   @ApiOperation({ summary: 'Start session' })
   @Post('')
   async create(@Body() body: LoginUserDto): Promise<UserSessionDto> {
+    let verifiedDevice;
     const scopes = [
       { method: ['byRoles', [UserRoles.user]] },
       'withAdditionalField'
@@ -79,6 +82,13 @@ export class SessionsController {
       });
     }
 
+    if (body.deviceId) {
+      verifiedDevice = await this.usersVerifiedDevicesService.getOne([
+        { method: ['byUserId', user.id] },
+        { method: ['byDeviceId', body.deviceId] }
+      ]);
+    }
+
     const session = await this.sessionsService.create(
       user.id,
       {
@@ -89,14 +99,15 @@ export class SessionsController {
         lifeTime: body.lifeTime
       },
       {
-        isDeviceVerified: false,
+        isDeviceVerified: !!verifiedDevice,
         additionalAuthenticationType: user.additionalAuthenticationType,
+        deviceId: body.deviceId,
       }
     );
 
     const cachedSession = await this.sessionsService.findSession(session.accessToken);
 
-    if (user.additionalAuthenticationType) {
+    if (user.additionalAuthenticationType && !verifiedDevice) {
       await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, user.additionalAuthenticationType, cachedSession.sessionId);
     }
 
