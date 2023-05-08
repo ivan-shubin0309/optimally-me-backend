@@ -23,13 +23,13 @@ export class UserVerifiedDevice extends Model {
 
     @Column({
         type: DataType.STRING,
-        allowNull: true,
+        allowNull: false,
     })
     deviceId: string;
 
     @Column({
         type: DataType.STRING,
-        allowNull: false,
+        allowNull: true,
     })
     deviceToken: string;
 

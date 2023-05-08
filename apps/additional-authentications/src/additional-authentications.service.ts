@@ -28,14 +28,6 @@ export class AdditionalAuthenticationsService {
 
         if (authenticationMethod === AdditionalAuthenticationTypes.email) {
             await this.mailerService.sendEmailFactorAuthenticationEmail(user, verificationToken.code);
-
-            if (deviceId) {
-                await this.usersVerifiedDevicesService.create({
-                    userId: user.id,
-                    deviceId,
-                    isMfaDevice: false
-                });
-            }
         }
 
         if (authenticationMethod === AdditionalAuthenticationTypes.mfa) {
@@ -44,7 +36,7 @@ export class AdditionalAuthenticationsService {
                 { method: ['byIsMfaDevice', true] }
             ]);
 
-            if (!mfaDevice) {
+            if (!mfaDevice && !user.additionalAuthenticationType) {
                 const userDevice = await this.usersDevicesService.getOne([
                     { method: ['byUserId', user.id] }
                 ]);
@@ -61,6 +53,12 @@ export class AdditionalAuthenticationsService {
                     userId: user.id,
                     deviceToken: userDevice.token,
                     isMfaDevice: true
+                });
+            } else {
+                throw new UnprocessableEntityException({
+                    message: this.translator.translate('MFA_NOT_FOUND'),
+                    errorCode: 'MFA_NOT_FOUND',
+                    statusCode: HttpStatus.UNPROCESSABLE_ENTITY
                 });
             }
 

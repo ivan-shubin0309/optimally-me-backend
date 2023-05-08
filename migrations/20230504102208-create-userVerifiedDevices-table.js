@@ -7,8 +7,8 @@ module.exports = {
         id INTEGER AUTO_INCREMENT,
         
         userId INTEGER NOT NULL,
-        deviceId VARCHAR(255) NULL,
-        deviceToken VARCHAR(255) NOT NULL,
+        deviceId VARCHAR(255) NOT NULL,
+        deviceToken VARCHAR(255) NULL,
         isMfaDevice BOOLEAN NOT NULL DEFAULT FALSE,
 
         createdAt DATETIME NULL DEFAULT CURRENT_TIMESTAMP,

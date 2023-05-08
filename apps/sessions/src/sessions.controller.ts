@@ -110,7 +110,7 @@ export class SessionsController {
     const cachedSession = await this.sessionsService.findSession(session.accessToken);
 
     if (user.additionalAuthenticationType && !verifiedDevice) {
-      await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, body.additionalAuthenticationType || user.additionalAuthenticationType, cachedSession.sessionId);
+      await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, body.additionalAuthenticationType || user.additionalAuthenticationType, cachedSession.sessionId, body.deviceId);
     }
 
     await this.userCodesService.generateCode(user.id, session.accessToken, session.refreshToken, session.expiresAt);

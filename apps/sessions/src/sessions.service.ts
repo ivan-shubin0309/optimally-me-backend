@@ -151,13 +151,17 @@ export class SessionsService {
         await this.redisClient.set(accessToken, JSON.stringify(params), 'PX', lifeTime);
     }
 
-    async findSessionBySessionId(sessionId: string, userId: number): Promise<any> {
+    async findSessionBySessionId(sessionId: string, userId: number): Promise<[SessionDataDto & { [key: string]: any }, string]> {
         const sessionKey = this.getSessionAppendix(userId);
         const existAccessTokens = await this.redisClient.lrange(sessionKey, 0, -1);
         const sessions = await Promise.all(
-            existAccessTokens.map(async token => this.findSession(token))
+            existAccessTokens.map(async token => ({
+                session: await this.findSession(token),
+                token
+            }))
         );
+        const result = sessions.find(data => data.session.sessionId === sessionId);
 
-        return sessions.find(session => session.sessionId === sessionId);
+        return [result.session, result.token];
     }
 }

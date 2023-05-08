@@ -56,8 +56,7 @@ export class AdditionalAuthenticationsController {
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ summary: 'Confirm additional authentication' })
     @Patch()
-    async confirmAdditionalAuthentication(@Headers('Authorization') bearer, @Body() body: PostAuthCodeDto, @Request() req: Request & { user: SessionDataDto & { [key: string]: any } }): Promise<void> {
-        const accessToken = bearer.split(' ')[1];
+    async confirmAdditionalAuthentication(@Body() body: PostAuthCodeDto, @Request() req: Request & { user: SessionDataDto & { [key: string]: any } }): Promise<void> {
         const verificationToken = await this.verificationsService.verifyCode(TokenTypes.additionalAuthentication, body.code, req.user.userId);
 
         const decoded = await this.verificationsService.decodeToken(verificationToken.token, 'CODE_IS_EXPIRED');
@@ -78,7 +77,9 @@ export class AdditionalAuthenticationsController {
             { method: ['byRoles', [UserRoles.user]] }
         ]);
 
-        const cachedSession = await this.sessionsService.findSessionBySessionId(decoded.data.sessionId, user.id);
+        const [cachedSession, accessToken] = await this.sessionsService.findSessionBySessionId(decoded.data.sessionId, user.id);
+
+        console.log(JSON.stringify(cachedSession));
 
         if (!cachedSession) {
             throw new UnprocessableEntityException({
@@ -98,6 +99,14 @@ export class AdditionalAuthenticationsController {
                     ], transaction);
                     await mfaDevice.update({ deviceId: req.user.deviceId }, { transaction });
                 }
+            }
+
+            if (decoded.data.deviceId) {
+                await this.usersVerifiedDevicesService.create({
+                    userId: user.id,
+                    deviceId: decoded.data.deviceId,
+                    isMfaDevice: false
+                });
             }
 
             await verificationToken.update({ isUsed: true }, { transaction });
