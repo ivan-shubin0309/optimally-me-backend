@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { PushNotificationsService } from '../../users-devices/src/push-notifications.service';
 import { JwtStrategy } from '../../common/src/strategies/jwt.strategy';
 import { ConfigModule } from '../../common/src/utils/config/config.module';
 import { entities } from '../../common/src/utils/database/database-entity.provider';
@@ -13,6 +14,9 @@ import { AdditionalAuthenticationsController } from './additional-authentication
 import { AdditionalAuthenticationsService } from './additional-authentications.service';
 import { modelProviders } from './models.provider';
 import { UsersVerifiedDevicesService } from './users-verified-devices.service';
+import { UsersDevicesService } from '../../users-devices/src/users-devices.service';
+import { VerificationsService } from '../../verifications/src/verifications.service';
+import { MailerService } from '../../common/src/resources/mailer/mailer.service';
 
 @Module({
     imports: [
@@ -25,6 +29,10 @@ import { UsersVerifiedDevicesService } from './users-verified-devices.service';
     providers: [
         AdditionalAuthenticationsService,
         UsersVerifiedDevicesService,
+        PushNotificationsService,
+        UsersDevicesService,
+        VerificationsService,
+        MailerService,
         SessionsService,
         UsersService,
         JwtStrategy,

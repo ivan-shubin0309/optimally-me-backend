@@ -13,6 +13,11 @@ import { translatorInstance } from '../../common/src/utils/translator/translator
 import { entities } from '../../common/src/utils/database/database-entity.provider';
 import { UsersDevicesService } from '../../users-devices/src/users-devices.service';
 import { UserCodesService } from './user-codes.service';
+import { AdditionalAuthenticationsService } from '../../additional-authentications/src/additional-authentications.service';
+import { UsersVerifiedDevicesService } from '../../additional-authentications/src/users-verified-devices.service';
+import { VerificationsService } from '../../verifications/src/verifications.service';
+import { MailerService } from '../../common/src/resources/mailer/mailer.service';
+import { PushNotificationsService } from '../../users-devices/src/push-notifications.service';
 
 @Module({
   imports: [
@@ -28,6 +33,11 @@ import { UserCodesService } from './user-codes.service';
     JwtStrategy,
     UsersDevicesService,
     UserCodesService,
+    AdditionalAuthenticationsService,
+    UsersVerifiedDevicesService,
+    VerificationsService,
+    MailerService,
+    PushNotificationsService,
     ...guardProviders,
     sequelizeProvider(entities),
     ...modelProviders

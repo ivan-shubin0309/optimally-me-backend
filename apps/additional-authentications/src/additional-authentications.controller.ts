@@ -13,7 +13,8 @@ import { VerificationsService } from '../../verifications/src/verifications.serv
 import { TokenTypes } from '../../common/src/resources/verificationTokens/token-types';
 import { Sequelize } from 'sequelize-typescript';
 import { SessionsService } from '../../sessions/src/sessions.service';
-import { IsNotRequiredAdditionalAuthentication } from 'apps/common/src/resources/common/is-not-required-additional-authentication.decorator';
+import { IsNotRequiredAdditionalAuthentication } from '../../common/src/resources/common/is-not-required-additional-authentication.decorator';
+import { UsersVerifiedDevicesService } from './users-verified-devices.service';
 
 @ApiBearerAuth()
 @ApiTags('users/additional-authentications')
@@ -26,6 +27,7 @@ export class AdditionalAuthenticationsController {
         private readonly verificationsService: VerificationsService,
         @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
         private readonly sessionsService: SessionsService,
+        private readonly usersVerifiedDevicesService: UsersVerifiedDevicesService,
     ) { }
 
     @ApiOperation({ summary: 'Set additional authentication method' })
@@ -46,15 +48,7 @@ export class AdditionalAuthenticationsController {
             });
         }
 
-        if (body.authenticationMethod === AdditionalAuthenticationTypes.mfa && !body.deviceId) {
-            throw new BadRequestException({
-                message: this.translator.translate('DEVICE_ID_REQUIRED'),
-                errorCode: 'DEVICE_ID_REQUIRED',
-                statusCode: HttpStatus.BAD_REQUEST
-            });
-        }
-
-        await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, body.authenticationMethod, req.user.sessionId, body.deviceId);
+        await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, body.authenticationMethod, req.user.sessionId);
     }
 
     @IsNotRequiredAdditionalAuthentication()
@@ -66,7 +60,7 @@ export class AdditionalAuthenticationsController {
         const accessToken = bearer.split(' ')[1];
         const verificationToken = await this.verificationsService.verifyCode(TokenTypes.additionalAuthentication, body.code, req.user.userId);
 
-        const decoded = await this.verificationsService.decodeToken(verificationToken.token, 'VERIFICATION_LINK_EXPIRED');
+        const decoded = await this.verificationsService.decodeToken(verificationToken.token, 'CODE_IS_EXPIRED');
 
         if (
             decoded.data.authenticationMethod === AdditionalAuthenticationTypes.email
@@ -79,39 +73,36 @@ export class AdditionalAuthenticationsController {
             });
         }
 
-        if (
-            decoded.data.authenticationMethod === AdditionalAuthenticationTypes.mfa
-            && decoded.data.deviceId !== req.user.deviceId
-        ) {
-            throw new BadRequestException({
-                message: this.translator.translate('DEVICE_NOT_MFA'),
-                errorCode: 'DEVICE_NOT_MFA',
-                statusCode: HttpStatus.BAD_REQUEST
-            });
-        }
-
         const user = await this.usersService.getOne([
-            { method: ['byId', verificationToken.userId] },
+            { method: ['byId', req.user.userId] },
             { method: ['byRoles', [UserRoles.user]] }
         ]);
 
-        if (!user) {
-            throw new NotFoundException({
-                message: this.translator.translate('USER_NOT_FOUND'),
-                errorCode: 'USER_NOT_FOUND',
-                statusCode: HttpStatus.NOT_FOUND
+        const cachedSession = await this.sessionsService.findSessionBySessionId(decoded.data.sessionId, user.id);
+
+        if (!cachedSession) {
+            throw new UnprocessableEntityException({
+                message: this.translator.translate('SESSION_ID_INVALID'),
+                errorCode: 'SESSION_ID_INVALID',
+                statusCode: HttpStatus.UNPROCESSABLE_ENTITY
             });
         }
 
         await this.dbConnection.transaction(async transaction => {
             if (!user.additionalAuthenticationType) {
                 await user.update({ additionalAuthenticationType: decoded.data.authenticationMethod }, { transaction });
+                if (decoded.data.authenticationMethod === AdditionalAuthenticationTypes.mfa) {
+                    const mfaDevice = await this.usersVerifiedDevicesService.getOne([
+                        { method: ['byUserId', user.id] },
+                        { method: ['byIsMfaDevice', true] }
+                    ], transaction);
+                    await mfaDevice.update({ deviceId: req.user.deviceId }, { transaction });
+                }
             }
 
             await verificationToken.update({ isUsed: true }, { transaction });
         });
 
-        const cachedSession = Object.assign({}, req.user);
         cachedSession.isDeviceVerified = true;
         cachedSession.additionalAuthenticationType = user.additionalAuthenticationType;
         await this.sessionsService.updateSessionParams(accessToken, cachedSession);

@@ -9,6 +9,7 @@ import { MailerService } from '../../common/src/resources/mailer/mailer.service'
 import { TranslatorService } from 'nestjs-translator';
 import { UsersVerifiedDevicesService } from './users-verified-devices.service';
 import { PushNotificationsService } from '../../users-devices/src/push-notifications.service';
+import { PushNotificationTypes } from 'apps/common/src/resources/push-notifications/push-notification-types';
 
 @Injectable()
 export class AdditionalAuthenticationsService {
@@ -38,22 +39,12 @@ export class AdditionalAuthenticationsService {
         }
 
         if (authenticationMethod === AdditionalAuthenticationTypes.mfa) {
-            const mfaDevice = await this.usersVerifiedDevicesService.getOne([
+            let mfaDevice = await this.usersVerifiedDevicesService.getOne([
                 { method: ['byUserId', user.id] },
                 { method: ['byIsMfaDevice', true] }
             ]);
 
-            if (mfaDevice) {
-                await this.pushNotificationsService.sendPushNotification(); //TO DO
-            } else {
-                if (!deviceId) {
-                    throw new BadRequestException({
-                        message: this.translator.translate('DEVICE_ID_REQUIRED'),
-                        errorCode: 'DEVICE_ID_REQUIRED',
-                        statusCode: HttpStatus.BAD_REQUEST
-                    });
-                }
-
+            if (!mfaDevice) {
                 const userDevice = await this.usersDevicesService.getOne([
                     { method: ['byUserId', user.id] }
                 ]);
@@ -66,13 +57,21 @@ export class AdditionalAuthenticationsService {
                     });
                 }
 
-                await this.usersVerifiedDevicesService.create({
+                mfaDevice = await this.usersVerifiedDevicesService.create({
                     userId: user.id,
-                    deviceId,
                     deviceToken: userDevice.token,
                     isMfaDevice: true
                 });
             }
+
+            const notification = {
+                type: PushNotificationTypes.mfa,
+                data: { code: verificationToken.code },
+                body: this.translator.translate('DEVICE_MFA_TITLE'),
+                title: this.translator.translate('DEVICE_MFA_TITLE')
+            };
+
+            await this.pushNotificationsService.sendPushNotification(mfaDevice.deviceToken, notification);
         }
     }
 }

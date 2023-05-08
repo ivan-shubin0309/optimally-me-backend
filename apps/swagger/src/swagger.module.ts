@@ -22,6 +22,7 @@ import { Hl7Module } from '../../hl7/src/hl7.module';
 import { Hl7ErrorNotificationsModule } from '../../hl7-error-notifications/src/hl7-error-notifications.module';
 import { UsersHl7Module } from '../../users-hl7/src/users-hl7.module';
 import { FulfillmentCenterModule } from '../../fulfillment-center/src/fulfillment-center.module';
+import { AdditionalAuthenticationsModule } from '../../additional-authentications/src/additional-authentications.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { FulfillmentCenterModule } from '../../fulfillment-center/src/fulfillmen
     Hl7ErrorNotificationsModule,
     UsersHl7Module,
     FulfillmentCenterModule,
+    AdditionalAuthenticationsModule,
   ]
 })
 export class SwaggerAppModule { }

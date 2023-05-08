@@ -7,7 +7,7 @@ export class AdditionalAuthenticationGuard implements CanActivate {
     constructor(private reflector: Reflector) { }
 
     canActivate(context: ExecutionContext) {
-        const isRequired = this.reflector.get<number[]>(
+        const isNotRequired = this.reflector.get<number[]>(
             IS_NOT_REQUIRED_ADDITIONAL_AUTHENTICATION_KEY,
             context.getHandler()
         );
@@ -16,7 +16,7 @@ export class AdditionalAuthenticationGuard implements CanActivate {
         if (!user) {
             return true;
         }
-        if (!isRequired) {
+        if (isNotRequired) {
             return true;
         }
         return user.additionalAuthenticationType

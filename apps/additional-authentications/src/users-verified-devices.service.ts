@@ -6,7 +6,7 @@ import { UserVerifiedDevice } from './models/user-verified-device.entity';
 
 interface ICreateVerifiedDevice {
     userId: number;
-    deviceId: string;
+    deviceId?: string;
     deviceToken?: string;
     isMfaDevice: boolean;
 }

@@ -99,7 +99,9 @@ export class SessionsController {
         lifeTime: body.lifeTime
       },
       {
-        isDeviceVerified: !!verifiedDevice,
+        isDeviceVerified: user.additionalAuthenticationType
+          ? !!body.deviceId && !!verifiedDevice
+          : true,
         additionalAuthenticationType: user.additionalAuthenticationType,
         deviceId: body.deviceId,
       }
@@ -108,7 +110,7 @@ export class SessionsController {
     const cachedSession = await this.sessionsService.findSession(session.accessToken);
 
     if (user.additionalAuthenticationType && !verifiedDevice) {
-      await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, user.additionalAuthenticationType, cachedSession.sessionId);
+      await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, body.additionalAuthenticationType || user.additionalAuthenticationType, cachedSession.sessionId);
     }
 
     await this.userCodesService.generateCode(user.id, session.accessToken, session.refreshToken, session.expiresAt);
@@ -229,12 +231,13 @@ export class SessionsController {
     return new UserSessionDto(new SessionDto(userCode.sessionToken, userCode.refreshToken, DateTime.fromJSDate(userCode.expiresAt).valueOf()), user);
   }
 
+  @IsNotRequiredAdditionalAuthentication()
   @ApiBearerAuth()
-  @ApiCreatedResponse({ type: () => SessionDynamicParamsDto })
+  @ApiResponse({ type: () => SessionDynamicParamsDto })
   @ApiOperation({ summary: 'Get session dynamic params' })
   @Roles(UserRoles.user)
   @Get('/dynamic-params')
   async getSessionDynamicParams(@Request() req: Request & { user: SessionDataDto & { [key: string]: any } }): Promise<SessionDynamicParamsDto> {
-    return new SessionDynamicParamsDto(req.user.userId);
+    return new SessionDynamicParamsDto(req.user);
   }
 }

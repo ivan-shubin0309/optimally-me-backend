@@ -65,5 +65,6 @@
     "CODE_IS_USED": "Code already used",
     "CODE_IS_EXPIRED": "Code is expired",
     "USER_DEVICE_NOT_FOUND": "User does not have any device to push notification",
-    "DEVICE_NOT_MFA": "Current device is not the one chosen for mfa"
+    "DEVICE_NOT_MFA": "Current device is not the one chosen for mfa",
+    "DEVICE_MFA_TITLE": "Confirm your authorization"
 }

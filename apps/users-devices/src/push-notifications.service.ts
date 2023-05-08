@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import * as firebaseAdmin from 'firebase-admin';
 import { messaging } from 'firebase-admin';
-import { UserDevice } from './models/user-device.entity';
+import * as uuid from 'uuid';
 
 export interface INotificationBody {
     title: string,
     body: string,
-    type: number
+    type: number,
+    data?: any,
 }
 
 @Injectable()
@@ -23,24 +24,24 @@ export class PushNotificationsService {
                 clientEmail: configService.get('FIREBASE_CLIENT_EMAIL'),
                 privateKey: configService.get('FIREBASE_PRIVATE_KEY')
             })
-        }).messaging();
-
+        }, uuid.v4()).messaging();
     }
 
-    async sendPushNotification(userDevices: UserDevice | UserDevice[], notification: INotificationBody): Promise<void> {
-        let sendResult, toUserDevices: UserDevice[];
+    async sendPushNotification(tokens: string[] | string, notification: INotificationBody): Promise<void> {
+        let sendResult, deviceTokens: string[];
 
-        if (!Array.isArray(userDevices)) {
-            toUserDevices = [userDevices];
+        if (!Array.isArray(tokens)) {
+            deviceTokens = [tokens];
         } else {
-            toUserDevices = userDevices;
+            deviceTokens = tokens;
         }
 
         const notificationPayload = {
-            tokens: toUserDevices.map(userDevice => userDevice.token),
+            tokens: deviceTokens,
             notification: { title: notification.title, body: notification.body },
             data: {
-                type: `${notification.type}`
+                type: `${notification.type}`,
+                ...notification.data
             },
             apns: {
                 payload: {
@@ -60,7 +61,7 @@ export class PushNotificationsService {
         }
 
         console.log(`Result: ${JSON.stringify(sendResult)}`);
-        console.log(`Tokens: ${toUserDevices.map(userDevice => userDevice.token)}`);
+        console.log(`Tokens: ${deviceTokens.join(', ')}`);
         console.log(`Notification: ${JSON.stringify(notificationPayload)}`);
     }
 }
