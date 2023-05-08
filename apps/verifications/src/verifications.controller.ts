@@ -84,7 +84,7 @@ export class VerificationsController {
         }
 
         const token = await this.verificationsService.generateToken({ userId: user.id }, body.tokenLifeTime || RESTORATION_TOKEN_EXPIRE);
-        await this.verificationsService.saveToken(user.id, token, TokenTypes.userPassword, true);
+        await this.verificationsService.saveToken(user.id, token, TokenTypes.userPassword, { isExpirePreviousTokens: true });
 
         link = `${this.configService.get('SWAGGER_BACKEND_URL')}/verifications/password/redirect?token=${token}`;
 
@@ -304,7 +304,7 @@ export class VerificationsController {
         }
 
         const token = await this.verificationsService.generateToken({ userId: user.id }, body.tokenLifeTime);
-        await this.verificationsService.saveToken(user.id, token, TokenTypes.email, true);
+        await this.verificationsService.saveToken(user.id, token, TokenTypes.email, { isExpirePreviousTokens: true });
 
         await this.mailerService.sendUserVerificationEmail(user, token, body.queryString);
     }

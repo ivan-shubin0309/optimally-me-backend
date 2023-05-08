@@ -44,7 +44,7 @@ export class AdminsVerificationsController {
     }
 
     const token = await this.verificationsService.generateToken({ userId: user.id }, body.tokenLifeTime || RESTORATION_TOKEN_EXPIRE);
-    await this.verificationsService.saveToken(user.id, token, TokenTypes.password, true);
+    await this.verificationsService.saveToken(user.id, token, TokenTypes.password, { isExpirePreviousTokens: true });
 
     await this.mailerService.sendRestorePasswordEmail(user, token);
   }

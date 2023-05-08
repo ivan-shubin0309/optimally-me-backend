@@ -96,6 +96,11 @@ Resources:
           Properties:
             Path: /sessions/codes
             Method: ANY
+        DynamicParamsApi:
+          Type: Api
+          Properties:
+            Path: /sessions/dynamic-params
+            Method: ANY
 
   UsersFunction:
     Type: AWS::Serverless::Function
@@ -725,4 +730,18 @@ Resources:
           Type: Api
           Properties:
             Path: /sirane
+            Method: ANY
+
+  AdditionalAuthenticationsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/additional-authentications/src/main.handler
+      Description:
+      Events:
+        UsersMfaDevicesApi:
+          Type: Api
+          Properties:
+            Path: /users/additional-authentications
             Method: ANY

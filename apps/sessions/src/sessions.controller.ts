@@ -36,6 +36,10 @@ import { UserCodesService } from './user-codes.service';
 import { UserCodeDto } from './models/user-code.dto';
 import { GetUserSessionByCodeDto } from './models/get-user-session-by-code.dto';
 import { DateTime } from 'luxon';
+import { SessionDynamicParamsDto } from './models/session-dynamic-params.dto';
+import { AdditionalAuthenticationsService } from '../../additional-authentications/src/additional-authentications.service';
+import { IsNotRequiredAdditionalAuthentication } from '../../common/src/resources/common/is-not-required-additional-authentication.decorator';
+import { UsersVerifiedDevicesService } from '../../additional-authentications/src/users-verified-devices.service';
 
 @ApiTags('sessions')
 @Controller('sessions')
@@ -47,6 +51,8 @@ export class SessionsController {
     private readonly configService: ConfigService,
     private readonly usersDevicesService: UsersDevicesService,
     private readonly userCodesService: UserCodesService,
+    private readonly additionalAuthenticationsService: AdditionalAuthenticationsService,
+    private readonly usersVerifiedDevicesService: UsersVerifiedDevicesService,
   ) {}
 
   @Public()
@@ -54,6 +60,7 @@ export class SessionsController {
   @ApiOperation({ summary: 'Start session' })
   @Post('')
   async create(@Body() body: LoginUserDto): Promise<UserSessionDto> {
+    let verifiedDevice;
     const scopes = [
       { method: ['byRoles', [UserRoles.user]] },
       'withAdditionalField'
@@ -75,19 +82,43 @@ export class SessionsController {
       });
     }
 
-    const session = await this.sessionsService.create(user.id, {
-      role: user.role,
-      email: user.email,
-      registrationStep: user?.additionalField?.registrationStep || RegistrationSteps.profileSetup,
-      isEmailVerified: !!user?.additionalField?.isEmailVerified,
-      lifeTime: body.lifeTime
-    });
+    if (body.deviceId) {
+      verifiedDevice = await this.usersVerifiedDevicesService.getOne([
+        { method: ['byUserId', user.id] },
+        { method: ['byDeviceId', body.deviceId] }
+      ]);
+    }
+
+    const session = await this.sessionsService.create(
+      user.id,
+      {
+        role: user.role,
+        email: user.email,
+        registrationStep: user?.additionalField?.registrationStep || RegistrationSteps.profileSetup,
+        isEmailVerified: !!user?.additionalField?.isEmailVerified,
+        lifeTime: body.lifeTime
+      },
+      {
+        isDeviceVerified: user.additionalAuthenticationType
+          ? !!body.deviceId && !!verifiedDevice
+          : true,
+        additionalAuthenticationType: user.additionalAuthenticationType,
+        deviceId: body.deviceId,
+      }
+    );
+
+    const cachedSession = await this.sessionsService.findSession(session.accessToken);
+
+    if (user.additionalAuthenticationType && !verifiedDevice) {
+      await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, body.additionalAuthenticationType || user.additionalAuthenticationType, cachedSession.sessionId, body.deviceId);
+    }
 
     await this.userCodesService.generateCode(user.id, session.accessToken, session.refreshToken, session.expiresAt);
 
     return new UserSessionDto(session, user);
   }
 
+  @IsNotRequiredAdditionalAuthentication()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Destroy session' })
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -198,5 +229,15 @@ export class SessionsController {
     }
 
     return new UserSessionDto(new SessionDto(userCode.sessionToken, userCode.refreshToken, DateTime.fromJSDate(userCode.expiresAt).valueOf()), user);
+  }
+
+  @IsNotRequiredAdditionalAuthentication()
+  @ApiBearerAuth()
+  @ApiResponse({ type: () => SessionDynamicParamsDto })
+  @ApiOperation({ summary: 'Get session dynamic params' })
+  @Roles(UserRoles.user)
+  @Get('/dynamic-params')
+  async getSessionDynamicParams(@Request() req: Request & { user: SessionDataDto & { [key: string]: any } }): Promise<SessionDynamicParamsDto> {
+    return new SessionDynamicParamsDto(req.user);
   }
 }

@@ -26,6 +26,7 @@
 .PHONY: build-Hl7ErrorNotificationsFunction
 .PHONY: build-UsersHl7Function
 .PHONY: build-FulfillmentCenterFunction
+.PHONY: build-AdditionalAuthenticationsFunction
 
 
 build-RuntimeDependenciesLayer:
@@ -125,3 +126,6 @@ build-UsersHl7Function:
 
 build-FulfillmentCenterFunction:
 	$(MAKE) HANDLER=apps/fulfillment-center/src/main.ts ENTITY=fulfillment-center build-lambda-common
+
+build-AdditionalAuthenticationsFunction:
+	$(MAKE) HANDLER=apps/additional-authentications/src/main.ts ENTITY=additional-authentications build-lambda-common

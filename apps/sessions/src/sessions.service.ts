@@ -37,7 +37,7 @@ export class SessionsService {
         await this.redisClient.del(sessionKey);
     }
 
-    async create(userId: number, sessionOptions?: any): Promise<SessionDto> {
+    async create(userId: number, sessionOptions?: any, dynamicOptions?: any): Promise<SessionDto> {
         const uniqueKey = uuid.v4();
 
         const tokenParams: SessionDataDto = {
@@ -51,6 +51,13 @@ export class SessionsService {
 
         const lifeTime = sessionOptions.lifeTime || this.configService.get('JWT_ACCESS_TOKEN_EXPIRES_IN');
 
+        const dynamicParams = {
+            additionalAuthenticationType: dynamicOptions.additionalAuthenticationType,
+            isDeviceVerified: dynamicOptions.isDeviceVerified,
+            deviceId: dynamicOptions.deviceId,
+            expiresAt: dynamicOptions.expiresAt || DateTime.utc().plus({ milliseconds: lifeTime }).toISO()
+        };
+
         const accessToken = this.jwtService.sign(
             {
                 data: tokenParams
@@ -61,7 +68,7 @@ export class SessionsService {
         );
 
         await this.addTokenToSessionList(userId, accessToken);
-        await this.redisClient.set(accessToken, JSON.stringify(tokenParams), 'PX', lifeTime);
+        await this.redisClient.set(accessToken, JSON.stringify(Object.assign(dynamicParams, tokenParams)), 'PX', lifeTime);
 
         const refreshToken = this.jwtService.sign(
             {
@@ -87,7 +94,7 @@ export class SessionsService {
         return this.redisClient.lrem(this.getSessionAppendix(userId), 0, accessToken);
     }
 
-    async findSession(accessToken: string): Promise<SessionDataDto> {
+    async findSession(accessToken: string): Promise<SessionDataDto & { [key: string]: any }> {
         const cachedSession: SessionDataDto = JSON.parse(await this.redisClient.get(accessToken));
 
         if (!cachedSession) {
@@ -113,6 +120,7 @@ export class SessionsService {
                 statusCode: HttpStatus.UNPROCESSABLE_ENTITY
             });
         }
+        const dynamicParams = await this.findSession(sessionParams.data.accessToken);
         await this.destroy(sessionParams.data.userId, sessionParams.data.accessToken);
         const paramsForNewSession = {
             role: sessionParams.data.role,
@@ -121,7 +129,7 @@ export class SessionsService {
             isEmailVerified: sessionParams.data.isEmailVerified,
             sessionId: sessionParams.data.sessionId,
         };
-        return this.create(sessionParams.data.userId, paramsForNewSession);
+        return this.create(sessionParams.data.userId, paramsForNewSession, dynamicParams);
     }
 
     verifyToken(token: string, error = 'TOKEN_EXPIRED'): any {
@@ -134,5 +142,26 @@ export class SessionsService {
                 statusCode: HttpStatus.UNPROCESSABLE_ENTITY
             });
         }
+    }
+
+    async updateSessionParams(accessToken: string, params: any): Promise<void> {
+        const cachedSession = await this.findSession(accessToken);
+        const lifeTime = DateTime.fromISO(cachedSession.expiresAt).valueOf() - DateTime.utc().valueOf();
+
+        await this.redisClient.set(accessToken, JSON.stringify(params), 'PX', lifeTime);
+    }
+
+    async findSessionBySessionId(sessionId: string, userId: number): Promise<[SessionDataDto & { [key: string]: any }, string]> {
+        const sessionKey = this.getSessionAppendix(userId);
+        const existAccessTokens = await this.redisClient.lrange(sessionKey, 0, -1);
+        const sessions = await Promise.all(
+            existAccessTokens.map(async token => ({
+                session: await this.findSession(token),
+                token
+            }))
+        );
+        const result = sessions.find(data => data.session.sessionId === sessionId);
+
+        return [result.session, result.token];
     }
 }

@@ -74,7 +74,7 @@ export class UsersDevicesController {
 
         for (let i = 0; i < iterations; i++) {
             const devicesList = await this.usersDevicesService.getList(scopes.concat([{ method: ['pagination', { limit: limit, offset: i * limit }] }]));
-            await this.pushNotificationsService.sendPushNotification(devicesList, notificationBody);
+            await this.pushNotificationsService.sendPushNotification(devicesList.map(device => device.token), notificationBody);
         }
     }
 }

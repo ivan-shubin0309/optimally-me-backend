@@ -6,6 +6,7 @@ import { SexTypes } from '../../../common/src/resources/filters/sex-types';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { UserAdditionalField } from './user-additional-field.entity';
 import { SkinTypes } from '../../../common/src/resources/filters/skin-types';
+import { AdditionalAuthenticationTypes } from '../../../common/src/resources/users-mfa-devices/additional-authentication-types';
 
 export class UserAdditionalFieldDto {
     constructor(additionalField: UserAdditionalField) {

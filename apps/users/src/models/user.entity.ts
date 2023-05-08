@@ -4,6 +4,7 @@ import { PasswordHelper } from '../../../common/src/utils/helpers/password.helpe
 import { UserWefitter } from '../../../wefitter/src/models/user-wefitter.entity';
 import { UserAdditionalField } from './user-additional-field.entity';
 import { UserHautAiField } from '../../../haut-ai/src/models/user-haut-ai-field.entity';
+import { AdditionalAuthenticationTypes } from '../../../common/src/resources/users-mfa-devices/additional-authentication-types';
 
 @Scopes(() => ({
     byRoles: (role: number) => ({
@@ -82,6 +83,12 @@ export class User extends Model {
         allowNull: true,
     })
     lastName: string;
+
+    @Column({
+        type: DataType.TINYINT,
+        allowNull: true
+    })
+    additionalAuthenticationType: AdditionalAuthenticationTypes;
 
     @HasOne(() => UserWefitter, 'userId')
     wefitter: UserWefitter;

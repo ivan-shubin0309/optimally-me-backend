@@ -9,6 +9,7 @@ import { BaseService } from '../../common/src/base/base.service';
 import { DateTime } from 'luxon';
 import { User } from '../../users/src/models';
 import { UserAdditionalField } from '../../users/src/models/user-additional-field.entity';
+import { CodeHelper } from 'apps/common/src/resources/common/code-helper';
 
 @Injectable()
 export class VerificationsService extends BaseService<VerificationToken> {
@@ -32,9 +33,9 @@ export class VerificationsService extends BaseService<VerificationToken> {
     );
   }
 
-  async saveToken(userId: number, token: string, type: TokenTypes, isExpirePreviousTokens = false): Promise<void> {
-    await this.dbConnection.transaction(async transaction => {
-      if (isExpirePreviousTokens) {
+  saveToken(userId: number, token: string, type: TokenTypes, options: { isExpirePreviousTokens?: boolean, isDeletePreviousTokens?: boolean, digitCodeLength?: number } = { isExpirePreviousTokens: false, isDeletePreviousTokens: false, digitCodeLength: 0 }): Promise<VerificationToken> {
+    return this.dbConnection.transaction(async transaction => {
+      if (options.isExpirePreviousTokens) {
         await this.model
           .scope([
             { method: ['byType', type] },
@@ -42,7 +43,24 @@ export class VerificationsService extends BaseService<VerificationToken> {
           ])
           .update({ isExpired: true }, { transaction } as any);
       }
-      await this.model.create({ userId, token, type }, { transaction });
+
+      if (options.isDeletePreviousTokens) {
+        await this.model
+          .scope([
+            { method: ['byType', type] },
+            { method: ['byUserId', userId] }
+          ])
+          .destroy({ transaction });
+      }
+
+      return this.model.create({
+        userId,
+        token,
+        type,
+        code: options.digitCodeLength
+          ? CodeHelper.generateDigitCode(options.digitCodeLength)
+          : null,
+      }, { transaction });
     });
   }
 
@@ -84,6 +102,43 @@ export class VerificationsService extends BaseService<VerificationToken> {
       throw new BadRequestException({
         message: this.translatorService.translate('LINK_IS_EXPIRED'),
         errorCode: 'LINK_IS_EXPIRED',
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+    }
+    return verificationToken;
+  }
+
+  async verifyCode(tokenType: number, code: string, userId?: number): Promise<VerificationToken> {
+    const scopes: any[] = [
+      { method: ['byType', tokenType] },
+      { method: ['byCode', code] }
+    ];
+    if (userId) {
+      scopes.push({ method: ['byUserId', userId] });
+    }
+
+    const verificationToken = await this.getOne(scopes);
+
+    if (!verificationToken) {
+      throw new BadRequestException({
+        message: this.translatorService.translate('CODE_INVALID'),
+        errorCode: 'CODE_INVALID',
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+    }
+
+    if (verificationToken.isUsed) {
+      throw new BadRequestException({
+        message: this.translatorService.translate('CODE_IS_USED'),
+        errorCode: 'CODE_IS_USED',
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+    }
+
+    if (verificationToken.isExpired) {
+      throw new BadRequestException({
+        message: this.translatorService.translate('CODE_IS_EXPIRED'),
+        errorCode: 'CODE_IS_EXPIRED',
         statusCode: HttpStatus.BAD_REQUEST
       });
     }
