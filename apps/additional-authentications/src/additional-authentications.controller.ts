@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Headers, HttpCode, HttpStatus, Inject, NotFoundException, Patch, Post, Query, Request, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Headers, HttpCode, HttpStatus, Inject, NotFoundException, Patch, Post, Put, Query, Request, UnprocessableEntityException } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SessionDataDto } from '../../sessions/src/models';
 import { Roles } from '../../common/src/resources/common/role.decorator';
@@ -15,6 +15,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { SessionsService } from '../../sessions/src/sessions.service';
 import { IsNotRequiredAdditionalAuthentication } from '../../common/src/resources/common/is-not-required-additional-authentication.decorator';
 import { UsersVerifiedDevicesService } from './users-verified-devices.service';
+import { PutAuthCodeDto } from './models/put-auth-code.dto';
 
 @ApiBearerAuth()
 @ApiTags('users/additional-authentications')
@@ -79,8 +80,6 @@ export class AdditionalAuthenticationsController {
 
         const [cachedSession, accessToken] = await this.sessionsService.findSessionBySessionId(decoded.data.sessionId, user.id);
 
-        console.log(JSON.stringify(cachedSession));
-
         if (!cachedSession) {
             throw new UnprocessableEntityException({
                 message: this.translator.translate('SESSION_ID_INVALID'),
@@ -123,7 +122,7 @@ export class AdditionalAuthenticationsController {
     @ApiOperation({ summary: 'Verify code for additional authentication' })
     @Get()
     async verifyCode(@Query() query: PostAuthCodeDto, @Request() req: Request & { user: SessionDataDto & { [key: string]: any } }): Promise<void> {
-        const verificationToken = await this.verificationsService.verifyCode(TokenTypes.additionalAuthentication, query.code,);
+        const verificationToken = await this.verificationsService.verifyCode(TokenTypes.additionalAuthentication, query.code);
 
         const decoded = await this.verificationsService.decodeToken(verificationToken.token, 'CODE_IS_EXPIRED');
 
@@ -149,5 +148,66 @@ export class AdditionalAuthenticationsController {
                 statusCode: HttpStatus.BAD_REQUEST
             });
         }
+    }
+
+    @IsNotRequiredAdditionalAuthentication()
+    @ApiOperation({ summary: 'Resend additional authentication code' })
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @Roles(UserRoles.user)
+    @Put()
+    async resendAdditionalAuthenticationCode(@Body() body: PutAuthCodeDto, @Request() req: Request & { user: SessionDataDto & { [key: string]: any } }): Promise<void> {
+        let sessionId, authenticationMethod, deviceId;
+
+        const user = await this.usersService.getOne([
+            { method: ['byId', req.user.userId] },
+            { method: ['byRoles', UserRoles.user] },
+            'withAdditionalField'
+        ]);
+
+        if (body.code) {
+            const verificationToken = await this.verificationsService.getOne([
+                { method: ['byUserId', req.user.userId] },
+                { method: ['byType', TokenTypes.additionalAuthentication] },
+                { method: ['byCode', body.code] }
+            ]);
+
+            if (!verificationToken) {
+                throw new BadRequestException({
+                    message: this.translator.translate('CODE_INVALID'),
+                    errorCode: 'CODE_INVALID',
+                    statusCode: HttpStatus.BAD_REQUEST
+                });
+            }
+
+            await verificationToken.update({ isUsed: true });
+
+            const decoded = await this.verificationsService.decodeToken(verificationToken.token, 'CODE_IS_EXPIRED', true);
+            sessionId = decoded.data.sessionId;
+            authenticationMethod = decoded.data.authenticationMethod;
+            deviceId = decoded.data.deviceId;
+        } else {
+            sessionId = req.user.sessionId;
+            authenticationMethod = user.additionalAuthenticationType;
+        }
+
+        const [cachedSession] = await this.sessionsService.findSessionBySessionId(sessionId, user.id);
+
+        if (!cachedSession) {
+            throw new UnprocessableEntityException({
+                message: this.translator.translate('SESSION_ID_INVALID'),
+                errorCode: 'SESSION_ID_INVALID',
+                statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+            });
+        }
+
+        if (user.additionalAuthenticationType && cachedSession.isDeviceVerified) {
+            throw new UnprocessableEntityException({
+                message: this.translator.translate('DEVICE_ALREADY_VERIFIED'),
+                errorCode: 'DEVICE_ALREADY_VERIFIED',
+                statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+            });
+        }
+
+        await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, authenticationMethod, sessionId, deviceId);
     }
 }

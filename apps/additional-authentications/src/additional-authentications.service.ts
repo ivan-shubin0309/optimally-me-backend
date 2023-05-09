@@ -31,6 +31,7 @@ export class AdditionalAuthenticationsService {
         }
 
         if (authenticationMethod === AdditionalAuthenticationTypes.mfa) {
+            let notificationType = PushNotificationTypes.mfa;
             let mfaDevice = await this.usersVerifiedDevicesService.getOne([
                 { method: ['byUserId', user.id] },
                 { method: ['byIsMfaDevice', true] }
@@ -62,11 +63,13 @@ export class AdditionalAuthenticationsService {
                     deviceToken: userDevice.token,
                     isMfaDevice: true
                 });
+
+                notificationType = PushNotificationTypes.additionalAuthenticationSetup;
             }
 
             const notification = {
-                type: PushNotificationTypes.mfa,
-                data: { code: verificationToken.code },
+                type: notificationType,
+                data: { code: verificationToken.code, },
                 body: this.translator.translate('DEVICE_MFA_TITLE'),
                 title: this.translator.translate('DEVICE_MFA_TITLE')
             };

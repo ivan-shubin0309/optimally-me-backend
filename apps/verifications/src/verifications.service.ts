@@ -64,9 +64,9 @@ export class VerificationsService extends BaseService<VerificationToken> {
     });
   }
 
-  decodeToken(token: string, customMessage = 'LINK_EXPIRED'): any {
+  decodeToken(token: string, customMessage = 'LINK_EXPIRED', ignoreExpiration = false): any {
     try {
-      return JWT.verify(token, this.configService.get('JWT_SECRET'), { ignoreExpiration: false });
+      return JWT.verify(token, this.configService.get('JWT_SECRET'), { ignoreExpiration });
     } catch (e) {
       throw new UnprocessableEntityException({
         message: this.translatorService.translate(customMessage),
