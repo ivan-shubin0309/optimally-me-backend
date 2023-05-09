@@ -37,7 +37,7 @@ export class SessionsService {
         await this.redisClient.del(sessionKey);
     }
 
-    async create(userId: number, sessionOptions?: any, dynamicOptions?: any): Promise<SessionDto> {
+    async create(userId: number, sessionOptions?: any, dynamicOptions: any = {}): Promise<SessionDto> {
         const uniqueKey = uuid.v4();
 
         const tokenParams: SessionDataDto = {
