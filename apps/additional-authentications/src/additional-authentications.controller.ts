@@ -183,11 +183,11 @@ export class AdditionalAuthenticationsController {
 
             const decoded = await this.verificationsService.decodeToken(verificationToken.token, 'CODE_IS_EXPIRED', true);
             sessionId = decoded.data.sessionId;
-            authenticationMethod = decoded.data.authenticationMethod;
+            authenticationMethod = body.authenticationMethod || decoded.data.authenticationMethod;
             deviceId = decoded.data.deviceId;
         } else {
             sessionId = req.user.sessionId;
-            authenticationMethod = user.additionalAuthenticationType;
+            authenticationMethod = body.authenticationMethod || user.additionalAuthenticationType;
         }
 
         const [cachedSession] = await this.sessionsService.findSessionBySessionId(sessionId, user.id);
