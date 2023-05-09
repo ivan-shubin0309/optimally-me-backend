@@ -104,6 +104,7 @@ export class SessionsController {
           : true,
         additionalAuthenticationType: user.additionalAuthenticationType,
         deviceId: body.deviceId,
+        isAdditionalAuthenticationDeclined: false
       }
     );
 

@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Headers, HttpCode, HttpStatus, Inject, NotFoundException, Patch, Post, Put, Query, Request, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Headers, HttpCode, HttpStatus, Inject, NotFoundException, Patch, Post, Put, Query, Request, UnprocessableEntityException } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SessionDataDto } from '../../sessions/src/models';
 import { Roles } from '../../common/src/resources/common/role.decorator';
@@ -190,7 +190,7 @@ export class AdditionalAuthenticationsController {
             authenticationMethod = body.authenticationMethod || user.additionalAuthenticationType;
         }
 
-        const [cachedSession] = await this.sessionsService.findSessionBySessionId(sessionId, user.id);
+        const [cachedSession, accessToken] = await this.sessionsService.findSessionBySessionId(sessionId, user.id);
 
         if (!cachedSession) {
             throw new UnprocessableEntityException({
@@ -208,6 +208,53 @@ export class AdditionalAuthenticationsController {
             });
         }
 
+        cachedSession.isAdditionalAuthenticationDeclined = false;
+        await this.sessionsService.updateSessionParams(accessToken, cachedSession);
         await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, authenticationMethod, sessionId, deviceId);
+    }
+
+    @ApiOperation({ summary: 'Resend additional authentication code' })
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @Roles(UserRoles.user)
+    @Delete()
+    async declineVerification(@Body() body: PostAuthCodeDto, @Request() req: Request & { user: SessionDataDto & { [key: string]: any } }): Promise<void> {
+        const verificationToken = await this.verificationsService.verifyCode(TokenTypes.additionalAuthentication, body.code);
+
+        const decoded = await this.verificationsService.decodeToken(verificationToken.token, 'CODE_IS_EXPIRED');
+
+        if (
+            decoded.data.authenticationMethod === AdditionalAuthenticationTypes.email
+            && decoded.data.sessionId !== req.user.sessionId
+        ) {
+            throw new UnprocessableEntityException({
+                message: this.translator.translate('SESSION_ID_INVALID'),
+                errorCode: 'SESSION_ID_INVALID',
+                statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+            });
+        }
+
+
+        if (
+            decoded.data.authenticationMethod === AdditionalAuthenticationTypes.mfa
+            && decoded.data.deviceId !== req.user.deviceId
+        ) {
+            throw new BadRequestException({
+                message: this.translator.translate('DEVICE_NOT_MFA'),
+                errorCode: 'DEVICE_NOT_MFA',
+                statusCode: HttpStatus.BAD_REQUEST
+            });
+        }
+
+        const user = await this.usersService.getOne([
+            { method: ['byId', req.user.userId] },
+            { method: ['byRoles', UserRoles.user] },
+            'withAdditionalField'
+        ]);
+
+        await verificationToken.update({ isUsed: true });
+
+        const [cachedSession, accessToken] = await this.sessionsService.findSessionBySessionId(decoded.data.sessionId, user.id);
+        cachedSession.isAdditionalAuthenticationDeclined = true;
+        await this.sessionsService.updateSessionParams(accessToken, cachedSession);
     }
 }
