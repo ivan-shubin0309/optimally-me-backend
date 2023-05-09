@@ -213,7 +213,7 @@ export class AdditionalAuthenticationsController {
         await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, authenticationMethod, sessionId, deviceId);
     }
 
-    @ApiOperation({ summary: 'Resend additional authentication code' })
+    @ApiOperation({ summary: 'Reject additional authentication' })
     @HttpCode(HttpStatus.NO_CONTENT)
     @Roles(UserRoles.user)
     @Delete()
