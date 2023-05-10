@@ -19,3 +19,7 @@ export const OBJECT_ALREADY_PROCESSED_ERROR = 'Test object already processed';
 export const INVALID_SAMPLE_ID_ERROR = 'Invalid Sample ID';
 
 export const INVALID_CUSTOMER_ID = 'Invalid Customer ID';
+
+export const SUPER_ADMIN_EMAIL = 'admin@optimallyme.com';
+export const PROD_ENVS = ['prod', 'pre-prod'];
+export const DEV_ADMIN_EMAILS = ['chunikhin.d@cleveroad.com', 'shevchenko.vladyslav.cr@gmail.com'];
