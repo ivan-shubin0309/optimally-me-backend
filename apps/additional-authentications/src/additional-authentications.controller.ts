@@ -136,18 +136,6 @@ export class AdditionalAuthenticationsController {
                 statusCode: HttpStatus.UNPROCESSABLE_ENTITY
             });
         }
-
-
-        if (
-            decoded.data.authenticationMethod === AdditionalAuthenticationTypes.mfa
-            && decoded.data.deviceId !== req.user.deviceId
-        ) {
-            throw new BadRequestException({
-                message: this.translator.translate('DEVICE_NOT_MFA'),
-                errorCode: 'DEVICE_NOT_MFA',
-                statusCode: HttpStatus.BAD_REQUEST
-            });
-        }
     }
 
     @IsNotRequiredAdditionalAuthentication()
@@ -230,18 +218,6 @@ export class AdditionalAuthenticationsController {
                 message: this.translator.translate('SESSION_ID_INVALID'),
                 errorCode: 'SESSION_ID_INVALID',
                 statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-            });
-        }
-
-
-        if (
-            decoded.data.authenticationMethod === AdditionalAuthenticationTypes.mfa
-            && decoded.data.deviceId !== req.user.deviceId
-        ) {
-            throw new BadRequestException({
-                message: this.translator.translate('DEVICE_NOT_MFA'),
-                errorCode: 'DEVICE_NOT_MFA',
-                statusCode: HttpStatus.BAD_REQUEST
             });
         }
 
