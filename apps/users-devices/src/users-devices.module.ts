@@ -13,6 +13,7 @@ import { UsersDevicesController } from './users-devices.controller';
 import { UsersDevicesService } from './users-devices.service';
 import { ConfigModule } from '../../common/src/utils/config/config.module';
 import { PushNotificationsService } from './push-notifications.service';
+import { UsersVerifiedDevicesService } from '../../additional-authentications/src/users-verified-devices.service';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { PushNotificationsService } from './push-notifications.service';
     UsersDevicesService,
     PushNotificationsService,
     SessionsService,
+    UsersVerifiedDevicesService,
     UsersService,
     JwtStrategy,
     ...guardProviders,
