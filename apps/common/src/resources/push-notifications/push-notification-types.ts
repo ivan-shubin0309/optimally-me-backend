@@ -1,4 +1,5 @@
 export enum PushNotificationTypes {
     datasync = 1,
-    mfa = 2
+    additionalAuthenticationSetup = 2,
+    mfa = 3,
 }

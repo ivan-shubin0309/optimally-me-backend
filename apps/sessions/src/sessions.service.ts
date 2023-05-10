@@ -54,6 +54,7 @@ export class SessionsService {
         const dynamicParams = {
             additionalAuthenticationType: dynamicOptions.additionalAuthenticationType,
             isDeviceVerified: dynamicOptions.isDeviceVerified,
+            isAdditionalAuthenticationDeclined: dynamicOptions.isAdditionalAuthenticationDeclined,
             deviceId: dynamicOptions.deviceId,
             expiresAt: dynamicOptions.expiresAt || DateTime.utc().plus({ milliseconds: lifeTime }).toISO()
         };
