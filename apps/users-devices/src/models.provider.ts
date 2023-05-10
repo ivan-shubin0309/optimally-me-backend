@@ -1,7 +1,7 @@
 import { UserAdditionalField } from '../../users/src/models/user-additional-field.entity';
 import { User } from '../../users/src/models';
 import { UserDevice } from './models/user-device.entity';
-import { UsersVerifiedDevicesService } from '../../additional-authentications/src/users-verified-devices.service';
+import { UserVerifiedDevice } from '../../additional-authentications/src/models/user-verified-device.entity';
 
 export const modelProviders = [
     {
@@ -18,6 +18,6 @@ export const modelProviders = [
     },
     {
         provide: 'USER_VERIFIED_DEVICE_MODEL',
-        useValue: UsersVerifiedDevicesService
+        useValue: UserVerifiedDevice
     }
 ];
