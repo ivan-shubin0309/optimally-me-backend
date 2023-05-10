@@ -16,3 +16,12 @@ export const recommendationTypesToRangeTypes = {
     [RecommendationTypes.supraOptimal]: UserBiomarkerRangeTypes.borderline,
     [RecommendationTypes.optimal]: UserBiomarkerRangeTypes.optimal,
 };
+
+export enum UserBiomarkerSkinRangeTypes {
+    poor = 1,
+    canDoBetter = 2,
+    scopeToImprove = 3,
+    good = 4,
+    great = 5,
+    optimal = 6
+}

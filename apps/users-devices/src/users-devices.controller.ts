@@ -10,6 +10,7 @@ import { PostDeviceTokenDto } from './models/post-device-token.dto';
 import { INotificationBody, PushNotificationsService } from './push-notifications.service';
 import { UsersDevicesService } from './users-devices.service';
 import { JwtService } from '@nestjs/jwt';
+import { UsersVerifiedDevicesService } from '../../additional-authentications/src/users-verified-devices.service';
 
 @ApiBearerAuth()
 @ApiTags('users/devices')
@@ -20,16 +21,27 @@ export class UsersDevicesController {
         private readonly translator: TranslatorService,
         private readonly pushNotificationsService: PushNotificationsService,
         private readonly jwtService: JwtService,
+        private readonly usersVerifiedDevicesService: UsersVerifiedDevicesService,
     ) { }
 
     @ApiOperation({ summary: 'Save user device notification token' })
     @Roles(UserRoles.user)
     @Post()
-    async saveNotificationToken(@Body() body: PostDeviceTokenDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
+    async saveNotificationToken(@Body() body: PostDeviceTokenDto, @Request() req: Request & { user: SessionDataDto & { [key: string]: any } }): Promise<void> {
+        const userMfaDevice = await this.usersVerifiedDevicesService.getOne([
+            { method: ['byDeviceId', req.user.deviceId] },
+            { method: ['byIsMfaDevice', true] },
+            { method: ['byUserId', req.user.userId] }
+        ]);
+
         const userDevice = await this.usersDevicesService.getOne([
             { method: ['byUserId', req.user.userId] },
             { method: ['byToken', body.token] }
         ]);
+
+        if (userMfaDevice) {
+            await userMfaDevice.update({ deviceToken: body.token });
+        }
 
         if (userDevice) {
             userDevice.update({
