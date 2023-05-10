@@ -245,11 +245,11 @@ export class WefitterService {
 
         const metricsArray = [];
 
-        if (data[metricTypeToFieldName[WefitterMetricTypes.steps]]) {
+        if (dailySummaryBody[metricTypeToFieldName[WefitterMetricTypes.steps]]) {
             metricsArray.push(WefitterMetricTypes.steps);
         }
 
-        if (data[metricTypeToFieldName[WefitterMetricTypes.caloriesBurned]]) {
+        if (dailySummaryBody[metricTypeToFieldName[WefitterMetricTypes.caloriesBurned]]) {
             metricsArray.push(WefitterMetricTypes.caloriesBurned);
         }
 
@@ -363,23 +363,23 @@ export class WefitterService {
 
         const metricsArray = [];
 
-        if (data[metricTypeToFieldName[WefitterMetricTypes.timeAsleep]]) {
+        if (sleepSummaryBody[metricTypeToFieldName[WefitterMetricTypes.timeAsleep]]) {
             metricsArray.push(WefitterMetricTypes.timeAsleep);
         }
 
-        if (data[metricTypeToFieldName[WefitterMetricTypes.sleepScore]]) {
+        if (sleepSummaryBody[metricTypeToFieldName[WefitterMetricTypes.sleepScore]]) {
             metricsArray.push(WefitterMetricTypes.sleepScore);
         }
-        if (data[metricTypeToFieldName[WefitterMetricTypes.awake]]) {
+        if (sleepSummaryBody[metricTypeToFieldName[WefitterMetricTypes.awake]]) {
             metricsArray.push(WefitterMetricTypes.awake);
         }
-        if (data[metricTypeToFieldName[WefitterMetricTypes.light]]) {
+        if (sleepSummaryBody[metricTypeToFieldName[WefitterMetricTypes.light]]) {
             metricsArray.push(WefitterMetricTypes.light);
         }
-        if (data[metricTypeToFieldName[WefitterMetricTypes.deep]]) {
+        if (sleepSummaryBody[metricTypeToFieldName[WefitterMetricTypes.deep]]) {
             metricsArray.push(WefitterMetricTypes.deep);
         }
-        if (data[metricTypeToFieldName[WefitterMetricTypes.rem]]) {
+        if (sleepSummaryBody[metricTypeToFieldName[WefitterMetricTypes.rem]]) {
             metricsArray.push(WefitterMetricTypes.rem);
         }
 
@@ -457,10 +457,19 @@ export class WefitterService {
                 PaginationHelper.buildPagination({ limit: query.limit, offset: query.offset }, 0)
             );
         }
+        const defaultSource = await this.usersWidgetDataSourcesService.getOne([
+            { method: ['byUserId', userId] },
+            { method: ['byMetricType', modelDataObject.metricEnum] }
+        ]);
+
         const scopes: any[] = [
             { method: ['byUserId', userId] },
-            { method: ['byFieldName', modelDataObject.fieldName, true] }
+            { method: ['byFieldName', modelDataObject.fieldName, true] },
         ];
+
+        if (defaultSource) {
+            scopes.push({ method: ['bySource', defaultSource.source] });
+        }
 
         if (query.startDate || query.endDate) {
             scopes.push({ method: ['byDateInterval', query.startDate, query.endDate] });
