@@ -112,7 +112,7 @@ export class SessionsController {
     const cachedSession = await this.sessionsService.findSession(session.accessToken);
 
     if (user.additionalAuthenticationType && !verifiedDevice) {
-      if (user.additionalAuthenticationType === AdditionalAuthenticationTypes.mfa) {
+      if ((body.additionalAuthenticationType || user.additionalAuthenticationType) === AdditionalAuthenticationTypes.mfa) {
         const mfaDevice = await this.usersVerifiedDevicesService.getOne([
           { method: ['byUserId', user.id] },
           { method: ['byIsMfaDevice', true] }
