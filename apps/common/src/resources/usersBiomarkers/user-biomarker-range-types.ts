@@ -25,3 +25,12 @@ export enum UserBiomarkerSkinRangeTypes {
     great = 5,
     optimal = 6
 }
+
+export const recommendationTypesToSkinRangeTypes = {
+    [RecommendationTypes.criticalLow]: UserBiomarkerSkinRangeTypes.poor,
+    [RecommendationTypes.low]: UserBiomarkerSkinRangeTypes.canDoBetter,
+    [RecommendationTypes.subOptimal]: UserBiomarkerSkinRangeTypes.scopeToImprove,
+    [RecommendationTypes.supraOptimal]: UserBiomarkerSkinRangeTypes.good,
+    [RecommendationTypes.high]: UserBiomarkerSkinRangeTypes.great,
+    [RecommendationTypes.criticalHigh]: UserBiomarkerSkinRangeTypes.optimal,
+};
