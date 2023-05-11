@@ -30,6 +30,7 @@ import { Op } from 'sequelize';
     }),
     byUserId: (userId) => ({ where: { userId } }),
     byToken: (token) => ({ where: { token } }),
+    orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
 }))
 @Table({
     tableName: 'userDevices',

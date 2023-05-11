@@ -29,7 +29,6 @@ export class UsersDevicesController {
     @Post()
     async saveNotificationToken(@Body() body: PostDeviceTokenDto, @Request() req: Request & { user: SessionDataDto & { [key: string]: any } }): Promise<void> {
         const userMfaDevice = await this.usersVerifiedDevicesService.getOne([
-            { method: ['byDeviceId', req.user.deviceId] },
             { method: ['byIsMfaDevice', true] },
             { method: ['byUserId', req.user.userId] }
         ]);
@@ -39,8 +38,18 @@ export class UsersDevicesController {
             { method: ['byToken', body.token] }
         ]);
 
+        const userVerifiedDevice = await this.usersVerifiedDevicesService.getOne([
+            { method: ['byDeviceId', req.user.deviceId] },
+            { method: ['byUserId', req.user.userId] }
+        ]);
+
+
         if (userMfaDevice) {
-            await userMfaDevice.update({ deviceToken: body.token });
+            await userMfaDevice.update({ deviceToken: null, isMfaDevice: false });
+        }
+
+        if (userVerifiedDevice) {
+            await userVerifiedDevice.update({ deviceToken: body.token, isMfaDevice: true });
         }
 
         if (userDevice) {

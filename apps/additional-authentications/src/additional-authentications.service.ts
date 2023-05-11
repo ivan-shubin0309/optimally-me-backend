@@ -47,7 +47,8 @@ export class AdditionalAuthenticationsService {
 
             if (!mfaDevice && !user.additionalAuthenticationType) {
                 const userDevice = await this.usersDevicesService.getOne([
-                    { method: ['byUserId', user.id] }
+                    { method: ['byUserId', user.id] },
+                    { method: ['orderBy', [['createdAt', 'desc']]] }
                 ]);
 
                 if (!userDevice) {
