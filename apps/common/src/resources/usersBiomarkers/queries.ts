@@ -7,7 +7,7 @@ export function getLastUserResultsForEachBiomarker(userId: number, numberOfLastR
         FROM (
             SELECT
                 \`userResults\`.\`id\` as \`id\`,
-                ROW_NUMBER() OVER (PARTITION BY \`userResults\`.\`biomarkerId\` ORDER BY \`userResults\`.\`date\` DESC) as \`orderValue\`        
+                ROW_NUMBER() OVER (PARTITION BY \`userResults\`.\`biomarkerId\` ORDER BY \`userResults\`.\`date\` DESC, \`userResults\`.\`createdAt\` DESC) as \`orderValue\`        
             FROM \`userResults\`
             WHERE \`userResults\`.\`userId\`=${userId}
             ${beforeDate ? `AND \`userResults\`.\`date\`<='${beforeDate}'` : ''}

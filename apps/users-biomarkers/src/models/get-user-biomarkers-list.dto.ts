@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { userBiomarkersOrderTypes } from '../../../common/src/resources/usersBiomarkers/order-types';
 import { Transform, Type } from 'class-transformer';
-import { ArrayUnique, IsArray, IsBoolean, IsEnum, IsInt, IsOptional, IsPositive, IsString, Max, Min } from 'class-validator';
+import { ArrayUnique, IsArray, IsBoolean, IsDate, IsDateString, IsEnum, IsInt, IsOptional, IsPositive, IsString, Max, Min } from 'class-validator';
 import { IsOnlyDate } from '../../../common/src/resources/common/is-only-date.decorator';
 import { orderTypes } from '../../../common/src/resources/common/order-types';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
@@ -34,12 +34,12 @@ export class GetUserBiomarkersListDto {
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
-    @IsOnlyDate()
+    @IsDateString()
     readonly afterDate: string;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
-    @IsOnlyDate()
+    @IsDateString()
     readonly beforeDate: string;
 
     @ApiProperty({ type: () => String, required: false, default: 'deviation', description: userBiomarkersOrderTypes.join(', ') })
