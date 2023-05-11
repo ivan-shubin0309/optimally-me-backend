@@ -20,5 +20,14 @@ export class UsersVerifiedDevicesService extends BaseService<UserVerifiedDevice>
     create(body: ICreateVerifiedDevice, transaction?: Transaction): Promise<UserVerifiedDevice> {
         return this.model.create(body as any, { transaction });
     }
+
+    async dropTokenFromDevice(userId: number, deviceId: string): Promise<void> {
+        await this.model
+            .scope([
+                { method: ['byUserId', userId] },
+                { method: ['byDeviceId', deviceId] }
+            ])
+            .update({ deviceToken: null }, {} as any);
+    }
 }
 

@@ -40,6 +40,7 @@ import { SessionDynamicParamsDto } from './models/session-dynamic-params.dto';
 import { AdditionalAuthenticationsService } from '../../additional-authentications/src/additional-authentications.service';
 import { IsNotRequiredAdditionalAuthentication } from '../../common/src/resources/common/is-not-required-additional-authentication.decorator';
 import { UsersVerifiedDevicesService } from '../../additional-authentications/src/users-verified-devices.service';
+import { AdditionalAuthenticationTypes } from 'apps/common/src/resources/users-mfa-devices/additional-authentication-types';
 
 @ApiTags('sessions')
 @Controller('sessions')
@@ -111,6 +112,21 @@ export class SessionsController {
     const cachedSession = await this.sessionsService.findSession(session.accessToken);
 
     if (user.additionalAuthenticationType && !verifiedDevice) {
+      const mfaDevice = await this.usersVerifiedDevicesService.getOne([
+        { method: ['byUserId', user.id] },
+        { method: ['byIsMfaDevice', true] }
+      ]);
+      if (
+        user.additionalAuthenticationType === AdditionalAuthenticationTypes.mfa
+        && mfaDevice
+        && !mfaDevice.deviceToken
+      ) {
+        throw new UnprocessableEntityException({
+          message: this.translator.translate('USER_DEVICE_NOT_FOUND'),
+          errorCode: 'USER_DEVICE_NOT_FOUND',
+          statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+        });
+      }
       await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, body.additionalAuthenticationType || user.additionalAuthenticationType, cachedSession.sessionId, body.deviceId);
     }
 
@@ -134,6 +150,10 @@ export class SessionsController {
     await this.usersDevicesService.removeDeviceBySessionId(user.sessionId);
 
     await this.userCodesService.destroy([{ method: ['byUserId', user.userId] }]);
+
+    if (user.deviceId) {
+      await this.usersVerifiedDevicesService.dropTokenFromDevice(user.userId, user.deviceId);
+    }
   }
 
   @Public()
