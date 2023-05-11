@@ -44,6 +44,8 @@ export class ShopifyController {
       });
     }
 
+    await user.additionalField.update({ shopifyCustomerId: body.id });
+
     await this.shopifyService.updateCustomer(body.id, user);
   }
 }
