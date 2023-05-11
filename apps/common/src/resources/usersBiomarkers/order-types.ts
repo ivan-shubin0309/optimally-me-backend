@@ -7,7 +7,8 @@ export const userBiomarkersOrderTypes = [
     'category',
     'name',
     'date',
-    'recommendationRange'
+    'recommendationRange',
+    'skinBiomarkerRange'
 ];
 
 export const userBiomarkerOrderScope = {

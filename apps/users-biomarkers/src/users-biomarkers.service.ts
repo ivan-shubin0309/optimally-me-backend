@@ -3,9 +3,10 @@ import { Biomarker } from '../../biomarkers/src/models/biomarker.entity';
 import { Repository, Sequelize } from 'sequelize-typescript';
 import { BaseService } from '../../common/src/base/base.service';
 import { UserResult } from '../../admins-results/src/models/user-result.entity';
-import { recommendationTypesToRangeTypes, UserBiomarkerRangeTypes } from '../../common/src/resources/usersBiomarkers/user-biomarker-range-types';
+import { recommendationTypesToRangeTypes, recommendationTypesToSkinRangeTypes, UserBiomarkerRangeTypes, UserBiomarkerSkinRangeTypes } from '../../common/src/resources/usersBiomarkers/user-biomarker-range-types';
 import { UserBiomarkerCounterDto } from './models/user-biomarker-counter.dto';
 import { getLastUserResultsForEachBiomarker } from '../../common/src/resources/usersBiomarkers/queries';
+import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-types';
 
 @Injectable()
 export class UsersBiomarkersService extends BaseService<Biomarker> {
@@ -15,7 +16,7 @@ export class UsersBiomarkersService extends BaseService<Biomarker> {
         @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
     ) { super(model); }
 
-    async getBiomarkerRangeCounters(lastResultIds: number[], additionalScopes = []): Promise<UserBiomarkerCounterDto> {
+    async getBiomarkerRangeCounters(lastResultIds: number[], additionalScopes = [], biomarkerTypes: BiomarkerTypes[] = [BiomarkerTypes.blood]): Promise<UserBiomarkerCounterDto> {
         const scopes: any[] = [
             { method: ['withLastResult', lastResultIds, true, [], false] },
             'rangeCounters'
@@ -32,11 +33,21 @@ export class UsersBiomarkersService extends BaseService<Biomarker> {
             //@ts-ignore
             const rangeType = recommendationTypesToRangeTypes[result.get('recommendationRange')];
             const fieldName = UserBiomarkerRangeTypes[rangeType];
-            if (rangeType && fieldName) {
+            //eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            const skinRangeType = recommendationTypesToSkinRangeTypes[result.get('recommendationRange')];
+            const skinFieldName = UserBiomarkerSkinRangeTypes[skinRangeType];
+            if (rangeType && fieldName && biomarkerTypes.includes(BiomarkerTypes.blood)) {
                 if (!resultMap[fieldName]) {
                     resultMap[fieldName] = 0;
                 }
                 resultMap[fieldName] += result.get('value');
+            }
+            if (skinRangeType && skinFieldName && biomarkerTypes.includes(BiomarkerTypes.skin)) {
+                if (!resultMap[skinFieldName]) {
+                    resultMap[skinFieldName] = 0;
+                }
+                resultMap[skinFieldName] += result.get('value');
             }
         });
 
