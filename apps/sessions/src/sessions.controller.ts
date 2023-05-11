@@ -112,20 +112,18 @@ export class SessionsController {
     const cachedSession = await this.sessionsService.findSession(session.accessToken);
 
     if (user.additionalAuthenticationType && !verifiedDevice) {
-      const mfaDevice = await this.usersVerifiedDevicesService.getOne([
-        { method: ['byUserId', user.id] },
-        { method: ['byIsMfaDevice', true] }
-      ]);
-      if (
-        user.additionalAuthenticationType === AdditionalAuthenticationTypes.mfa
-        && mfaDevice
-        && !mfaDevice.deviceToken
-      ) {
-        throw new UnprocessableEntityException({
-          message: this.translator.translate('USER_DEVICE_NOT_FOUND'),
-          errorCode: 'USER_DEVICE_NOT_FOUND',
-          statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-        });
+      if (user.additionalAuthenticationType === AdditionalAuthenticationTypes.mfa) {
+        const mfaDevice = await this.usersVerifiedDevicesService.getOne([
+          { method: ['byUserId', user.id] },
+          { method: ['byIsMfaDevice', true] }
+        ]);
+        if (!mfaDevice?.deviceToken) {
+          throw new UnprocessableEntityException({
+            message: this.translator.translate('USER_DEVICE_NOT_FOUND'),
+            errorCode: 'USER_DEVICE_NOT_FOUND',
+            statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+          });
+        }
       }
       await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, body.additionalAuthenticationType || user.additionalAuthenticationType, cachedSession.sessionId, body.deviceId);
     }
