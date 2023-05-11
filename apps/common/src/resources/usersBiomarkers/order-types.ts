@@ -33,6 +33,16 @@ export const userBiomarkerOrderScope = {
             ]
         ]
     }),
+    'skinBiomarkerRange': (query: GetUserBiomarkersListDto) => ({
+        method: [
+            'orderBy',
+            [
+                sequelize.literal(`FIELD(\`lastResult\`.\`recommendationRange\`, ${skinBiomarkerRangeSort.join(',')}) ${query.orderType === 'desc' ? 'asc' : 'desc'}`),
+                [sequelize.literal('`lastResult`.`value`'), query.orderType],
+                ['name', query.orderType]
+            ]
+        ]
+    }),
 };
 
 const recommendationRangeSort = [
@@ -43,4 +53,14 @@ const recommendationRangeSort = [
     RecommendationTypes.supraOptimal,
     RecommendationTypes.subOptimal,
     RecommendationTypes.optimal,
+];
+
+const skinBiomarkerRangeSort = [
+    RecommendationTypes.criticalLow,
+    RecommendationTypes.low,
+    RecommendationTypes.subOptimal,
+    RecommendationTypes.optimal,
+    RecommendationTypes.supraOptimal,
+    RecommendationTypes.high,
+    RecommendationTypes.criticalHigh,
 ];
