@@ -121,7 +121,7 @@ import { HautAiMetricTypes } from '../../../common/src/resources/haut-ai/haut-ai
         ]
     }),
     orderByLiteral: (field: string, values: any[]) => ({
-        order: [literal(`FIELD(${field}, ${values.join(',')}) ASC`), literal('`userResults`.`date` DESC')]
+        order: [literal(`FIELD(${field}, ${values.join(',')}) ASC`), literal('`userResults`.`date` DESC, `userResults`.`createdAt` DESC')]
     }),
     bySex: (sex: BiomarkerSexTypes) => ({ where: { sex } }),
     searchByNames: (searchString) => ({
