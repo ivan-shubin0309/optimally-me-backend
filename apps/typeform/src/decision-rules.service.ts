@@ -19,6 +19,7 @@ interface IRuleData {
     biomarkerResult: {
         value: number;
         range: string;
+        name: string;
     };
     recommendations: Array<{
         id: number;
@@ -58,6 +59,9 @@ export class DecisionRulesService {
     }
 
     async updateUserRecommendations(userId: number, typeformQuizData: any, transaction: Transaction): Promise<void> {
+        const typeformQuizDataWithoutHidden = Object.assign({}, typeformQuizData);
+        typeformQuizDataWithoutHidden.hidden = {};
+
         const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(userId, { beforeDate: DateTime.utc().toFormat('yyyy-MM-dd') }, 1);
         const biomarkerScopes: ScopeOptions[] = [
             { method: ['byType', [BiomarkerTypes.blood, BiomarkerTypes.skin]] },
@@ -97,14 +101,15 @@ export class DecisionRulesService {
                 },
                 biomarkerResult: {
                     value: biomarker.lastResult.value,
-                    range: RecommendationTypes[biomarker.lastResult.recommendationRange]
+                    range: RecommendationTypes[biomarker.lastResult.recommendationRange],
+                    name: biomarker.name
                 },
                 recommendations: recommendations.map(recommendation => ({
                     id: recommendation.userRecommendation.id,
                     name: recommendation.title,
                     tag: recommendation.tag ? recommendation.tag.name : undefined,
                 })),
-                form_response: typeformQuizData,
+                form_response: typeformQuizDataWithoutHidden,
             };
 
             console.log(JSON.stringify(payload));
