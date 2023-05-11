@@ -10,7 +10,7 @@ import { InternalFileTypes } from '../../common/src/resources/files/file-types';
 import { HL7_FILE_TYPE, PDF_CONTENT_TYPE } from '../../common/src/resources/files/files-validation-rules';
 import { Hl7FtpService } from './hl7-ftp.service';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
-import { BIOMARKER_MAPPING_ERROR, INVALID_CUSTOMER_ID, INVALID_SAMPLE_ID_ERROR, OBJECT_ALREADY_PROCESSED_ERROR, SAMPLE_CODE_FROM_PDF_RESULT_FILE, SAMPLE_CODE_FROM_RESULT_FILE, SAMPLE_CODE_FROM_STATUS_FILE, UNIT_MISMATCH_ERROR } from '../../common/src/resources/hl7/hl7-constants';
+import { BIOMARKER_MAPPING_ERROR, DEV_ADMIN_EMAILS, INVALID_CUSTOMER_ID, INVALID_SAMPLE_ID_ERROR, OBJECT_ALREADY_PROCESSED_ERROR, PROD_ENVS, SAMPLE_CODE_FROM_PDF_RESULT_FILE, SAMPLE_CODE_FROM_RESULT_FILE, SAMPLE_CODE_FROM_STATUS_FILE, SUPER_ADMIN_EMAIL, UNIT_MISMATCH_ERROR } from '../../common/src/resources/hl7/hl7-constants';
 import axios from 'axios';
 import { DateTime } from 'luxon';
 import { AdminsResultsService } from '../../admins-results/src/admins-results.service';
@@ -265,20 +265,21 @@ export class Hl7Service extends BaseService<Hl7Object> {
                             await lastHl7Object.update({ status: Hl7ObjectStatuses.error, toFollow: `${INVALID_SAMPLE_ID_ERROR} - ${matches[2]}` });
                             await this.hl7ErrorNotificationsService.create({ message: `${INVALID_SAMPLE_ID_ERROR} - ${matches[2]}`, hl7ObjectId: lastHl7Object.id });
                         } else {
-                            const superAdmins = await this.usersService.getList([{ method: ['byRoles', UserRoles.superAdmin] }]);
-                            await Promise.all(
-                                superAdmins.map(superAdmin => 
-                                    this.mailerService.sendAdminSampleIdError(
-                                        superAdmin, 
-                                        {
-                                            sampleId: matches[2],
-                                            customerId: parsedFile.userId || INVALID_CUSTOMER_ID,
-                                            resultAt: fileDate.toISO(),
-                                            labName: parsedFile.lab,
-                                            rawFile: rawFile.toString()
-                                        }
-                                    )
-                                )
+                            const emails = [];
+                            if (PROD_ENVS.includes(process.env.NODE_ENV)) {
+                                emails.push(SUPER_ADMIN_EMAIL);
+                            } else {
+                                emails.push(...DEV_ADMIN_EMAILS);
+                            }
+                            await this.mailerService.sendAdminSampleIdError(
+                                emails,
+                                {
+                                    sampleId: matches[2],
+                                    customerId: parsedFile.userId || INVALID_CUSTOMER_ID,
+                                    resultAt: fileDate.toISO(),
+                                    labName: parsedFile.lab,
+                                    rawFile: rawFile.toString()
+                                }
                             );
                         }
                         await this.hl7FileErrorModel.create({ fileName: file.name });

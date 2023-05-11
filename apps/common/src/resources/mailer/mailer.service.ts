@@ -122,11 +122,11 @@ export class MailerService {
         });
     }
 
-    async sendAdminSampleIdError(user: User, options: { sampleId: string, resultAt: string, labName: string, customerId: number | string, rawFile: string }): Promise<void> {
+    async sendAdminSampleIdError(emails: string[], options: { sampleId: string, resultAt: string, labName: string, customerId: number | string, rawFile: string }): Promise<void> {
         const link = `${this.configService.get('ADMIN_FRONTEND_BASE_URL')}/app/customer-results`;
 
         return this.sendMail({
-            to: [user.email],
+            to: emails,
             templateData: {
                 title: this.translatorService.translate('ADMIN_EMAIL_SAMPLE_ID_ERROR_TITLE'),
                 body: this.translatorService.translate('ADMIN_EMAIL_SAMPLE_ID_ERROR_BODY', {
