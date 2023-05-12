@@ -38,22 +38,32 @@ export class UsersDevicesController {
             { method: ['byToken', body.token] }
         ]);
 
-        const userVerifiedDevice = await this.usersVerifiedDevicesService.getOne([
-            { method: ['byDeviceId', req.user.deviceId] },
-            { method: ['byUserId', req.user.userId] }
-        ]);
-
-
         if (userMfaDevice) {
-            await userMfaDevice.update({ deviceToken: null, isMfaDevice: false });
-        }
+            if (userMfaDevice.deviceId === req.user.deviceId) {
+                await userMfaDevice.update({ deviceToken: body.token });
+            } else {
+                await userMfaDevice.update({ deviceToken: null, isMfaDevice: false });
 
-        if (userVerifiedDevice) {
-            await userVerifiedDevice.update({ deviceToken: body.token, isMfaDevice: true });
+                const userVerifiedDevice = await this.usersVerifiedDevicesService.getOne([
+                    { method: ['byDeviceId', req.user.deviceId] },
+                    { method: ['byUserId', req.user.userId] }
+                ]);
+                if (userVerifiedDevice) {
+                    await userVerifiedDevice.update({ deviceToken: body.token, isMfaDevice: true });
+                }
+            }
+        } else {
+            const userVerifiedDevice = await this.usersVerifiedDevicesService.getOne([
+                { method: ['byDeviceId', req.user.deviceId] },
+                { method: ['byUserId', req.user.userId] }
+            ]);
+            if (userVerifiedDevice) {
+                await userVerifiedDevice.update({ deviceToken: body.token, isMfaDevice: true });
+            }
         }
 
         if (userDevice) {
-            userDevice.update({
+            await userDevice.update({
                 sessionId: req.user.sessionId,
                 token: body.token
             });
