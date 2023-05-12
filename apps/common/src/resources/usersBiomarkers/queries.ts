@@ -1,6 +1,8 @@
 import { RecommendationTypes } from '../recommendations/recommendation-types';
 
 export function getLastUserResultsForEachBiomarker(userId: number, numberOfLastRecords: number, afterDate?: string, beforeDate?: string): string {
+
+
     return `
         SELECT
             \`orderedUserResults\`.\`id\` as \`id\`
@@ -10,8 +12,8 @@ export function getLastUserResultsForEachBiomarker(userId: number, numberOfLastR
                 ROW_NUMBER() OVER (PARTITION BY \`userResults\`.\`biomarkerId\` ORDER BY \`userResults\`.\`date\` DESC, \`userResults\`.\`createdAt\` DESC) as \`orderValue\`        
             FROM \`userResults\`
             WHERE \`userResults\`.\`userId\`=${userId}
-            ${beforeDate ? `AND \`userResults\`.\`date\`<='${beforeDate}'` : ''}
-            ${afterDate ? `AND \`userResults\`.\`date\`>='${afterDate}'` : ''}
+            ${beforeDate ? `AND IF(\`userResults\`.\`skinUserResultId\` IS NOT NULL, \`userResults\`.\`createdAt\`, \`userResults\`.\`date\`)<='${beforeDate}'` : ''}
+            ${afterDate ? `AND IF(\`userResults\`.\`skinUserResultId\` IS NOT NULL, \`userResults\`.\`createdAt\`, \`userResults\`.\`date\`)>='${afterDate}'` : ''}
         ) as \`orderedUserResults\`
         WHERE \`orderedUserResults\`.\`orderValue\` <= ${numberOfLastRecords}
     `.replace(/\s+/ig, ' ').trim();
