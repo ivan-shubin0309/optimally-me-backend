@@ -90,7 +90,7 @@ export class Hl7FilesService {
         const orcSegment = message.addSegment(['ORC']);
         orcSegment.addField('NW', 1);
         orcSegment.addField(hl7Object.sampleCode, 2);
-        orcSegment.addField(DateTime.fromFormat(hl7Object.activatedAt, 'yyyy-MM-dd').toFormat('yyyyMMddHHmmss'), 9);
+        orcSegment.addField(DateTime.fromJSDate(hl7Object.activatedAt).toFormat('yyyyMMddHHmmss'), 9);
 
         const obrSegment = message.addSegment(['OBR']);
         obrSegment.addField('1', 1);
@@ -127,14 +127,14 @@ export class Hl7FilesService {
             sampleCode: orcSegment.getField(2),
             status: orcSegment.getField(5) && hl7FileStatusToHl7ObjectStatuses[orcSegment.getField(5)],
             activatedAt: DateTime.fromFormat(orcSegment.getField(9), 'yyyyMMddHHmmss').isValid
-                ? DateTime.fromFormat(orcSegment.getField(9), 'yyyyMMddHHmmss').toFormat('yyyy-MM-dd')
+                ? DateTime.fromFormat(orcSegment.getField(9), 'yyyyMMddHHmmss').toISO()
                 : null,
             labId: obrSegment.getField(3),
             labReceivedAt: DateTime.fromFormat(obrSegment.getField(6), 'yyyyMMddHHmmss').isValid
-                ? DateTime.fromFormat(obrSegment.getField(6), 'yyyyMMddHHmmss').toFormat('yyyy-MM-dd')
+                ? DateTime.fromFormat(obrSegment.getField(6), 'yyyyMMddHHmmss').toISO()
                 : null,
             sampleAt: DateTime.fromFormat(obrSegment.getField(14), 'yyyyMMddHHmmss').isValid
-                ? DateTime.fromFormat(obrSegment.getField(14), 'yyyyMMddHHmmss').toFormat('yyyy-MM-dd')
+                ? DateTime.fromFormat(obrSegment.getField(14), 'yyyyMMddHHmmss').toISO()
                 : null,
             results: results,
             failedTests: results
