@@ -20,6 +20,7 @@ import { UsersRecommendationsService } from '../../users-recommendations/src/use
 import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
 import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
 import { UsersTagsService } from '../../users-tags/src/users-tags.service';
+import { ShopifyService } from 'apps/shopify/src/shopify.service';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { UsersTagsService } from '../../users-tags/src/users-tags.service';
     KlaviyoModelService,
     KlaviyoService,
     UsersTagsService,
+    ShopifyService,
     ...guardProviders,
     sequelizeProvider(entities),
     ...modelProviders
