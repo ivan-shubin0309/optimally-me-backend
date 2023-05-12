@@ -1,5 +1,5 @@
 export class CustomerMetafieldDto {
-    constructor(key: string, value: any, type: 'list.single_line_text_field' | 'date', namespace: string) {
+    constructor(key: string, value: any, type: 'list.single_line_text_field' | 'date' | 'boolean', namespace: string) {
         this.key = key;
         this.value = value;
         this.type = type;

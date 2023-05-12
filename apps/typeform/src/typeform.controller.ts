@@ -12,6 +12,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { UserRoles } from '../../common/src/resources/users';
 import { TypeformQuizType } from '../../common/src/resources/typeform/typeform-quiz-types';
 import { DecisionRulesService } from './decision-rules.service';
+import { ShopifyService } from '../../shopify/src/shopify.service';
 
 @ApiTags('typeform')
 @Controller('typeform')
@@ -24,6 +25,7 @@ export class TypeformController {
         @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
         private readonly userQuizAnswersService: UserQuizAnswersService,
         private readonly decisionRulesService: DecisionRulesService,
+        private readonly shopifyService: ShopifyService,
     ) { }
 
     @Public()
@@ -150,6 +152,10 @@ export class TypeformController {
 
             await this.decisionRulesService.updateUserRecommendations(user.id, body.form_response, transaction);
         });
+
+        if (user.additionalField.shopifyCustomerId) {
+            await this.shopifyService.updateCustomer(user.additionalField.shopifyCustomerId, user);
+        }
 
         return new TypeformEventResponseDto(null, null);
     }

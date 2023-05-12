@@ -15,6 +15,9 @@ export class UpdateShopifyCustomerDto {
         if (user?.additionalField?.dateOfBirth) {
             this.metafields.push(new CustomerMetafieldDto('date_of_birth', user?.additionalField?.dateOfBirth, 'date', 'custom'));
         }
+        if (user?.additionalField?.isSelfAssesmentQuizCompleted) {
+            this.metafields.push(new CustomerMetafieldDto('self_assessment_quiz_completed', user?.additionalField?.isSelfAssesmentQuizCompleted, 'boolean', 'custom'));
+        }
     }
 
     readonly first_name: string;
