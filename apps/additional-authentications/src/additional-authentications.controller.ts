@@ -50,6 +50,10 @@ export class AdditionalAuthenticationsController {
         }
 
         await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, body.authenticationMethod, req.user.sessionId);
+
+        const [cachedSession, accessToken] = await this.sessionsService.findSessionBySessionId(req.user.sessionId, user.id);
+        cachedSession.isAdditionalAuthenticationDeclined = true;
+        await this.sessionsService.updateSessionParams(accessToken, cachedSession);
     }
 
     @IsNotRequiredAdditionalAuthentication()
