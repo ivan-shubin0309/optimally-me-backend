@@ -4,7 +4,7 @@ import { WefitterMetricResultType } from './wefitter-metric-result.type';
 export class WefitterMetricResultDto {
     constructor(entity: WefitterMetricResultType) {
         this.value = entity.get('value') as number;
-        this.date = entity.get('date') as string;
+        this.date = entity.get('date') as string || entity.get('timestamp') as string;
     }
 
     @ApiProperty({ type: () => Number, required: true })
