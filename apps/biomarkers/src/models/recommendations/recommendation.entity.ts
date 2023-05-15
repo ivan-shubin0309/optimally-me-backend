@@ -100,13 +100,16 @@ import { RecommendationTag } from '../recommendationTags/recommendation-tag.enti
             }
             : undefined,
     }),
-    withFilterRecommendation: (filterId) => ({
+    withFilterRecommendation: (filterId, type) => ({
         include: [
             {
                 model: FilterRecommendation,
                 as: 'filterRecommendation',
                 required: false,
-                where: { filterId }
+                where: {
+                    filterId,
+                    type: type || undefined
+                }
             },
         ],
     }),
