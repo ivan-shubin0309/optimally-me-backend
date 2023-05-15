@@ -146,7 +146,7 @@ export class UsersResultsController {
             {
                 biomarkerId: userResult?.filter?.biomarkerId || userResult?.filter?.removedFromBiomarkerId,
                 additionalScopes: [
-                    { method: ['withFilterRecommendation', userResult.filterId] },
+                    { method: ['withFilterRecommendation', userResult.filterId, userResult.recommendationRange] },
                     { method: ['orderBy', [[sequelize.literal('`filterRecommendation.order`'), 'asc']]] }
                 ],
                 isExcluded: false,
