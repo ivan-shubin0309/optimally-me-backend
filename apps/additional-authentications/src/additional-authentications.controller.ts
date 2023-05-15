@@ -180,6 +180,7 @@ export class AdditionalAuthenticationsController {
         } else {
             sessionId = req.user.sessionId;
             authenticationMethod = body.authenticationMethod || user.additionalAuthenticationType;
+            deviceId = req.user.deviceId;
         }
 
         const [cachedSession, accessToken] = await this.sessionsService.findSessionBySessionId(sessionId, user.id);
