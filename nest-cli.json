@@ -287,6 +287,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/additional-authentications/tsconfig.app.json"
       }
+    },
+    "hl7-templates": {
+      "type": "application",
+      "root": "apps/hl7-templates",
+      "entryFile": "main",
+      "sourceRoot": "apps/hl7-templates/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/hl7-templates/tsconfig.app.json"
+      }
     }
   }
 }

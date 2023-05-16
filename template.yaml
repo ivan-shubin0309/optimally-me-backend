@@ -745,3 +745,17 @@ Resources:
           Properties:
             Path: /users/additional-authentications
             Method: ANY
+
+  Hl7TemplatesFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/hl7-templates/src/main.handler
+      Description: 
+      Events:
+        Hl7TemplatesApi:
+          Type: Api
+          Properties:
+            Path: /hl7/templates
+            Method: ANY
