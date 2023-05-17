@@ -17,7 +17,7 @@ export class Hl7TemplatesController {
 
     @ApiCreatedResponse({ type: () => Hl7TemplateDto })
     @ApiOperation({ summary: 'Get list of user biomarkers' })
-    @Roles(UserRoles.user)
+    @Roles(UserRoles.superAdmin)
     @HttpCode(HttpStatus.CREATED)
     @Post()
     async createTemplate(@Body() body: PostHl7TemplateDto, @Request() req: Request & { user: SessionDataDto }): Promise<Hl7TemplateDto> {
