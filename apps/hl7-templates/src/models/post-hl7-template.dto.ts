@@ -23,95 +23,95 @@ export class PostHl7TemplateDto {
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsOnlyDate()
-    readonly dateOfBirthStart: string;
+    readonly dateOfBirthStart: string = null;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsOnlyDate()
-    readonly dateOfBirthEnd: string;
+    readonly dateOfBirthEnd: string = null;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsString()
     @IsDateString()
-    readonly activatedAtStartDate: string;
+    readonly activatedAtStartDate: string = null;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsString()
     @IsDateString()
-    readonly activatedAtEndDate: string;
+    readonly activatedAtEndDate: string = null;
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(DateFilterTypes) })
     @IsOptional()
     @IsNumber()
     @IsEnum(DateFilterTypes)
-    readonly activatedAtFilterType: number;
+    readonly activatedAtFilterType: number = null;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsString()
     @IsDateString()
-    readonly sampleAtStartDate: string;
+    readonly sampleAtStartDate: string = null;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsString()
     @IsDateString()
-    readonly sampleAtEndDate: string;
+    readonly sampleAtEndDate: string = null;
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(DateFilterTypes) })
     @IsOptional()
     @IsNumber()
     @IsEnum(DateFilterTypes)
-    readonly sampleAtFilterType: number;
+    readonly sampleAtFilterType: number = null;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsString()
     @IsDateString()
-    readonly labReceivedAtStartDate: string;
+    readonly labReceivedAtStartDate: string = null;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsString()
     @IsDateString()
-    readonly labReceivedAtEndDate: string;
+    readonly labReceivedAtEndDate: string = null;
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(DateFilterTypes) })
     @IsOptional()
     @IsNumber()
     @IsEnum(DateFilterTypes)
-    readonly labReceivedAtFilterType: number;
+    readonly labReceivedAtFilterType: number = null;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsString()
     @IsDateString()
-    readonly resultAtStartDate: string;
+    readonly resultAtStartDate: string = null;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsString()
     @IsDateString()
-    readonly resultAtEndDate: string;
+    readonly resultAtEndDate: string = null;
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(DateFilterTypes) })
     @IsOptional()
     @IsNumber()
     @IsEnum(DateFilterTypes)
-    readonly resultAtFilterType: number;
+    readonly resultAtFilterType: number = null;
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(Hl7ObjectStatuses) })
     @IsOptional()
     @IsNumber()
     @IsEnum(Hl7ObjectStatuses)
-    readonly status: number;
+    readonly status: number = null;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsString()
     @MaxLength(hl7TemplatesValidationRules.searchStringMaxLength)
     @Transform(({ value }: TransformFnParams) => value?.trim())
-    readonly searchString: string;
+    readonly searchString: string = null;
 }

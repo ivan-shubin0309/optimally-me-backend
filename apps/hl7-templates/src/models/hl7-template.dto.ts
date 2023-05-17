@@ -27,6 +27,7 @@ export class Hl7TemplateDto extends BaseDto<Hl7Template> {
         this.resultAtFilterType = entity.resultAtFilterType;
         this.status = entity.status;
         this.searchString = entity.searchString;
+        this.isFavourite = entity.isFavourite;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -85,4 +86,7 @@ export class Hl7TemplateDto extends BaseDto<Hl7Template> {
 
     @ApiProperty({ type: () => String, required: false })
     readonly searchString: string;
+
+    @ApiProperty({ type: () => Boolean, required: true })
+    readonly isFavourite: boolean;
 }

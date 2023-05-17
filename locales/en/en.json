@@ -68,5 +68,6 @@
     "DEVICE_NOT_MFA": "Current device is not the one chosen for mfa",
     "DEVICE_MFA_TITLE": "Confirm your authorization",
     "MFA_NOT_FOUND": "Mfa authentication is not set",
-    "DEVICE_ALREADY_VERIFIED": "Device for this code already verified"
+    "DEVICE_ALREADY_VERIFIED": "Device for this code already verified",
+    "HL7_TEMPLATE_NOT_FOUND": "Template by specified id not found"
 }

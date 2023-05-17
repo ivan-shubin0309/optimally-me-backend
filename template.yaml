@@ -759,3 +759,8 @@ Resources:
           Properties:
             Path: /hl7/templates
             Method: ANY
+        Hl7TemplatesIdApi:
+          Type: Api
+          Properties:
+            Path: /hl7/templates/{id}
+            Method: ANY
