@@ -2,9 +2,24 @@ import { Hl7ObjectStatuses } from '../../../common/src/resources/hl7/hl7-object-
 import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
 import { User } from '../../../users/src/models';
 import { DateFilterTypes } from '../../../common/src/resources/hl7-templates/date-filter-types';
+import { Op } from 'sequelize';
 
 @Scopes(() => ({
     pagination: (query) => ({ limit: query.limit, offset: query.offset }),
+    byId: (id) => ({ where: { id } }),
+    byUserIdOrPublic: (userId) => ({
+        where: {
+            [Op.or]: [
+                {
+                    userId,
+                    isPrivate: true
+                },
+                {
+                    isPrivate: false
+                }
+            ]
+        }
+    })
 }))
 @Table({
     tableName: 'hl7Templates',
@@ -126,4 +141,11 @@ export class Hl7Template extends Model {
         allowNull: true
     })
     searchString: string;
+
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    })
+    isFavourite: boolean;
 }
