@@ -209,25 +209,25 @@ export class Hl7Object extends Model {
     sex: SexTypes;
 
     @Column({
-        type: DataType.DATEONLY,
+        type: DataType.DATE,
         allowNull: true
     })
     activatedAt: Date | any;
 
     @Column({
-        type: DataType.DATEONLY,
+        type: DataType.DATE,
         allowNull: true
     })
     sampleAt: Date | any;
 
     @Column({
-        type: DataType.DATEONLY,
+        type: DataType.DATE,
         allowNull: true
     })
     labReceivedAt: Date | any;
 
     @Column({
-        type: DataType.DATEONLY,
+        type: DataType.DATE,
         allowNull: true
     })
     resultAt: Date | any;
