@@ -19,7 +19,10 @@ import { Op } from 'sequelize';
                 }
             ]
         }
-    })
+    }),
+    byIsFavourite: (isFavourite) => ({ where: { isFavourite } }),
+    search: (searchString) => ({ where: { [Op.like]: { name: `%${searchString}%` } } }),
+    orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
 }))
 @Table({
     tableName: 'hl7Templates',

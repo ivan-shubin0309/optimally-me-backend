@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Put, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Put, Query, Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SessionDataDto } from '../../sessions/src/models';
 import { Roles } from '../../common/src/resources/common/role.decorator';
@@ -9,6 +9,9 @@ import { PostHl7TemplateDto } from './models/post-hl7-template.dto';
 import { EntityByIdDto } from '../../common/src/models/entity-by-id.dto';
 import { TranslatorService } from 'nestjs-translator';
 import { PatchHl7TemplateDto } from './models/patch-hl7-template.dto';
+import { GetTemplateListDto } from './models/get-template-list.dto';
+import { Hl7TemplatesDto } from './models/hl7-templates.dto';
+import { PaginationHelper } from '../../common/src/utils/helpers/pagination.helper';
 
 @ApiBearerAuth()
 @ApiTags('hl7/templates')
@@ -97,5 +100,34 @@ export class Hl7TemplatesController {
         await template.update(body);
 
         return new Hl7TemplateDto(template);
+    }
+
+    @ApiResponse({ type: () => Hl7TemplatesDto })
+    @ApiOperation({ summary: 'Get list of templates' })
+    @Roles(UserRoles.superAdmin)
+    @HttpCode(HttpStatus.OK)
+    @Get('')
+    async getTemplateList(@Query() query: GetTemplateListDto, @Request() req: Request & { user: SessionDataDto }): Promise<Hl7TemplatesDto> {
+        let hl7TemplatesList = [];
+        const scopes: any[] = [
+            { method: ['byUserIdOrPublic', req.user.userId] }
+        ];
+
+        if (typeof query.isFavourite === 'boolean') {
+            scopes.push({ method: ['byIsFavourite', query.isFavourite] });
+        }
+
+        if (query.search) {
+            scopes.push({ method: ['search', query.search] });
+        }
+
+        const count = await this.hl7TemplatesService.getCount(scopes);
+
+        if (count) {
+            scopes.push({ method: ['orderBy', [[query.orderBy, query.orderType]]] });
+            hl7TemplatesList = await this.hl7TemplatesService.getList(scopes);
+        }
+
+        return new Hl7TemplatesDto(hl7TemplatesList, PaginationHelper.buildPagination({ limit: query.limit, offset: query.offset }, count));
     }
 }
