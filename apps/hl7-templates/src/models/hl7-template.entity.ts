@@ -21,7 +21,11 @@ import { Op } from 'sequelize';
         }
     }),
     byIsFavourite: (isFavourite) => ({ where: { isFavourite } }),
-    search: (searchString) => ({ where: { [Op.like]: { name: `%${searchString}%` } } }),
+    search: (searchString) => ({
+        where: {
+            name: { [Op.like]: `%${searchString}%` }
+        }
+    }),
     orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
 }))
 @Table({
@@ -151,4 +155,28 @@ export class Hl7Template extends Model {
         defaultValue: false
     })
     isFavourite: boolean;
+
+    @Column({
+        type: DataType.INTEGER.UNSIGNED,
+        allowNull: true
+    })
+    activatedAtDaysCount: number;
+
+    @Column({
+        type: DataType.INTEGER.UNSIGNED,
+        allowNull: true
+    })
+    sampleAtDaysCount: number;
+
+    @Column({
+        type: DataType.INTEGER.UNSIGNED,
+        allowNull: true
+    })
+    labReceivedAtDaysCount: number;
+
+    @Column({
+        type: DataType.INTEGER.UNSIGNED,
+        allowNull: true
+    })
+    resultAtDaysCount: number;
 }

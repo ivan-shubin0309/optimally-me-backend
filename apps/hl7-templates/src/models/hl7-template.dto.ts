@@ -28,6 +28,10 @@ export class Hl7TemplateDto extends BaseDto<Hl7Template> {
         this.status = entity.status;
         this.searchString = entity.searchString;
         this.isFavourite = entity.isFavourite;
+        this.activatedAtDaysCount = entity.activatedAtDaysCount;
+        this.sampleAtDaysCount = entity.sampleAtDaysCount;
+        this.labReceivedAtDaysCount = entity.labReceivedAtDaysCount;
+        this.resultAtDaysCount = entity.resultAtDaysCount;
     }
 
     @ApiProperty({ type: () => Number, required: true })
@@ -89,4 +93,16 @@ export class Hl7TemplateDto extends BaseDto<Hl7Template> {
 
     @ApiProperty({ type: () => Boolean, required: true })
     readonly isFavourite: boolean;
+
+    @ApiProperty({ type: () => Number, required: false })
+    readonly activatedAtDaysCount: number;
+
+    @ApiProperty({ type: () => Number, required: false })
+    readonly sampleAtDaysCount: number;
+
+    @ApiProperty({ type: () => Number, required: false })
+    readonly labReceivedAtDaysCount: number;
+
+    @ApiProperty({ type: () => Number, required: false })
+    readonly resultAtDaysCount: number;
 }

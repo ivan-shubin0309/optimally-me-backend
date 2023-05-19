@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { hl7TemplatesValidationRules } from '../../../common/src/resources/hl7-templates/hl7-templates-validation-rules';
 import { Hl7ObjectStatuses } from '../../../common/src/resources/hl7/hl7-object-statuses';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
-import { IsBoolean, IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsBoolean, IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength } from 'class-validator';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { DateFilterTypes } from '../../../common/src/resources/hl7-templates/date-filter-types';
 import { IsOnlyDate } from '../../../common/src/resources/common/is-only-date.decorator';
@@ -114,4 +114,32 @@ export class PostHl7TemplateDto {
     @MaxLength(hl7TemplatesValidationRules.searchStringMaxLength)
     @Transform(({ value }: TransformFnParams) => value?.trim())
     readonly searchString: string = null;
+
+    @ApiProperty({ type: () => Number, required: false })
+    @IsOptional()
+    @IsNumber()
+    @IsInt()
+    @IsPositive()
+    readonly activatedAtDaysCount: number;
+
+    @ApiProperty({ type: () => Number, required: false })
+    @IsOptional()
+    @IsNumber()
+    @IsInt()
+    @IsPositive()
+    readonly sampleAtDaysCount: number;
+
+    @ApiProperty({ type: () => Number, required: false })
+    @IsOptional()
+    @IsNumber()
+    @IsInt()
+    @IsPositive()
+    readonly labReceivedAtDaysCount: number;
+
+    @ApiProperty({ type: () => Number, required: false })
+    @IsOptional()
+    @IsNumber()
+    @IsInt()
+    @IsPositive()
+    readonly resultAtDaysCount: number;
 }
