@@ -22,6 +22,9 @@ import { Sequelize } from 'sequelize-typescript';
 import { DateTime } from 'luxon';
 import { ScopeOptions } from 'sequelize';
 import { Hl7ErrorNotificationsService } from '../../hl7-error-notifications/src/hl7-error-notifications.service';
+import { PatchResultFileDto } from './models/patch-result-file.dto';
+import { FilesService } from '../../files/src/files.service';
+import { FileTypes } from '../../common/src/resources/files/file-types';
 
 @ApiBearerAuth()
 @ApiTags('hl7')
@@ -34,6 +37,7 @@ export class Hl7Controller {
         private readonly usersResultsService: UsersResultsService,
         @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
         private readonly hl7ErrorNotificationsService: Hl7ErrorNotificationsService,
+        private readonly filesService: FilesService,
     ) { }
 
     @ApiResponse({ type: () => Hl7ObjectDto })
@@ -262,5 +266,28 @@ export class Hl7Controller {
         if (files.resultFile) {
             await this.hl7Service.loadHl7ResultFile(hl7Object, files.resultFile, DateTime.fromJSDate(hl7Object.resultFileAt).toISO());
         }
+    }
+
+    @ApiOperation({ summary: 'Process result file by fileId' })
+    @Roles(UserRoles.superAdmin)
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @Patch('/hl7-objects/results/result-files')
+    async patchResultFile(@Body() body: PatchResultFileDto): Promise<void> {
+        const resultFile = await this.filesService.getOne([
+            { method: ['byId', body.resultFileId] },
+            { method: ['byType', FileTypes.hl7] }
+        ]);
+
+        if (!resultFile) {
+            throw new NotFoundException({
+                message: this.translator.translate('FILE_NOT_FOUND'),
+                errorCode: 'FILE_NOT_FOUND',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        const hl7Object = await this.hl7Service.processHl7FileByFile(resultFile);
+
+        await this.hl7Service.loadHl7ResultFile(hl7Object, files.resultFile, DateTime.fromJSDate(hl7Object.resultFileAt).toISO());
     }
 }

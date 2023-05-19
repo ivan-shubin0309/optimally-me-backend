@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository, Sequelize } from 'sequelize-typescript';
 import { BaseService } from '../../common/src/base/base.service';
 import { Hl7Object } from './models/hl7-object.entity';
@@ -19,14 +19,16 @@ import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-
 import { Hl7CriticalRange } from './models/hl7-critical-range.entity';
 import { MailerService } from '../../common/src/resources/mailer/mailer.service';
 import { UsersService } from '../../users/src/users.service';
-import { UserRoles } from '../../common/src/resources/users';
 import { Hl7FileError } from './models/hl7-file-error.entity';
 import { Hl7ErrorNotificationsService } from '../../hl7-error-notifications/src/hl7-error-notifications.service';
 import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
 import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
 import { recommendationTypesToRangeTypes, UserBiomarkerRangeTypes } from '../../common/src/resources/usersBiomarkers/user-biomarker-range-types';
 import { recommendationTypesClientValues } from '../../common/src/resources/recommendations/recommendation-types';
-import { hl7LabNames } from 'apps/common/src/resources/hl7/hl7-lab-names';
+import { hl7LabNames } from '../../common/src/resources/hl7/hl7-lab-names';
+import { File } from '../../files/src/models/file.entity';
+import { TranslatorService } from 'nestjs-translator';
+import { UserRoles } from '../../common/src/resources/users';
 
 @Injectable()
 export class Hl7Service extends BaseService<Hl7Object> {
@@ -46,6 +48,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
         private readonly hl7ErrorNotificationsService: Hl7ErrorNotificationsService,
         private readonly klaviyoModelService: KlaviyoModelService,
         private readonly klaviyoService: KlaviyoService,
+        private readonly translator: TranslatorService,
     ) { super(model); }
 
     async generateHl7ObjectsFromSamples(): Promise<void> {
@@ -552,5 +555,62 @@ export class Hl7Service extends BaseService<Hl7Object> {
         });
 
         await this.filesService.markFilesAsUsed([createdFile.id]);
+    }
+
+    async processHl7FileByFile(resultFile: File): Promise<Hl7Object> {
+        const response = await axios.get(FileHelper.getInstance().buildBaseLink(resultFile));
+
+        const parsedData = await this.hl7FilesService.parseHl7FileToHl7Object(response.data);
+
+        if (!parsedData.userId) {
+            throw new NotFoundException({
+                message: this.translator.translate('USER_FIELD_INVALID_IN_FILE'),
+                errorCode: 'USER_FIELD_INVALID_IN_FILE',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        if (!parsedData.sampleCode) {
+            throw new NotFoundException({
+                message: this.translator.translate('SAMPLE_CODE_FIELD_INVALID_IN_FILE'),
+                errorCode: 'SAMPLE_CODE_FIELD_INVALID_IN_FILE',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        const user = await this.usersService.getOne([
+            { method: ['byId', parsedData.userId] },
+            { method: ['byRoles', UserRoles.user] }
+        ]);
+
+        if (!user) {
+            throw new NotFoundException({
+                message: this.translator.translate('USER_NOT_FOUND'),
+                errorCode: 'USER_NOT_FOUND',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        const hl7Object = await this.getOne([
+            { method: ['bySampleCode', parsedData.sampleCode] },
+            { method: ['byUserId', user.id] }
+        ]);
+
+        if (!hl7Object) {
+            throw new NotFoundException({
+                message: this.translator.translate('HL7_OBJECT_NOT_FOUND'),
+                errorCode: 'HL7_OBJECT_NOT_FOUND',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        await hl7Object.update({
+            resultFileId: resultFile.id,
+            resultFileAt: hl7Object.resultFileAt
+                ? undefined
+                : DateTime.fromJSDate(resultFile.createdAt).toISO()
+        });
+
+        return hl7Object;
     }
 }
