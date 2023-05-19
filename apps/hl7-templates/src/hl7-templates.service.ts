@@ -26,6 +26,10 @@ interface ICreateHl7Template {
     resultAtFilterType?: DateFilterTypes;
     status?: Hl7ObjectStatuses;
     searchString?: string;
+    activatedAtDaysCount?: number;
+    sampleAtDaysCount?: number;
+    labReceivedAtDaysCount?: number;
+    resultAtDaysCount?: number;
 }
 
 @Injectable()

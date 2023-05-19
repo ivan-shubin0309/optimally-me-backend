@@ -6,4 +6,5 @@ export enum DateFilterTypes {
     pastThreeMonths = 5,
     pastSixMonths = 6,
     pastTwelveMonths = 7,
+    lastDaysCount = 8,
 }
