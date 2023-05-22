@@ -288,6 +288,14 @@ export class Hl7Controller {
 
         const hl7Object = await this.hl7Service.processHl7FileByFile(resultFile);
 
-        await this.hl7Service.loadHl7ResultFile(hl7Object, files.resultFile, DateTime.fromJSDate(hl7Object.resultFileAt).toISO());
+        await this.dbConnection.transaction(async transaction => {
+            await hl7Object.update({ status: Hl7ObjectStatuses.inProgress }, { transaction });
+
+            await this.usersResultsService.removeResultsByObjectId(hl7Object.id, transaction);
+
+            await this.hl7ErrorNotificationsService.resolveAllErrors(hl7Object.id, transaction);
+        });
+
+        await this.hl7Service.processHl7ResultFile(hl7Object, resultFile, DateTime.fromJSDate(hl7Object.resultFileAt).toISO());
     }
 }

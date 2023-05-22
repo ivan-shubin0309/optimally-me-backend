@@ -663,6 +663,11 @@ Resources:
           Properties:
             Path: /hl7/hl7-objects/{id}/results
             Method: ANY
+        Hl7ObjectsResultsResultFilesApi:
+          Type: Api
+          Properties:
+            Path: /hl7/hl7-objects/results/result-files
+            Method: ANY
 
   Hl7ObjectDataGeneratorFunction:
     Type: AWS::Serverless::Function

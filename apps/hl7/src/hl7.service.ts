@@ -322,22 +322,26 @@ export class Hl7Service extends BaseService<Hl7Object> {
     }
 
     async loadHl7ResultFile(hl7Object: Hl7Object, fileName: string, resultFileAt: string, options = { isForce: false }): Promise<void> {
-        let isCriticalResult = false, status;
-
         const awsFile = await this.filesService.prepareFile({ contentType: HL7_FILE_TYPE, type: InternalFileTypes.hl7 }, hl7Object.userId, InternalFileTypes[InternalFileTypes.hl7]);
         const [createdFile] = await this.filesService.createFilesInDb(hl7Object.userId, [awsFile]);
 
         const data = await this.hl7FtpService.downloadResultFile(fileName);
         await this.filesService.putFileToS3(data, awsFile, createdFile);
 
-        const response = await axios.get(FileHelper.getInstance().buildBaseLink(createdFile));
+        await this.processHl7ResultFile(hl7Object, createdFile, resultFileAt, options);
+    }
+
+    async processHl7ResultFile(hl7Object: Hl7Object, resultFile: File, resultFileAt: string, options = { isForce: false }) {
+        let isCriticalResult = false, status;
+
+        const response = await axios.get(FileHelper.getInstance().buildBaseLink(resultFile));
 
         const bodyForUpdate = await this.hl7FilesService.parseHl7FileToHl7Object(response.data);
 
         status = bodyForUpdate.status;
 
         await hl7Object.update({
-            resultFileId: createdFile.id,
+            resultFileId: resultFile.id,
             failedTests: bodyForUpdate.failedTests,
             toFollow: bodyForUpdate.toFollow,
             resultAt: DateTime.utc().toFormat('yyyy-MM-dd'),
@@ -345,7 +349,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
             status
         });
 
-        await this.filesService.markFilesAsUsed([createdFile.id]);
+        await this.filesService.markFilesAsUsed([resultFile.id]);
 
         if (bodyForUpdate.results && bodyForUpdate.results.length) {
             const biomarkersList = await this.usersBiomarkersService.getList([
@@ -600,6 +604,14 @@ export class Hl7Service extends BaseService<Hl7Object> {
             throw new NotFoundException({
                 message: this.translator.translate('HL7_OBJECT_NOT_FOUND'),
                 errorCode: 'HL7_OBJECT_NOT_FOUND',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
+        if (hl7Object.status !== Hl7ObjectStatuses.error) {
+            throw new NotFoundException({
+                message: this.translator.translate('HL7_OBJECT_NOT_ERROR_STATUS'),
+                errorCode: 'HL7_OBJECT_NOT_ERROR_STATUS',
                 statusCode: HttpStatus.NOT_FOUND
             });
         }
