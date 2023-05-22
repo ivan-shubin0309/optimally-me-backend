@@ -61,7 +61,7 @@ export interface IUserResult {
         attributes: [[fn('COUNT', fn('DISTINCT', col('date'))), 'counter']],
     }),
     byFilterId: (filterId) => ({ where: { filterId } }),
-    byDate: (startDate?: string, endDate?: string) => {
+    byDate: (startDate?: string, endDate?: string, fieldName = 'date') => {
         const opAnd = [];
         if (startDate) {
             opAnd.push({ [Op.gte]: startDate });
@@ -69,7 +69,7 @@ export interface IUserResult {
         if (endDate) {
             opAnd.push({ [Op.lte]: endDate });
         }
-        return { where: { date: { [Op.and]: opAnd } } };
+        return { where: { [fieldName]: { [Op.and]: opAnd } } };
     },
     withFilter: () => ({
         include: [
