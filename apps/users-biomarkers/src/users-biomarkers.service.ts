@@ -54,7 +54,7 @@ export class UsersBiomarkersService extends BaseService<Biomarker> {
         return new UserBiomarkerCounterDto(resultMap);
     }
 
-    async includeUserBiomarkerCounters(biomarkers: Biomarker[], userId: number, options: { afterDate?: string, beforeDate?: string }): Promise<void> {
+    async includeUserBiomarkerCounters(biomarkers: Biomarker[], userId: number, options: { afterDate?: string, beforeDate?: string, biomarkerTypes?: BiomarkerTypes[] }): Promise<void> {
         const scopes: any[] = [
             { method: ['byUserId', userId] },
             { method: ['byBiomarkerId', biomarkers.map(biomarker => biomarker.id)] },
@@ -62,7 +62,11 @@ export class UsersBiomarkersService extends BaseService<Biomarker> {
         ];
 
         if (options?.beforeDate || options?.afterDate) {
-            scopes.push({ method: ['byDate', options.afterDate, options.beforeDate] });
+            if (options?.biomarkerTypes?.includes(BiomarkerTypes.skin)) {
+                scopes.push({ method: ['byCreatedAt', options.afterDate, options.beforeDate, 'createdAt'] });
+            } else {
+                scopes.push({ method: ['byDate', options.afterDate, options.beforeDate] });
+            }
         }
 
         const results = await this.userResultModel

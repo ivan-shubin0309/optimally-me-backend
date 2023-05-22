@@ -101,7 +101,11 @@ export class UsersBiomarkersController {
 
       biomarkersList = await this.usersBiomarkersService.getList(scopes);
 
-      await this.usersBiomarkersService.includeUserBiomarkerCounters(biomarkersList, req.user.userId, { afterDate: query.afterDate, beforeDate: query.beforeDate });
+      await this.usersBiomarkersService.includeUserBiomarkerCounters(
+        biomarkersList,
+        req.user.userId,
+        { afterDate: query.afterDate, beforeDate: query.beforeDate, biomarkerTypes: query.biomarkerType }
+      );
     }
 
     return new UserBiomarkersDto(biomarkersList, rangeCounters, PaginationHelper.buildPagination({ limit, offset }, count));
