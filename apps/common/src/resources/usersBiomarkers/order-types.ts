@@ -39,8 +39,8 @@ export const userBiomarkerOrderScope = {
             'orderBy',
             [
                 sequelize.literal(`FIELD(\`lastResult\`.\`recommendationRange\`, ${skinBiomarkerRangeSort.join(',')}) ${query.orderType === 'desc' ? 'asc' : 'desc'}`),
-                [sequelize.literal('`lastResult`.`value`'), query.orderType],
-                ['name', query.orderType]
+                [sequelize.literal('`lastResult`.`value`'), query.orderType === 'desc' ? 'asc' : 'desc'],
+                ['name', query.orderType === 'desc' ? 'asc' : 'desc']
             ]
         ]
     }),
