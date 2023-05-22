@@ -62,11 +62,16 @@ export class UsersBiomarkersService extends BaseService<Biomarker> {
         ];
 
         if (options?.beforeDate || options?.afterDate) {
-            if (options?.biomarkerTypes?.includes(BiomarkerTypes.skin)) {
-                scopes.push({ method: ['byCreatedAt', options.afterDate, options.beforeDate, 'createdAt'] });
-            } else {
-                scopes.push({ method: ['byDate', options.afterDate, options.beforeDate] });
-            }
+            scopes.push({
+                method: [
+                    'byDate',
+                    options.afterDate,
+                    options.beforeDate,
+                    options?.biomarkerTypes?.includes(BiomarkerTypes.skin)
+                        ? 'createdAt'
+                        : 'date'
+                ]
+            });
         }
 
         const results = await this.userResultModel
