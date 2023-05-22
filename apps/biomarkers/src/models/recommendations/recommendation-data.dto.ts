@@ -10,6 +10,7 @@ export class RecommendationDataDto {
         this.type = data.type || null;
         this.isAddToCartAllowed = data.isAddToCartAllowed || false;
         this.idealTimeOfDay = data.idealTimeOfDay || null;
+        this.idealFrequency = data.idealFrequency || null;
     }
 
     category: number = null;
@@ -19,4 +20,5 @@ export class RecommendationDataDto {
     productLink: string = null;
     isAddToCartAllowed: boolean;
     idealTimeOfDay: number = null;
+    idealFrequency: number = null;
 }
