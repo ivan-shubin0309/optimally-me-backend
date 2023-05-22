@@ -19,6 +19,7 @@ import { RecommendationReactionTypes } from '../../../../common/src/resources/re
 import sequelize from 'sequelize';
 import { countRecommendationBiomarkersQuery, minRecommendationOrderQuery } from '../../../../common/src/resources/recommendations/queries';
 import { RecommendationTag } from '../recommendationTags/recommendation-tag.entity';
+import { SkinTypes } from 'apps/common/src/resources/filters/skin-types';
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
@@ -168,14 +169,16 @@ import { RecommendationTag } from '../recommendationTags/recommendation-tag.enti
             },
         ]
     }),
-    bySkinType: (skinType) => ({
+    bySkinType: (skinType, isWithSensitiveSkin = true) => ({
         include: [
             {
                 model: RecommendationSkinType,
                 as: 'skinTypes',
                 required: true,
                 where: { 
-                    skinType,
+                    skinType: isWithSensitiveSkin
+                        ? { [Op.or]: [skinType, SkinTypes.sensitive] }
+                        : skinType,
                     isIdealSkinType: true
                 }
             },
