@@ -20,6 +20,7 @@ import sequelize from 'sequelize';
 import { countRecommendationBiomarkersQuery, minRecommendationOrderQuery } from '../../../../common/src/resources/recommendations/queries';
 import { RecommendationTag } from '../recommendationTags/recommendation-tag.entity';
 import { IdealFrequencyTypes } from '../../../../common/src/resources/recommendations/ideal-frequency-types';
+import { SkinTypes } from '../../../../common/src/resources/filters/skin-types';
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
@@ -169,14 +170,16 @@ import { IdealFrequencyTypes } from '../../../../common/src/resources/recommenda
             },
         ]
     }),
-    bySkinType: (skinType) => ({
+    bySkinType: (skinType, isWithSensitiveSkin = true) => ({
         include: [
             {
                 model: RecommendationSkinType,
                 as: 'skinTypes',
                 required: true,
                 where: { 
-                    skinType,
+                    skinType: isWithSensitiveSkin
+                        ? { [Op.or]: [skinType, SkinTypes.sensitive] }
+                        : skinType,
                     isIdealSkinType: true
                 }
             },

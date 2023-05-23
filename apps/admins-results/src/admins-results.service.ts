@@ -34,7 +34,7 @@ export class AdminsResultsService extends BaseService<UserResult> {
         return this.model.bulkCreate(data as any, { transaction });
     }
 
-    async attachRecommendations(userResults: UserResult[], userId: number, transaction?: Transaction, options?: { isAnyRecommendation: boolean, skinType: SkinTypes }): Promise<void> {
+    async attachRecommendations(userResults: UserResult[], userId: number, transaction?: Transaction, options?: { isAnyRecommendation: boolean, skinType: SkinTypes, isSensitiveSkin?: boolean }): Promise<void> {
         const userRecommendationsToCreate = [];
         const filteredUserResults = userResults.filter(userResult => userResult.filterId && userResult.recommendationRange);
         const scopes = [];
@@ -46,7 +46,13 @@ export class AdminsResultsService extends BaseService<UserResult> {
         if (options?.isAnyRecommendation) {
             scopes.push({ method: ['byFilterId', filteredUserResults.map(userResult => userResult.filterId)] });
             if (options.skinType) {
-                scopes.push({ method: ['bySkinType', options.skinType] });
+                scopes.push({
+                    method: [
+                        'bySkinType',
+                        options.skinType,
+                        options?.isSensitiveSkin
+                    ]
+                });
             }
         } else {
             scopes.push({ method: ['byFilterIdAndType', filteredUserResults.map(userResult => ({ filterId: userResult.filterId, type: userResult.recommendationRange }))] });
