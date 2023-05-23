@@ -7,7 +7,7 @@ import { Hl7Template } from './hl7-template.entity';
     byHl7TemplateId: (hl7TemplateId) => ({ where: { hl7TemplateId } }),
 }))
 @Table({
-    tableName: 'hl7Templates',
+    tableName: 'hl7TemplateStatuses',
     timestamps: true,
     underscored: false
 })
