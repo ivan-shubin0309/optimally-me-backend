@@ -1,8 +1,9 @@
 import { Hl7ObjectStatuses } from '../../../common/src/resources/hl7/hl7-object-statuses';
-import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Model, Scopes, DataType, ForeignKey, HasMany } from 'sequelize-typescript';
 import { User } from '../../../users/src/models';
 import { DateFilterTypes } from '../../../common/src/resources/hl7-templates/date-filter-types';
 import { Op } from 'sequelize';
+import { Hl7TemplateStatus } from './hl7-template-status.entity';
 
 @Scopes(() => ({
     pagination: (query) => ({ limit: query.limit, offset: query.offset }),
@@ -27,6 +28,15 @@ import { Op } from 'sequelize';
         }
     }),
     orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
+    withStatuses: () => ({
+        include: [
+            {
+                model: Hl7TemplateStatus,
+                as: 'statuses',
+                required: false,
+            },
+        ]
+    })
 }))
 @Table({
     tableName: 'hl7Templates',
@@ -138,12 +148,6 @@ export class Hl7Template extends Model {
     resultAtFilterType: DateFilterTypes;
 
     @Column({
-        type: DataType.TINYINT,
-        allowNull: true
-    })
-    status: Hl7ObjectStatuses;
-
-    @Column({
         type: DataType.STRING,
         allowNull: true
     })
@@ -179,4 +183,7 @@ export class Hl7Template extends Model {
         allowNull: true
     })
     resultAtDaysCount: number;
+
+    @HasMany(() => Hl7TemplateStatus, 'hl7TemplateId')
+    statuses: Hl7TemplateStatus[];
 }

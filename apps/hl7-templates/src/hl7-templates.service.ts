@@ -5,9 +5,10 @@ import { Repository } from 'sequelize-typescript';
 import { BaseService } from '../../common/src/base/base.service';
 import { Hl7Template } from './models/hl7-template.entity';
 import { Hl7ObjectStatuses } from '../../common/src/resources/hl7/hl7-object-statuses';
+import { Hl7TemplateStatus } from './models/hl7-template-status.entity';
 
 interface ICreateHl7Template {
-    userId: number;
+    userId?: number;
     isPrivate: boolean;
     name: string;
     dateOfBirthStart?: Date | any;
@@ -24,7 +25,7 @@ interface ICreateHl7Template {
     resultAtStartDate?: Date | any;
     resultAtEndDate?: Date | any;
     resultAtFilterType?: DateFilterTypes;
-    status?: Hl7ObjectStatuses;
+    status?: Hl7ObjectStatuses[];
     searchString?: string;
     activatedAtDaysCount?: number;
     sampleAtDaysCount?: number;
@@ -36,10 +37,38 @@ interface ICreateHl7Template {
 export class Hl7TemplatesService extends BaseService<Hl7Template> {
     constructor(
         @Inject('HL7_TEMPLATE_MODEL') protected model: Repository<Hl7Template>,
+        @Inject('HL7_TEMPLATE_STATUS_MODEL') protected hl7TemplateStatusModel: Repository<Hl7TemplateStatus>,
     ) { super(model); }
 
-    create(body: ICreateHl7Template, transaction?: Transaction): Promise<Hl7Template> {
-        return this.model.create(body as any, { transaction });
+    async create(body: ICreateHl7Template, transaction?: Transaction): Promise<Hl7Template> {
+        const createdTemplate = await this.model.create(body as any, { transaction });
+
+        if (body.status && body.status.length) {
+            const statusesToCreate = body.status.map(status => ({ status, hl7TemplateId: createdTemplate.id }));
+            const templateStatuses = await this.hl7TemplateStatusModel.bulkCreate(statusesToCreate, { transaction });
+            createdTemplate.setDataValue('statuses', templateStatuses);
+            createdTemplate.statuses = templateStatuses;
+        }
+
+        return createdTemplate;
+    }
+
+    async update(template: Hl7Template, body: ICreateHl7Template, transaction?: Transaction): Promise<Hl7Template> {
+        await template.update(body, { transaction });
+
+        await this.hl7TemplateStatusModel
+            .scope({ method: ['byHl7TemplateId', template.id] })
+            .destroy({ transaction });
+
+        if (body.status && body.status.length) {
+            const statusesToCreate = body.status.map(status => ({ status, hl7TemplateId: template.id }));
+            await this.hl7TemplateStatusModel.bulkCreate(statusesToCreate, { transaction });
+        }
+
+        return this.getOne([
+            { method: ['byId', template.id] },
+            { method: ['withStatuses'] }
+        ]);
     }
 }
 

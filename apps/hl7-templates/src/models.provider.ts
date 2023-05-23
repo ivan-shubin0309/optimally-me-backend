@@ -1,6 +1,7 @@
 import { UserAdditionalField } from '../../users/src/models/user-additional-field.entity';
 import { User } from '../../users/src/models';
 import { Hl7Template } from './models/hl7-template.entity';
+import { Hl7TemplateStatus } from './models/hl7-template-status.entity';
 
 export const modelProviders = [
     {
@@ -14,5 +15,9 @@ export const modelProviders = [
     {
         provide: 'HL7_TEMPLATE_MODEL',
         useValue: Hl7Template
+    },
+    {
+        provide: 'HL7_TEMPLATE_STATUS_MODEL',
+        useValue: Hl7TemplateStatus
     },
 ];
