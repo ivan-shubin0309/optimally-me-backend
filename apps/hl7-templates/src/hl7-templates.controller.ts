@@ -39,7 +39,7 @@ export class Hl7TemplatesController {
     @HttpCode(HttpStatus.OK)
     @Put('/:id')
     async updateTemplate(@Param() params: EntityByIdDto, @Body() body: PostHl7TemplateDto, @Request() req: Request & { user: SessionDataDto }): Promise<Hl7TemplateDto> {
-        const template = await this.hl7TemplatesService.getOne([
+        let template = await this.hl7TemplatesService.getOne([
             { method: ['byUserIdOrPublic', req.user.userId] },
             { method: ['byId', params.id] }
         ]);
@@ -52,7 +52,7 @@ export class Hl7TemplatesController {
             });
         }
 
-        await template.update(body);
+        template = await this.hl7TemplatesService.update(template, body);
 
         return new Hl7TemplateDto(template);
     }
@@ -86,7 +86,8 @@ export class Hl7TemplatesController {
     async patchTemplate(@Param() params: EntityByIdDto, @Body() body: PatchHl7TemplateDto, @Request() req: Request & { user: SessionDataDto }): Promise<Hl7TemplateDto> {
         const template = await this.hl7TemplatesService.getOne([
             { method: ['byUserIdOrPublic', req.user.userId] },
-            { method: ['byId', params.id] }
+            { method: ['byId', params.id] },
+            { method: ['withStatuses'] }
         ]);
 
         if (!template) {
@@ -124,7 +125,10 @@ export class Hl7TemplatesController {
         const count = await this.hl7TemplatesService.getCount(scopes);
 
         if (count) {
-            scopes.push({ method: ['orderBy', [[query.orderBy, query.orderType]]] });
+            scopes.push(
+                { method: ['orderBy', [[query.orderBy, query.orderType]]] },
+                { method: ['withStatuses'] }
+            );
             hl7TemplatesList = await this.hl7TemplatesService.getList(scopes);
         }
 

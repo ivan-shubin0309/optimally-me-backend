@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { hl7TemplatesValidationRules } from '../../../common/src/resources/hl7-templates/hl7-templates-validation-rules';
 import { Hl7ObjectStatuses } from '../../../common/src/resources/hl7/hl7-object-statuses';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
-import { IsBoolean, IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength } from 'class-validator';
+import { ArrayUnique, IsArray, IsBoolean, IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, MaxLength } from 'class-validator';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { DateFilterTypes } from '../../../common/src/resources/hl7-templates/date-filter-types';
 import { IsOnlyDate } from '../../../common/src/resources/common/is-only-date.decorator';
@@ -102,11 +102,13 @@ export class PostHl7TemplateDto {
     @IsEnum(DateFilterTypes)
     readonly resultAtFilterType: number = null;
 
-    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(Hl7ObjectStatuses) })
+    @ApiProperty({ type: () => [Number], required: false, description: EnumHelper.toDescription(Hl7ObjectStatuses) })
     @IsOptional()
-    @IsNumber()
-    @IsEnum(Hl7ObjectStatuses)
-    readonly status: number = null;
+    @IsArray()
+    @ArrayUnique()
+    @IsNumber({}, { each: true })
+    @IsEnum(Hl7ObjectStatuses, { each: true })
+    readonly status: number[];
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()

@@ -25,7 +25,9 @@ export class Hl7TemplateDto extends BaseDto<Hl7Template> {
         this.resultAtStartDate = entity.resultAtStartDate;
         this.resultAtEndDate = entity.resultAtEndDate;
         this.resultAtFilterType = entity.resultAtFilterType;
-        this.status = entity.status;
+        this.statuses = entity.statuses && entity.statuses.length
+            ? entity.statuses.map(templateStatus => templateStatus.status)
+            : undefined;
         this.searchString = entity.searchString;
         this.isFavourite = entity.isFavourite;
         this.activatedAtDaysCount = entity.activatedAtDaysCount;
@@ -85,8 +87,8 @@ export class Hl7TemplateDto extends BaseDto<Hl7Template> {
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(DateFilterTypes) })
     readonly resultAtFilterType: DateFilterTypes;
 
-    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(Hl7ObjectStatuses) })
-    readonly status: Hl7ObjectStatuses;
+    @ApiProperty({ type: () => [Number], required: false, description: EnumHelper.toDescription(Hl7ObjectStatuses) })
+    readonly statuses: Hl7ObjectStatuses[];
 
     @ApiProperty({ type: () => String, required: false })
     readonly searchString: string;
