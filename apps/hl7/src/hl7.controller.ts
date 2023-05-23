@@ -137,10 +137,7 @@ export class Hl7Controller {
             });
         }
 
-        if (
-            body.status === Hl7ObjectStatuses.verified
-            && hl7Object.status === Hl7ObjectStatuses.error
-        ) {
+        if (body.status === Hl7ObjectStatuses.verified) {
             const files = await this.hl7Service.findFileNameForHl7Object(hl7Object);
 
             if (files.resultFile) {
@@ -152,8 +149,12 @@ export class Hl7Controller {
             } else {
                 await hl7Object.update({ status: body.status });
             }
-        } else {
+        }
+
+        if (body.status === Hl7ObjectStatuses.canceled) {
             await hl7Object.update({ status: body.status });
+
+            await this.hl7ErrorNotificationsService.resolveAllErrors(hl7Object.id);
         }
     }
 
