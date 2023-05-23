@@ -56,6 +56,7 @@ import { UserKlaviyo } from '../../../../klaviyo/src/models/user-klaviyo.entity'
 import { UserTag } from '../../../../users-tags/src/models/user-tag.entity';
 import { UserVerifiedDevice } from '../../../../additional-authentications/src/models/user-verified-device.entity';
 import { Hl7Template } from '../../../../hl7-templates/src/models/hl7-template.entity';
+import { Hl7TemplateStatus } from '../../../../hl7-templates/src/models/hl7-template-status.entity';
 
 export const entities = [
     User,
@@ -116,4 +117,5 @@ export const entities = [
     UserTag,
     UserVerifiedDevice,
     Hl7Template,
+    Hl7TemplateStatus,
 ];
