@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOnlyDate } from '../../../common/src/resources/common/is-only-date.decorator';
 import { Transform, Type } from 'class-transformer';
-import { ArrayUnique, IsArray, IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
+import { ArrayUnique, IsArray, IsDateString, IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 import { Hl7ObjectStatuses } from '../../../common/src/resources/hl7/hl7-object-statuses';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { orderTypes } from '../../../common/src/resources/common/order-types';
@@ -28,42 +28,42 @@ export class GetHl7ObjectListDto {
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
-    @IsOnlyDate()
+    @IsDateString()
     readonly activatedAtStartDate: string;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
-    @IsOnlyDate()
+    @IsDateString()
     readonly activatedAtEndDate: string;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
-    @IsOnlyDate()
+    @IsDateString()
     readonly sampleAtStartDate: string;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
-    @IsOnlyDate()
+    @IsDateString()
     readonly sampleAtEndDate: string;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
-    @IsOnlyDate()
+    @IsDateString()
     readonly labReceivedAtStartDate: string;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
-    @IsOnlyDate()
+    @IsDateString()
     readonly labReceivedAtEndDate: string;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
-    @IsOnlyDate()
+    @IsDateString()
     readonly resultAtStartDate: string;
 
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
-    @IsOnlyDate()
+    @IsDateString()
     readonly resultAtEndDate: string;
 
     @ApiProperty({ type: () => String, required: false })
