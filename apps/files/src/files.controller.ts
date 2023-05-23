@@ -20,7 +20,6 @@ import { ApiDescriptions } from '../../common/src/resources/files/api-descriptio
 import { FilesContentTypesDto } from './models/files-content-types.dto';
 import { SessionDataDto } from '../../sessions/src/models';
 import { PatchFilesDto } from './models/patch-files.dto';
-import { ConfigService } from '../../common/src/utils/config/config.service';
 import { FilesDto } from './models/files.dto';
 import { ScopeOptions } from 'sequelize';
 

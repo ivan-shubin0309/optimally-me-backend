@@ -69,5 +69,7 @@
     "DEVICE_MFA_TITLE": "Confirm your authorization",
     "MFA_NOT_FOUND": "Mfa authentication is not set",
     "DEVICE_ALREADY_VERIFIED": "Device for this code already verified",
-    "HL7_TEMPLATE_NOT_FOUND": "Template by specified id not found"
+    "HL7_TEMPLATE_NOT_FOUND": "Template by specified id not found",
+    "USER_FIELD_INVALID_IN_FILE": "Cannot parse user id from hl7 file",
+    "SAMPLE_CODE_FIELD_INVALID_IN_FILE": "Cannot parse sample code field from hl7 file"
 }
