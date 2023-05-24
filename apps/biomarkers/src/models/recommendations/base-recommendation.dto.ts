@@ -4,6 +4,7 @@ import { RecommendationActionTypes } from '../../../../common/src/resources/reco
 import { EnumHelper } from '../../../../common/src/utils/helpers/enum.helper';
 import { Recommendation } from './recommendation.entity';
 import { IdealTimeOfDayTypes } from '../../../../common/src/resources/recommendations/ideal-time-of-day-types';
+import { IdealFrequencyTypes } from '../../../../common/src/resources/recommendations/ideal-frequency-types';
 
 
 export class BaseRecommendationDto extends BaseDto<Recommendation> {
@@ -17,6 +18,7 @@ export class BaseRecommendationDto extends BaseDto<Recommendation> {
         this.isArchived = entity.isArchived;
         this.isAddToCartAllowed = entity.isAddToCartAllowed;
         this.idealTimeOfDay = entity.idealTimeOfDay;
+        this.idealFrequency = entity.idealFrequency;
         this.isDeletable = entity.isDeletable;
     }
 
@@ -43,6 +45,9 @@ export class BaseRecommendationDto extends BaseDto<Recommendation> {
 
     @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(IdealTimeOfDayTypes) })
     readonly idealTimeOfDay: number;
+
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(IdealFrequencyTypes) })
+    readonly idealFrequency: number;
 
     @ApiProperty({ type: () => Boolean, required: true })
     readonly isDeletable: boolean;

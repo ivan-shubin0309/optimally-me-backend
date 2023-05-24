@@ -19,7 +19,8 @@ import { RecommendationReactionTypes } from '../../../../common/src/resources/re
 import sequelize from 'sequelize';
 import { countRecommendationBiomarkersQuery, minRecommendationOrderQuery } from '../../../../common/src/resources/recommendations/queries';
 import { RecommendationTag } from '../recommendationTags/recommendation-tag.entity';
-import { SkinTypes } from 'apps/common/src/resources/filters/skin-types';
+import { IdealFrequencyTypes } from '../../../../common/src/resources/recommendations/ideal-frequency-types';
+import { SkinTypes } from '../../../../common/src/resources/filters/skin-types';
 
 @Scopes(() => ({
     byCategory: (category) => ({ where: { category } }),
@@ -242,6 +243,12 @@ export class Recommendation extends Model {
         allowNull: true,
     })
     idealTimeOfDay: IdealTimeOfDayTypes;
+
+    @Column({
+        type: DataType.TINYINT,
+        allowNull: true,
+    })
+    idealFrequency: IdealFrequencyTypes;
 
     @Column({
         type: DataType.BOOLEAN,

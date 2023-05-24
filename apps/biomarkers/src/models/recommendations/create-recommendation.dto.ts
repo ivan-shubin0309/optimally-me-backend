@@ -14,6 +14,7 @@ import { ValidateIdealSkinType } from '../../../../common/src/resources/recommen
 import { IdealTimeOfDayTypes } from '../../../../common/src/resources/recommendations/ideal-time-of-day-types';
 import { IsAddToCartAllowed } from '../../../../common/src/resources/recommendations/is-add-to-cart-allowed.decorator';
 import { RecommendationCategoryValidation } from '../../../../common/src/resources/recommendations/recommendation-category-validation.decorator';
+import { IdealFrequencyTypes } from '../../../../common/src/resources/recommendations/ideal-frequency-types';
 
 export class CreateRecommendationDto {
     @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(RecommendationCategoryTypes) })
@@ -61,6 +62,12 @@ export class CreateRecommendationDto {
     @IsEnum(IdealTimeOfDayTypes)
     @IsNumber()
     readonly idealTimeOfDay: number;
+
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(IdealFrequencyTypes) })
+    @IsOptional()
+    @IsEnum(IdealFrequencyTypes)
+    @IsNumber()
+    readonly idealFrequency: number;
 
     @ApiProperty({ type: () => Number, required: false })
     @IsNotEmpty()
