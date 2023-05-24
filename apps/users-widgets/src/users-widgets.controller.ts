@@ -20,7 +20,7 @@ import { TranslatorService } from 'nestjs-translator';
 
 @ApiBearerAuth()
 @ApiTags('users/widgets')
-@Controller('users/widgets')
+@Controller('users')
 export class UsersWidgetsController {
     constructor(
         private readonly usersWidgetSettingsService: UsersWidgetSettingsService,
@@ -33,7 +33,7 @@ export class UsersWidgetsController {
     @ApiOperation({ summary: 'Set dashboard widget settings' })
     @Roles(UserRoles.user)
     @HttpCode(HttpStatus.OK)
-    @Put('dashboard-settings')
+    @Put('/widgets/dashboard-settings')
     async setDashboardWidgetSettings(@Body() body: PutWidgetUserDashboardSettingsDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
         await this.usersWidgetSettingsService.bulkCreateDashboardSettings(body, req.user.userId);
     }
@@ -42,7 +42,7 @@ export class UsersWidgetsController {
     @ApiOperation({ summary: 'Get dashboard widget settings' })
     @Roles(UserRoles.user)
     @HttpCode(HttpStatus.OK)
-    @Get('settings')
+    @Get('/widgets/settings')
     async getWidgetSettings(@Query() query: GetWidgetSettingsDto, @Request() req: Request & { user: SessionDataDto }): Promise<UserWidgetSettingsDto> {
         const widgetTypeEnum = widgetSettingTypeToWidgetType[query.widgetSettingType];
 
@@ -65,7 +65,7 @@ export class UsersWidgetsController {
     @ApiOperation({ summary: 'Set device data widget settings' })
     @Roles(UserRoles.user)
     @HttpCode(HttpStatus.OK)
-    @Put('device-data-settings')
+    @Put('/widgets/device-data-settings')
     async setDeviceDataWidgetSettings(@Body() body: PutWidgetUserDeviceDataSettingsDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
         await this.usersWidgetSettingsService.bulkCreateDeviceDataSettings(body, req.user.userId);
     }
@@ -74,7 +74,7 @@ export class UsersWidgetsController {
     @ApiOperation({ summary: 'Get active data sources' })
     @Roles(UserRoles.user)
     @HttpCode(HttpStatus.OK)
-    @Get('data-sources')
+    @Get('/widgets/data-sources')
     async getWidgetDataSources(@Request() req: Request & { user: SessionDataDto }): Promise<UserWidgetDataSourcesDto> {
         const dataSourcesList = await this.usersWidgetDataSourcesService.getList([
             { method: ['byUserId', req.user.userId] }
@@ -87,7 +87,7 @@ export class UsersWidgetsController {
     @ApiOperation({ summary: 'Set active data sources' })
     @Roles(UserRoles.user)
     @HttpCode(HttpStatus.OK)
-    @Patch('data-sources')
+    @Patch('/widgets/data-sources')
     async postWidgetDataSources(@Request() req: Request & { user: SessionDataDto }, @Body() body: PatchWidgetDataSourcesDto): Promise<void> {
         await this.dbConnection.transaction(async transaction => {
             const dataSourcesList = await this.usersWidgetDataSourcesService.getList(
@@ -118,5 +118,39 @@ export class UsersWidgetsController {
                 })
             );
         });
+    }
+
+    @ApiOperation({ summary: 'Set dashboard settings' })
+    @Roles(UserRoles.user)
+    @HttpCode(HttpStatus.OK)
+    @Put('/dashboard-settings')
+    async setDashboardSettings(@Body() body: , @Request() req: Request & { user: SessionDataDto }): Promise<void> {
+
+    }
+
+    @ApiResponse({ type: () =>  })
+    @ApiOperation({ summary: 'Get dashboard settings' })
+    @Roles(UserRoles.user)
+    @HttpCode(HttpStatus.OK)
+    @Get('/dashboard-settings')
+    async getDashboardSettings(@Request() req: Request & { user: SessionDataDto }): Promise<> {
+
+    }
+
+    @ApiOperation({ summary: 'Set metric graph settings' })
+    @Roles(UserRoles.user)
+    @HttpCode(HttpStatus.OK)
+    @Put('/widgets/metric-graph-settings')
+    async setMetricGraphSettings(@Body() body: , @Request() req: Request & { user: SessionDataDto }): Promise<void> {
+
+    }
+
+    @ApiResponse({ type: () =>  })
+    @ApiOperation({ summary: 'Get metric graph settings' })
+    @Roles(UserRoles.user)
+    @HttpCode(HttpStatus.OK)
+    @Get('/widgets/metric-graph-settings')
+    async getMetricGraphSettings(@Request() req: Request & { user: SessionDataDto }): Promise<> {
+
     }
 }

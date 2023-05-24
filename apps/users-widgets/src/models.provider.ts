@@ -12,6 +12,8 @@ import { WefitterDiastolicBloodPressure } from '../../wefitter/src/models/biomet
 import { WefitterSystolicBloodPressure } from '../../wefitter/src/models/biometric-measurements/wefitter-systolic-blood-pressure.entity';
 import { WefitterVo2Max } from '../../wefitter/src/models/biometric-measurements/wefitter-vo2-max.entity';
 import { WefitterHrvSleep } from '../../wefitter/src/models/biometric-measurements/wefitter-hrv-sleep.entity';
+import { UserDashboardSetting } from './models/user-dashboard-setting.entity';
+import { UserMetricGraphSetting } from './models/user-metric-graph-setting.entity';
 
 export const modelProviders = [
     {
@@ -69,5 +71,13 @@ export const modelProviders = [
     {
         provide: 'WEFITTER_HRV_SLEEP',
         useValue: WefitterHrvSleep
+    },
+    {
+        provide: 'USER_DASHBOARD_SETTING_MODEL',
+        useValue: UserDashboardSetting
+    },
+    {
+        provide: 'USER_METRIC_GRAPH_MODEL',
+        useValue: UserMetricGraphSetting
     },
 ];
