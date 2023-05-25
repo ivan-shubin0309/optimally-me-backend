@@ -14,6 +14,8 @@ import { UsersWidgetsController } from './users-widgets.controller';
 import { UsersWidgetSettingsService } from './users-widget-settings.service';
 import { WefitterService } from '../../wefitter/src/wefitter.service';
 import { UsersWidgetDataSourcesService } from './users-widget-data-sources.service';
+import { UsersDashboardSettingsService } from './users-dashboard-settings.service';
+import { UsersMetricGraphSettingsService } from './users-metric-graph-service';
 
 @Module({
     imports: [
@@ -29,6 +31,8 @@ import { UsersWidgetDataSourcesService } from './users-widget-data-sources.servi
         UsersService,
         WefitterService,
         UsersWidgetDataSourcesService,
+        UsersDashboardSettingsService,
+        UsersMetricGraphSettingsService,
         JwtStrategy,
         ...guardProviders,
         sequelizeProvider(entities),

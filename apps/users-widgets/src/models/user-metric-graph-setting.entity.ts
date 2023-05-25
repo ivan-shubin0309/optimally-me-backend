@@ -39,9 +39,19 @@ export class UserMetricGraphSetting extends Model {
 
     @Column({
         type: DataType.STRING,
-        allowNull: true
+        allowNull: true,
+        get() {
+            return typeof this.getDataValue('activeMetrics') === 'string'
+                ? this.getDataValue('activeMetrics')
+                    .split(',')
+                    .map(stringNumber => parseInt(stringNumber))
+                : null;
+        },
+        set(value: number[] | null) {
+            this.setDataValue('activeMetrics', value === null ? null : value.join(','));
+        }
     })
-    activeMetrics: string;
+    activeMetrics: number[];
 
     @Column({
         type: DataType.BOOLEAN,

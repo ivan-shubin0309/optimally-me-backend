@@ -77,7 +77,7 @@ export const modelProviders = [
         useValue: UserDashboardSetting
     },
     {
-        provide: 'USER_METRIC_GRAPH_MODEL',
+        provide: 'USER_METRIC_GRAPH_SETTING_MODEL',
         useValue: UserMetricGraphSetting
     },
 ];
