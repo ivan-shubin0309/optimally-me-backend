@@ -45,7 +45,7 @@ export class Hl7FtpService {
         const client = await this.getFtpClient();
 
         await client
-            .put(fileStream, `${HL7_BASE_REQUEST_PATH}/${fileName}.hl7`)
+            .put(fileStream, `${this.configService.get('HL7_FTP_ROOT_FOLDER')}${HL7_BASE_REQUEST_PATH}/${fileName}.hl7`)
             .catch(err => {
                 console.log(err.message);
                 throw new UnprocessableEntityException({
@@ -63,15 +63,15 @@ export class Hl7FtpService {
     }
 
     getStatusFileList(): Promise<ClientSftp.FileInfo[]> {
-        return this.getFileList(`${HL7_STATUS_PATH}/`);
+        return this.getFileList(`${this.configService.get('HL7_FTP_ROOT_FOLDER')}${HL7_STATUS_PATH}/`);
     }
 
     getResultFileList(): Promise<ClientSftp.FileInfo[]> {
-        return this.getFileList(`${HL7_RESULT_PATH}/`);
+        return this.getFileList(`${this.configService.get('HL7_FTP_ROOT_FOLDER')}${HL7_RESULT_PATH}/`);
     }
 
     getPdfResultsFileList(): Promise<ClientSftp.FileInfo[]> {
-        return this.getFileList(`${PDF_RESULTS_PATH}/`);
+        return this.getFileList(`${this.configService.get('HL7_FTP_ROOT_FOLDER')}${PDF_RESULTS_PATH}/`);
     }
 
     private async downloadFile(fullPath: string): Promise<string | Buffer | NodeJS.WritableStream> {
@@ -81,14 +81,14 @@ export class Hl7FtpService {
     }
 
     downloadStatusFile(fileName: string): Promise<string | Buffer | NodeJS.WritableStream> {
-        return this.downloadFile(`${HL7_STATUS_PATH}/${fileName}`);
+        return this.downloadFile(`${this.configService.get('HL7_FTP_ROOT_FOLDER')}${HL7_STATUS_PATH}/${fileName}`);
     }
 
     downloadResultFile(fileName: string): Promise<string | Buffer | NodeJS.WritableStream> {
-        return this.downloadFile(`${HL7_RESULT_PATH}/${fileName}`);
+        return this.downloadFile(`${this.configService.get('HL7_FTP_ROOT_FOLDER')}${HL7_RESULT_PATH}/${fileName}`);
     }
 
     downloadPdfResultsFile(fileName: string): Promise<string | Buffer | NodeJS.WritableStream> {
-        return this.downloadFile(`${PDF_RESULTS_PATH}/${fileName}`);
+        return this.downloadFile(`${this.configService.get('HL7_FTP_ROOT_FOLDER')}${PDF_RESULTS_PATH}/${fileName}`);
     }
 }
