@@ -7,6 +7,7 @@ import { SesMessageParamsDto } from './models/ses-message-params.dto';
 import { SesMessageBodyDto } from './models/ses-message-body.dto';
 import { SesMessageBaseParamDto } from './models/ses-message-base-param.dto';
 import { EmailTemplates } from './email-templates';
+import { DateTime } from 'luxon';
 
 interface IEmailParams {
     readonly from?: string,
@@ -79,6 +80,7 @@ export class MailerService {
                     }
                 }),
                 subject: this.translatorService.translate('RESTORE_PASSWORD_EMAIL_SUBJECT'),
+                timestamp: DateTime.utc().toISO()
             },
             templateName: EmailTemplates.BASE_EMAIL_TEMPLATE.NAME,
         });
@@ -96,7 +98,8 @@ export class MailerService {
                         lastName: user.lastName
                     }
                 }),
-                subject: this.translatorService.translate('USER_RESTORE_PASSWORD_EMAIL_SUBJECT')
+                subject: this.translatorService.translate('USER_RESTORE_PASSWORD_EMAIL_SUBJECT'),
+                timestamp: DateTime.utc().toISO()
             },
             templateName: EmailTemplates.BASE_EMAIL_TEMPLATE.NAME,
         });
@@ -116,7 +119,8 @@ export class MailerService {
                 body: this.translatorService.translate('USER_EMAIL_VERIFICATION_TEXT', {
                     replace: { link }
                 }),
-                subject: this.translatorService.translate('USER_EMAIL_VERIFICATION_SUBJECT')
+                subject: this.translatorService.translate('USER_EMAIL_VERIFICATION_SUBJECT'),
+                timestamp: DateTime.utc().toISO()
             },
             templateName: EmailTemplates.BASE_EMAIL_TEMPLATE.NAME,
         });
@@ -139,9 +143,10 @@ export class MailerService {
                         link
                     }
                 }),
-                    subject: this.translatorService.translate('ADMIN_EMAIL_SAMPLE_ID_ERROR_SUBJECT', {
-                        replace: { sampleId: options.sampleId, resultAt: options.resultAt }
-                    }),
+                subject: this.translatorService.translate('ADMIN_EMAIL_SAMPLE_ID_ERROR_SUBJECT', {
+                    replace: { sampleId: options.sampleId, resultAt: options.resultAt }
+                }),
+                timestamp: DateTime.utc().toISO()
             },
             templateName: EmailTemplates.BASE_EMAIL_TEMPLATE.NAME,
         });
@@ -155,7 +160,8 @@ export class MailerService {
                 body: this.translatorService.translate('USER_EMAIL_FACTOR_AUTH_TEXT', {
                     replace: { code, firstName: user.firstName, lastName: user.lastName }
                 }),
-                subject: this.translatorService.translate('USER_EMAIL_FACTOR_AUTH_SUBJECT')
+                subject: this.translatorService.translate('USER_EMAIL_FACTOR_AUTH_SUBJECT'),
+                timestamp: DateTime.utc().toISO()
             },
             templateName: EmailTemplates.BASE_EMAIL_TEMPLATE.NAME,
         });
