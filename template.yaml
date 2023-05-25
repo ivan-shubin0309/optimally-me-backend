@@ -610,6 +610,16 @@ Resources:
           Properties:
             Path: /users/widgets/data-sources
             Method: ANY
+        UsersDashboardSettingsApi:
+          Type: Api
+          Properties:
+            Path: /users/dashboard-settings
+            Method: ANY
+        UsersWidgetsMetricGraphSettingsApi:
+          Type: Api
+          Properties:
+            Path: /users/widgets/metric-graph-settings
+            Method: ANY
 
   UsersRecommendationsFunction:
     Type: AWS::Serverless::Function

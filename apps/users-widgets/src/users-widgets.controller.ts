@@ -17,10 +17,16 @@ import { WefitterService } from '../../wefitter/src/wefitter.service';
 import { WefitterMetricTypes } from '../../common/src/resources/wefitter/wefitter-metric-types';
 import { Sequelize } from 'sequelize-typescript';
 import { TranslatorService } from 'nestjs-translator';
+import { PutDahboardSettingsDto } from './models/put-dashboard-settings.dto';
+import { UsersDashboardSettingsService } from './users-dashboard-settings.service';
+import { UsersMetricGraphSettingsService } from './users-metric-graph-service';
+import { UserDashboardSettingDto } from './models/user-dashboard-setting.dto';
+import { PutMetricGraphSettingsDto } from './models/put-metric-graph-setting.dto';
+import { UserMetricGraphSettingDto } from './models/user-metric-graph-setting.dto';
 
 @ApiBearerAuth()
 @ApiTags('users/widgets')
-@Controller('users/widgets')
+@Controller('users')
 export class UsersWidgetsController {
     constructor(
         private readonly usersWidgetSettingsService: UsersWidgetSettingsService,
@@ -28,12 +34,14 @@ export class UsersWidgetsController {
         private readonly wefitterService: WefitterService,
         @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
         private readonly translator: TranslatorService,
+        private readonly usersDashboardSettingsService: UsersDashboardSettingsService,
+        private readonly usersMetricGraphSettingsService: UsersMetricGraphSettingsService,
     ) { }
 
     @ApiOperation({ summary: 'Set dashboard widget settings' })
     @Roles(UserRoles.user)
     @HttpCode(HttpStatus.OK)
-    @Put('dashboard-settings')
+    @Put('/widgets/dashboard-settings')
     async setDashboardWidgetSettings(@Body() body: PutWidgetUserDashboardSettingsDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
         await this.usersWidgetSettingsService.bulkCreateDashboardSettings(body, req.user.userId);
     }
@@ -42,7 +50,7 @@ export class UsersWidgetsController {
     @ApiOperation({ summary: 'Get dashboard widget settings' })
     @Roles(UserRoles.user)
     @HttpCode(HttpStatus.OK)
-    @Get('settings')
+    @Get('/widgets/settings')
     async getWidgetSettings(@Query() query: GetWidgetSettingsDto, @Request() req: Request & { user: SessionDataDto }): Promise<UserWidgetSettingsDto> {
         const widgetTypeEnum = widgetSettingTypeToWidgetType[query.widgetSettingType];
 
@@ -65,7 +73,7 @@ export class UsersWidgetsController {
     @ApiOperation({ summary: 'Set device data widget settings' })
     @Roles(UserRoles.user)
     @HttpCode(HttpStatus.OK)
-    @Put('device-data-settings')
+    @Put('/widgets/device-data-settings')
     async setDeviceDataWidgetSettings(@Body() body: PutWidgetUserDeviceDataSettingsDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
         await this.usersWidgetSettingsService.bulkCreateDeviceDataSettings(body, req.user.userId);
     }
@@ -74,7 +82,7 @@ export class UsersWidgetsController {
     @ApiOperation({ summary: 'Get active data sources' })
     @Roles(UserRoles.user)
     @HttpCode(HttpStatus.OK)
-    @Get('data-sources')
+    @Get('/widgets/data-sources')
     async getWidgetDataSources(@Request() req: Request & { user: SessionDataDto }): Promise<UserWidgetDataSourcesDto> {
         const dataSourcesList = await this.usersWidgetDataSourcesService.getList([
             { method: ['byUserId', req.user.userId] }
@@ -87,7 +95,7 @@ export class UsersWidgetsController {
     @ApiOperation({ summary: 'Set active data sources' })
     @Roles(UserRoles.user)
     @HttpCode(HttpStatus.OK)
-    @Patch('data-sources')
+    @Patch('/widgets/data-sources')
     async postWidgetDataSources(@Request() req: Request & { user: SessionDataDto }, @Body() body: PatchWidgetDataSourcesDto): Promise<void> {
         await this.dbConnection.transaction(async transaction => {
             const dataSourcesList = await this.usersWidgetDataSourcesService.getList(
@@ -118,5 +126,55 @@ export class UsersWidgetsController {
                 })
             );
         });
+    }
+
+    @ApiOperation({ summary: 'Set dashboard settings' })
+    @Roles(UserRoles.user)
+    @HttpCode(HttpStatus.OK)
+    @Put('/dashboard-settings')
+    async setDashboardSettings(@Body() body: PutDahboardSettingsDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
+        await this.usersDashboardSettingsService.updateOrCreate(Object.assign({ userId: req.user.userId }, body));
+    }
+
+    @ApiResponse({ type: () => UserDashboardSettingDto })
+    @ApiOperation({ summary: 'Get dashboard settings' })
+    @Roles(UserRoles.user)
+    @HttpCode(HttpStatus.OK)
+    @Get('/dashboard-settings')
+    async getDashboardSettings(@Request() req: Request & { user: SessionDataDto }): Promise<UserDashboardSettingDto | object> {
+        const dashboardSetting = await this.usersDashboardSettingsService.getOne([
+            { method: ['byUserId', req.user.userId] }
+        ]);
+
+        if (!dashboardSetting) {
+            return {};
+        }
+
+        return new UserDashboardSettingDto(dashboardSetting);
+    }
+
+    @ApiOperation({ summary: 'Set metric graph settings' })
+    @Roles(UserRoles.user)
+    @HttpCode(HttpStatus.OK)
+    @Put('/widgets/metric-graph-settings')
+    async setMetricGraphSettings(@Body() body: PutMetricGraphSettingsDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
+        await this.usersMetricGraphSettingsService.updateOrCreate(Object.assign({ userId: req.user.userId }, body));
+    }
+
+    @ApiResponse({ type: () => UserMetricGraphSettingDto })
+    @ApiOperation({ summary: 'Get metric graph settings' })
+    @Roles(UserRoles.user)
+    @HttpCode(HttpStatus.OK)
+    @Get('/widgets/metric-graph-settings')
+    async getMetricGraphSettings(@Request() req: Request & { user: SessionDataDto }): Promise<UserMetricGraphSettingDto | object> {
+        const metricGraphSetting = await this.usersMetricGraphSettingsService.getOne([
+            { method: ['byUserId', req.user.userId] }
+        ]);
+
+        if (!metricGraphSetting) {
+            return {};
+        }
+
+        return new UserMetricGraphSettingDto(metricGraphSetting);
     }
 }
