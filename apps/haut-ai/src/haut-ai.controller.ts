@@ -245,7 +245,7 @@ export class HautAiController {
         ]);
 
         if (!user.hautAiField || !user.hautAiField?.hautAiSubjectId) {
-            return;
+            return new SkinResultListDto(skinResults, PaginationHelper.buildPagination({ limit: query.limit, offset: query.offset }, count));
         }
 
         scopes.push({ method: ['byUserHautAiFieldId', user.hautAiField.id] });
