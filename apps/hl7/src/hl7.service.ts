@@ -29,6 +29,7 @@ import { hl7LabNames } from '../../common/src/resources/hl7/hl7-lab-names';
 import { File } from '../../files/src/models/file.entity';
 import { TranslatorService } from 'nestjs-translator';
 import { UserRoles } from '../../common/src/resources/users';
+import { errorsExplanations } from '../../common/src/resources/hl7/errors-explanations';
 
 @Injectable()
 export class Hl7Service extends BaseService<Hl7Object> {
@@ -445,8 +446,13 @@ export class Hl7Service extends BaseService<Hl7Object> {
                     labProfileId: hl7Object.labId,
                     activationDate: hl7Object.activatedAt,
                     resultsDate: hl7Object.resultAt,
-                    isResultsFailed: !!bodyForUpdate.toFollow,
-                    resultsFailedReasons: bodyForUpdate.toFollow.split(',\n'),
+                    isResultsFailed: !!bodyForUpdate.failedTests,
+                    resultsFailedReasons: bodyForUpdate.failedTests
+                        .split(',\n')
+                        .map(errorMessage => {
+                            const [biomarkerName, errorText] = errorMessage.split(' due to ');
+                            return `${biomarkerName} due to ${errorsExplanations[errorText] ? errorsExplanations[errorText] : errorText}`;
+                        }),
                 }
             );
 
