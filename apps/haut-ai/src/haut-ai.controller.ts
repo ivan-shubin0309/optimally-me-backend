@@ -236,7 +236,9 @@ export class HautAiController {
     async getSkinResultDates(@Request() req: Request & { user: SessionDataDto }, @Query() query: GetSkinResultListDto): Promise<SkinResultListDto> {
         let skinResults = [], count = 0;
 
-        const scopes: any[] = [];
+        const scopes: any[] = [
+            { method: ['byStatus', SkinUserResultStatuses.loaded] }
+        ];
 
         const user = await this.usersService.getOne([
             { method: ['byId', req.user.userId] },

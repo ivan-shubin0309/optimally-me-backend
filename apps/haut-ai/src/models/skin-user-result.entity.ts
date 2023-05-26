@@ -47,6 +47,7 @@ export interface ISkinUserResult {
         }
         return { where: { createdAt: { [Op.and]: opAnd } } };
     },
+    byStatus: (status) => ({ where: { status } }),
 }))
 @Table({
     tableName: 'skinUserResults',
