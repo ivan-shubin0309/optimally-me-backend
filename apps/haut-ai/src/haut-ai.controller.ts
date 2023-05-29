@@ -244,7 +244,9 @@ export class HautAiController {
     async getSkinResultDates(@Request() req: Request & { user: SessionDataDto }, @Query() query: GetSkinResultListDto): Promise<SkinResultListDto> {
         let skinResults = [], count = 0;
 
-        const scopes: any[] = [];
+        const scopes: any[] = [
+            { method: ['byStatus', SkinUserResultStatuses.loaded] }
+        ];
 
         const user = await this.usersService.getOne([
             { method: ['byId', req.user.userId] },
@@ -330,6 +332,20 @@ export class HautAiController {
     @Get('/face-skin-metrics/skin-results/:id/results')
     async getResultsBySkinResultId(@Param() param: EntityByIdDto, @Query() query: GetResultsBySkinResultDto, @Request() req: Request & { user: SessionDataDto }): Promise<UserResultsDto> {
         const { limit, offset } = query;
+
+        const skinResult = await this.skinUserResultsService.getList([
+            { method: ['byStatus', SkinUserResultStatuses.loaded] },
+            { method: ['byId', param.id] },
+            { method: ['byUserId', req.user.userId] }
+        ]);
+
+        if (!skinResult) {
+            throw new NotFoundException({
+                message: this.translator.translate('SKIN_RESULT_NOT_FOUND'),
+                errorCode: 'SKIN_RESULT_NOT_FOUND',
+                statusCode: HttpStatus.BAD_REQUEST
+            });
+        }
 
         let userResultsList = [];
         const scopes: any[] = [

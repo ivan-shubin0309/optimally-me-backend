@@ -47,6 +47,19 @@ export interface ISkinUserResult {
         }
         return { where: { createdAt: { [Op.and]: opAnd } } };
     },
+    byStatus: (status) => ({ where: { status } }),
+    byUserId: (userId) => ({
+        include: [
+            {
+                model: UserHautAiField,
+                as: 'userHautAiField',
+                required: true,
+                where: {
+                    userId
+                }
+            },
+        ]
+    }),
 }))
 @Table({
     tableName: 'skinUserResults',
@@ -110,4 +123,7 @@ export class SkinUserResult extends Model {
 
     @HasOne(() => UserSkinDiary, 'skinUserResultId')
     skinDiary: UserSkinDiary;
+
+    @HasOne(() => UserHautAiField, 'userHautAiFieldId')
+    userHautAiField: UserHautAiField;
 }
