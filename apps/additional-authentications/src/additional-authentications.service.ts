@@ -22,8 +22,16 @@ export class AdditionalAuthenticationsService {
         private readonly pushNotificationsService: PushNotificationsService,
     ) { }
 
-    async sendAdditionalAuthentication(user: User, authenticationMethod: AdditionalAuthenticationTypes, sessionId: string, deviceId?: string): Promise<void> {
-        const token = await this.verificationsService.generateToken({ sessionId, authenticationMethod, deviceId }, ADDITIONAL_AUTHENTICATION_TOKEN_EXPIRE);
+    async sendAdditionalAuthentication(user: User, authenticationMethod: AdditionalAuthenticationTypes, sessionId: string, deviceId?: string, options: { isAuthenticationMethodRewrite?: boolean } = {}): Promise<void> {
+        const token = await this.verificationsService.generateToken(
+            {
+                sessionId,
+                authenticationMethod,
+                deviceId,
+                isAuthenticationMethodRewrite: options.isAuthenticationMethodRewrite
+            },
+            ADDITIONAL_AUTHENTICATION_TOKEN_EXPIRE
+        );
         const verificationToken = await this.verificationsService.saveToken(user.id, token, TokenTypes.additionalAuthentication, { isExpirePreviousTokens: true, digitCodeLength: ADDITIONAL_AUTHENTICATION_CODE_LENGTH });
 
         if (authenticationMethod === AdditionalAuthenticationTypes.email) {

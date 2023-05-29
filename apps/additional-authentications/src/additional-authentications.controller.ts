@@ -93,7 +93,10 @@ export class AdditionalAuthenticationsController {
         }
 
         await this.dbConnection.transaction(async transaction => {
-            if (!user.additionalAuthenticationType) {
+            if (
+                !user.additionalAuthenticationType
+                || decoded.data.isAuthenticationMethodRewrite
+            ) {
                 await user.update({ additionalAuthenticationType: decoded.data.authenticationMethod }, { transaction });
                 if (decoded.data.authenticationMethod === AdditionalAuthenticationTypes.mfa) {
                     const mfaDevice = await this.usersVerifiedDevicesService.getOne([
@@ -148,7 +151,7 @@ export class AdditionalAuthenticationsController {
     @Roles(UserRoles.user)
     @Put()
     async resendAdditionalAuthenticationCode(@Body() body: PutAuthCodeDto, @Request() req: Request & { user: SessionDataDto & { [key: string]: any } }): Promise<void> {
-        let sessionId, authenticationMethod, deviceId;
+        let sessionId, authenticationMethod, deviceId, isAuthenticationMethodRewrite;
 
         const user = await this.usersService.getOne([
             { method: ['byId', req.user.userId] },
@@ -177,10 +180,12 @@ export class AdditionalAuthenticationsController {
             sessionId = decoded.data.sessionId;
             authenticationMethod = body.authenticationMethod || decoded.data.authenticationMethod;
             deviceId = decoded.data.deviceId;
+            isAuthenticationMethodRewrite = decoded.data.isAuthenticationMethodRewrite;
         } else {
             sessionId = req.user.sessionId;
             authenticationMethod = body.authenticationMethod || user.additionalAuthenticationType;
             deviceId = req.user.deviceId;
+            isAuthenticationMethodRewrite = false;
         }
 
         const [cachedSession, accessToken] = await this.sessionsService.findSessionBySessionId(sessionId, user.id);
@@ -203,7 +208,7 @@ export class AdditionalAuthenticationsController {
 
         cachedSession.isAdditionalAuthenticationDeclined = false;
         await this.sessionsService.updateSessionParams(accessToken, cachedSession);
-        await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, authenticationMethod, sessionId, deviceId);
+        await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, authenticationMethod, sessionId, deviceId, { isAuthenticationMethodRewrite });
     }
 
     @ApiOperation({ summary: 'Reject additional authentication' })
@@ -236,6 +241,31 @@ export class AdditionalAuthenticationsController {
 
         const [cachedSession, accessToken] = await this.sessionsService.findSessionBySessionId(decoded.data.sessionId, user.id);
         cachedSession.isAdditionalAuthenticationDeclined = true;
+        await this.sessionsService.updateSessionParams(accessToken, cachedSession);
+    }
+
+    @ApiOperation({ summary: 'Change additional authentication method' })
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @Roles(UserRoles.user)
+    @Patch('/additional-authentication-type')
+    async changeAdditionalAuthenticationMethod(@Body() body: PostAuthenticationMethodDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
+        const user = await this.usersService.getOne([
+            { method: ['byId', req.user.userId] },
+            { method: ['withAdditionalField'] }
+        ]);
+
+        if (!user.additionalAuthenticationType) {
+            throw new BadRequestException({
+                message: this.translator.translate('ADDITIONAL_AUTHENTICATION_NOT_SET'),
+                errorCode: 'ADDITIONAL_AUTHENTICATION_NOT_SET',
+                statusCode: HttpStatus.BAD_REQUEST
+            });
+        }
+
+        await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, body.authenticationMethod, req.user.sessionId, null, { isAuthenticationMethodRewrite: true });
+
+        const [cachedSession, accessToken] = await this.sessionsService.findSessionBySessionId(req.user.sessionId, user.id);
+        cachedSession.isAdditionalAuthenticationDeclined = false;
         await this.sessionsService.updateSessionParams(accessToken, cachedSession);
     }
 }
