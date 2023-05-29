@@ -25,6 +25,7 @@ import { MailerService } from '../../common/src/resources/mailer/mailer.service'
 import { Hl7ErrorNotificationsService } from '../../hl7-error-notifications/src/hl7-error-notifications.service';
 import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
 import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
+import { ShopifyService } from '../../shopify/src/shopify.service';
 
 @Module({
     imports: [
@@ -51,6 +52,7 @@ import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
         Hl7ErrorNotificationsService,
         KlaviyoModelService,
         KlaviyoService,
+        ShopifyService,
         JwtStrategy,
         ...guardProviders,
         sequelizeProvider(entities),
