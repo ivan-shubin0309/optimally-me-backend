@@ -29,6 +29,7 @@ import { FiltersService } from '../../biomarkers/src/services/filters/filters.se
 import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
 import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
 import { UsersTagsService } from '../../users-tags/src/users-tags.service';
+import { ShopifyService } from '../../shopify/src/shopify.service';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { UsersTagsService } from '../../users-tags/src/users-tags.service';
     UserSkinDiariesService,
     KlaviyoModelService,
     KlaviyoService,
+    ShopifyService,
     JwtStrategy,
     ...guardProviders,
     sequelizeProvider(entities),

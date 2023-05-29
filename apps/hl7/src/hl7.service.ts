@@ -30,6 +30,7 @@ import { File } from '../../files/src/models/file.entity';
 import { TranslatorService } from 'nestjs-translator';
 import { UserRoles } from '../../common/src/resources/users';
 import { errorsExplanations } from '../../common/src/resources/hl7/errors-explanations';
+import { ShopifyService } from '../../shopify/src/shopify.service';
 
 @Injectable()
 export class Hl7Service extends BaseService<Hl7Object> {
@@ -50,6 +51,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
         private readonly klaviyoModelService: KlaviyoModelService,
         private readonly klaviyoService: KlaviyoService,
         private readonly translator: TranslatorService,
+        private readonly shopifyService: ShopifyService,
     ) { super(model); }
 
     async generateHl7ObjectsFromSamples(): Promise<void> {
@@ -433,6 +435,9 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
             if (!user.additionalField.isUserVerified) {
                 await user.additionalField.update({ isUserVerified: true });
+                if (user.additionalField.shopifyCustomerId) {
+                    await this.shopifyService.updateCustomer(user.additionalField.shopifyCustomerId, user);
+                }
             }
 
             await hl7Object.update({ isCriticalResult });

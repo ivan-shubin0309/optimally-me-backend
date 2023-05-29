@@ -18,6 +18,9 @@ export class UpdateShopifyCustomerDto {
         if (user?.additionalField?.isSelfAssesmentQuizCompleted) {
             this.metafields.push(new CustomerMetafieldDto('self_assessment_quiz_completed', user?.additionalField?.isSelfAssesmentQuizCompleted, 'boolean', 'custom'));
         }
+        if (user?.additionalField?.isUserVerified) {
+            this.metafields.push(new CustomerMetafieldDto('has_access_to_dashboard', user?.additionalField?.isUserVerified, 'boolean', 'custom'));
+        }
     }
 
     readonly first_name: string;

@@ -29,6 +29,7 @@ import { hautAiResultOrderScope } from '../../common/src/resources/haut-ai/resul
 import { UserSkinDiariesService } from './user-skin-diaries.service';
 import { UserSkinDiaryDto } from './models/user-skin-diary.dto';
 import { PatchSkinDiaryNoteDto } from './models/patch-skin-diary-note.dto';
+import { ShopifyService } from '../../shopify/src/shopify.service';
 
 @ApiBearerAuth()
 @ApiTags('haut-ai')
@@ -42,6 +43,7 @@ export class HautAiController {
         private readonly translator: TranslatorService,
         private readonly usersResultsService: UsersResultsService,
         private readonly userSkinDiariesService: UserSkinDiariesService,
+        private readonly shopifyService: ShopifyService,
     ) { }
 
     @ApiCreatedResponse({ type: () => HautAiUploadedPhotoDto })
@@ -225,7 +227,13 @@ export class HautAiController {
         });
 
         await this.skinUserResultsService.saveResults(results, skinResult, req.user.userId);
-        await user.additionalField.update({ isUserVerified: true });
+
+        if (!user.additionalField.isUserVerified) {
+            await user.additionalField.update({ isUserVerified: true });
+            if (user.additionalField.shopifyCustomerId) {
+                await this.shopifyService.updateCustomer(user.additionalField.shopifyCustomerId, user);
+            }
+        }
     }
 
     @ApiOperation({ summary: 'Get skin result dates' })
