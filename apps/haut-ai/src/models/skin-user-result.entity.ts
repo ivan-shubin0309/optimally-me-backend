@@ -124,6 +124,6 @@ export class SkinUserResult extends Model {
     @HasOne(() => UserSkinDiary, 'skinUserResultId')
     skinDiary: UserSkinDiary;
 
-    @HasOne(() => UserHautAiField, 'userHautAiFieldId')
+    @BelongsTo(() => UserHautAiField, 'userHautAiFieldId')
     userHautAiField: UserHautAiField;
 }
