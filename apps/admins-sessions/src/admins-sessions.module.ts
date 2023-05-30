@@ -11,6 +11,12 @@ import { redisModuleInstance } from 'apps/common/src/utils/database/redis.provid
 import { modelProviders } from './model.provider';
 import { translatorInstance } from '../../common/src/utils/translator/translator.provider';
 import { entities } from '../../common/src/utils/database/database-entity.provider';
+import { AdditionalAuthenticationsService } from '../../additional-authentications/src/additional-authentications.service';
+import { UsersVerifiedDevicesService } from '../../additional-authentications/src/users-verified-devices.service';
+import { VerificationsService } from '../../verifications/src/verifications.service';
+import { MailerService } from '../../common/src/resources/mailer/mailer.service';
+import { PushNotificationsService } from '../../users-devices/src/push-notifications.service';
+import { UsersDevicesService } from '../../users-devices/src/users-devices.service';
 
 @Module({
   imports: [
@@ -24,6 +30,12 @@ import { entities } from '../../common/src/utils/database/database-entity.provid
     SessionsService,
     UsersService,
     JwtStrategy,
+    AdditionalAuthenticationsService,
+    UsersVerifiedDevicesService,
+    VerificationsService,
+    MailerService,
+    PushNotificationsService,
+    UsersDevicesService,
     ...guardProviders,
     sequelizeProvider(entities),
     ...modelProviders

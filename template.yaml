@@ -140,6 +140,11 @@ Resources:
           Properties:
             Path: /admins/sessions
             Method: ANY
+        AdminsSessionsDynamicParams:
+          Type: Api
+          Properties:
+            Path: /admins/sessions/dynamic-params
+            Method: ANY
 
 
   AdminsVerificationsFunction:
