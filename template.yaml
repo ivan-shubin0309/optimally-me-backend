@@ -760,6 +760,11 @@ Resources:
           Properties:
             Path: /users/additional-authentications
             Method: ANY
+        UsersMfaAuthTypeApi:
+          Type: Api
+          Properties:
+            Path: /users/additional-authentications/additional-authentication-type
+            Method: ANY
 
   Hl7TemplatesFunction:
     Type: AWS::Serverless::Function
