@@ -23,11 +23,12 @@ export class ShopifyController {
     const isVerified = this.shopifyService.verifyWebhook(hmac, req.rawBody);
 
     if (!isVerified) {
-      throw new UnauthorizedException({
+      console.log(JSON.stringify({
         message: this.translator.translate('SHOPIFY_EVENT_NOT_VERIFIED'),
         errorCode: 'SHOPIFY_EVENT_NOT_VERIFIED',
         statusCode: HttpStatus.UNAUTHORIZED
-      });
+      }));
+      return;
     }
 
     const user = await this.usersService.getOne([
@@ -37,15 +38,16 @@ export class ShopifyController {
     ]);
 
     if (!user) {
-      throw new NotFoundException({
+      console.log(JSON.stringify({
         message: this.translator.translate('USER_NOT_FOUND'),
         errorCode: 'USER_NOT_FOUND',
         statusCode: HttpStatus.NOT_FOUND
-      });
+      }));
+      return;
     }
 
     await user.additionalField.update({ shopifyCustomerId: body.id });
 
-    await this.shopifyService.updateCustomer(body.id, user);
+    await this.shopifyService.updateCustomer(body.id, user, false);
   }
 }

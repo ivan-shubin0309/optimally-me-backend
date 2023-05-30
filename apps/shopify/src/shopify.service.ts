@@ -36,7 +36,7 @@ export class ShopifyService {
     return hash === hmac;
   }
 
-  async updateCustomer(customerId: string, user: User): Promise<void> {
+  async updateCustomer(customerId: string, user: User, isThrowError = true): Promise<void> {
     const url = `${this.baseUrl}/admin/api/${apiVersion}/customers/${customerId}.json`;
     const data = { customer: new UpdateShopifyCustomerDto(user) };
 
@@ -44,11 +44,13 @@ export class ShopifyService {
       await axios.put(url, data, { headers: this.getHeaders() });
     } catch (err) {
       console.log(err.message);
-      throw new UnprocessableEntityException({
-        message: err.message,
-        errorCode: 'SHOPIFY_REQUEST_ERROR',
-        statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-      });
+      if (!isThrowError) {
+        throw new UnprocessableEntityException({
+          message: err.message,
+          errorCode: 'SHOPIFY_REQUEST_ERROR',
+          statusCode: HttpStatus.UNPROCESSABLE_ENTITY
+        });
+      }
     }
   }
 }
