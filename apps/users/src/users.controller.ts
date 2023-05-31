@@ -53,7 +53,7 @@ export class UsersController {
     ) {}
 
     @IsNotRequiredAdditionalAuthentication()
-    @Roles(UserRoles.user)
+    @Roles(UserRoles.user, UserRoles.superAdmin)
     @ApiBearerAuth()
     @AllowedRegistrationSteps(
         ...EnumHelper
@@ -66,7 +66,6 @@ export class UsersController {
     async getMyProfile(@Request() req): Promise<UserDto> {
         const user = await this.usersService.getOne([
             { method: ['byId', req.user.userId] },
-            { method: ['byRoles', UserRoles.user] },
             'withAdditionalField'
         ]);
 

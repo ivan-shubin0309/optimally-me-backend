@@ -8,7 +8,8 @@ import {
   HttpStatus,
   HttpCode,
   Request,
-  Put
+  Put,
+  Get
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from '../../common/src/resources/common/public.decorator';
@@ -18,8 +19,12 @@ import { UserRoles } from '../../common/src/resources/users';
 import { UsersService } from '../../users/src/users.service';
 import { PasswordHelper } from '../../common/src/utils/helpers/password.helper';
 import { TranslatorService } from 'nestjs-translator';
-import { RefreshSessionDto } from '../../sessions/src/models';
+import { RefreshSessionDto, SessionDataDto } from '../../sessions/src/models';
 import { UserSessionDto } from '../../users/src/models/user-session.dto';
+import { IsNotRequiredAdditionalAuthentication } from '../../common/src/resources/common/is-not-required-additional-authentication.decorator';
+import { SessionDynamicParamsDto } from '../../sessions/src/models/session-dynamic-params.dto';
+import { Roles } from '../../common/src/resources/common/role.decorator';
+import { AdditionalAuthenticationsService } from '../../additional-authentications/src/additional-authentications.service';
 
 @ApiTags('admins')
 @Controller('admins')
@@ -28,6 +33,7 @@ export class AdminsSessionsController {
     private readonly sessionsService: SessionsService,
     private readonly usersService: UsersService,
     private readonly translator: TranslatorService,
+    private readonly additionalAuthenticationsService: AdditionalAuthenticationsService
   ) {}
 
   @Public()
@@ -56,7 +62,21 @@ export class AdminsSessionsController {
     }
 
     const sessionOptions = { role: user.role, lifeTime: body.lifeTime, email: user.email };
-    const sessionResult =  await this.sessionsService.create( user.id, sessionOptions);
+    const sessionResult = await this.sessionsService.create(
+      user.id,
+      sessionOptions,
+      {
+        isDeviceVerified: !user.additionalAuthenticationType,
+        additionalAuthenticationType: user.additionalAuthenticationType,
+        isAdditionalAuthenticationDeclined: false
+      }
+    );
+
+    const cachedSession = await this.sessionsService.findSession(sessionResult.accessToken);
+
+    if (user.additionalAuthenticationType) {
+      await this.additionalAuthenticationsService.sendAdditionalAuthentication(user, body.additionalAuthenticationType || user.additionalAuthenticationType, cachedSession.sessionId, body.deviceId);
+    }
 
     return new UserSessionDto(sessionResult, user);
   }
@@ -95,5 +115,15 @@ export class AdminsSessionsController {
     accessToken = accessToken.split(' ')[1];
 
     await this.sessionsService.destroy(user.userId, accessToken);
+  }
+
+  @IsNotRequiredAdditionalAuthentication()
+  @ApiBearerAuth()
+  @ApiResponse({ type: () => SessionDynamicParamsDto })
+  @ApiOperation({ summary: 'Get session dynamic params' })
+  @Roles(UserRoles.superAdmin)
+  @Get('/sessions/dynamic-params')
+  async getSessionDynamicParams(@Request() req: Request & { user: SessionDataDto & { [key: string]: any } }): Promise<SessionDynamicParamsDto> {
+    return new SessionDynamicParamsDto(req.user);
   }
 }

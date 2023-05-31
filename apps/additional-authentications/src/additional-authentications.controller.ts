@@ -33,7 +33,7 @@ export class AdditionalAuthenticationsController {
 
     @ApiOperation({ summary: 'Set additional authentication method' })
     @HttpCode(HttpStatus.NO_CONTENT)
-    @Roles(UserRoles.user)
+    @Roles(UserRoles.user, UserRoles.superAdmin)
     @Post()
     async setAdditionalAuthenticationMethod(@Body() body: PostAuthenticationMethodDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
         const user = await this.usersService.getOne([
@@ -57,7 +57,7 @@ export class AdditionalAuthenticationsController {
     }
 
     @IsNotRequiredAdditionalAuthentication()
-    @Roles(UserRoles.user)
+    @Roles(UserRoles.user, UserRoles.superAdmin)
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ summary: 'Confirm additional authentication' })
     @Patch()
@@ -78,8 +78,7 @@ export class AdditionalAuthenticationsController {
         }
 
         const user = await this.usersService.getOne([
-            { method: ['byId', req.user.userId] },
-            { method: ['byRoles', [UserRoles.user]] }
+            { method: ['byId', req.user.userId] }
         ]);
 
         const [cachedSession, accessToken] = await this.sessionsService.findSessionBySessionId(decoded.data.sessionId, user.id);
@@ -124,7 +123,7 @@ export class AdditionalAuthenticationsController {
     }
 
     @IsNotRequiredAdditionalAuthentication()
-    @Roles(UserRoles.user)
+    @Roles(UserRoles.user, UserRoles.superAdmin)
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ summary: 'Verify code for additional authentication' })
     @Get()
@@ -148,14 +147,13 @@ export class AdditionalAuthenticationsController {
     @IsNotRequiredAdditionalAuthentication()
     @ApiOperation({ summary: 'Resend additional authentication code' })
     @HttpCode(HttpStatus.NO_CONTENT)
-    @Roles(UserRoles.user)
+    @Roles(UserRoles.user, UserRoles.superAdmin)
     @Put()
     async resendAdditionalAuthenticationCode(@Body() body: PutAuthCodeDto, @Request() req: Request & { user: SessionDataDto & { [key: string]: any } }): Promise<void> {
         let sessionId, authenticationMethod, deviceId, isAuthenticationMethodRewrite;
 
         const user = await this.usersService.getOne([
             { method: ['byId', req.user.userId] },
-            { method: ['byRoles', UserRoles.user] },
             'withAdditionalField'
         ]);
 
@@ -213,7 +211,7 @@ export class AdditionalAuthenticationsController {
 
     @ApiOperation({ summary: 'Reject additional authentication' })
     @HttpCode(HttpStatus.NO_CONTENT)
-    @Roles(UserRoles.user)
+    @Roles(UserRoles.user, UserRoles.superAdmin)
     @Delete()
     async declineVerification(@Body() body: PostAuthCodeDto, @Request() req: Request & { user: SessionDataDto & { [key: string]: any } }): Promise<void> {
         const verificationToken = await this.verificationsService.verifyCode(TokenTypes.additionalAuthentication, body.code);
@@ -233,7 +231,6 @@ export class AdditionalAuthenticationsController {
 
         const user = await this.usersService.getOne([
             { method: ['byId', req.user.userId] },
-            { method: ['byRoles', UserRoles.user] },
             'withAdditionalField'
         ]);
 
