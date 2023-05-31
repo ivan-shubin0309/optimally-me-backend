@@ -13,7 +13,6 @@ export const sequelizeProvider = (models) => ({
       database: configService.get('DB_NAME'),
     });
     sequelize.addModels(models);
-    await sequelize.sync();
     return sequelize;
   },
   inject: [ConfigService]
