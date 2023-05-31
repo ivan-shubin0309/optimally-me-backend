@@ -78,8 +78,7 @@ export class AdditionalAuthenticationsController {
         }
 
         const user = await this.usersService.getOne([
-            { method: ['byId', req.user.userId] },
-            { method: ['byRoles', [UserRoles.user]] }
+            { method: ['byId', req.user.userId] }
         ]);
 
         const [cachedSession, accessToken] = await this.sessionsService.findSessionBySessionId(decoded.data.sessionId, user.id);
@@ -155,7 +154,6 @@ export class AdditionalAuthenticationsController {
 
         const user = await this.usersService.getOne([
             { method: ['byId', req.user.userId] },
-            { method: ['byRoles', UserRoles.user] },
             'withAdditionalField'
         ]);
 
@@ -233,7 +231,6 @@ export class AdditionalAuthenticationsController {
 
         const user = await this.usersService.getOne([
             { method: ['byId', req.user.userId] },
-            { method: ['byRoles', UserRoles.user] },
             'withAdditionalField'
         ]);
 
@@ -246,7 +243,7 @@ export class AdditionalAuthenticationsController {
 
     @ApiOperation({ summary: 'Change additional authentication method' })
     @HttpCode(HttpStatus.NO_CONTENT)
-    @Roles(UserRoles.user, UserRoles.superAdmin)
+    @Roles(UserRoles.user)
     @Patch('/additional-authentication-type')
     async changeAdditionalAuthenticationMethod(@Body() body: PostAuthenticationMethodDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
         const user = await this.usersService.getOne([

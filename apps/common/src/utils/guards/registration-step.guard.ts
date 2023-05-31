@@ -1,5 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { UserRoles } from '../../resources/users';
 import { RegistrationSteps } from '../../resources/users/registration-steps';
 
 @Injectable()
@@ -14,6 +15,9 @@ export class RegistrationStepGuard implements CanActivate {
         const request = context.switchToHttp().getRequest();
         const user = request.user;
         if (!user) {
+            return true;
+        }
+        if (user.role === UserRoles.superAdmin) {
             return true;
         }
         if (!registrationSteps) {
