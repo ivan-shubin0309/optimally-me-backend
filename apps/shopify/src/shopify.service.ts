@@ -41,6 +41,7 @@ export class ShopifyService {
     const data = { customer: new UpdateShopifyCustomerDto(user) };
 
     try {
+      console.log(JSON.stringify(data));
       await axios.put(url, data, { headers: this.getHeaders() });
     } catch (err) {
       console.log(err.message);
