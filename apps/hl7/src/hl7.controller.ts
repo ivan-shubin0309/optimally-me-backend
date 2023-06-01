@@ -152,7 +152,7 @@ export class Hl7Controller {
         }
 
         if (body.status === Hl7ObjectStatuses.canceled) {
-            await hl7Object.update({ status: body.status });
+            await hl7Object.update({ status: body.status, cancellationReason: body.cancellationReason });
 
             await this.hl7ErrorNotificationsService.resolveAllErrors(hl7Object.id);
         }

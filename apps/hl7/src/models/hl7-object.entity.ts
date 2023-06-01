@@ -293,6 +293,12 @@ export class Hl7Object extends Model {
     })
     userOtherFeature: OtherFeatureTypes;
 
+    @Column({
+        type: DataType.STRING,
+        allowNull: true
+    })
+    cancellationReason: string;
+
     @BelongsTo(() => File, 'fileId')
     file: File;
 
