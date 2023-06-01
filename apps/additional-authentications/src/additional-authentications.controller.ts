@@ -196,7 +196,7 @@ export class AdditionalAuthenticationsController {
             });
         }
 
-        if (user.additionalAuthenticationType && cachedSession.isDeviceVerified) {
+        if (user.additionalAuthenticationType && user.additionalAuthenticationType === body.authenticationMethod && cachedSession.isDeviceVerified) {
             throw new UnprocessableEntityException({
                 message: this.translator.translate('DEVICE_ALREADY_VERIFIED'),
                 errorCode: 'DEVICE_ALREADY_VERIFIED',
