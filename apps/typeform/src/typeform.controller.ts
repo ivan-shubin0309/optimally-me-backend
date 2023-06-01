@@ -116,7 +116,7 @@ export class TypeformController {
             );
         }
 
-        const user = await this.usersService.getOne([
+        let user = await this.usersService.getOne([
             { method: ['byEmail', userEmail] },
             { method: ['byRoles', UserRoles.user] },
             { method: ['withAdditionalField'] }
@@ -152,6 +152,11 @@ export class TypeformController {
 
             await this.decisionRulesService.updateUserRecommendations(user.id, body.form_response, transaction);
         });
+
+        user = await this.usersService.getOne([
+            { method: ['byId', user.id] },
+            { method: ['withAdditionalField'] }
+        ]);
 
         if (user.additionalField.shopifyCustomerId) {
             await this.shopifyService.updateCustomer(user.additionalField.shopifyCustomerId, user);
