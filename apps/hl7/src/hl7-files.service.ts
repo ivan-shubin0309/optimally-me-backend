@@ -98,6 +98,8 @@ export class Hl7FilesService {
         obrSegment.addField(hl7Object.labId || '', 4);
         obrSegment.addField('Normal', 5);
 
+        console.log(JSON.stringify(message));
+
         return message.toString().replace(/\n|\r\n|\r/g, '\r\n');
     }
 
