@@ -59,55 +59,55 @@ export class Hl7Service extends BaseService<Hl7Object> {
             { method: ['byIsHl7ObjectGenerated', false] },
         ];
 
+        const step = 1000;
+        let iterations;
+
         const userSamplesCount = await this.userSampleModel
             .scope(scopes)
             .count();
 
-        if (!userSamplesCount) {
-            return;
+        if (userSamplesCount) {
+            iterations = Math.ceil(userSamplesCount / step);
+
+            scopes.push(
+                { method: ['withUser', ['withAdditionalField']] },
+                { method: ['withSample'] }
+            );
+
+            await this.dbConnection.transaction(async transaction => {
+                for (let i = 0; i < iterations; i++) {
+                    const userSamples = await this.userSampleModel
+                        .scope(
+                            scopes.concat([{ method: ['pagination', { limit: step, offset: i * step }] }])
+                        )
+                        .findAll({ transaction });
+
+                    const objectsToCreate = userSamples.map(userSample => ({
+                        userId: userSample.userId,
+                        lab: hl7LabNames[userSample.sample.labName],
+                        sampleCode: userSample.sample.sampleId,
+                        status: Hl7ObjectStatuses.new,
+                        email: userSample.user.email,
+                        firstName: userSample.user.firstName,
+                        lastName: userSample.user.lastName,
+                        dateOfBirth: userSample.user.additionalField.dateOfBirth,
+                        sex: userSample.user.additionalField.sex,
+                        activatedAt: userSample.createdAt,
+                        isQuizCompleted: userSample.user.additionalField.isSelfAssesmentQuizCompleted,
+                        userOtherFeature: userSample.userOtherFeature,
+                        labId: userSample.sample.labProfileId,
+                        testProductName: userSample.sample.productName,
+                        orderId: userSample.sample.orderId,
+                    }));
+
+                    await this.model.bulkCreate(objectsToCreate, { transaction } as any);
+
+                    await this.userSampleModel
+                        .scope({ method: ['byId', userSamples.map(userSample => userSample.id)] })
+                        .update({ isHl7ObjectGenerated: true }, { transaction } as any);
+                }
+            });
         }
-
-        scopes.push(
-            { method: ['withUser', ['withAdditionalField']] },
-            { method: ['withSample'] }
-        );
-
-        const step = 1000;
-        let iterations = Math.ceil(userSamplesCount / step);
-
-        await this.dbConnection.transaction(async transaction => {
-            for (let i = 0; i < iterations; i++) {
-                const userSamples = await this.userSampleModel
-                    .scope(
-                        scopes.concat([{ method: ['pagination', { limit: step, offset: i * step }] }])
-                    )
-                    .findAll({ transaction });
-
-                const objectsToCreate = userSamples.map(userSample => ({
-                    userId: userSample.userId,
-                    lab: hl7LabNames[userSample.sample.labName],
-                    sampleCode: userSample.sample.sampleId,
-                    status: Hl7ObjectStatuses.new,
-                    email: userSample.user.email,
-                    firstName: userSample.user.firstName,
-                    lastName: userSample.user.lastName,
-                    dateOfBirth: userSample.user.additionalField.dateOfBirth,
-                    sex: userSample.user.additionalField.sex,
-                    activatedAt: userSample.createdAt,
-                    isQuizCompleted: userSample.user.additionalField.isSelfAssesmentQuizCompleted,
-                    userOtherFeature: userSample.userOtherFeature,
-                    labId: userSample.sample.labProfileId,
-                    testProductName: userSample.sample.productName,
-                    orderId: userSample.sample.orderId,
-                }));
-
-                await this.model.bulkCreate(objectsToCreate, { transaction } as any);
-
-                await this.userSampleModel
-                    .scope({ method: ['byId', userSamples.map(userSample => userSample.id)] })
-                    .update({ isHl7ObjectGenerated: true }, { transaction } as any);
-            }
-        });
 
         const hl7ObjectsToUploadCount = await this.getCount([{ method: ['byFileId', null] }]);
         iterations = Math.ceil(hl7ObjectsToUploadCount / step);
