@@ -56,6 +56,8 @@ import { GetRulesListDto } from './models/get-rules-list.dto';
 import { PatchSkinBiomarkerDto } from './models/patch-skin-biomarker.dto';
 import { GetRecommendationTagListDto } from './models/recommendationTags/get-recommendation-tag-list.dto';
 import { TagNamesListDto } from './models/recommendationTags/tag-names-list.dto';
+import { CreateDnaAgeBiomarkerDto } from './models/create-dna-age-biomarker.dto';
+import { UpdateDnaAgeBiomarkerDto } from './models/update-dna-age-biomarker.dto';
 
 const RULE_PREFIX = 'rule';
 
@@ -734,5 +736,75 @@ export class BiomarkersController {
     }
 
     await biomarker.update({ isActive: body.isActive });
+  }
+
+  @ApiCreatedResponse({ type: () => BiomarkerDto })
+  @ApiOperation({ summary: 'Create dna age biomarker' })
+  @HttpCode(HttpStatus.CREATED)
+  @Roles(UserRoles.superAdmin)
+  @Post('/dna-age')
+  async createDnaAgeBiomarker(@Body() body: CreateDnaAgeBiomarkerDto): Promise<BiomarkerDto> {
+    let biomarker = await this.biomarkersService.getOne([
+      { method: ['byName', body.name] },
+      { method: ['byType', BiomarkerTypes.dnaAge] }
+    ]);
+
+    if (biomarker) {
+      throw new BadRequestException({
+        message: this.translator.translate('BIOMARKER_ALREADY_EXIST'),
+        errorCode: 'BIOMARKER_ALREADY_EXIST',
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+    }
+
+    await this.biomarkersService.validateBody(body, BiomarkerTypes.dnaAgeRule);
+
+    biomarker = await this.biomarkersService.createDnaAgeBiomarker(body);
+
+    return new BiomarkerDto(biomarker);
+  }
+
+  @ApiResponse({ type: () => BiomarkerDto })
+  @ApiOperation({ summary: 'Update dna age biomarker' })
+  @HttpCode(HttpStatus.OK)
+  @Roles(UserRoles.superAdmin)
+  @Put('/dna-age/:id')
+  async updateDnaAgeBiomarker(@Param() param: EntityByIdDto, @Body() body: UpdateDnaAgeBiomarkerDto): Promise<BiomarkerDto> {
+    let biomarker = await this.biomarkersService.getOne(
+      [
+        { method: ['byId', param.id] },
+        { method: ['byType', BiomarkerTypes.dnaAge] },
+        'withFilters'
+      ],
+      null,
+      { filters: { isIncludeAll: true } }
+    );
+
+    if (!biomarker) {
+      throw new NotFoundException({
+        message: this.translator.translate('BIOMARKER_NOT_FOUND'),
+        errorCode: 'BIOMARKER_NOT_FOUND',
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+    }
+
+    const biomarkerWithName = await this.biomarkersService.getOne([
+      { method: ['byName', body.name] },
+      { method: ['byType', BiomarkerTypes.dnaAge] },
+    ]);
+
+    if (biomarkerWithName && biomarkerWithName.id !== biomarker.id) {
+      throw new BadRequestException({
+        message: this.translator.translate('BIOMARKER_ALREADY_EXIST'),
+        errorCode: 'BIOMARKER_ALREADY_EXIST',
+        statusCode: HttpStatus.BAD_REQUEST
+      });
+    }
+
+    await this.biomarkersService.validateBody(body, BiomarkerTypes.dnaAgeRule, biomarker);
+
+    biomarker = await this.biomarkersService.updateDnaAgeBiomarker(biomarker, body);
+
+    return new BiomarkerDto(biomarker);
   }
 }
