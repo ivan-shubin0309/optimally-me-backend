@@ -240,6 +240,16 @@ Resources:
           Properties:
             Path: /biomarkers/skin/{id}
             Method: ANY
+        DnaAgeBiomarkersApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/dna-age
+            Method: ANY
+        DnaAgeBiomarkersByIdApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/dna-age/{id}
+            Method: ANY
         BiomarkersIdApi:
           Type: Api
           Properties:

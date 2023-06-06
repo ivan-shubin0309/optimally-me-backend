@@ -46,11 +46,11 @@ export class CreateDnaAgeFilterDto implements ICreateFilter {
     readonly whatAreTheCauses: CreateWhatAreTheCausesDto;
 
     @ApiProperty({ type: () => Number, required: false })
-    @IsNotEmpty()
+    @IsOptional()
     @IsNumber()
     @Min(FilterValidationRules.rangeMinValue)
     @NumberMaxCharacters(FilterValidationRules.rangeMaxCharactersCount)
-    readonly optimalMax: number = null;
+    readonly criticalLow: number = null;
 
     @ApiProperty({ type: () => Number, required: false })
     @IsOptional()
