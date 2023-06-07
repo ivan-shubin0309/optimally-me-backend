@@ -18,6 +18,7 @@ import { BloodBiomarkersFactory } from '../../biomarkers/src/blood-biomarkers.fa
 import { FiltersService } from '../../biomarkers/src/services/filters/filters.service';
 import { SkinBiomarkersFactory } from '../../biomarkers/src/skin-biomarkers.factory';
 import { UsersRecommendationsService } from '../../users-recommendations/src/users-recommendations.service';
+import { DnaAgeBiomarkersFactory } from '../../biomarkers/src/dna-age-biomarkers.factory';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { UsersRecommendationsService } from '../../users-recommendations/src/use
     BiomarkersService,
     BloodBiomarkersFactory,
     SkinBiomarkersFactory,
+    DnaAgeBiomarkersFactory,
     UnitsService,
     SessionsService,
     UsersService,

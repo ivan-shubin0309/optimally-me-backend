@@ -51,12 +51,16 @@ module.exports = {
         id: 12,
         name: 'Skin',
       },
+      {
+        id: 13,
+        name: 'DNAm age',
+      },
     ], {});
   },
   down: async (queryInterface) => {
     await queryInterface.bulkDelete('categories', {
       where: {
-        id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+        id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
       }
     });
   }

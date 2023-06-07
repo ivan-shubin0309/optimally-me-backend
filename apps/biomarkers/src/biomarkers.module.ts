@@ -26,6 +26,7 @@ import { FileHelper } from '../../common/src/utils/helpers/file.helper';
 import { RecommendationImpactsService } from './services/recommendation-impacts/recommendation-impacts.service';
 import { CacheService } from '../../common/src/resources/cache/cache.service';
 import { SkinBiomarkersFactory } from './skin-biomarkers.factory';
+import { DnaAgeBiomarkersFactory } from './dna-age-biomarkers.factory';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { SkinBiomarkersFactory } from './skin-biomarkers.factory';
     JwtStrategy,
     BloodBiomarkersFactory,
     SkinBiomarkersFactory,
+    DnaAgeBiomarkersFactory,
     AlternativeNamesService,
     FiltersService,
     FilesService,
