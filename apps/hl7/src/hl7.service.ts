@@ -23,8 +23,7 @@ import { Hl7FileError } from './models/hl7-file-error.entity';
 import { Hl7ErrorNotificationsService } from '../../hl7-error-notifications/src/hl7-error-notifications.service';
 import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
 import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
-import { recommendationTypesToRangeTypes, UserBiomarkerRangeTypes } from '../../common/src/resources/usersBiomarkers/user-biomarker-range-types';
-import { recommendationTypesClientValues } from '../../common/src/resources/recommendations/recommendation-types';
+import { RecommendationTypes, recommendationTypesClientValues } from '../../common/src/resources/recommendations/recommendation-types';
 import { hl7LabNames } from '../../common/src/resources/hl7/hl7-lab-names';
 import { File } from '../../files/src/models/file.entity';
 import { TranslatorService } from 'nestjs-translator';
@@ -442,6 +441,12 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
             await hl7Object.update({ isCriticalResult });
 
+            const userResults = await this.adminsResultsService.getList([
+                { method: ['byUserId', hl7Object.userId] },
+                { method: ['withBiomarker'] },
+                { method: ['byHl7ObjectId', hl7Object.id] }
+            ]);
+
             await this.klaviyoModelService.getKlaviyoProfile(user);
             await this.klaviyoService.resultsReadyEvent(
                 user.email,
@@ -458,16 +463,18 @@ export class Hl7Service extends BaseService<Hl7Object> {
                             const [biomarkerName, errorText] = errorMessage.split(' due to ');
                             return `${biomarkerName} due to ${errorsExplanations[errorText] ? errorsExplanations[errorText] : errorText}`;
                         }),
+                    isCriticalResults: isCriticalResult,
+                    criticalResults: userResults
+                        .filter(userResult =>
+                            userResult.recommendationRange === RecommendationTypes.criticalLow
+                            || userResult.recommendationRange === RecommendationTypes.criticalHigh
+                        )
+                        .map(userResult => userResult.biomarker.shortName)
                 }
             );
 
-            const userResults = await this.adminsResultsService.getList([
-                { method: ['byUserId', hl7Object.userId] },
-                { method: ['withBiomarker'] }
-            ]);
-
             const badUserResults = userResults.filter(userResult =>
-                recommendationTypesToRangeTypes[userResult.recommendationRange] !== UserBiomarkerRangeTypes.optimal
+                userResult.recommendationRange !== RecommendationTypes.optimal
             );
 
             if (badUserResults.length) {
