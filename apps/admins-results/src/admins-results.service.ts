@@ -94,7 +94,7 @@ export class AdminsResultsService extends BaseService<UserResult> {
             .update({ filterId: null }, { transaction } as any);
     }
 
-    async createUserResults(results: CreateUserResultDto[], userId: User | number, options?: { otherFeature: OtherFeatureTypes }): Promise<void> {
+    async createUserResults(results: CreateUserResultDto[], userId: User | number, options?: { otherFeature: OtherFeatureTypes }): Promise<UserResult[]> {
         let user;
 
         const biomarkerIds = results.map(result => result.biomarkerId);
@@ -162,5 +162,7 @@ export class AdminsResultsService extends BaseService<UserResult> {
         const createdResults = await this.bulkCreate(userResultsToCreate);
 
         await this.attachRecommendations(createdResults, user.id);
+
+        return createdResults;
     }
 }

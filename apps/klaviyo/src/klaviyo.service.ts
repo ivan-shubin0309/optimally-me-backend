@@ -54,6 +54,8 @@ interface IResultsReadyEventProperties {
     resultsDate: string,
     isResultsFailed: boolean,
     resultsFailedReasons: string[],
+    isCriticalResults: boolean,
+    criticalResults: string[],
 }
 
 interface IBadResultsEventProperties {
@@ -258,6 +260,8 @@ export class KlaviyoService {
                 Results_Date: properties.resultsDate,
                 Results_Failed: properties.isResultsFailed,
                 Results_Failed_Reason: properties.resultsFailedReasons,
+                Critical_Results: properties.isCriticalResults,
+                Critical_Results_Details: properties.criticalResults,
             },
         );
     }
