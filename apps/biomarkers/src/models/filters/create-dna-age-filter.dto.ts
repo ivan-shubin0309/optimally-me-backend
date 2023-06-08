@@ -13,10 +13,6 @@ import { CreateWhatAreTheCausesDto } from './create-what-are-the-causes.dto';
 import { ICreateFilter } from '../create-biomarker.interface';
 
 export class CreateDnaAgeFilterDto implements ICreateFilter {
-    @ApiProperty({ type: () => String, required: true })
-    @IsNotEmpty()
-    readonly name: string;
-
     @ApiProperty({ type: () => String, required: false })
     @IsNotEmpty()
     @Transform(({ value }: TransformFnParams) => value?.trim())
