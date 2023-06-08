@@ -2,15 +2,14 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ArrayMaxSize, IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min, ValidateNested } from 'class-validator';
 import { AddRecommendationDto } from '../recommendations/add-recommendation.dto';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
-import { MaxFieldValueRepeatCount } from '../../../../common/src/resources/common/max-field-value-repeat-count.decorator';
 import { FilterValidationRules } from '../../../../common/src/resources/filters/validation-rules';
 import { NumberMaxCharacters } from '../../../../common/src/resources/common/number-max-characters';
-import { CheckAllowedRecommendationTypes } from '../../../../common/src/resources/filters/check-allowed-recommendation-types.decorator';
 import { CreateFilterSummaryDto } from '../filterSummaries/create-filter-summary.dto';
 import { CheckAllowedSummaries } from '../../../../common/src/resources/filterSummaries/check-allowed-summaries.decorator';
 import { CheckIsAllowedTextField } from '../../../../common/src/resources/filters/check-allowed-risks.decorator';
 import { CreateWhatAreTheCausesDto } from './create-what-are-the-causes.dto';
 import { ICreateFilter } from '../create-biomarker.interface';
+import { skinBiomarkerValidationRules } from '../../../../common/src/resources/biomarkers/validation-rules';
 
 export class CreateDnaAgeFilterDto implements ICreateFilter {
     @ApiProperty({ type: () => String, required: false })
@@ -72,9 +71,7 @@ export class CreateDnaAgeFilterDto implements ICreateFilter {
     @ApiProperty({ type: () => [AddRecommendationDto], required: false })
     @IsOptional()
     @IsArray()
-    @ArrayMaxSize(FilterValidationRules.recommendationArrayMaxLength)
-    @MaxFieldValueRepeatCount('type', FilterValidationRules.recommendationTypesMaxCount)
-    @CheckAllowedRecommendationTypes({ each: true })
+    @ArrayMaxSize(skinBiomarkerValidationRules.maxRecommendations)
     @ValidateNested()
     @Type(() => AddRecommendationDto)
     readonly recommendations: AddRecommendationDto[];
