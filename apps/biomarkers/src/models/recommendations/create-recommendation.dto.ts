@@ -114,8 +114,7 @@ export class CreateRecommendationDto {
     @ApiProperty({ type: () => String, required: false })
     @IsOptional()
     @IsString()
-    @MaxLength(recommendationValidationRules.tagNameMaxLength)
-    @MinLength(recommendationValidationRules.tagNameMinLength)    
+    @MaxLength(recommendationValidationRules.tagNameMaxLength)   
     @Transform(({ value }: TransformFnParams) => value?.trim())
     readonly tagName: string;
 }
