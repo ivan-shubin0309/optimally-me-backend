@@ -15,5 +15,5 @@ capabilities="CAPABILITY_IAM"
 tags="PROJECT=\"optimally-me-backend\" ENV=\"$NODE_ENV\""
 image_repositories=[]
 disable_rollback=false
-parameter_overrides="NodeEnv=$NODE_ENV AwsRegion=$AWS_REGION AppEnv=$APP_ENV SGid=$SGid SubnetIds=\"$SubnetIds\""
+parameter_overrides="ProvisionedConcurencyUnits=$CONCURENCY_UNITS NodeEnv=$NODE_ENV AwsRegion=$AWS_REGION AppEnv=$APP_ENV SGid=$SGid SubnetIds=\"$SubnetIds\""
 EOT
