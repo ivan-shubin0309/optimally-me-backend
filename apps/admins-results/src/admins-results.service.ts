@@ -50,7 +50,8 @@ export class AdminsResultsService extends BaseService<UserResult> {
                     method: [
                         'bySkinType',
                         options.skinType,
-                        options?.isSensitiveSkin
+                        options?.isSensitiveSkin,
+                        false
                     ]
                 });
             }
