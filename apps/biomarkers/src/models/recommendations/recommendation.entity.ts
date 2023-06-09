@@ -170,21 +170,33 @@ import { SkinTypes } from '../../../../common/src/resources/filters/skin-types';
             },
         ]
     }),
-    bySkinType: (skinType, isWithSensitiveSkin = true) => ({
-        include: [
-            {
-                model: RecommendationSkinType,
-                as: 'skinTypes',
-                required: true,
-                where: { 
-                    skinType: isWithSensitiveSkin
-                        ? { [Op.or]: [skinType, SkinTypes.sensitive] }
-                        : skinType,
-                    isIdealSkinType: true
-                }
-            },
-        ]
-    }),
+    bySkinType: (skinType, isWithSensitiveSkin = true, isRequired = true) => {
+        const opOr = [skinType];
+        let isIdealSkinType: any = true;
+
+        if (isWithSensitiveSkin) {
+            opOr.push(SkinTypes.sensitive);
+        }
+
+        if (!isRequired) {
+            opOr.push(null);
+            isIdealSkinType = { [Op.or]: [true, null] };
+        }
+
+        return {
+            include: [
+                {
+                    model: RecommendationSkinType,
+                    as: 'skinTypes',
+                    required: isRequired,
+                    where: {
+                        skinType: { [Op.or]: opOr },
+                        isIdealSkinType,
+                    }
+                },
+            ]
+        };
+    },
 }))
 
 @Table({
