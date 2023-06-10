@@ -59,6 +59,7 @@ import { Hl7Template } from '../../../../hl7-templates/src/models/hl7-template.e
 import { Hl7TemplateStatus } from '../../../../hl7-templates/src/models/hl7-template-status.entity';
 import { UserDashboardSetting } from '../../../../users-widgets/src/models/user-dashboard-setting.entity';
 import { UserMetricGraphSetting } from '../../../../users-widgets/src/models/user-metric-graph-setting.entity';
+import { LastDataSource } from '../../../../wefitter/src/models/last-data-source.entity';
 
 export const entities = [
     User,
@@ -122,4 +123,5 @@ export const entities = [
     Hl7TemplateStatus,
     UserDashboardSetting,
     UserMetricGraphSetting,
+    LastDataSource,
 ];
