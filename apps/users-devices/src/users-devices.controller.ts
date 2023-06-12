@@ -1,4 +1,4 @@
-import { Body, Controller, Headers, HttpStatus, Post, Request, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Headers, HttpStatus, Inject, Post, Request, UnauthorizedException } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Public } from '../../common/src/resources/common/public.decorator';
 import { PushNotificationTypes } from '../../common/src/resources/push-notifications/push-notification-types';
@@ -11,6 +11,9 @@ import { INotificationBody, PushNotificationsService } from './push-notification
 import { UsersDevicesService } from './users-devices.service';
 import { JwtService } from '@nestjs/jwt';
 import { UsersVerifiedDevicesService } from '../../additional-authentications/src/users-verified-devices.service';
+import { LastDataSource } from '../../wefitter/src/models/last-data-source.entity';
+import { Repository } from 'sequelize-typescript';
+import { DateTime } from 'luxon';
 
 @ApiBearerAuth()
 @ApiTags('users/devices')
@@ -22,6 +25,7 @@ export class UsersDevicesController {
         private readonly pushNotificationsService: PushNotificationsService,
         private readonly jwtService: JwtService,
         private readonly usersVerifiedDevicesService: UsersVerifiedDevicesService,
+        @Inject('LAST_DATA_SOURCE_MODEL') private readonly lastDataSourceModel: Repository<LastDataSource>,
     ) { }
 
     @ApiOperation({ summary: 'Save user device notification token' })
@@ -105,7 +109,26 @@ export class UsersDevicesController {
 
         for (let i = 0; i < iterations; i++) {
             const devicesList = await this.usersDevicesService.getList(scopes.concat([{ method: ['pagination', { limit: limit, offset: i * limit }] }]));
-            await this.pushNotificationsService.sendPushNotification(devicesList.map(device => device.token), notificationBody);
+            const userLastSources = await this.lastDataSourceModel
+                .scope([
+                    { method: ['byUserId', devicesList.map(device => device.userId)] },
+                    { method: ['bySource', ['SAMSUNG', 'APPLE', 'ANDROID']] },
+                    { method: ['byAfterDate', DateTime.utc().minus({ day: 7 }).toISO()] },
+                    { method: ['withoutId'] }
+                ])
+                .findAll();
+            const userLastSourcesMap = {};
+            userLastSources.forEach(lastSource => {
+                if (!userLastSourcesMap[lastSource.userId]) {
+                    userLastSourcesMap[lastSource.userId] = true;
+                }
+            });
+            console.log(JSON.stringify(userLastSourcesMap));
+            const filteredDeviceList = devicesList.filter(device => !userLastSourcesMap[device.userId]);
+            if (!filteredDeviceList.length) {
+                continue;
+            }
+            await this.pushNotificationsService.sendPushNotification(filteredDeviceList.map(device => device.token), notificationBody);
         }
     }
 }
