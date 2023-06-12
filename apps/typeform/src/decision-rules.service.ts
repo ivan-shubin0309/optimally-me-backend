@@ -10,6 +10,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { Transaction } from 'sequelize/types';
 import { ScopeOptions } from 'sequelize';
 import { UsersTagsService } from '../../users-tags/src/users-tags.service';
+import { recommendationCategoryToString } from '../../common/src/resources/recommendations/recommendation-category-types';
 
 interface IRuleData {
     customer: {
@@ -108,6 +109,7 @@ export class DecisionRulesService {
                     id: recommendation.userRecommendation.id,
                     name: recommendation.title,
                     tag: recommendation.tag ? recommendation.tag.name : undefined,
+                    category: recommendationCategoryToString[recommendation.category],
                 })),
                 form_response: typeformQuizDataWithoutHidden,
             };
