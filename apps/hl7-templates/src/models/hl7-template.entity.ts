@@ -1,9 +1,9 @@
-import { Hl7ObjectStatuses } from '../../../common/src/resources/hl7/hl7-object-statuses';
-import { Table, Column, Model, Scopes, DataType, ForeignKey, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, Scopes, DataType, ForeignKey, HasMany, HasOne } from 'sequelize-typescript';
 import { User } from '../../../users/src/models';
 import { DateFilterTypes } from '../../../common/src/resources/hl7-templates/date-filter-types';
 import { Op } from 'sequelize';
 import { Hl7TemplateStatus } from './hl7-template-status.entity';
+import { FavouriteHl7Template } from './favourite-hl7-template.entity';
 
 @Scopes(() => ({
     pagination: (query) => ({ limit: query.limit, offset: query.offset }),
@@ -34,6 +34,16 @@ import { Hl7TemplateStatus } from './hl7-template-status.entity';
                 model: Hl7TemplateStatus,
                 as: 'statuses',
                 required: false,
+            },
+        ]
+    }),
+    withFavouriteHl7Template: (userId) => ({
+        include: [
+            {
+                model: FavouriteHl7Template,
+                as: 'favouriteHl7Template',
+                required: false,
+                where: { userId }
             },
         ]
     })
@@ -179,4 +189,7 @@ export class Hl7Template extends Model {
 
     @HasMany(() => Hl7TemplateStatus, 'hl7TemplateId')
     statuses: Hl7TemplateStatus[];
+
+    @HasOne(() => FavouriteHl7Template, 'hl7TemplateId')
+    favouriteHl7Template: FavouriteHl7Template;
 }

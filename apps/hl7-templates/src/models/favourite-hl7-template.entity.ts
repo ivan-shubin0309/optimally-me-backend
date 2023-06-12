@@ -5,6 +5,7 @@ import { User } from '../../../users/src/models';
 @Scopes(() => ({
     byId: (id) => ({ where: { id } }),
     byHl7TemplateId: (hl7TemplateId) => ({ where: { hl7TemplateId } }),
+    byUserId: (userId) => ({ where: { userId } }),
 }))
 @Table({
     tableName: 'favouriteHl7Templates',

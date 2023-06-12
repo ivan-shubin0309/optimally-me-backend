@@ -6,6 +6,7 @@ import { BaseService } from '../../common/src/base/base.service';
 import { Hl7Template } from './models/hl7-template.entity';
 import { Hl7ObjectStatuses } from '../../common/src/resources/hl7/hl7-object-statuses';
 import { Hl7TemplateStatus } from './models/hl7-template-status.entity';
+import { FavouriteHl7Template } from './models/favourite-hl7-template.entity';
 
 interface ICreateHl7Template {
     userId?: number;
@@ -38,6 +39,7 @@ export class Hl7TemplatesService extends BaseService<Hl7Template> {
     constructor(
         @Inject('HL7_TEMPLATE_MODEL') protected model: Repository<Hl7Template>,
         @Inject('HL7_TEMPLATE_STATUS_MODEL') protected hl7TemplateStatusModel: Repository<Hl7TemplateStatus>,
+        @Inject('FAVOURITE_HL7_TEMPLATE_MODEL') private readonly favouriteHl7TemplateModel: Repository<FavouriteHl7Template>,
     ) { super(model); }
 
     async create(body: ICreateHl7Template, transaction?: Transaction): Promise<Hl7Template> {
@@ -69,6 +71,10 @@ export class Hl7TemplatesService extends BaseService<Hl7Template> {
             { method: ['byId', template.id] },
             { method: ['withStatuses'] }
         ]);
+    }
+
+    async createFavourite(userId: number, hl7TemplateId: number): Promise<void> {
+        await this.favouriteHl7TemplateModel.create({ userId, hl7TemplateId });
     }
 }
 
