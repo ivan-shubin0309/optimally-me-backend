@@ -9,7 +9,9 @@ import { CheckAllowedSummaries } from '../../../../common/src/resources/filterSu
 import { CheckIsAllowedTextField } from '../../../../common/src/resources/filters/check-allowed-risks.decorator';
 import { CreateWhatAreTheCausesDto } from './create-what-are-the-causes.dto';
 import { ICreateFilter } from '../create-biomarker.interface';
-import { skinBiomarkerValidationRules } from '../../../../common/src/resources/biomarkers/validation-rules';
+import { MaxFieldValueRepeatCount } from '../../../../common/src/resources/common/max-field-value-repeat-count.decorator';
+import { CheckAllowedRecommendationTypes } from '../../../../common/src/resources/filters/check-allowed-recommendation-types.decorator';
+import { dnaAgeFilterValidationRules } from '../../../../common/src/resources/filters/dna-age-filter-validation-rules';
 
 export class CreateDnaAgeFilterDto implements ICreateFilter {
     @ApiProperty({ type: () => String, required: false })
@@ -71,7 +73,9 @@ export class CreateDnaAgeFilterDto implements ICreateFilter {
     @ApiProperty({ type: () => [AddRecommendationDto], required: false })
     @IsOptional()
     @IsArray()
-    @ArrayMaxSize(skinBiomarkerValidationRules.maxRecommendations)
+    @ArrayMaxSize(dnaAgeFilterValidationRules.recommendationArrayMaxLength)
+    @MaxFieldValueRepeatCount('type', dnaAgeFilterValidationRules.recommendationTypesMaxCount)
+    @CheckAllowedRecommendationTypes({ each: true })
     @ValidateNested()
     @Type(() => AddRecommendationDto)
     readonly recommendations: AddRecommendationDto[];
