@@ -154,13 +154,6 @@ export class Hl7Template extends Model {
     searchString: string;
 
     @Column({
-        type: DataType.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
-    })
-    isFavourite: boolean;
-
-    @Column({
         type: DataType.INTEGER.UNSIGNED,
         allowNull: true
     })
