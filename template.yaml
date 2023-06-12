@@ -595,7 +595,7 @@ Resources:
         SyncDataEvent:
           Type: Schedule
           Properties:
-            Schedule: cron(00 20 * * 1 *)
+            Schedule: cron(0 20 * * SUN *)
 
   UsersWidgetsFunction:
     Type: AWS::Serverless::Function
