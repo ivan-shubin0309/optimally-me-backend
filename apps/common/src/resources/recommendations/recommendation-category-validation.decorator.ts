@@ -21,14 +21,14 @@ export function RecommendationCategoryValidation(validationOptions?: ValidationO
                     const body = args.object as CreateRecommendationDto;
                     if (
                         skinCategoryTypes.includes(value)
-                        && (!body.idealTimeOfDay || !body?.idealSkinTypes?.length)
+                        && (!body?.idealSkinTypes?.length && !body?.notMeantForSkinTypes?.length)
                     ) {
                         return false;
                     }
                     return true;
                 },
                 defaultMessage(args: ValidationArguments): string {
-                    return 'idealTimeOfDay, idealSkinTypes and notMeantForSkinTypes fields are required';
+                    return 'idealSkinTypes or notMeantForSkinTypes must exist';
                 },
             },
         });
