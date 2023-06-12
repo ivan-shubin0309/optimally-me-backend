@@ -29,7 +29,7 @@ export class Hl7TemplateDto extends BaseDto<Hl7Template> {
             ? entity.statuses.map(templateStatus => templateStatus.status)
             : undefined;
         this.searchString = entity.searchString;
-        this.isFavourite = entity.isFavourite;
+        this.isFavourite = !!entity.favouriteHl7Template;
         this.activatedAtDaysCount = entity.activatedAtDaysCount;
         this.sampleAtDaysCount = entity.sampleAtDaysCount;
         this.labReceivedAtDaysCount = entity.labReceivedAtDaysCount;

@@ -41,7 +41,9 @@ export class Hl7TemplatesController {
     async updateTemplate(@Param() params: EntityByIdDto, @Body() body: PostHl7TemplateDto, @Request() req: Request & { user: SessionDataDto }): Promise<Hl7TemplateDto> {
         let template = await this.hl7TemplatesService.getOne([
             { method: ['byUserIdOrPublic', req.user.userId] },
-            { method: ['byId', params.id] }
+            { method: ['byId', params.id] },
+            { method: ['withFavouriteHl7Template', req.user.userId] },
+            { method: ['withStatuses'] },
         ]);
 
         if (!template) {
@@ -84,10 +86,11 @@ export class Hl7TemplatesController {
     @HttpCode(HttpStatus.OK)
     @Patch('/:id')
     async patchTemplate(@Param() params: EntityByIdDto, @Body() body: PatchHl7TemplateDto, @Request() req: Request & { user: SessionDataDto }): Promise<Hl7TemplateDto> {
-        const template = await this.hl7TemplatesService.getOne([
+        let template = await this.hl7TemplatesService.getOne([
             { method: ['byUserIdOrPublic', req.user.userId] },
             { method: ['byId', params.id] },
-            { method: ['withStatuses'] }
+            { method: ['withStatuses'] },
+            { method: ['withFavouriteHl7Template', req.user.userId] }
         ]);
 
         if (!template) {
@@ -98,7 +101,20 @@ export class Hl7TemplatesController {
             });
         }
 
-        await template.update(body);
+        if (body.isFavourite && !template.favouriteHl7Template) {
+            await this.hl7TemplatesService.createFavourite(template.userId, template.id);
+        }
+
+        if (!body.isFavourite && template.favouriteHl7Template) {
+            await template.favouriteHl7Template.destroy();
+        }
+
+        template = await this.hl7TemplatesService.getOne([
+            { method: ['byUserIdOrPublic', req.user.userId] },
+            { method: ['byId', params.id] },
+            { method: ['withStatuses'] },
+            { method: ['withFavouriteHl7Template', req.user.userId] }
+        ]);
 
         return new Hl7TemplateDto(template);
     }
@@ -127,7 +143,8 @@ export class Hl7TemplatesController {
         if (count) {
             scopes.push(
                 { method: ['orderBy', [[query.orderBy, query.orderType]]] },
-                { method: ['withStatuses'] }
+                { method: ['withStatuses'] },
+                { method: ['withFavouriteHl7Template', req.user.userId] }
             );
             hl7TemplatesList = await this.hl7TemplatesService.getList(scopes);
         }
