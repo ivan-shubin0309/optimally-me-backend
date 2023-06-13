@@ -19,6 +19,7 @@ import { GetUserResultAveragesDto } from './models/get-user-result-averages.dto'
 import { UserResultAveragesDto } from './models/user-result-averages.dto';
 import { UsersRecommendationsService } from '../../users-recommendations/src/users-recommendations.service';
 import sequelize from 'sequelize';
+import { RecommendationTypes } from 'apps/common/src/resources/recommendations/recommendation-types';
 
 @ApiBearerAuth()
 @ApiTags('users/biomarkers/results')
@@ -146,7 +147,7 @@ export class UsersResultsController {
             {
                 biomarkerId: userResult?.filter?.biomarkerId || userResult?.filter?.removedFromBiomarkerId,
                 additionalScopes: [
-                    { method: ['withFilterRecommendation', userResult.filterId, userResult.recommendationRange] },
+                    { method: ['withFilterRecommendation', userResult.filterId, userResult.skinUserResultId ? RecommendationTypes.optimal : userResult.recommendationRange] },
                     { method: ['orderBy', [[sequelize.literal('`filterRecommendation.order`'), 'asc']]] }
                 ],
                 isExcluded: false,
