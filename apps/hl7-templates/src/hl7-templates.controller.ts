@@ -127,7 +127,8 @@ export class Hl7TemplatesController {
     async getTemplateList(@Query() query: GetTemplateListDto, @Request() req: Request & { user: SessionDataDto }): Promise<Hl7TemplatesDto> {
         let hl7TemplatesList = [];
         const scopes: any[] = [
-            { method: ['byUserIdOrPublic', req.user.userId] }
+            { method: ['byUserIdOrPublic', req.user.userId] },
+            { method: ['withFavouriteHl7Template', req.user.userId] }
         ];
 
         if (typeof query.isFavourite === 'boolean') {
@@ -143,8 +144,7 @@ export class Hl7TemplatesController {
         if (count) {
             scopes.push(
                 { method: ['orderBy', [[query.orderBy, query.orderType]]] },
-                { method: ['withStatuses'] },
-                { method: ['withFavouriteHl7Template', req.user.userId] }
+                { method: ['withStatuses'] }
             );
             hl7TemplatesList = await this.hl7TemplatesService.getList(scopes);
         }
