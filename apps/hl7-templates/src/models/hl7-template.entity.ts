@@ -21,7 +21,9 @@ import { FavouriteHl7Template } from './favourite-hl7-template.entity';
             ]
         }
     }),
-    byIsFavourite: (isFavourite) => ({ where: { isFavourite } }),
+    byIsFavourite: (isFavourite) => ({
+        where: { '$favouriteHl7Template.id$': isFavourite ? { [Op.ne]: null } : null }
+    }),
     search: (searchString) => ({
         where: {
             name: { [Op.like]: `%${searchString}%` }
