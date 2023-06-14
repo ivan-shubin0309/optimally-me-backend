@@ -21,6 +21,7 @@ interface IRuleData {
         value: number;
         range: string;
         name: string;
+        category: string;
     };
     recommendations: Array<{
         id: number;
@@ -103,7 +104,8 @@ export class DecisionRulesService {
                 biomarkerResult: {
                     value: biomarker.lastResult.value,
                     range: RecommendationTypes[biomarker.lastResult.recommendationRange],
-                    name: biomarker.name
+                    name: biomarker.name,
+                    category: biomarker.category.name
                 },
                 recommendations: recommendations.map(recommendation => ({
                     id: recommendation.userRecommendation.id,
