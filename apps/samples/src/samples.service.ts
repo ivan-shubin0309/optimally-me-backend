@@ -11,6 +11,8 @@ import { TestKitTypes } from '../../common/src/resources/hl7/test-kit-types';
 import { OtherFeatureTypes } from '../../common/src/resources/filters/other-feature-types';
 import { FulfillmentCenterService } from '../../fulfillment-center/src/fulfillment-center.service';
 import { TranslatorService } from 'nestjs-translator';
+import { User } from '../../users/src/models';
+import { SexTypes } from '../../common/src/resources/filters/sex-types';
 
 @Injectable()
 export class SamplesService extends BaseService<Sample> {
@@ -39,7 +41,7 @@ export class SamplesService extends BaseService<Sample> {
         }
     }
 
-    async activateSample(sample: Sample, userId: number, userOtherFeature: OtherFeatureTypes): Promise<void> {
+    async activateSample(sample: Sample, user: User, userOtherFeature: OtherFeatureTypes): Promise<void> {
         if (!sample.testKitType) {
             const [sampleStatus] = await this.fulfillmentCenterService.getSampleStatus(sample.sampleId);
 
@@ -64,6 +66,14 @@ export class SamplesService extends BaseService<Sample> {
             });
         }
 
+        if (sample.testKitType === TestKitTypes.femaleHormones && user.additionalField.sex === SexTypes.male) {
+            throw new BadRequestException({
+                message: this.translator.translate('USER_NOT_FEMALE'),
+                errorCode: 'USER_NOT_FEMALE',
+                statusCode: HttpStatus.NOT_FOUND
+            });
+        }
+
         if (sample.testKitType === TestKitTypes.femaleHormones && !userOtherFeature) {
             throw new BadRequestException({
                 message: this.translator.translate('OTHER_FEATURE_REQUIRED'),
@@ -79,7 +89,7 @@ export class SamplesService extends BaseService<Sample> {
                 }, { transaction }),
                 this.userSampleModel.create({
                     sampleId: sample.id,
-                    userId,
+                    userId: user.id,
                     userOtherFeature
                 }, { transaction })
             ]);

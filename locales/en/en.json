@@ -72,5 +72,6 @@
     "HL7_TEMPLATE_NOT_FOUND": "Template by specified id not found",
     "USER_FIELD_INVALID_IN_FILE": "Cannot parse user id from hl7 file",
     "SAMPLE_CODE_FIELD_INVALID_IN_FILE": "Cannot parse sample code field from hl7 file",
-    "ADDITIONAL_AUTHENTICATION_NOT_SET": "Cannot change additional authentication type because it is not set"
+    "ADDITIONAL_AUTHENTICATION_NOT_SET": "Cannot change additional authentication type because it is not set",
+    "USER_NOT_FEMALE": "User is not female"
 }
