@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { HttpStatus, Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import * as crypto from 'crypto';
 import { Transaction } from 'sequelize/types';
@@ -9,6 +9,9 @@ import axios from 'axios';
 import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
 import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
 import { UsersTagsService } from '../../users-tags/src/users-tags.service';
+import { TypeformHelper } from '../../common/src/resources/typeform/typeform-helper';
+import { TypeformEventResponseDto } from './models/typeform-event-response.dto';
+import { TranslatorService } from 'nestjs-translator';
 
 @Injectable()
 export class TypeformService {
@@ -87,5 +90,27 @@ export class TypeformService {
         }
 
         return null;
+    }
+    
+    checkSignatureAndUserEmail (signature: string, rawBody: Buffer, body: Record<string, any>, translator: TranslatorService): string | TypeformEventResponseDto {
+        const isVerified = this.verifySignature(signature.split('sha256=')[1], rawBody);
+        if (!isVerified) {
+            throw new UnauthorizedException({
+                message: translator.translate('TYPEFORM_EVENT_NOT_VERIFIED'),
+                errorCode: 'TYPEFORM_EVENT_NOT_VERIFIED',
+                statusCode: HttpStatus.UNAUTHORIZED
+            });
+        }
+    
+        const userEmail = TypeformHelper.getUserEmail(body);
+    
+        if (!userEmail) {
+            return new TypeformEventResponseDto(
+              'EMAIL_NOT_FOUND_ON_BODY',
+              translator.translate('EMAIL_NOT_FOUND_ON_BODY')
+            );
+        }
+        
+        return userEmail;
     }
 }
