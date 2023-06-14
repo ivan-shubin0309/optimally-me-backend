@@ -28,4 +28,5 @@ export const errorsExplanations = {
     'Trig too high': 'Triglycerides value being over  the reporting limit',
     'Unknown': 'test being unknown or sender being unknown',
     'Unlabelled': 'sample tube not being labelled correctly',
+    'ND': 'test not being done'
 };
