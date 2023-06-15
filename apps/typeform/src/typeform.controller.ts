@@ -31,29 +31,16 @@ export class TypeformController {
     @Public()
     @ApiOperation({ summary: 'Sensitive quiz webhook' })
     @Post('/sensitive-quiz')
-    async handleSensitiveQuizEvent(@Body() body: any, @Headers('Typeform-Signature') signature, @Req() req: RawBodyRequest<Request>): Promise<TypeformEventResponseDto> {
+    async handleSensitiveQuizEvent(@Body() body: Record<string, any>, @Headers('Typeform-Signature') signature, @Req() req: RawBodyRequest<Request>): Promise<TypeformEventResponseDto> {
         console.log(JSON.stringify(body));
-
-        const isVerified = this.typeformService.verifySignature(signature.split('sha256=')[1], req.rawBody);
-        if (!isVerified) {
-            throw new UnauthorizedException({
-                message: this.translator.translate('TYPEFORM_EVENT_NOT_VERIFIED'),
-                errorCode: 'TYPEFORM_EVENT_NOT_VERIFIED',
-                statusCode: HttpStatus.UNAUTHORIZED
-            });
-        }
-
-        const userEmail = TypeformHelper.getUserEmail(body);
-
-        if (!userEmail) {
-            return new TypeformEventResponseDto(
-                'EMAIL_NOT_FOUND_ON_BODY',
-                this.translator.translate('EMAIL_NOT_FOUND_ON_BODY')
-            );
+        const response = this.typeformService.checkSignatureAndUserEmail(signature, req.rawBody, body, this.translator);
+        
+        if (typeof response !== 'string') {
+            return response;
         }
 
         const user = await this.usersService.getOne([
-            { method: ['byEmail', userEmail] },
+            { method: ['byEmail', response] },
             { method: ['byRoles', UserRoles.user] },
             { method: ['withAdditionalField'] }
         ]);
@@ -79,7 +66,6 @@ export class TypeformController {
             const variables = TypeformHelper.getVariables(body);
 
             const answers = TypeformHelper.getAnswers(body);
-            console.log(JSON.stringify(answers));
             const answersToCreate = answers.map(answer => Object.assign({ userId: user.id, quizId: userQuiz.id }, answer));
 
             await this.userQuizAnswersService.bulkCreate(answersToCreate, transaction);
@@ -97,27 +83,14 @@ export class TypeformController {
     @Post('/self-assesment')
     async handleSelfAssesmentEvent(@Body() body: any, @Headers('Typeform-Signature') signature, @Req() req: RawBodyRequest<Request>): Promise<TypeformEventResponseDto> {
         console.log(JSON.stringify(body));
-
-        const isVerified = this.typeformService.verifySignature(signature.split('sha256=')[1], req.rawBody);
-        if (!isVerified) {
-            throw new UnauthorizedException({
-                message: this.translator.translate('TYPEFORM_EVENT_NOT_VERIFIED'),
-                errorCode: 'TYPEFORM_EVENT_NOT_VERIFIED',
-                statusCode: HttpStatus.UNAUTHORIZED
-            });
+        const response = this.typeformService.checkSignatureAndUserEmail(signature, req.rawBody, body, this.translator);
+    
+        if (typeof response !== 'string') {
+            return response;
         }
-
-        const userEmail = TypeformHelper.getUserEmail(body);
-
-        if (!userEmail) {
-            return new TypeformEventResponseDto(
-                'EMAIL_NOT_FOUND_ON_BODY',
-                this.translator.translate('EMAIL_NOT_FOUND_ON_BODY')
-            );
-        }
-
+        
         let user = await this.usersService.getOne([
-            { method: ['byEmail', userEmail] },
+            { method: ['byEmail', response] },
             { method: ['byRoles', UserRoles.user] },
             { method: ['withAdditionalField'] }
         ]);

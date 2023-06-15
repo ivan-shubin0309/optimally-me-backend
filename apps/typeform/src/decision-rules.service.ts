@@ -67,7 +67,8 @@ export class DecisionRulesService {
         const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(userId, { beforeDate: DateTime.utc().toFormat('yyyy-MM-dd') }, 1);
         const biomarkerScopes: ScopeOptions[] = [
             { method: ['byType', [BiomarkerTypes.blood, BiomarkerTypes.skin]] },
-            { method: ['withLastResult', lastResultIds, true] }
+            { method: ['withLastResult', lastResultIds, true] },
+            { method: ['withCategory', true] },
         ];
         const biomarkersList = await this.usersBiomarkersService.getList(biomarkerScopes);
         if (!biomarkersList.length) {
