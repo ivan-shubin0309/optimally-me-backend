@@ -32,6 +32,7 @@ export class TypeformController {
     @ApiOperation({ summary: 'Sensitive quiz webhook' })
     @Post('/sensitive-quiz')
     async handleSensitiveQuizEvent(@Body() body: Record<string, any>, @Headers('Typeform-Signature') signature, @Req() req: RawBodyRequest<Request>): Promise<TypeformEventResponseDto> {
+        console.log(JSON.stringify(body));
         const response = this.typeformService.checkSignatureAndUserEmail(signature, req.rawBody, body, this.translator);
         
         if (typeof response !== 'string') {
@@ -81,6 +82,7 @@ export class TypeformController {
     @ApiOperation({ summary: 'Handle self assesment quiz' })
     @Post('/self-assesment')
     async handleSelfAssesmentEvent(@Body() body: any, @Headers('Typeform-Signature') signature, @Req() req: RawBodyRequest<Request>): Promise<TypeformEventResponseDto> {
+        console.log(JSON.stringify(body));
         const response = this.typeformService.checkSignatureAndUserEmail(signature, req.rawBody, body, this.translator);
     
         if (typeof response !== 'string') {
