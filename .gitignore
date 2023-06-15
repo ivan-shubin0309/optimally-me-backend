@@ -41,3 +41,4 @@ lerna-debug.log*
 !.env.example
 config/*
 *.toml
+local.template.yaml
