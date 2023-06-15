@@ -296,6 +296,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/hl7-templates/tsconfig.app.json"
       }
+    },
+    "dna-age": {
+      "type": "application",
+      "root": "apps/dna-age",
+      "entryFile": "main",
+      "sourceRoot": "apps/dna-age/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/dna-age/tsconfig.app.json"
+      }
     }
   }
 }
