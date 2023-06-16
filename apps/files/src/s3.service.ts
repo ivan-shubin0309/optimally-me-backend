@@ -4,10 +4,10 @@ import { Repository } from 'sequelize-typescript';
 import { File } from './models/file.entity';
 import { PutObjectCommand, S3 } from '@aws-sdk/client-s3';
 import { createPresignedPost as s3CreatePresignedPost, PresignedPost } from '@aws-sdk/s3-presigned-post';
-import { Transaction } from 'sequelize/types';
 import { FileStatuses } from '../../common/src/resources/files/file-statuses';
 import { IAwsCopyFile } from './files.service';
 import { SessionDataDto } from '../../sessions/src/models';
+import { Transaction } from 'sequelize';
 
 @Injectable()
 export class S3Service {

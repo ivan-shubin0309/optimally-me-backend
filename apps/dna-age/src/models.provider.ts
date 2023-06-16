@@ -4,6 +4,8 @@ import { Sample } from '../../samples/src/models/sample.entity';
 import { UserSample } from '../../samples/src/models/user-sample.entity';
 import { Biomarker } from '../../biomarkers/src/models/biomarker.entity';
 import { UserResult } from '../../admins-results/src/models/user-result.entity';
+import { DnaAgeResult } from './models/dna-age-result.entity';
+import { File } from '../../files/src/models/file.entity';
 
 export const modelProviders = [
     {
@@ -29,5 +31,13 @@ export const modelProviders = [
     {
         provide: 'USER_RESULT_MODEL',
         useValue: UserResult
-    }
+    },
+    {
+        provide: 'DNA_AGE_RESULT_MODEL',
+        useValue: DnaAgeResult
+    },
+    {
+        provide: 'FILE_MODEL',
+        useValue: File
+    },
 ];

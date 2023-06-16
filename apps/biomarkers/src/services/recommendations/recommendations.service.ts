@@ -3,7 +3,6 @@ import { BaseService } from '../../../../common/src/base/base.service';
 import { Repository, Sequelize } from 'sequelize-typescript';
 import { CreateRecommendationDto } from '../../models/recommendations/create-recommendation.dto';
 import { Recommendation } from '../../models/recommendations/recommendation.entity';
-import { Transaction } from 'sequelize/types';
 import { RecommendationFile } from '../../models/recommendations/recommendation-file.entity';
 import { RecommendationImpact } from '../../models/recommendationImpacts/recommendation-impact.entity';
 import { RecommendationDataDto } from '../../models/recommendations/recommendation-data.dto';
@@ -18,6 +17,7 @@ import { ImpactStudyLinkTypes } from '../../../../common/src/resources/recommend
 import { RecommendationSkinType } from '../../models/recommendationSkinTypes/recommendation-skin-type.entity';
 import { RecommendationContradiction } from '../../models/recommendationContradictions/recommendation-contradiction.entity';
 import { RecommendationTag } from '../../models/recommendationTags/recommendation-tag.entity';
+import { Transaction } from 'sequelize';
 
 @Injectable()
 export class RecommendationsService extends BaseService<Recommendation> {

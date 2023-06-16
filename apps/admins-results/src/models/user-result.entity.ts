@@ -8,6 +8,7 @@ import { RecommendationTypes } from '../../../common/src/resources/recommendatio
 import { UserRecommendation } from '../../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
 import { SkinUserResult } from '../../../haut-ai/src/models/skin-user-result.entity';
 import { Hl7Object } from '../../../hl7/src/models/hl7-object.entity';
+import { DnaAgeResult } from '../../../dna-age/src/models/dna-age-result.entity';
 
 export interface IUserResult {
     readonly value: number,
@@ -208,6 +209,13 @@ export class UserResult extends Model {
         allowNull: false,
     })
     hl7ObjectId: number;
+
+    @ForeignKey(() => DnaAgeResult)
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+    })
+    dnaAgeResultId: number;
 
     @BelongsTo(() => Unit)
     unit: Unit;

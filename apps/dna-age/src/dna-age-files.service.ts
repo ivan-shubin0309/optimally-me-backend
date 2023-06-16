@@ -1,6 +1,5 @@
-import { BadRequestException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { File } from '../../files/src/models/file.entity';
-import neatCsv from 'neat-csv';
 import axios from 'axios';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
 import { Repository } from 'sequelize-typescript';
@@ -13,8 +12,12 @@ import { DateTime } from 'luxon';
 import { Sequelize } from 'sequelize';
 import { TranslatorService } from 'nestjs-translator';
 import { FileTypes } from '../../common/src/resources/files/file-types';
+import { DnaAgeResult } from './models/dna-age-result.entity';
+import { CreateDnaAgeResultDto } from './models/create-dna-age-result.dto';
 
-interface IDnaAgeFile {
+const neatCsv = import('neat-csv');
+
+export interface IDnaAgeFile {
     SID: string,
     OriginalOrderInBatch: string,
     Plate_Number: string,
@@ -44,6 +47,7 @@ export class DnaAgeFilesService {
     constructor(
         @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
         @Inject('USER_RESULT_MODEL') private readonly userResultModel: Repository<UserResult>,
+        @Inject('DNA_AGE_RESULT_MODEL') private readonly dnaAgeResultModel: Repository<DnaAgeResult>,
         private readonly samplesService: SamplesService,
         private readonly usersBiomarkersService: UsersBiomarkersService,
         private readonly translator: TranslatorService,
@@ -60,7 +64,7 @@ export class DnaAgeFilesService {
 
         const response = await axios.get(FileHelper.getInstance().buildBaseLink(file));
 
-        const data: IDnaAgeFile[] = await neatCsv(response.data);
+        const data: IDnaAgeFile[] = await (await neatCsv).default(response.data);
 
         if (!data.length) {
             throw new BadRequestException({
@@ -95,6 +99,19 @@ export class DnaAgeFilesService {
                     return;
                 }
 
+                let dnaAgeResultToCreate: any, dnaAgeResult;
+
+                try {
+                    dnaAgeResultToCreate = new CreateDnaAgeResultDto(row, sample.id, sample.userSample.userId);
+                    dnaAgeResult = await this.dnaAgeResultModel.create(dnaAgeResultToCreate, { transaction });
+                } catch (err) {
+                    throw new UnprocessableEntityException({
+                        message: this.translator.translate('CANNOT_PARSE_CSV'),
+                        errorCode: 'CANNOT_PARSE_CSV',
+                        statusCode: HttpStatus.BAD_REQUEST
+                    });
+                }
+
                 const biomarkers = await this.usersBiomarkersService.getList([
                     { method: ['withAlternativeNames'] },
                     { method: ['byType', BiomarkerTypes.dnaAge] },
@@ -112,15 +129,18 @@ export class DnaAgeFilesService {
                         return;
                     }
 
+                    const baseName = foundAlternativName.name.split('_')[0];
+
                     resultsToCreate.push({
                         userId: sample.userSample.userId,
                         biomarkerId: biomarker.id,
-                        value: parseFloat(row[foundAlternativName.name]),
+                        value: parseFloat(row[foundAlternativName.name]).toFixed(2),
                         date: DateTime.utc().toISODate(),
                         recommendationRange: FilterRangeHelper.getRecommendationTypeByValue(biomarker.filters[0], row[foundAlternativName.name]),
-                        deviation: FilterRangeHelper.formatDnaAgeDeviation(parseFloat(row[`${foundAlternativName.name}${PERCENTILE_SUFFIX}`])),
+                        deviation: FilterRangeHelper.formatDnaAgeDeviation(parseFloat(row[`${baseName}${PERCENTILE_SUFFIX}`])),
                         unitId: biomarker.unitId,
                         filterId: biomarker.filters[0].id,
+                        dnaAgeResultId: dnaAgeResult.id,
                     });
                 });
 

@@ -1,6 +1,5 @@
 import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-types';
 import { Repository } from 'sequelize-typescript';
-import { Transaction } from 'sequelize/types';
 import { Biomarker } from './models/biomarker.entity';
 import { Filter } from './models/filters/filter.entity';
 import { Interaction } from './models/interactions/interaction.entity';
@@ -17,6 +16,7 @@ import { StudyLink } from './models/filterBulletLists/study-link.entity';
 import { BulletListCategories } from '../../common/src/resources/filterBulletLists/bullet-list-types';
 import { IAddRecommendation, ICreateBiomarker, ICreateFilter, ICreateFilterBulletList, ICreateFilterGroup, ICreateInteraction, ICreateResultSummary } from './models/create-biomarker.interface';
 import { UpdateFilterDataDto } from './models/filters/update-filter-data.dto';
+import { Transaction } from 'sequelize';
 
 export abstract class BiomarkersFactory {
     constructor(

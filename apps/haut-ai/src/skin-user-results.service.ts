@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { BaseService } from '../../common/src/base/base.service';
 import { Repository } from 'sequelize-typescript';
-import { Transaction } from 'sequelize/types';
 import { Sequelize } from 'sequelize-typescript';
 import { ISkinUserResult, SkinUserResult } from './models/skin-user-result.entity';
 import { EYES_AGE_METRIC, HautAiMetricTypes, ITA_SCORE_METRIC, PERCEIVED_AGE_METRIC, techNamesToMetricTypes } from '../../common/src/resources/haut-ai/haut-ai-metric-types';
@@ -17,6 +16,7 @@ import { UserQuizesService } from '../../typeform/src/user-quizes.service';
 import { DecisionRulesService } from 'apps/typeform/src/decision-rules.service';
 import { UsersService } from 'apps/users/src/users.service';
 import { UserRoles } from 'apps/common/src/resources/users';
+import { Transaction } from 'sequelize';
 
 @Injectable()
 export class SkinUserResultsService extends BaseService<SkinUserResult> {

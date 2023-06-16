@@ -15,6 +15,9 @@ import { modelProviders } from './models.provider';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
 import { SamplesService } from '../../samples/src/samples.service';
 import { FulfillmentCenterService } from '../../fulfillment-center/src/fulfillment-center.service';
+import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomarkers.service';
+import { FilesService } from '../../files/src/files.service';
+import { S3Service } from '../../files/src/s3.service';
 
 @Module({
     imports: [
@@ -25,6 +28,9 @@ import { FulfillmentCenterService } from '../../fulfillment-center/src/fulfillme
     ],
     controllers: [DnaAgeController],
     providers: [
+        S3Service,
+        FilesService,
+        UsersBiomarkersService,
         FulfillmentCenterService,
         SamplesService,
         DnaAgeFilesService,

@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-types';
 import { Repository } from 'sequelize-typescript';
-import { Transaction } from 'sequelize/types';
 import { Biomarker } from './models/biomarker.entity';
 import { Filter } from './models/filters/filter.entity';
 import { Interaction } from './models/interactions/interaction.entity';
@@ -17,6 +16,7 @@ import { FilterBulletList } from './models/filterBulletLists/filter-bullet-list.
 import { StudyLink } from './models/filterBulletLists/study-link.entity';
 import { BiomarkersFactory } from './biomarkers.factory';
 import { CreateDnaAgeBiomarkerDto } from './models/create-dna-age-biomarker.dto';
+import { Transaction } from 'sequelize';
 
 @Injectable()
 export class DnaAgeBiomarkersFactory extends BiomarkersFactory {

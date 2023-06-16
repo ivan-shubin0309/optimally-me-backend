@@ -13,9 +13,7 @@ import { UserSample } from './user-sample.entity';
                 model: UserSample,
                 as: 'userSample',
                 required: isRequired,
-                where: {
-                    userId
-                }
+                where: typeof userId === 'undefined' ? {} : { userId }
             },
         ]
     })

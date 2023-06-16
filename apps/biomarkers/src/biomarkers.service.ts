@@ -11,7 +11,6 @@ import { Unit } from './models/units/unit.entity';
 import { Category } from './models/categories/category.entity';
 import { Recommendation } from './models/recommendations/recommendation.entity';
 import { allowedCategoriesByRule, BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-types';
-import { Transaction } from 'sequelize/types';
 import { FiltersService } from './services/filters/filters.service';
 import { UpdateBiomarkerDto } from './models/update-biomarker.dto';
 import { BiomarkerHelper } from '../../common/src/resources/biomarkers/biomarker-helper';
@@ -23,6 +22,7 @@ import { UpdateSkinBiomarkerDto } from './models/update-skin-biomarker.dto';
 import { CreateDnaAgeBiomarkerDto } from './models/create-dna-age-biomarker.dto';
 import { DnaAgeBiomarkersFactory } from './dna-age-biomarkers.factory';
 import { UpdateDnaAgeBiomarkerDto } from './models/update-dna-age-biomarker.dto';
+import { Transaction } from 'sequelize';
 
 interface IBiomarkerGetOneOptions {
     readonly filters?: { isIncludeAll: boolean }

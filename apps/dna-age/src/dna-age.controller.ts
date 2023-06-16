@@ -8,8 +8,8 @@ import { DnaAgeFilesService } from './dna-age-files.service';
 import { PostDnaAgeDto } from './models/post-dna-age-file.dto';
 
 @ApiBearerAuth()
-@ApiTags('dna-age')
-@Controller('dna-age')
+@ApiTags('admins/dna-age')
+@Controller('admins/dna-age')
 export class DnaAgeController {
     constructor(
         private readonly dnaAgeFilesService: DnaAgeFilesService,
@@ -26,5 +26,7 @@ export class DnaAgeController {
         const data = await this.dnaAgeFilesService.parseCsvToJson(file);
 
         await this.dnaAgeFilesService.processDnaAgeResults(data);
+
+        await this.filesService.markFilesAsUsed([file.id]);
     }
 }

@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { BaseService } from '../../common/src/base/base.service';
 import { Repository } from 'sequelize-typescript';
 import { UserDevice } from './models/user-device.entity';
-import { Transaction } from 'sequelize/types';
+import { Transaction } from 'sequelize';
 
 interface ICreateUserDevice {
     userId: number,

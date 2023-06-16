@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto, User } from './models';
-import { Transaction } from 'sequelize/types';
 import { ICreateUser } from './models/create-user.interface';
 import { BaseService } from '../../common/src/base/base.service';
 import { Repository } from 'sequelize-typescript';
 import { UserAdditionalField } from './models/user-additional-field.entity';
 import { RegistrationSteps } from '../../common/src/resources/users/registration-steps';
+import { Transaction } from 'sequelize';
 
 @Injectable()
 export class UsersService extends BaseService<User> {

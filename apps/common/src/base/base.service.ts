@@ -1,7 +1,6 @@
-import { Attributes, Model, Transaction } from 'sequelize/types';
-import { Repository } from 'sequelize-typescript';
+import { Model, Repository } from 'sequelize-typescript';
 import { Directions } from '../resources/common/cursor-pagination';
-import { Op, FindOptions, ScopeOptions } from 'sequelize';
+import { Op, FindOptions, ScopeOptions, Transaction, Attributes } from 'sequelize';
 
 export interface ICursorPaginationOptions {
     readonly cursorValue: number,
