@@ -76,5 +76,6 @@
     "DNA_AGE_FILE_EMPTY": "File doesn't have any results",
     "FILE_NOT_DNA_AGE": "Provided file is not dna age csv",
     "DNA_AGE_FILE_STRUCTURE_INCORRECT": "File has different structure",
-    "CANNOT_PARSE_CSV": "File structure is wrong or something happend while parsing csv"
+    "CANNOT_PARSE_CSV": "File structure is wrong or something happend while parsing csv",
+    "USER_NOT_FEMALE": "User is not female"
 }

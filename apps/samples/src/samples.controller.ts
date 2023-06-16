@@ -20,7 +20,6 @@ import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
 import { UsersService } from '../../users/src/users.service';
 import { DateTime } from 'luxon';
 import { OtherFeatureTypes } from '../../common/src/resources/filters/other-feature-types';
-import { hl7LabNames } from '../../common/src/resources/hl7/hl7-lab-names';
 import { FulfillmentCenterService } from '../../fulfillment-center/src/fulfillment-center.service';
 
 @ApiTags('samples')
@@ -118,15 +117,15 @@ export class SamplesController {
             });
         }
 
-        await this.samplesService.activateSample(sample, req.user.userId, body.otherFeature);
-
-        sample = await this.samplesService.getOne([
-            { method: ['bySampleId', params.sampleId] }
-        ]);
-
         const user = await this.usersService.getOne([
             { method: ['byId', req.user.userId] },
             'withAdditionalField'
+        ]);
+
+        await this.samplesService.activateSample(sample, user, body.otherFeature);
+
+        sample = await this.samplesService.getOne([
+            { method: ['bySampleId', params.sampleId] }
         ]);
 
         const klaviyoProfile = await this.klaviyoModelService.getKlaviyoProfile(user);

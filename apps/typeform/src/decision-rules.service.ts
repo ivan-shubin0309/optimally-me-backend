@@ -21,6 +21,7 @@ interface IRuleData {
         value: number;
         range: string;
         name: string;
+        category: string;
     };
     recommendations: Array<{
         id: number;
@@ -66,7 +67,8 @@ export class DecisionRulesService {
         const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(userId, { beforeDate: DateTime.utc().toFormat('yyyy-MM-dd') }, 1);
         const biomarkerScopes: ScopeOptions[] = [
             { method: ['byType', [BiomarkerTypes.blood, BiomarkerTypes.skin]] },
-            { method: ['withLastResult', lastResultIds, true] }
+            { method: ['withLastResult', lastResultIds, true] },
+            { method: ['withCategory', true] },
         ];
         const biomarkersList = await this.usersBiomarkersService.getList(biomarkerScopes);
         if (!biomarkersList.length) {
@@ -103,7 +105,8 @@ export class DecisionRulesService {
                 biomarkerResult: {
                     value: biomarker.lastResult.value,
                     range: RecommendationTypes[biomarker.lastResult.recommendationRange],
-                    name: biomarker.name
+                    name: biomarker.name,
+                    category: biomarker.category.name
                 },
                 recommendations: recommendations.map(recommendation => ({
                     id: recommendation.userRecommendation.id,
