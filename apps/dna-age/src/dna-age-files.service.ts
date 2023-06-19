@@ -14,8 +14,8 @@ import { TranslatorService } from 'nestjs-translator';
 import { FileTypes } from '../../common/src/resources/files/file-types';
 import { DnaAgeResult } from './models/dna-age-result.entity';
 import { CreateDnaAgeResultDto } from './models/create-dna-age-result.dto';
-
-const neatCsv = import('neat-csv');
+import { CsvParser, ParsedData } from 'nest-csv-parser';
+import { DnaAgeFileDto } from './models/dna-age-file.dto';
 
 export interface IDnaAgeFile {
     SID: string,
@@ -51,6 +51,7 @@ export class DnaAgeFilesService {
         private readonly samplesService: SamplesService,
         private readonly usersBiomarkersService: UsersBiomarkersService,
         private readonly translator: TranslatorService,
+        private readonly csvParser: CsvParser,
     ) { }
 
     async parseCsvToJson(file: File): Promise<IDnaAgeFile[]> {
@@ -64,7 +65,8 @@ export class DnaAgeFilesService {
 
         const response = await axios.get(FileHelper.getInstance().buildBaseLink(file));
 
-        const data: IDnaAgeFile[] = await (await neatCsv).default(response.data);
+        const parsedData: ParsedData<DnaAgeFileDto> = await this.csvParser.parse(response.data, DnaAgeFileDto);
+        const data = parsedData.list;
 
         if (!data.length) {
             throw new BadRequestException({
