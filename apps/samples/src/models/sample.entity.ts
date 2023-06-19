@@ -7,15 +7,13 @@ import { UserSample } from './user-sample.entity';
     byIsActivated: (isActivated) => ({ where: { isActivated } }),
     pagination: (query) => ({ limit: query.limit, offset: query.offset }),
     bySampleId: (sampleId) => ({ where: { sampleId } }),
-    withUserSample: (userId) => ({
+    withUserSample: (userId, isRequired = false) => ({
         include: [
             {
                 model: UserSample,
                 as: 'userSample',
-                required: false,
-                where: {
-                    userId
-                }
+                required: isRequired,
+                where: typeof userId === 'undefined' ? {} : { userId }
             },
         ]
     })

@@ -1,7 +1,6 @@
 import { HttpStatus, Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import * as crypto from 'crypto';
-import { Transaction } from 'sequelize/types';
 import { User } from '../../users/src/models';
 import { SENSITIVE_SKIN_ATTRIBUTE, TypeformQuizType } from '../../common/src/resources/typeform/typeform-quiz-types';
 import { UserQuiz } from './models/user-quiz.entity';
@@ -9,6 +8,7 @@ import axios from 'axios';
 import { KlaviyoService } from '../../klaviyo/src/klaviyo.service';
 import { KlaviyoModelService } from '../../klaviyo/src/klaviyo-model.service';
 import { UsersTagsService } from '../../users-tags/src/users-tags.service';
+import { Transaction } from 'sequelize';
 import { TypeformHelper } from '../../common/src/resources/typeform/typeform-helper';
 import { TypeformEventResponseDto } from './models/typeform-event-response.dto';
 import { TranslatorService } from 'nestjs-translator';

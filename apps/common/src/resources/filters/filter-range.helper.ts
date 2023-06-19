@@ -79,4 +79,8 @@ export class FilterRangeHelper {
 
         return resultRange && resultRange.type;
     }
+
+    static formatDnaAgeDeviation(value) {
+        return (value * 100).toFixed(2);
+    }
 }

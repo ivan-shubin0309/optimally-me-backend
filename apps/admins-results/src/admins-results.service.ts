@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Recommendation } from '../../biomarkers/src/models/recommendations/recommendation.entity';
 import { Repository, Sequelize } from 'sequelize-typescript';
-import { Transaction } from 'sequelize/types';
 import { BaseService } from '../../common/src/base/base.service';
 import { IUserResult, UserResult } from './models/user-result.entity';
 import { UserRecommendation } from '../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
@@ -14,6 +13,7 @@ import { UsersService } from '../../users/src/users.service';
 import { UserRoles } from '../../common/src/resources/users';
 import { OtherFeatureTypes } from '../../common/src/resources/filters/other-feature-types';
 import { SkinTypes } from '../../common/src/resources/filters/skin-types';
+import { Transaction } from 'sequelize';
 
 @Injectable()
 export class AdminsResultsService extends BaseService<UserResult> {

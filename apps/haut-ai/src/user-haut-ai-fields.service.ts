@@ -2,7 +2,6 @@ import { HttpStatus, Inject, Injectable, UnprocessableEntityException } from '@n
 import { BaseService } from '../../common/src/base/base.service';
 import { Repository } from 'sequelize-typescript';
 import { UserHautAiField } from './models/user-haut-ai-field.entity';
-import { Transaction } from 'sequelize/types';
 import { HautAiService } from './haut-ai.service';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import { SubjectInDto } from './models/subject-in.dto';
@@ -10,6 +9,7 @@ import { File } from '../../files/src/models/file.entity';
 import axios from 'axios';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
 import { HautAiUploadedPhotoDto } from './models/haut-ai-uploaded-photo.dto';
+import { Transaction } from 'sequelize';
 
 @Injectable()
 export class UserHautAiFieldsService extends BaseService<UserHautAiField> {

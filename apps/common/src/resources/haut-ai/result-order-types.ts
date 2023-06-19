@@ -7,7 +7,7 @@ export const hautAiResultOrderTypes = [
     'recommendationRange'
 ];
 
-export const hautAiResultOrderScope = {
+export const hautAiResultOrderScope: any = {
     'name': (query: GetResultsBySkinResultDto) => ({ method: ['orderBy', [[col('biomarker.name'), query.orderType]]] }),
     'recommendationRange': (query: GetResultsBySkinResultDto) => ({
         method: [

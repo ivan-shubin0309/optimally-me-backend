@@ -7,10 +7,10 @@ import { DateTime } from 'luxon';
 import { RecommendationTypes } from '../../common/src/resources/recommendations/recommendation-types';
 import { UsersRecommendationsService } from '../../users-recommendations/src/users-recommendations.service';
 import { Sequelize } from 'sequelize-typescript';
-import { Transaction } from 'sequelize/types';
 import { ScopeOptions } from 'sequelize';
 import { UsersTagsService } from '../../users-tags/src/users-tags.service';
 import { recommendationCategoryToString } from '../../common/src/resources/recommendations/recommendation-category-types';
+import { Transaction } from 'sequelize';
 
 interface IRuleData {
     customer: {

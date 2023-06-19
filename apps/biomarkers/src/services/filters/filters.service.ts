@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { BaseService } from 'apps/common/src/base/base.service';
 import { Repository } from 'sequelize-typescript';
-import { Transaction } from 'sequelize/types';
 import { FilterBulletList } from '../../models/filterBulletLists/filter-bullet-list.entity';
 import { Filter } from '../../models/filters/filter.entity';
 import { FilterRecommendation } from '../../models/recommendations/filter-recommendation.entity';
@@ -9,6 +8,7 @@ import { UpdateFilterDataDto } from '../../models/filters/update-filter-data.dto
 import { BiomarkersFactory } from '../../biomarkers.factory';
 import { IUpdateFilter } from '../../models/create-biomarker.interface';
 import { UserResult } from '../../../../admins-results/src/models/user-result.entity';
+import { Transaction } from 'sequelize';
 
 interface IFilterGetListOptions {
     readonly isIncludeAll: boolean,

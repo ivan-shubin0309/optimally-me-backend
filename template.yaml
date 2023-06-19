@@ -799,3 +799,17 @@ Resources:
           Properties:
             Path: /hl7/templates/{id}
             Method: ANY
+
+  DnaAgeFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/dna-age/src/main.handler
+      Description: 
+      Events:
+        DnaAgeFilesApi:
+          Type: Api
+          Properties:
+            Path: /admins/dna-age/files
+            Method: ANY

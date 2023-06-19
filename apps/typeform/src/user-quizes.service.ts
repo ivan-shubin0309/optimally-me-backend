@@ -3,7 +3,7 @@ import { ConfigService } from '../../common/src/utils/config/config.service';
 import { BaseService } from '../../common/src/base/base.service';
 import { UserQuiz } from './models/user-quiz.entity';
 import { Repository } from 'sequelize-typescript';
-import { Transaction } from 'sequelize/types';
+import { Transaction } from 'sequelize';
 
 interface ICreateUserQuiz {
     userId: number;

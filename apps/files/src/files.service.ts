@@ -4,7 +4,6 @@ import { Repository } from 'sequelize-typescript';
 import { BaseService } from '../../common/src/base/base.service';
 import { File } from './models/file.entity';
 import { FileTypes, InternalFileTypes } from '../../common/src/resources/files/file-types';
-import { Transaction } from 'sequelize/types';
 import { TranslatorService } from 'nestjs-translator';
 import { S3Service } from './s3.service';
 import { SessionDataDto } from '../../sessions/src/models';
@@ -13,7 +12,7 @@ import { rules } from '../../common/src/resources/files/files-validation-rules';
 import { adminRoles } from '../../common/src/resources/users';
 import * as uuid from 'uuid';
 import { FILE_PREFIX } from '../../common/src/resources/files/constants';
-import { ScopeOptions } from 'sequelize';
+import { ScopeOptions, Transaction } from 'sequelize';
 
 interface IAwsFile {
     acl?: string,

@@ -61,6 +61,7 @@ import { UserDashboardSetting } from '../../../../users-widgets/src/models/user-
 import { UserMetricGraphSetting } from '../../../../users-widgets/src/models/user-metric-graph-setting.entity';
 import { LastDataSource } from '../../../../wefitter/src/models/last-data-source.entity';
 import { FavouriteHl7Template } from '../../../../hl7-templates/src/models/favourite-hl7-template.entity';
+import { DnaAgeResult } from '../../../../dna-age/src/models/dna-age-result.entity';
 
 export const entities = [
     User,
@@ -126,4 +127,5 @@ export const entities = [
     UserMetricGraphSetting,
     LastDataSource,
     FavouriteHl7Template,
+    DnaAgeResult,
 ];

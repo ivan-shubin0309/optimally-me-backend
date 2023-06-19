@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import { BaseService } from '../../common/src/base/base.service';
 import { Repository } from 'sequelize-typescript';
-import { Transaction } from 'sequelize/types';
 import { UserQuizAnswer } from './models/user-quiz-answer.entity';
+import { Transaction } from 'sequelize';
 
 interface ICreateUserQuizAnswer {
     userId: number;
