@@ -18,13 +18,15 @@ import { FulfillmentCenterService } from '../../fulfillment-center/src/fulfillme
 import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomarkers.service';
 import { FilesService } from '../../files/src/files.service';
 import { S3Service } from '../../files/src/s3.service';
+import { CsvModule } from 'nest-csv-parser';
 
 @Module({
     imports: [
         ConfigModule,
         jwtModuleInstance,
         redisModuleInstance,
-        translatorInstance
+        translatorInstance,
+        CsvModule
     ],
     controllers: [DnaAgeController],
     providers: [
