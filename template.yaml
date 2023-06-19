@@ -114,6 +114,7 @@ Resources:
       Description:
       ProvisionedConcurrencyConfig:
         ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
+      AutoPublishAlias: live
       Events:
         UsersMeApi:
           Type: Api
@@ -270,6 +271,7 @@ Resources:
       Description:
       ProvisionedConcurrencyConfig:
         ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
+      AutoPublishAlias: live
       Events:
         WefitterProfileApi:
           Type: Api
@@ -422,6 +424,7 @@ Resources:
       Description:
       ProvisionedConcurrencyConfig:
         ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
+      AutoPublishAlias: live
       Events:
         UsersBiomarkersApi:
           Type: Api
@@ -496,6 +499,7 @@ Resources:
       Description:
       ProvisionedConcurrencyConfig:
         ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
+      AutoPublishAlias: live
       Events:
         HautAiFaceSkinMetricsImagesApi:
           Type: Api
@@ -561,6 +565,7 @@ Resources:
       Description:
       ProvisionedConcurrencyConfig:
         ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
+      AutoPublishAlias: live
       Events:
         SamplesApi:
           Type: Api
@@ -587,6 +592,7 @@ Resources:
       Description:
       ProvisionedConcurrencyConfig:
         ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
+      AutoPublishAlias: live
       Events:
         UsersDevicesApi:
           Type: Api
@@ -663,6 +669,7 @@ Resources:
       Description:
       ProvisionedConcurrencyConfig:
         ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
+      AutoPublishAlias: live
       Events:
         UsersRecommendationsApi:
           Type: Api
@@ -763,6 +770,7 @@ Resources:
       Description:
       ProvisionedConcurrencyConfig:
         ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
+      AutoPublishAlias: live
       Events:
         UsersHl7ObjectsApi:
           Type: Api
