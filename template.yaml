@@ -855,10 +855,10 @@ Resources:
         UsersDnaAgeApi:
           Type: Api
           Properties:
-            Path: /admins/dna-age
+            Path: /users/dna-age
             Method: ANY
         UsersDnaAgeIdResultsApi:
           Type: Api
           Properties:
-            Path: /admins/dna-age/{id}/results
+            Path: /users/dna-age/{id}/results
             Method: ANY
