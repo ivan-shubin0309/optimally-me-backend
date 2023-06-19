@@ -8,6 +8,9 @@ Parameters:
   NodeEnv:
     Type: String
     Default: "default"
+  ProvisionedConcurencyUnits:
+    Type: String
+    Default: "0"
   AwsRegion:
     Type: String
     Default: "default"
@@ -109,6 +112,8 @@ Resources:
     Properties:
       Handler: dist/apps/users/src/main.handler
       Description:
+      ProvisionedConcurrencyConfig:
+        ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
       Events:
         UsersMeApi:
           Type: Api
@@ -263,6 +268,8 @@ Resources:
     Properties:
       Handler: dist/apps/wefitter/src/main.handler
       Description:
+      ProvisionedConcurrencyConfig:
+        ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
       Events:
         WefitterProfileApi:
           Type: Api
@@ -336,7 +343,7 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/verifications/src/main.handler
-      Description: 
+      Description:
       Events:
         VerificationsPasswordApi:
           Type: Api
@@ -360,7 +367,7 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/admins-users/src/main.handler
-      Description: 
+      Description:
       Events:
         AdminsUsersApi:
           Type: Api
@@ -379,7 +386,7 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/admins-results/src/main.handler
-      Description: 
+      Description:
       Events:
         AdminsUsersApi:
           Type: Api
@@ -398,7 +405,7 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/files/src/main.handler
-      Description: 
+      Description:
       Events:
         FilesApi:
           Type: Api
@@ -412,7 +419,9 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/users-biomarkers/src/main.handler
-      Description: 
+      Description:
+      ProvisionedConcurrencyConfig:
+        ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
       Events:
         UsersBiomarkersApi:
           Type: Api
@@ -431,7 +440,7 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/shopify/src/main.handler
-      Description: 
+      Description:
       Events:
         ShopifyCustomerCreationApi:
           Type: Api
@@ -445,7 +454,7 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/users-results/src/main.handler
-      Description: 
+      Description:
       Events:
         UsersBiomarkersIdResultsApi:
           Type: Api
@@ -484,7 +493,9 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/haut-ai/src/main.handler
-      Description: 
+      Description:
+      ProvisionedConcurrencyConfig:
+        ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
       Events:
         HautAiFaceSkinMetricsImagesApi:
           Type: Api
@@ -528,7 +539,7 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/typeform/src/main.handler
-      Description: 
+      Description:
       Events:
         TypeformSensistiveQuizApi:
           Type: Api
@@ -547,7 +558,9 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/samples/src/main.handler
-      Description: 
+      Description:
+      ProvisionedConcurrencyConfig:
+        ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
       Events:
         SamplesApi:
           Type: Api
@@ -571,7 +584,9 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/users-devices/src/main.handler
-      Description: 
+      Description:
+      ProvisionedConcurrencyConfig:
+        ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
       Events:
         UsersDevicesApi:
           Type: Api
@@ -584,13 +599,16 @@ Resources:
             Path: /users/devices/notifications/data-sync
             Method: ANY
 
+
+
+
   SyncDataPushNotificationFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/data-sync-notification-cron/src/main.handler
-      Description: 
+      Description:
       Events:
         SyncDataEvent:
           Type: Schedule
@@ -603,7 +621,7 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/users-widgets/src/main.handler
-      Description: 
+      Description:
       Events:
         UsersWidgetsDashboardSettingsApi:
           Type: Api
@@ -642,21 +660,23 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/users-recommendations/src/main.handler
-      Description: 
+      Description:
+      ProvisionedConcurrencyConfig:
+        ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
       Events:
         UsersRecommendationsApi:
           Type: Api
           Properties:
             Path: /users/recommendations
             Method: ANY
-  
+
   Hl7Function:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/hl7/src/main.handler
-      Description: 
+      Description:
       Events:
         Hl7ObjectsByIdApi:
           Type: Api
@@ -700,7 +720,7 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/hl7-object-data-generator-cron/src/main.handler
-      Description: 
+      Description:
       Events:
         SyncDataEvent:
           Type: Schedule
@@ -713,7 +733,7 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/hl7-result-cron/src/main.handler
-      Description: 
+      Description:
       Events:
         SyncDataEvent:
           Type: Schedule
@@ -726,7 +746,7 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/hl7-error-notifications/src/main.handler
-      Description: 
+      Description:
       Events:
         Hl7NotificationsApi:
           Type: Api
@@ -741,6 +761,8 @@ Resources:
     Properties:
       Handler: dist/apps/users-hl7/src/main.handler
       Description:
+      ProvisionedConcurrencyConfig:
+        ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
       Events:
         UsersHl7ObjectsApi:
           Type: Api
@@ -787,7 +809,7 @@ Resources:
       BuildMethod: makefile
     Properties:
       Handler: dist/apps/hl7-templates/src/main.handler
-      Description: 
+      Description:
       Events:
         Hl7TemplatesApi:
           Type: Api
