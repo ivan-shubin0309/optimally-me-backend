@@ -305,6 +305,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/dna-age/tsconfig.app.json"
       }
+    },
+    "users-dna-age": {
+      "type": "application",
+      "root": "apps/users-dna-age",
+      "entryFile": "main",
+      "sourceRoot": "apps/users-dna-age/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/users-dna-age/tsconfig.app.json"
+      }
     }
   }
 }

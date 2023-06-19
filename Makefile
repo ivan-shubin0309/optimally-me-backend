@@ -29,6 +29,7 @@
 .PHONY: build-AdditionalAuthenticationsFunction
 .PHONY: build-Hl7TemplatesFunction
 .PHONY: build-DnaAgeFunction
+.PHONY: build-UsersDnaAgeFunction
 
 
 build-RuntimeDependenciesLayer:
@@ -137,3 +138,6 @@ build-Hl7TemplatesFunction:
 
 build-DnaAgeFunction:
 	$(MAKE) HANDLER=apps/dna-age/src/main.ts ENTITY=dna-age build-lambda-common
+
+build-UsersDnaAgeFunction:
+	$(MAKE) HANDLER=apps/users-dna-age/src/main.ts ENTITY=users-dna-age build-lambda-common
