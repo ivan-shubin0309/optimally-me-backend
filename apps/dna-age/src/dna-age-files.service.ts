@@ -1,6 +1,5 @@
 import { BadRequestException, HttpStatus, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { File } from '../../files/src/models/file.entity';
-import axios from 'axios';
 import { FileHelper } from '../../common/src/utils/helpers/file.helper';
 import { Repository } from 'sequelize-typescript';
 import { UserResult } from '../../admins-results/src/models/user-result.entity';
@@ -16,6 +15,8 @@ import { DnaAgeResult } from './models/dna-age-result.entity';
 import { CreateDnaAgeResultDto } from './models/create-dna-age-result.dto';
 import { CsvParser, ParsedData } from 'nest-csv-parser';
 import { DnaAgeFileDto } from './models/dna-age-file.dto';
+import * as https from 'https';
+import { Readable } from 'stream';
 
 export interface IDnaAgeFile {
     SID: string,
@@ -55,6 +56,8 @@ export class DnaAgeFilesService {
     ) { }
 
     async parseCsvToJson(file: File): Promise<IDnaAgeFile[]> {
+        let fileStream: Readable, parsedData: ParsedData<DnaAgeFileDto>, data: DnaAgeFileDto[];
+
         if (file.type !== FileTypes.dnaAge) {
             throw new BadRequestException({
                 message: this.translator.translate('FILE_NOT_DNA_AGE'),
@@ -63,10 +66,24 @@ export class DnaAgeFilesService {
             });
         }
 
-        const response = await axios.get(FileHelper.getInstance().buildBaseLink(file));
+        try {
+            fileStream = await new Promise<Readable>((resolve, reject) => {
+                https.get(FileHelper.getInstance().buildBaseLink(file), (stream) => {
+                    resolve(stream);
+                });
+            });
 
-        const parsedData: ParsedData<DnaAgeFileDto> = await this.csvParser.parse(response.data, DnaAgeFileDto);
-        const data = parsedData.list;
+            parsedData = await this.csvParser.parse(fileStream, DnaAgeFileDto, null, null, { separator: ',' });
+            data = parsedData.list;
+        } catch (err) {
+            throw new UnprocessableEntityException({
+                message: this.translator.translate('ERROR_WHEN_PARSING_CSV'),
+                errorCode: 'ERROR_WHEN_PARSING_CSV',
+                statusCode: HttpStatus.BAD_REQUEST
+            });
+        }
+
+        console.log(JSON.stringify(data));
 
         if (!data.length) {
             throw new BadRequestException({
