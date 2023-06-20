@@ -64,13 +64,13 @@ export class DecisionRulesService {
         const typeformQuizDataWithoutHidden = Object.assign({}, typeformQuizData);
         typeformQuizDataWithoutHidden.hidden = {};
 
-        const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(userId, { beforeDate: DateTime.utc().toISO() }, 1);
+        const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(userId, { beforeDate: DateTime.utc().toISO() }, 1, transaction);
         const biomarkerScopes: ScopeOptions[] = [
             { method: ['byType', [BiomarkerTypes.blood, BiomarkerTypes.skin]] },
             { method: ['withLastResult', lastResultIds, true] },
             { method: ['withCategory', true] },
         ];
-        const biomarkersList = await this.usersBiomarkersService.getList(biomarkerScopes);
+        const biomarkersList = await this.usersBiomarkersService.getList(biomarkerScopes, transaction);
         if (!biomarkersList.length) {
             return;
         }
@@ -84,7 +84,8 @@ export class DecisionRulesService {
                         { method: ['withUserRecommendation', biomarker.lastResult.id] }, 
                         'withRecommendationTag'
                     ]
-                }
+                },
+                transaction
             );
 
             if (!recommendations.length) {
@@ -158,9 +159,9 @@ export class DecisionRulesService {
         if (userRecommendationIdsToInclude.length) {
             await this.userRecommendationsService.update(
                 { isExcluded: false },
-            { method: ['byId', userRecommendationIdsToInclude] } as any,
-            transaction
-        );
+                { method: ['byId', userRecommendationIdsToInclude] } as any,
+                transaction
+            );
         }
     }
 }
