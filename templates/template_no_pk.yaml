@@ -1,0 +1,804 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  optimally-me
+
+Transform: "AWS::Serverless-2016-10-31"
+
+Parameters:
+  NodeEnv:
+    Type: String
+    Default: "default"
+  AwsRegion:
+    Type: String
+    Default: "default"
+  AppEnv:
+    Type: String
+    Default: "default"
+  SGid:
+    Type: String
+    Default: "default"
+  SubnetIds:
+    Type: List<String>
+    Default: "default"
+
+Globals:
+  Function:
+    Layers:
+      - !Ref RuntimeDependenciesLayer
+    Runtime: nodejs16.x
+    MemorySize: 512
+    Timeout: 100
+    Environment:
+      Variables:
+        NODE_ENV: !Ref NodeEnv
+    VpcConfig:
+        SecurityGroupIds:
+          - !Ref SGid
+        SubnetIds: !Ref SubnetIds
+
+Resources:
+  RuntimeDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Description: Runtime dependencies for Lambdas
+      ContentUri: ./
+      CompatibleRuntimes:
+        - nodejs16.x
+      RetentionPolicy: Retain
+
+  SwaggerFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Description: The Lambda function that serves the Swagger.
+      Handler: dist/apps/swagger/src/main.handler
+      Events:
+        SwaggerUiApi:
+          Type: Api
+          Properties:
+            Path: /swagger
+            Method: GET
+        SwaggerUiApiProxy:
+          Type: Api
+          Properties:
+            Path: /swagger/{any+}
+            Method: GET
+        SwaggerJsonApi:
+          Type: Api
+          Properties:
+            Path: /swagger-json
+            Method: GET
+
+
+  SessionsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/sessions/src/main.handler
+      Description:
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /sessions
+            Method: ANY
+        ShopifyApi:
+          Type: Api
+          Properties:
+            Path: /sessions/shopify
+            Method: GET
+        CodesApi:
+          Type: Api
+          Properties:
+            Path: /sessions/codes
+            Method: ANY
+        DynamicParamsApi:
+          Type: Api
+          Properties:
+            Path: /sessions/dynamic-params
+            Method: ANY
+
+  UsersFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/users/src/main.handler
+      Description:
+      Events:
+        UsersMeApi:
+          Type: Api
+          Properties:
+            Path: /users/me
+            Method: ANY
+        UsersSignUpApi:
+          Type: Api
+          Properties:
+            Path: /users/signup
+            Method: ANY
+        UsersProfileApi:
+          Type: Api
+          Properties:
+            Path: /users/profile
+            Method: ANY
+
+
+  AdminsSessionsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/admins-sessions/src/main.handler
+      Description:
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /admins/sessions
+            Method: ANY
+        AdminsSessionsDynamicParams:
+          Type: Api
+          Properties:
+            Path: /admins/sessions/dynamic-params
+            Method: ANY
+
+
+  AdminsVerificationsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/admins-verifications/src/main.handler
+      Description:
+      Events:
+        AdminsVerificationsPasswordApi:
+          Type: Api
+          Properties:
+            Path: /admins/verifications/password
+            Method: ANY
+
+
+  BiomarkersFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/biomarkers/src/main.handler
+      Description:
+      Events:
+        BiomarkersApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers
+            Method: ANY
+        BloodBiomarkersApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/blood
+            Method: ANY
+        BloodBiomarkersByIdApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/blood/{id}
+            Method: ANY
+        CategoriesApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/categories
+            Method: ANY
+        UnitsApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/units
+            Method: ANY
+        RulesApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/rules
+            Method: ANY
+        RulesIdApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/rules/{id}
+            Method: ANY
+        RecommendationsApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/recommendations
+            Method: ANY
+        BiomarkersRecommendationsTagsApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/recommendations/tags
+            Method: ANY
+        RecommendationByIdApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/recommendations/{id}
+            Method: ANY
+        RecommendationCopyApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/recommendations/{id}/copy
+            Method: ANY
+        FiltersCharacteristicsApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/filters/characteristics
+            Method: ANY
+        SkinBiomarkersApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/skin
+            Method: ANY
+        SkinBiomarkersByIdApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/skin/{id}
+            Method: ANY
+        DnaAgeBiomarkersApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/dna-age
+            Method: ANY
+        DnaAgeBiomarkersByIdApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/dna-age/{id}
+            Method: ANY
+        BiomarkersIdApi:
+          Type: Api
+          Properties:
+            Path: /biomarkers/{id}
+            Method: ANY
+
+  WefitterFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/wefitter/src/main.handler
+      Description:
+      Events:
+        WefitterProfileApi:
+          Type: Api
+          Properties:
+            Path: /wefitter/profile
+            Method: ANY
+        WefitterConnectionsApi:
+          Type: Api
+          Properties:
+            Path: /wefitter/connections
+            Method: ANY
+        WefitterConnectionApi:
+          Type: Api
+          Properties:
+            Path: /wefitter/connection
+            Method: ANY
+        WefitterUserDataApi:
+          Type: Api
+          Properties:
+            Path: /wefitter/user-data
+            Method: ANY
+        WefitterConnectionsRedirectApi:
+          Type: Api
+          Properties:
+            Path: /wefitter/connections/redirect
+            Method: ANY
+        WefitterUserDailySummary:
+          Type: Api
+          Properties:
+            Path: /wefitter/push/daily-summary
+            Method: POST
+        WefitterUserHeartrateSummary:
+          Type: Api
+          Properties:
+            Path: /wefitter/push/heartrate-summary
+            Method: POST
+        WefitterUserSleepSummary:
+          Type: Api
+          Properties:
+            Path: /wefitter/push/sleep-summary
+            Method: POST
+        WefitterUserBiometricMeasurement:
+          Type: Api
+          Properties:
+            Path: /wefitter/push/biometric-measurement
+            Method: POST
+        WefitterResultsAvaragesApi:
+          Type: Api
+          Properties:
+            Path: /wefitter/results/averages
+            Method: ANY
+        WefitterResultsMetricNamesApi:
+          Type: Api
+          Properties:
+            Path: /wefitter/results/metric-names
+            Method: ANY
+        WefitterResultsSourcesApi:
+          Type: Api
+          Properties:
+            Path: /wefitter/results/sources
+            Method: ANY
+        WefitterResultsApi:
+          Type: Api
+          Properties:
+            Path: /wefitter/results
+            Method: ANY
+
+  VerificationsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/verifications/src/main.handler
+      Description:
+      Events:
+        VerificationsPasswordApi:
+          Type: Api
+          Properties:
+            Path: /verifications/password
+            Method: ANY
+        VerificationsPasswordRedirectApi:
+          Type: Api
+          Properties:
+            Path: /verifications/password/redirect
+            Method: ANY
+        VerificationsEmailApi:
+          Type: Api
+          Properties:
+            Path: /verifications/email
+            Method: ANY
+
+  AdminsUsersFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/admins-users/src/main.handler
+      Description:
+      Events:
+        AdminsUsersApi:
+          Type: Api
+          Properties:
+            Path: /admins/users
+            Method: ANY
+        AdminsUserByIdApi:
+          Type: Api
+          Properties:
+            Path: /admins/users/{id}
+            Method: ANY
+
+  AdminsResultsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/admins-results/src/main.handler
+      Description:
+      Events:
+        AdminsUsersApi:
+          Type: Api
+          Properties:
+            Path: /admins/users/{id}/results
+            Method: ANY
+        AdminsUsersRecommendationsApi:
+          Type: Api
+          Properties:
+            Path: /admins/users/{id}/recommendations
+            Method: ANY
+
+  FilesFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/files/src/main.handler
+      Description:
+      Events:
+        FilesApi:
+          Type: Api
+          Properties:
+            Path: /files
+            Method: ANY
+
+  UsersBiomarkersFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/users-biomarkers/src/main.handler
+      Description:
+      Events:
+        UsersBiomarkersApi:
+          Type: Api
+          Properties:
+            Path: /users/biomarkers
+            Method: ANY
+        UsersResultsDatesApi:
+          Type: Api
+          Properties:
+            Path: /users/biomarkers/result-dates
+            Method: ANY
+
+  ShopifyFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/shopify/src/main.handler
+      Description:
+      Events:
+        ShopifyCustomerCreationApi:
+          Type: Api
+          Properties:
+            Path: /shopify/events/customer-creation
+            Method: ANY
+
+  UsersBiomarkersResultsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/users-results/src/main.handler
+      Description:
+      Events:
+        UsersBiomarkersIdResultsApi:
+          Type: Api
+          Properties:
+            Path: /users/biomarkers/{id}/results
+            Method: ANY
+        UsersBiomarkersResultsIdFiltersApi:
+          Type: Api
+          Properties:
+            Path: /users/biomarkers/results/{id}/filters
+            Method: ANY
+        UsersBiomarkersResultsIdRecommendationsApi:
+          Type: Api
+          Properties:
+            Path: /users/biomarkers/results/{id}/recommendations
+            Method: ANY
+        UsersBiomarkersResultsRecommendationsReactionsApi:
+          Type: Api
+          Properties:
+            Path: /users/biomarkers/results/recommendations/reactions
+            Method: ANY
+        UsersBiomarkersIdFiltersApi:
+          Type: Api
+          Properties:
+            Path: /users/biomarkers/{id}/filters
+            Method: ANY
+        UsersBiomarkersIdResultsAvaragesApi:
+          Type: Api
+          Properties:
+            Path: /users/biomarkers/results/averages
+            Method: ANY
+
+  HautAiFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/haut-ai/src/main.handler
+      Description:
+      Events:
+        HautAiFaceSkinMetricsImagesApi:
+          Type: Api
+          Properties:
+            Path: /haut-ai/face-skin-metrics/images
+            Method: ANY
+        HautAiFaceSkinMetricsResultsApi:
+          Type: Api
+          Properties:
+            Path: /haut-ai/face-skin-metrics/results
+            Method: ANY
+        HautAiFaceSkinMetricsSkinResultsSkinDiariesIdApi:
+          Type: Api
+          Properties:
+            Path: /haut-ai/face-skin-metrics/skin-results/skin-diaries/{id}
+            Method: ANY
+        HautAiFaceSkinMetricsSkinResultsSkinDiariesIdNoteApi:
+          Type: Api
+          Properties:
+            Path: /haut-ai/face-skin-metrics/skin-results/skin-diaries/{id}/notes
+            Method: ANY
+        HautAiFaceSkinMetricsSkinResultsIdApi:
+          Type: Api
+          Properties:
+            Path: /haut-ai/face-skin-metrics/skin-results/{id}
+            Method: ANY
+        HautAiFaceSkinMetricsSkinResultsIdResultsApi:
+          Type: Api
+          Properties:
+            Path: /haut-ai/face-skin-metrics/skin-results/{id}/results
+            Method: ANY
+        HautAiFaceSkinMetricsSkinResultsApi:
+          Type: Api
+          Properties:
+            Path: /haut-ai/face-skin-metrics/skin-results
+            Method: ANY
+
+  TypeformFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/typeform/src/main.handler
+      Description:
+      Events:
+        TypeformSensistiveQuizApi:
+          Type: Api
+          Properties:
+            Path: /typeform/sensitive-quiz
+            Method: ANY
+        TypeformSelfAssesmentApi:
+          Type: Api
+          Properties:
+            Path: /typeform/self-assesment
+            Method: ANY
+
+  SamplesFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/samples/src/main.handler
+      Description:
+      Events:
+        SamplesApi:
+          Type: Api
+          Properties:
+            Path: /samples
+            Method: ANY
+        SamplesSampleIdApi:
+          Type: Api
+          Properties:
+            Path: /samples/sampleId
+            Method: ANY
+        SamplesBySampleIdApi:
+          Type: Api
+          Properties:
+            Path: /samples/{sampleId}
+            Method: ANY
+
+  UsersDevicesFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/users-devices/src/main.handler
+      Description:
+      Events:
+        UsersDevicesApi:
+          Type: Api
+          Properties:
+            Path: /users/devices
+            Method: ANY
+        UsersDevicesNotificationsDataSyncApi:
+          Type: Api
+          Properties:
+            Path: /users/devices/notifications/data-sync
+            Method: ANY
+
+
+
+
+  SyncDataPushNotificationFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/data-sync-notification-cron/src/main.handler
+      Description:
+      Events:
+        SyncDataEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(00 19 * * ? *)
+
+  UsersWidgetsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/users-widgets/src/main.handler
+      Description:
+      Events:
+        UsersWidgetsDashboardSettingsApi:
+          Type: Api
+          Properties:
+            Path: /users/widgets/dashboard-settings
+            Method: ANY
+        UsersWidgetsSettingsApi:
+          Type: Api
+          Properties:
+            Path: /users/widgets/settings
+            Method: ANY
+        UsersWidgetsDeviceDataSettingsApi:
+          Type: Api
+          Properties:
+            Path: /users/widgets/device-data-settings
+            Method: ANY
+        UsersWidgetsDeviceDataSourcesApi:
+          Type: Api
+          Properties:
+            Path: /users/widgets/data-sources
+            Method: ANY
+        UsersDashboardSettingsApi:
+          Type: Api
+          Properties:
+            Path: /users/dashboard-settings
+            Method: ANY
+        UsersWidgetsMetricGraphSettingsApi:
+          Type: Api
+          Properties:
+            Path: /users/widgets/metric-graph-settings
+            Method: ANY
+
+  UsersRecommendationsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/users-recommendations/src/main.handler
+      Description:
+      Events:
+        UsersRecommendationsApi:
+          Type: Api
+          Properties:
+            Path: /users/recommendations
+            Method: ANY
+
+  Hl7Function:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/hl7/src/main.handler
+      Description:
+      Events:
+        Hl7ObjectsByIdApi:
+          Type: Api
+          Properties:
+            Path: /hl7/hl7-objects/{id}
+            Method: ANY
+        Hl7ObjectsApi:
+          Type: Api
+          Properties:
+            Path: /hl7/hl7-objects
+            Method: ANY
+        Hl7ObjectsByIdStatusApi:
+          Type: Api
+          Properties:
+            Path: /hl7/hl7-objects/{id}/status
+            Method: ANY
+        Hl7WebhookObjectGeneratorApi:
+          Type: Api
+          Properties:
+            Path: /hl7/webhook/object-generator
+            Method: ANY
+        Hl7WebhookResultsApi:
+          Type: Api
+          Properties:
+            Path: /hl7/webhook/results
+            Method: ANY
+        Hl7ObjectsByIdResultsApi:
+          Type: Api
+          Properties:
+            Path: /hl7/hl7-objects/{id}/results
+            Method: ANY
+        Hl7ObjectsResultsResultFilesApi:
+          Type: Api
+          Properties:
+            Path: /hl7/hl7-objects/results/result-files
+            Method: ANY
+
+  Hl7ObjectDataGeneratorFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/hl7-object-data-generator-cron/src/main.handler
+      Description:
+      Events:
+        SyncDataEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(00 02 * * ? *)
+
+  Hl7ResultFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/hl7-result-cron/src/main.handler
+      Description:
+      Events:
+        SyncDataEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(00 * * * ? *)
+
+  Hl7ErrorNotificationsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/hl7-error-notifications/src/main.handler
+      Description:
+      Events:
+        Hl7NotificationsApi:
+          Type: Api
+          Properties:
+            Path: /hl7/notifications
+            Method: ANY
+
+  UsersHl7Function:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/users-hl7/src/main.handler
+      Description:
+      Events:
+        UsersHl7ObjectsApi:
+          Type: Api
+          Properties:
+            Path: /users/hl7-objects
+            Method: ANY
+
+  FulfillmentCenterFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/fulfillment-center/src/main.handler
+      Description:
+      Events:
+        UsersHl7ObjectsApi:
+          Type: Api
+          Properties:
+            Path: /sirane
+            Method: ANY
+
+  AdditionalAuthenticationsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/additional-authentications/src/main.handler
+      Description:
+      Events:
+        UsersMfaDevicesApi:
+          Type: Api
+          Properties:
+            Path: /users/additional-authentications
+            Method: ANY
+        UsersMfaAuthTypeApi:
+          Type: Api
+          Properties:
+            Path: /users/additional-authentications/additional-authentication-type
+            Method: ANY
+
+  Hl7TemplatesFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/hl7-templates/src/main.handler
+      Description:
+      Events:
+        Hl7TemplatesApi:
+          Type: Api
+          Properties:
+            Path: /hl7/templates
+            Method: ANY
+        Hl7TemplatesIdApi:
+          Type: Api
+          Properties:
+            Path: /hl7/templates/{id}
+            Method: ANY
