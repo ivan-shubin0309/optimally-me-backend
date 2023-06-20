@@ -12,12 +12,13 @@ phases:
       - unzip aws-sam-cli-linux-x86_64.zip -d sam-installation
       - sudo ./sam-installation/install
       - sam --version
-      - chmod +x ./scripts/config_generator.sh
+      - chmod +x ./scripts/*
       - echo Generating config
       - sh ./scripts/config_generator.sh
       - echo Generating $TOML_FILE
-      - chmod +x ./scripts/toml_generator.sh
       - sh ./scripts/toml_generator.sh
+      - echo Selecting template
+      - sh ./scripts/template_selector.sh
       - echo Install sequelize-cli for migrations
       - npm i sequelize-cli
   build:
