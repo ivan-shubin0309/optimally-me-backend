@@ -64,7 +64,7 @@ export class DecisionRulesService {
         const typeformQuizDataWithoutHidden = Object.assign({}, typeformQuizData);
         typeformQuizDataWithoutHidden.hidden = {};
 
-        const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(userId, { beforeDate: DateTime.utc().toFormat('yyyy-MM-dd') }, 1);
+        const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(userId, { beforeDate: DateTime.utc().toISO() }, 1);
         const biomarkerScopes: ScopeOptions[] = [
             { method: ['byType', [BiomarkerTypes.blood, BiomarkerTypes.skin]] },
             { method: ['withLastResult', lastResultIds, true] },
