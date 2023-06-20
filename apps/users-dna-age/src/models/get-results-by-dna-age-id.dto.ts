@@ -1,8 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { orderTypes } from '../../../common/src/resources/common/order-types';
 import { Transform } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
-import { dnaAgeResultsOrderTypes } from '../../../common/src/resources/dna-age/dna-age-results-order-types';
+import { IsInt, Max, Min } from 'class-validator';
 
 export class GetResultsByDnaAgeIdDto {
     @ApiProperty({ type: () => Number, required: true, default: 100 })
@@ -17,15 +15,4 @@ export class GetResultsByDnaAgeIdDto {
     @Min(0)
     @Transform(({ value }) => Number(value))
     readonly offset: number = 0;
-
-    @ApiProperty({ type: () => String, required: false, default: 'name', description: dnaAgeResultsOrderTypes.join(', ') })
-    @IsOptional()
-    @IsEnum(dnaAgeResultsOrderTypes)
-    readonly orderBy: string = 'name';
-
-    @ApiProperty({ type: () => String, required: false, default: 'desc', description: orderTypes.join(', ') })
-    @IsOptional()
-    @IsString()
-    @IsEnum(orderTypes)
-    readonly orderType: string = 'desc';
 }

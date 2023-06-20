@@ -61,12 +61,12 @@ export class UsersDnaAgeController {
     async getDnaAgeResultsById(@Param() param: EntityByIdDto, @Query() query: GetResultsByDnaAgeIdDto, @Request() req: Request & { user: SessionDataDto }): Promise<UserResultsDto> {
         const { limit, offset } = query;
 
-        const skinResult = await this.usersDnaAgeService.getList([
+        const dnaAgeResult = await this.usersDnaAgeService.getOne([
             { method: ['byId', param.id] },
             { method: ['byUserId', req.user.userId] }
         ]);
 
-        if (!skinResult) {
+        if (!dnaAgeResult) {
             throw new NotFoundException({
                 message: this.translator.translate('DNA_AGE_RESULT_NOT_FOUND'),
                 errorCode: 'DNA_AGE_RESULT_NOT_FOUND',
@@ -76,7 +76,7 @@ export class UsersDnaAgeController {
 
         let userResultsList = [];
         const scopes: any[] = [
-            { method: ['bySkinUserResultId', param.id] },
+            { method: ['byDnaAgeResultId', param.id] },
             { method: ['byUserId', req.user.userId] }
         ];
 
@@ -85,7 +85,6 @@ export class UsersDnaAgeController {
         if (count) {
             scopes.push(
                 { method: ['pagination', { limit, offset }] },
-                { method: ['orderBy', [[query.orderBy, query.orderType]]] },
                 'withUnit',
                 'withBiomarker',
                 'withFilter',

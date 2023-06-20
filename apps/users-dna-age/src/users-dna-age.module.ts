@@ -10,6 +10,9 @@ import { redisModuleInstance } from '../../common/src/utils/database/redis.provi
 import { translatorInstance } from '../../common/src/utils/translator/translator.provider';
 import { modelProviders } from './models.provider';
 import { UsersResultsService } from '../../users-results/src/users-results.service';
+import { JwtStrategy } from '../../common/src/strategies/jwt.strategy';
+import { UsersService } from '../../users/src/users.service';
+import { SessionsService } from '../../sessions/src/sessions.service';
 
 @Module({
     imports: [
@@ -22,6 +25,9 @@ import { UsersResultsService } from '../../users-results/src/users-results.servi
     providers: [
         UsersDnaAgeService,
         UsersResultsService,
+        SessionsService,
+        UsersService,
+        JwtStrategy,
         ...guardProviders,
         sequelizeProvider(entities),
         ...modelProviders

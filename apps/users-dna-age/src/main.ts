@@ -3,12 +3,12 @@ import { configure as serverlessExpress } from '@vendia/serverless-express';
 import { ConfigService } from '../../common/src/utils/config/config.service';
 import { Callback, Context, Handler } from 'aws-lambda';
 import { appBuilder } from '../../common/src/utils/appBuilder/app-builder.provider';
-import { DnaAgeModule } from '../../dna-age/src/dna-age.module';
+import { UsersDnaAgeModule } from './users-dna-age.module';
 
 let server: Handler;
 
 async function bootstrap(): Promise<Handler> {
-    const app = await NestFactory.create(DnaAgeModule);
+    const app = await NestFactory.create(UsersDnaAgeModule);
     const configService = app.get(ConfigService);
 
     await appBuilder(app, configService);

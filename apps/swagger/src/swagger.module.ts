@@ -25,6 +25,7 @@ import { FulfillmentCenterModule } from '../../fulfillment-center/src/fulfillmen
 import { AdditionalAuthenticationsModule } from '../../additional-authentications/src/additional-authentications.module';
 import { Hl7TemplatesModule } from '../../hl7-templates/src/hl7-templates.module';
 import { DnaAgeModule } from '../../dna-age/src/dna-age.module';
+import { UsersDnaAgeModule } from '../../users-dna-age/src/users-dna-age.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { DnaAgeModule } from '../../dna-age/src/dna-age.module';
     AdditionalAuthenticationsModule,
     Hl7TemplatesModule,
     DnaAgeModule,
+    UsersDnaAgeModule,
   ]
 })
 export class SwaggerAppModule { }
