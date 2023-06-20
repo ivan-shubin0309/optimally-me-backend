@@ -19,7 +19,7 @@ export class UsersRecommendationsService extends BaseService<UserRecommendation>
         @Inject('USER_RESULT_MODEL') private readonly userResultModel: Repository<UserResult>,
     ) { super(model); }
 
-    async getRecommendationListByUserResult(userResult: UserResult, options: { biomarkerId: number, additionalScopes?: any[], isExcluded?: boolean }): Promise<Recommendation[]> {
+    async getRecommendationListByUserResult(userResult: UserResult, options: { biomarkerId: number, additionalScopes?: any[], isExcluded?: boolean }, transaction?: Transaction): Promise<Recommendation[]> {
         const scopesForUserRecommendations: ScopeOptions[] = [
             { method: ['byUserResultId', userResult.id] },
         ];
@@ -28,7 +28,7 @@ export class UsersRecommendationsService extends BaseService<UserRecommendation>
             scopesForUserRecommendations.push({ method: ['byIsExcluded', options.isExcluded] });
         }
 
-        const userRecommendations = await this.getList(scopesForUserRecommendations);
+        const userRecommendations = await this.getList(scopesForUserRecommendations, transaction);
 
         if (!userRecommendations.length) {
             return [];
@@ -48,7 +48,7 @@ export class UsersRecommendationsService extends BaseService<UserRecommendation>
 
         const recommendations = await this.recommendationModel
             .scope(scopes)
-            .findAll();
+            .findAll({ transaction });
 
         return recommendations;
     }

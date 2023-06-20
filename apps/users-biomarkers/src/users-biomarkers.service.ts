@@ -7,6 +7,7 @@ import { recommendationTypesToRangeTypes, recommendationTypesToSkinRangeTypes, U
 import { UserBiomarkerCounterDto } from './models/user-biomarker-counter.dto';
 import { getLastUserResultsForEachBiomarker } from '../../common/src/resources/usersBiomarkers/queries';
 import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-types';
+import { Transaction } from 'sequelize';
 
 @Injectable()
 export class UsersBiomarkersService extends BaseService<Biomarker> {
@@ -88,8 +89,8 @@ export class UsersBiomarkersService extends BaseService<Biomarker> {
         });
     }
 
-    async getLastResultIdsByDate(userId: number, dateFilter: { afterDate?: string, beforeDate: string }, numberOfLastRecords: number): Promise<number[]> {
-        const results = await this.dbConnection.query(getLastUserResultsForEachBiomarker(userId, numberOfLastRecords, dateFilter?.afterDate, dateFilter?.beforeDate), { model: UserResult });
+    async getLastResultIdsByDate(userId: number, dateFilter: { afterDate?: string, beforeDate: string }, numberOfLastRecords: number, transaction?: Transaction): Promise<number[]> {
+        const results = await this.dbConnection.query(getLastUserResultsForEachBiomarker(userId, numberOfLastRecords, dateFilter?.afterDate, dateFilter?.beforeDate), { model: UserResult, transaction });
 
         return results.map(result => result.get('id'));
     }
