@@ -802,3 +802,36 @@ Resources:
           Properties:
             Path: /hl7/templates/{id}
             Method: ANY
+
+  DnaAgeFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/dna-age/src/main.handler
+      Description: 
+      Events:
+        DnaAgeFilesApi:
+          Type: Api
+          Properties:
+            Path: /admins/dna-age/files
+            Method: ANY
+
+  UsersDnaAgeFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+    Properties:
+      Handler: dist/apps/users-dna-age/src/main.handler
+      Description: 
+      Events:
+        UsersDnaAgeApi:
+          Type: Api
+          Properties:
+            Path: /users/dna-age
+            Method: ANY
+        UsersDnaAgeIdResultsApi:
+          Type: Api
+          Properties:
+            Path: /users/dna-age/{id}/results
+            Method: ANY
