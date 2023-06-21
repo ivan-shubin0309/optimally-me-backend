@@ -175,6 +175,9 @@ Resources:
     Properties:
       Handler: dist/apps/biomarkers/src/main.handler
       Description:
+      ProvisionedConcurrencyConfig:
+        ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
+      AutoPublishAlias: live
       Events:
         BiomarkersApi:
           Type: Api
@@ -370,6 +373,9 @@ Resources:
     Properties:
       Handler: dist/apps/admins-users/src/main.handler
       Description:
+      ProvisionedConcurrencyConfig:
+        ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
+      AutoPublishAlias: live
       Events:
         AdminsUsersApi:
           Type: Api
@@ -389,6 +395,9 @@ Resources:
     Properties:
       Handler: dist/apps/admins-results/src/main.handler
       Description:
+      ProvisionedConcurrencyConfig:
+        ProvisionedConcurrentExecutions: !Ref ProvisionedConcurencyUnits
+      AutoPublishAlias: live
       Events:
         AdminsUsersApi:
           Type: Api
