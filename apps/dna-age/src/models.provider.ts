@@ -6,6 +6,8 @@ import { Biomarker } from '../../biomarkers/src/models/biomarker.entity';
 import { UserResult } from '../../admins-results/src/models/user-result.entity';
 import { DnaAgeResult } from './models/dna-age-result.entity';
 import { File } from '../../files/src/models/file.entity';
+import { Recommendation } from '../../biomarkers/src/models/recommendations/recommendation.entity';
+import { UserRecommendation } from '../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
 
 export const modelProviders = [
     {
@@ -39,5 +41,13 @@ export const modelProviders = [
     {
         provide: 'FILE_MODEL',
         useValue: File
+    },
+    {
+        provide: 'RECOMMENDATION_MODEL',
+        useValue: Recommendation
+    },
+    {
+        provide: 'USER_RECOMMENDATION_MODEL',
+        useValue: UserRecommendation
     },
 ];

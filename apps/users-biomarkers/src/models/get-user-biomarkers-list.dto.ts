@@ -90,7 +90,7 @@ export class GetUserBiomarkersListDto {
     @IsOptional()
     @IsArray()
     @ArrayUnique()
-    @IsEnum([BiomarkerTypes.blood, BiomarkerTypes.skin], { each: true })
+    @IsEnum([BiomarkerTypes.blood, BiomarkerTypes.skin, BiomarkerTypes.dnaAge], { each: true })
     @Type(() => Number)
     @Transform(({ value }) => typeof value === 'number' ? [value] : value)
     readonly biomarkerType: number[] = [BiomarkerTypes.blood];
