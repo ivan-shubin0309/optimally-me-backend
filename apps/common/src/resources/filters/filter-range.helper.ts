@@ -28,7 +28,7 @@ export class FilterRangeHelper {
         EnumHelper
             .toCollection(RecommendationTypes)
             .forEach(recommendationType => {
-                if (recommendationType.value === RecommendationTypes.criticalLow && filter.get('criticalLow')) {
+                if (recommendationType.value === RecommendationTypes.criticalLow && typeof filter.get('criticalLow') === 'number') {
                     return ranges.push({
                         max: filter.get('criticalLow'),
                         min: -Infinity,
@@ -36,7 +36,7 @@ export class FilterRangeHelper {
                     });
                 }
 
-                if (recommendationType.value === RecommendationTypes.criticalHigh && filter.get('criticalHigh')) {
+                if (recommendationType.value === RecommendationTypes.criticalHigh && typeof filter.get('criticalHigh') === 'number') {
                     return ranges.push({
                         max: Infinity,
                         min: filter.get('criticalHigh'),
@@ -46,11 +46,11 @@ export class FilterRangeHelper {
 
                 const range: any = { type: recommendationType.value };
 
-                if (filter[`${recommendationType.key}Min`]) {
+                if (typeof filter[`${recommendationType.key}Min`] === 'number') {
                     range.min = filter.get(`${recommendationType.key}Min`);
                 }
 
-                if (filter[`${recommendationType.key}Max`]) {
+                if (typeof filter[`${recommendationType.key}Max`] === 'number') {
                     range.max = filter.get(`${recommendationType.key}Max`);
                 }
 
@@ -59,10 +59,10 @@ export class FilterRangeHelper {
                 }
             });
 
-        if (ranges.length && !ranges[0].min) {
+        if (ranges.length && typeof ranges[0].min !== 'number') {
             ranges[0].min = -Infinity;
         }
-        if (ranges.length && !ranges[ranges.length - 1].max) {
+        if (ranges.length && typeof ranges[ranges.length - 1].max !== 'number') {
             ranges[ranges.length - 1].max = Infinity;
         }
 
@@ -75,7 +75,12 @@ export class FilterRangeHelper {
             }
         });
 
+        console.log(JSON.stringify(ranges));
+        console.log(`typeof ${typeof value}`);
+        console.log(`value: ${value}`);
         const resultRange = ranges.find((range, index) => index ? (value > range.min && value <= range.max) : (value >= range.min && value <= range.max));
+
+        console.log(`result range: ${JSON.stringify(resultRange)}`);
 
         return resultRange && resultRange.type;
     }

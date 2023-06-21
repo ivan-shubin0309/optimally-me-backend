@@ -17,6 +17,9 @@ import { CsvParser, ParsedData } from 'nest-csv-parser';
 import { DnaAgeFileDto } from './models/dna-age-file.dto';
 import * as https from 'https';
 import { Readable } from 'stream';
+import { Transaction } from 'sequelize';
+import { Recommendation } from '../../biomarkers/src/models/recommendations/recommendation.entity';
+import { UserRecommendation } from '../../biomarkers/src/models/userRecommendations/user-recommendation.entity';
 
 export interface IDnaAgeFile {
     SID: string,
@@ -49,6 +52,8 @@ export class DnaAgeFilesService {
         @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
         @Inject('USER_RESULT_MODEL') private readonly userResultModel: Repository<UserResult>,
         @Inject('DNA_AGE_RESULT_MODEL') private readonly dnaAgeResultModel: Repository<DnaAgeResult>,
+        @Inject('RECOMMENDATION_MODEL') private readonly recommendationModel: Repository<Recommendation>,
+        @Inject('USER_RECOMMENDATION_MODEL') private readonly userRecommendationModel: Repository<UserRecommendation>,
         private readonly samplesService: SamplesService,
         private readonly usersBiomarkersService: UsersBiomarkersService,
         private readonly translator: TranslatorService,
@@ -149,24 +154,69 @@ export class DnaAgeFilesService {
                     }
 
                     const baseName = foundAlternativName.name.split('_')[0];
+                    const recommendationRange = FilterRangeHelper.getRecommendationTypeByValue(biomarker.filters[0], parseFloat(row[foundAlternativName.name]));
 
                     resultsToCreate.push({
                         userId: sample.userSample.userId,
                         biomarkerId: biomarker.id,
                         value: parseFloat(row[foundAlternativName.name]).toFixed(2),
                         date: DateTime.utc().toISODate(),
-                        recommendationRange: FilterRangeHelper.getRecommendationTypeByValue(biomarker.filters[0], row[foundAlternativName.name]),
-                        deviation: FilterRangeHelper.formatDnaAgeDeviation(parseFloat(row[`${baseName}${PERCENTILE_SUFFIX}`])),
+                        recommendationRange,
+                        percentile: FilterRangeHelper.formatDnaAgeDeviation(parseFloat(row[`${baseName}${PERCENTILE_SUFFIX}`])),
+                        deviation: null,
                         unitId: biomarker.unitId,
                         filterId: biomarker.filters[0].id,
                         dnaAgeResultId: dnaAgeResult.id,
                     });
                 });
 
-                await this.userResultModel.bulkCreate(resultsToCreate, { transaction });
+                const createdResults = await this.userResultModel.bulkCreate(resultsToCreate, { transaction });
+
+                await this.attachRecommendations(createdResults, sample.userSample.userId, transaction);
             });
 
             await Promise.all(promises);
         });
+    }
+
+    async attachRecommendations(userResults: UserResult[], userId: number, transaction?: Transaction): Promise<void> {
+        const userRecommendationsToCreate = [];
+        const filteredUserResults = userResults.filter(userResult => userResult.filterId && userResult.recommendationRange);
+        const scopes = [];
+
+        if (!filteredUserResults.length) {
+            return;
+        }
+
+        scopes.push({ method: ['byFilterIdAndType', filteredUserResults.map(userResult => ({ filterId: userResult.filterId, type: userResult.recommendationRange }))] });
+
+        const recommendations = await this.recommendationModel
+            .scope(scopes)
+            .findAll({ transaction });
+
+        const userResultsMap = {};
+        filteredUserResults.forEach(userResult => {
+            userResultsMap[userResult.filterId] = userResult;
+        });
+
+        recommendations.forEach(recommendation => {
+            recommendation.filterRecommendations.forEach(filterRecommendation => {
+                if (userResultsMap[filterRecommendation.filterId]) {
+                    userRecommendationsToCreate.push({
+                        userId: userId,
+                        recommendationId: recommendation.id,
+                        userResultId: userResultsMap[filterRecommendation.filterId].id
+                    });
+                }
+            });
+        });
+
+        await this.userRecommendationModel.bulkCreate(userRecommendationsToCreate, { transaction });
+
+        if (recommendations.length) {
+            await this.recommendationModel
+                .scope([{ method: ['byId', recommendations.map(recommendation => recommendation.id)] }])
+                .update({ isDeletable: false }, { transaction } as any);
+        }
     }
 }

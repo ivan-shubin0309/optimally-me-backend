@@ -169,6 +169,12 @@ export class UserResult extends Model {
     })
     deviation: number;
 
+    @Column({
+        type: DataType.DECIMAL(10, 2),
+        allowNull: false,
+    })
+    percentile: number;
+
     @ForeignKey(() => User)
     @Column({
         type: DataType.INTEGER,

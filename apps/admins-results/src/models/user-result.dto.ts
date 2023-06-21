@@ -17,6 +17,7 @@ export class UserResultDto extends BaseDto<UserResult> {
         this.date = data.date;
         this.recommendationRange = data.recommendationRange;
         this.deviation = data.deviation;
+        this.percentile = data.percentile;
         this.unitId = data.unitId;
         this.filterId = data.filterId;
         this.unit = data.unit && new UnitDto(data.unit);
@@ -48,6 +49,9 @@ export class UserResultDto extends BaseDto<UserResult> {
 
     @ApiProperty({ type: () => Number, required: false })
     readonly deviation: number;
+
+    @ApiProperty({ type: () => Number, required: false })
+    readonly percentile: number;
 
     @ApiProperty({ type: () => Number, required: true })
     readonly unitId: number;
