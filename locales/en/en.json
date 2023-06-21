@@ -78,5 +78,6 @@
     "DNA_AGE_FILE_STRUCTURE_INCORRECT": "File has different structure",
     "CANNOT_PARSE_CSV": "File structure is wrong or something happend while parsing csv",
     "USER_NOT_FEMALE": "User is not female",
-    "ERROR_WHEN_PARSING_CSV": "Error ocurred while trying to parse csv file"
+    "ERROR_WHEN_PARSING_CSV": "Error ocurred while trying to parse csv file",
+    "DNA_AGE_RESULT_NOT_FOUND": "Dna age result with specified id is not found"
 }

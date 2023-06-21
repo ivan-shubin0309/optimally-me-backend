@@ -136,7 +136,8 @@ export interface IUserResult {
                 attributes: []
             },
         ]
-    })
+    }),
+    byDnaAgeResultId: (dnaAgeResultId) => ({ where: { dnaAgeResultId } }),
 }))
 @Table({
     tableName: 'userResults',

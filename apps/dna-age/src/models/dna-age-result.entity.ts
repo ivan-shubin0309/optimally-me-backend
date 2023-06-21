@@ -1,12 +1,26 @@
 import { Sample } from '../../../samples/src/models/sample.entity';
 import { Table, Column, Model, Scopes, DataType, ForeignKey } from 'sequelize-typescript';
 import { User } from '../../../users/src/models';
+import { Op } from 'sequelize';
 
 const PRECISION = 10;
 const SCALE = 2;
 
 @Scopes(() => ({
     byId: (id: number | number[]) => ({ where: { id } }),
+    byDate: (startDate?: string, endDate?: string) => {
+        const opAnd = [];
+        if (startDate) {
+            opAnd.push({ [Op.gte]: startDate });
+        }
+        if (endDate) {
+            opAnd.push({ [Op.lte]: endDate });
+        }
+        return { where: { createdAt: { [Op.and]: opAnd } } };
+    },
+    pagination: (query) => ({ limit: query.limit, offset: query.offset }),
+    orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
+    byUserId: (userId) => ({ where: { userId } }),
 }))
 @Table({
     tableName: 'dnaAgeResults',
