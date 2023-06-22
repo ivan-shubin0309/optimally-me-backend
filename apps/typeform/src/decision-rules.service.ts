@@ -71,25 +71,31 @@ export class DecisionRulesService {
             { method: ['withCategory', true] },
         ];
         const biomarkersList = await this.usersBiomarkersService.getList(biomarkerScopes, transaction);
+        console.log(`biomarkers list: ${JSON.stringify(biomarkersList.map(biomarker => biomarker.id))}`);
+
         if (!biomarkersList.length) {
             return;
         }
 
-        const promises = biomarkersList.map(async biomarker => {
+        const results = [];
+
+        for (let i = 0; i < biomarkersList.length; i++) {
             const recommendations = await this.userRecommendationsService.getRecommendationListByUserResult(
-                biomarker.lastResult,
+                biomarkersList[i].lastResult,
                 {
-                    biomarkerId: biomarker.id,
+                    biomarkerId: biomarkersList[i].id,
                     additionalScopes: [
-                        { method: ['withUserRecommendation', biomarker.lastResult.id] }, 
+                        { method: ['withUserRecommendation', biomarkersList[i].lastResult.id] }, 
                         'withRecommendationTag'
                     ]
                 },
                 transaction
             );
 
+            console.log(`recommendations list: ${JSON.stringify(recommendations.map(recommendation => recommendation.id))}`);
+
             if (!recommendations.length) {
-                return null;
+                continue;
             }
 
             const userTags = await this.usersTagsService.getList([
@@ -104,10 +110,10 @@ export class DecisionRulesService {
                     attributes: userTags.map(userTag => userTag.key)
                 },
                 biomarkerResult: {
-                    value: biomarker.lastResult.value,
-                    range: RecommendationTypes[biomarker.lastResult.recommendationRange],
-                    name: biomarker.name,
-                    category: biomarker.category.name
+                    value: biomarkersList[i].lastResult.value,
+                    range: RecommendationTypes[biomarkersList[i].lastResult.recommendationRange],
+                    name: biomarkersList[i].name,
+                    category: biomarkersList[i].category.name
                 },
                 recommendations: recommendations.map(recommendation => ({
                     id: recommendation.userRecommendation.id,
@@ -118,20 +124,25 @@ export class DecisionRulesService {
                 form_response: typeformQuizDataWithoutHidden,
             };
 
-            console.log(JSON.stringify(payload));
+            console.log(`biomarked id: ${biomarkersList[i].id} body ${JSON.stringify(payload)}`);
 
-            return this.solveRule(payload)
+            const response = await this.solveRule(payload)
                 .catch(err => {
-                    console.log(`\nError on biomarker id - ${biomarker.id} `);
+                    console.log(`Error on biomarker id - ${biomarkersList[i].id}`);
+                    //console.log(`Error: ${JSON.stringify(err)}`);
                     throw new UnprocessableEntityException({
                         message: err.message,
                         errorCode: 'DECISION_RULES_ERROR',
                         statusCode: HttpStatus.UNPROCESSABLE_ENTITY
                     });
                 });
-        });
 
-        const results = await Promise.all(promises);
+            console.log(`Rule solved for biomarker id - ${biomarkersList[i].id}`);
+
+            results.push(response);
+        }
+
+        console.log('Rules solved!');
 
         const userRecommendationIdsToExclude = [];
         const userRecommendationIdsToInclude = [];

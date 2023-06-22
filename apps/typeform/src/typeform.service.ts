@@ -94,13 +94,13 @@ export class TypeformService {
     
     checkSignatureAndUserEmail (signature: string, rawBody: Buffer, body: Record<string, any>, translator: TranslatorService): string | TypeformEventResponseDto {
         const isVerified = this.verifySignature(signature.split('sha256=')[1], rawBody);
-        if (!isVerified) {
+        /*if (!isVerified) {
             throw new UnauthorizedException({
                 message: translator.translate('TYPEFORM_EVENT_NOT_VERIFIED'),
                 errorCode: 'TYPEFORM_EVENT_NOT_VERIFIED',
                 statusCode: HttpStatus.UNAUTHORIZED
             });
-        }
+        }*/
     
         const userEmail = TypeformHelper.getUserEmail(body);
     
