@@ -9,6 +9,8 @@ export class UserResultBiomarkerDto extends BaseDto<Biomarker> {
     constructor(entity: Biomarker) {
         super(entity);
         this.name = entity.name;
+        this.shortName = entity.shortName;
+        this.label = entity.label;
         this.type = entity.type;
         this.categoryId = entity.categoryId;
         this.unitId = entity.unitId;
@@ -19,6 +21,12 @@ export class UserResultBiomarkerDto extends BaseDto<Biomarker> {
 
     @ApiProperty({ type: () => String, required: true })
     name: string;
+
+    @ApiProperty({ type: () => String, required: true })
+    shortName: string;
+
+    @ApiProperty({ type: () => String, required: true })
+    label: string;
 
     @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(BiomarkerTypes) })
     type: number;
