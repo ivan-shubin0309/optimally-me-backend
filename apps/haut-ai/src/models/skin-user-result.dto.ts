@@ -5,6 +5,7 @@ import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { FileDto } from '../../../files/src/models/file.dto';
 import { SkinUserResult } from './skin-user-result.entity';
 import { UserSkinDiaryDto } from './user-skin-diary.dto';
+import { UserHautAiFieldDto } from './user-haut-ai-field.dto';
 
 export class SkinUserResultDto extends BaseDto<SkinUserResult> {
     constructor(entity: SkinUserResult) {
@@ -23,6 +24,9 @@ export class SkinUserResultDto extends BaseDto<SkinUserResult> {
             : undefined;
         this.skinDiary = entity.skinDiary
             ? new UserSkinDiaryDto(entity.skinDiary)
+            : undefined;
+        this.userHautAiField = entity.userHautAiField
+            ? new UserHautAiFieldDto(entity.userHautAiField)
             : undefined;
     }
 
@@ -55,4 +59,7 @@ export class SkinUserResultDto extends BaseDto<SkinUserResult> {
 
     @ApiProperty({ type: () => UserSkinDiaryDto, required: false })
     readonly skinDiary: UserSkinDiaryDto;
+    
+    @ApiProperty({ type: () => UserHautAiFieldDto, required: false })
+    readonly userHautAiField: UserHautAiFieldDto;
 }

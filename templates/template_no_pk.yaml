@@ -506,10 +506,10 @@ Resources:
           Properties:
             Path: /haut-ai/face-skin-metrics/skin-results/skin-diaries/{id}/notes
             Method: ANY
-        HautAiFaceSkinMetricsSkinResultsIdApi:
+        HautAiFaceSkinMetricsSkinResultsWebhookApi:
           Type: Api
           Properties:
-            Path: /haut-ai/face-skin-metrics/skin-results/{id}
+            Path: /haut-ai/face-skin-metrics/webhook/skin-results
             Method: ANY
         HautAiFaceSkinMetricsSkinResultsIdResultsApi:
           Type: Api

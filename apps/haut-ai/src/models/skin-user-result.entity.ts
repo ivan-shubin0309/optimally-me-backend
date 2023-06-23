@@ -15,10 +15,19 @@ export interface ISkinUserResult {
 
 @Scopes(() => ({
     byUserHautAiFieldId: (userHautAiFieldId: number) => ({ where: { userHautAiFieldId } }),
+    byHautAiFileId: (hautAiFileId: string) => ({ where: { hautAiFileId } }),
+    byHautAiBatchId: (hautAiBatchId: string) => ({ where: { hautAiBatchId } }),
     byId: (id: number) => ({ where: { id } }),
     afterDate: (date: string) => ({ where: { createdAt: { [Op.gte]: date } } }),
     pagination: (query) => ({ limit: query.limit, offset: query.offset }),
     orderBy: (arrayOfOrders: [[string, string]]) => ({ order: arrayOfOrders }),
+    withUserHautAiField: () => ({
+        include: [{
+            model: UserHautAiField,
+            as: 'userHautAiField',
+            required: false,
+        }]
+    }),
     withFile: () => ({
         include: [
             {

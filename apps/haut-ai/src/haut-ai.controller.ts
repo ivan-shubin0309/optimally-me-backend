@@ -1,4 +1,21 @@
-import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Query, Request, UnprocessableEntityException } from '@nestjs/common';
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Delete,
+    ForbiddenException,
+    Get,
+    Headers,
+    HttpCode,
+    HttpStatus,
+    NotFoundException,
+    Param,
+    Patch,
+    Post,
+    Query,
+    Request,
+    UnprocessableEntityException
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FileTypes } from '../../common/src/resources/files/file-types';
 import { FilesService } from '../../files/src/files.service';
@@ -30,6 +47,8 @@ import { UserSkinDiariesService } from './user-skin-diaries.service';
 import { UserSkinDiaryDto } from './models/user-skin-diary.dto';
 import { PatchSkinDiaryNoteDto } from './models/patch-skin-diary-note.dto';
 import { ShopifyService } from '../../shopify/src/shopify.service';
+import { Public } from '../../common/src/resources/common/public.decorator';
+import { ConfigService } from '../../common/src/utils/config/config.service';
 
 @ApiBearerAuth()
 @ApiTags('haut-ai')
@@ -44,6 +63,7 @@ export class HautAiController {
         private readonly usersResultsService: UsersResultsService,
         private readonly userSkinDiariesService: UserSkinDiariesService,
         private readonly shopifyService: ShopifyService,
+        private readonly configService: ConfigService,
     ) { }
 
     @ApiCreatedResponse({ type: () => HautAiUploadedPhotoDto })
@@ -114,14 +134,15 @@ export class HautAiController {
         const result = await this.userHautAiFieldsService.uploadPhotoToHautAi(file, user.hautAiField.hautAiSubjectId, accessToken);
         console.log('Photo uploaded');
 
-        await this.filesService.markFilesAsUsed([file.id]);
-
-        const skinResult = await this.skinUserResultsService.create({
-            hautAiBatchId: result.batchId,
-            hautAiFileId: result.uploadedFileId,
-            userHautAiFieldId: user.hautAiField.id,
-            fileId: body.fileId
-        });
+        const [skinResult] = await Promise.all([
+            this.skinUserResultsService.create({
+                hautAiBatchId: result.batchId,
+                hautAiFileId: result.uploadedFileId,
+                userHautAiFieldId: user.hautAiField.id,
+                fileId: body.fileId
+            }),
+            this.filesService.markFilesAsUsed([file.id])
+        ]);
 
         if (body.feelingType || body.notes || body.isWearingMakeUp) {
             await this.userSkinDiariesService.create({
@@ -159,32 +180,31 @@ export class HautAiController {
         }
         return this.userHautAiFieldsService.getImageResults(this.userHautAiFieldsService.getAccessToken(), user.hautAiField.hautAiSubjectId, body.batchId, body.uploadedFileId);
     }
-
+    
     @ApiOperation({ summary: 'Load skin results' })
-    @Roles(UserRoles.user)
     @HttpCode(HttpStatus.NO_CONTENT)
-    @Patch('/face-skin-metrics/skin-results/:id')
-    async loadSkinResults(@Param() params: EntityByIdDto, @Request() req: Request & { user: SessionDataDto }): Promise<void> {
-        const user = await this.usersService.getOne([
-            { method: ['byId', req.user.userId] },
-            { method: ['byRoles', UserRoles.user] },
-            'withHautAiField',
-            'withAdditionalField'
-        ]);
-
-        if (!user.hautAiField || !user.hautAiField?.hautAiSubjectId) {
-            throw new NotFoundException({
-                message: this.translator.translate('SKIN_RESULT_NOT_FOUND'),
-                errorCode: 'SKIN_RESULT_NOT_FOUND',
-                statusCode: HttpStatus.NOT_FOUND
+    @Public()
+    @Post('/face-skin-metrics/webhook/skin-results')
+    async loadSkinResults(@Body() body: any, @Headers('Authorization') hautAiToken): Promise<void> {
+        if (!hautAiToken || hautAiToken.split('Bearer ')[1] !== this.configService.get('HAUT_AI_WEBHOOK_TOKEN')) {
+            throw new ForbiddenException({
+                statusCode: HttpStatus.FORBIDDEN
             });
         }
-
+        
+        if (body.event !== 'photo_calculated_by_app') {
+            throw new BadRequestException({
+                message: `Incorrect event name: ${body.event}`,
+                statusCode: HttpStatus.BAD_REQUEST
+            });
+        }
+    
         const skinResult = await this.skinUserResultsService.getOne([
-            { method: ['byUserHautAiFieldId', user.hautAiField.id] },
-            { method: ['byId', params.id] }
+            { method: ['byHautAiFileId', body.image_id] },
+            { method: ['byHautAiBatchId', body.batch_id] },
+            { method: ['withUserHautAiField'] },
         ]);
-
+    
         if (!skinResult) {
             throw new NotFoundException({
                 message: this.translator.translate('SKIN_RESULT_NOT_FOUND'),
@@ -192,7 +212,7 @@ export class HautAiController {
                 statusCode: HttpStatus.NOT_FOUND
             });
         }
-
+        
         if (skinResult.status === SkinUserResultStatuses.loaded) {
             throw new BadRequestException({
                 message: this.translator.translate('SKIN_RESULT_ALREADY_LOADED'),
@@ -200,14 +220,14 @@ export class HautAiController {
                 statusCode: HttpStatus.BAD_REQUEST
             });
         }
-
+        
         const results = await this.userHautAiFieldsService.getImageResults(
-            this.userHautAiFieldsService.getAccessToken(),
-            user.hautAiField.hautAiSubjectId,
-            skinResult.hautAiBatchId,
-            skinResult.hautAiFileId
+          this.userHautAiFieldsService.getAccessToken(),
+          skinResult.userHautAiField.hautAiSubjectId,
+          skinResult.hautAiBatchId,
+          skinResult.hautAiFileId
         );
-
+        
         if (!results || !results?.length) {
             throw new UnprocessableEntityException({
                 message: this.translator.translate('SKIN_RESULT_NOT_LOADED'),
@@ -215,7 +235,7 @@ export class HautAiController {
                 statusCode: HttpStatus.UNPROCESSABLE_ENTITY
             });
         }
-
+        
         results.forEach(result => {
             if (result?.result?.error) {
                 throw new UnprocessableEntityException({
@@ -225,9 +245,15 @@ export class HautAiController {
                 });
             }
         });
-
-        await this.skinUserResultsService.saveResults(results, skinResult, req.user.userId);
-
+        
+        await this.skinUserResultsService.saveResults(results, skinResult, skinResult.userHautAiField.userId);
+    
+        const user = await this.usersService.getOne([
+            { method: ['byId', skinResult.userHautAiField.userId] },
+            { method: ['byRoles', UserRoles.user] },
+            'withAdditionalField'
+        ]);
+        
         if (!user.additionalField.isUserVerified) {
             await user.additionalField.update({ isUserVerified: true });
             if (user.additionalField.shopifyCustomerId) {
