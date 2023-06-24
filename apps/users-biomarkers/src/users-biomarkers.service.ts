@@ -94,5 +94,9 @@ export class UsersBiomarkersService extends BaseService<Biomarker> {
 
         return results.map(result => result.get('id'));
     }
+
+    async getResultsList(scopes: any[]): Promise<UserResult[]> {
+        return this.userResultModel.scope(scopes).findAll();
+    }
 }
 
