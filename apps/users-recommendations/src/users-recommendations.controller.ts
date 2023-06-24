@@ -8,7 +8,11 @@ import { GetUserRecommendationsDto } from './models/get-user-recommendations.dto
 import { UsersRecommendationsService } from './users-recommendations.service';
 import { UsersBiomarkersService } from '../../users-biomarkers/src/users-biomarkers.service';
 import { UserRecommendationsListDto } from './models/user-recommendations-list.dto';
-import { userRecommendationsSortingServerValues } from 'apps/common/src/resources/recommendations/user-recommendations-field-names';
+import { userRecommendationsSortingServerValues } from '../../common/src/resources/recommendations/user-recommendations-field-names';
+import { BiomarkerTypes } from '../../common/src/resources/biomarkers/biomarker-types';
+import { RecommendationCategoryTypes } from '../../common/src/resources/recommendations/recommendation-category-types';
+import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
+import { TopTenRecommendationsDto } from './models/top-ten-recommendations.dto';
 
 @ApiBearerAuth()
 @ApiTags('users/recommendations')
@@ -59,5 +63,125 @@ export class UsersRecommendationsController {
         }
 
         return new UserRecommendationsListDto(recommendationsList, PaginationHelper.buildPagination({ limit: query.limit, offset: query.offset }, count));
+    }
+
+    @ApiResponse({ type: () => TopTenRecommendationsDto })
+    @ApiOperation({ summary: 'Get top ten recommendations list' })
+    @Roles(UserRoles.user)
+    @HttpCode(HttpStatus.OK)
+    @Get('top-ten')
+    async getTopTenRecommendationsList(@Request() req: Request & { user: SessionDataDto }): Promise<TopTenRecommendationsDto> {
+        const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(req.user.userId, null, 1);
+
+        const [
+            resultsWithBloodBiomarker,
+            resultsWithSkinBiomarker
+        ] = await Promise.all([
+            this.usersBiomarkersService.getResultsList([
+                { method: ['byId', lastResultIds] },
+                { method: ['byBiomarkerType', BiomarkerTypes.blood] }
+            ]),
+            this.usersBiomarkersService.getResultsList([
+                { method: ['byId', lastResultIds] },
+                { method: ['byBiomarkerType', BiomarkerTypes.skin] }
+            ])
+        ]);
+
+        const [
+            userRecommendationsWithDoctorCategory,
+            userBloodRecommendations,
+            userSkinRecommendations
+        ] = await Promise.all([
+            this.usersRecommendationsService.getList([
+                { method: ['byUserResultId', lastResultIds] },
+                { method: ['byIsExcluded', false] },
+                { method: ['byCategory', RecommendationCategoryTypes.doctor] }
+            ]),
+            this.usersRecommendationsService.getList([
+                { method: ['byUserResultId', resultsWithBloodBiomarker.map(result => result.id)] },
+                { method: ['byIsExcluded', false] },
+                {
+                    method: [
+                        'byCategory',
+                        EnumHelper
+                            .toCollection(RecommendationCategoryTypes)
+                            .filter(categoryType => categoryType.value !== RecommendationCategoryTypes.doctor)
+                            .map(categoryType => categoryType.value)
+                    ]
+                }
+            ]),
+            this.usersRecommendationsService.getList([
+                { method: ['byUserResultId', resultsWithSkinBiomarker.map(result => result.id)] },
+                { method: ['byIsExcluded', false] },
+                {
+                    method: [
+                        'byCategory',
+                        EnumHelper
+                            .toCollection(RecommendationCategoryTypes)
+                            .filter(categoryType => categoryType.value !== RecommendationCategoryTypes.doctor)
+                            .map(categoryType => categoryType.value)
+                    ]
+                }
+            ])
+        ]);
+
+        const [
+            doctorRecommendations,
+            bloodRecommendations,
+            skinRecommendations,
+        ] = await Promise.all([
+            this.usersRecommendationsService.getRecommendationList([
+                { method: ['byId', userRecommendationsWithDoctorCategory.map(userRecommendation => userRecommendation.recommendationId)] },
+                { method: ['withUserReaction', req.user.userId, true] },
+                { method: ['orderByPriority', 'desc', lastResultIds] }
+            ]),
+            this.usersRecommendationsService.getRecommendationList([
+                { method: ['byId', userBloodRecommendations.map(userRecommendation => userRecommendation.recommendationId)] },
+                { method: ['withUserReaction', req.user.userId, true] },
+                { method: ['orderByPriority', 'desc', resultsWithBloodBiomarker.map(result => result.id)] }
+            ]),
+            this.usersRecommendationsService.getRecommendationList([
+                { method: ['byId', userSkinRecommendations.map(userRecommendation => userRecommendation.recommendationId)] },
+                { method: ['withUserReaction', req.user.userId, true] },
+                { method: ['orderByPriority', 'desc', resultsWithSkinBiomarker.map(result => result.id)] }
+            ]),
+        ]);
+
+        const topTenRecommendationIds = [];
+
+        if (doctorRecommendations.length) {
+            const recommendation = doctorRecommendations.shift();
+            topTenRecommendationIds.push(recommendation.id);
+        }
+
+        if (bloodRecommendations.length) {
+            const numberOfBlood = 9 - topTenRecommendationIds.length;
+            const recommendations = bloodRecommendations.splice(0, numberOfBlood);
+            topTenRecommendationIds.push(...recommendations.map(recommendation => recommendation.id));
+        }
+
+        if (skinRecommendations.length) {
+            const numberOfSkin = 10 - topTenRecommendationIds.length;
+            const recommendations = skinRecommendations.splice(0, numberOfSkin);
+            topTenRecommendationIds.push(...recommendations.map(recommendation => recommendation.id));
+        } else if (bloodRecommendations.length) {
+            const recommendation = bloodRecommendations.shift();
+            topTenRecommendationIds.push(recommendation.id);
+        }
+
+        const scopes: any[] = [
+            { method: ['byId', topTenRecommendationIds] },
+            { method: ['withUserReaction', req.user.userId, true] },
+            { method: ['withFiles'] },
+            { method: ['withUserReaction', req.user.userId, true] },
+            { method: ['withUserRecommendation', lastResultIds] },
+            { method: ['orderByLiteral', 'id', topTenRecommendationIds] },
+        ];
+
+        const recommendationsList = await this.usersRecommendationsService.getRecommendationList(scopes);
+
+        await this.usersRecommendationsService.attachBiomarkersToRecommendations(lastResultIds, recommendationsList, req.user.userId);
+
+        return new TopTenRecommendationsDto(recommendationsList);
     }
 }

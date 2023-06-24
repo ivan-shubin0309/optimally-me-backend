@@ -685,6 +685,11 @@ Resources:
           Properties:
             Path: /users/recommendations
             Method: ANY
+        UsersRecommendationsTopTenApi:
+          Type: Api
+          Properties:
+            Path: /users/recommendations/top-ten
+            Method: ANY
 
   Hl7Function:
     Type: AWS::Serverless::Function
