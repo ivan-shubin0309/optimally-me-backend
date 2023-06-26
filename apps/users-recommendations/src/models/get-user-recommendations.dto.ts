@@ -36,5 +36,6 @@ export class GetUserRecommendationsDto {
     @IsOptional()
     @IsNumber()
     @IsEnum([BiomarkerTypes.blood, BiomarkerTypes.skin])
+    @Transform(({ value }) => Number(value))
     readonly biomarkerType: BiomarkerTypes;
 }
