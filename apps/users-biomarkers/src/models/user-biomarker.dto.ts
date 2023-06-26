@@ -6,6 +6,7 @@ import { Biomarker } from '../../../biomarkers/src/models/biomarker.entity';
 import { BaseDto } from '../../../common/src/base/base.dto';
 import { EnumHelper } from '../../../common/src/utils/helpers/enum.helper';
 import { BiomarkerSexTypes } from '../../../common/src/resources/biomarkers/biomarker-sex-types';
+import { BiomarkerTypes } from '../../../common/src/resources/biomarkers/biomarker-types';
 
 export class UserBiomarkerDto extends BaseDto<Biomarker> {
     constructor(entity: Biomarker) {
@@ -18,6 +19,7 @@ export class UserBiomarkerDto extends BaseDto<Biomarker> {
         this.unitId = entity.unitId;
         this.sex = entity.sex;
         this.resultsCount = entity.resultsCount;
+        this.type = entity.type;
         this.userResults = entity.userResults && entity.userResults.length
             ? entity.userResults.map(userResult => new UserResultDto(userResult))
             : undefined;
@@ -49,6 +51,9 @@ export class UserBiomarkerDto extends BaseDto<Biomarker> {
 
     @ApiProperty({ type: () => Number, required: false })
     readonly resultsCount: number;
+
+    @ApiProperty({ type: () => Number, required: true, description: EnumHelper.toDescription(BiomarkerTypes) })
+    readonly type: number;
 
     @ApiProperty({ type: () => [UserResultDto], required: false })
     readonly userResults: UserResultDto[];

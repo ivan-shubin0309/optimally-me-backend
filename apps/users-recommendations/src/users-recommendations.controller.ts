@@ -31,7 +31,26 @@ export class UsersRecommendationsController {
     async getRecommendationsList(@Query() query: GetUserRecommendationsDto, @Request() req: Request & { user: SessionDataDto }): Promise<UserRecommendationsListDto> {
         let recommendationsList = [];
 
-        const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(req.user.userId, null, 1);
+        let lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(req.user.userId, null, 1);
+
+        if (query.biomarkerType === BiomarkerTypes.blood) {
+            const results = await this.usersBiomarkersService.getResultsList([
+                { method: ['byId', lastResultIds] },
+                { method: ['byBiomarkerType', BiomarkerTypes.blood] }
+            ]);
+
+            lastResultIds = results.map(result => result.id);
+        }
+
+        if (query.biomarkerType === BiomarkerTypes.skin) {
+            const results = await this.usersBiomarkersService.getResultsList([
+                { method: ['byId', lastResultIds] },
+                { method: ['byBiomarkerType', BiomarkerTypes.skin] }
+            ]);
+
+            lastResultIds = results.map(result => result.id);
+        }
+
         const userRecommendations = await this.usersRecommendationsService.getList([
             { method: ['byUserResultId', lastResultIds] },
             { method: ['byIsExcluded', false] }
@@ -71,6 +90,8 @@ export class UsersRecommendationsController {
     @HttpCode(HttpStatus.OK)
     @Get('top-ten')
     async getTopTenRecommendationsList(@Request() req: Request & { user: SessionDataDto }): Promise<TopTenRecommendationsDto> {
+        let userBloodRecommendations, userSkinRecommendations, doctorRecommendations, bloodRecommendations, skinRecommendations;
+
         const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(req.user.userId, null, 1);
 
         const [
@@ -87,17 +108,14 @@ export class UsersRecommendationsController {
             ])
         ]);
 
-        const [
-            userRecommendationsWithDoctorCategory,
-            userBloodRecommendations,
-            userSkinRecommendations
-        ] = await Promise.all([
-            this.usersRecommendationsService.getList([
-                { method: ['byUserResultId', lastResultIds] },
-                { method: ['byIsExcluded', false] },
-                { method: ['byCategory', RecommendationCategoryTypes.doctor] }
-            ]),
-            this.usersRecommendationsService.getList([
+        const userRecommendationsWithDoctorCategory = await this.usersRecommendationsService.getList([
+            { method: ['byUserResultId', lastResultIds] },
+            { method: ['byIsExcluded', false] },
+            { method: ['byCategory', RecommendationCategoryTypes.doctor] }
+        ]);
+
+        if (resultsWithBloodBiomarker.length) {
+            userBloodRecommendations = await this.usersRecommendationsService.getList([
                 { method: ['byUserResultId', resultsWithBloodBiomarker.map(result => result.id)] },
                 { method: ['byIsExcluded', false] },
                 {
@@ -109,8 +127,11 @@ export class UsersRecommendationsController {
                             .map(categoryType => categoryType.value)
                     ]
                 }
-            ]),
-            this.usersRecommendationsService.getList([
+            ]);
+        }
+
+        if (resultsWithSkinBiomarker.length) {
+            userSkinRecommendations = await this.usersRecommendationsService.getList([
                 { method: ['byUserResultId', resultsWithSkinBiomarker.map(result => result.id)] },
                 { method: ['byIsExcluded', false] },
                 {
@@ -122,49 +143,51 @@ export class UsersRecommendationsController {
                             .map(categoryType => categoryType.value)
                     ]
                 }
-            ])
-        ]);
+            ]);
+        }
 
-        const [
-            doctorRecommendations,
-            bloodRecommendations,
-            skinRecommendations,
-        ] = await Promise.all([
-            this.usersRecommendationsService.getRecommendationList([
+        if (userRecommendationsWithDoctorCategory?.length) {
+            doctorRecommendations = await this.usersRecommendationsService.getRecommendationList([
                 { method: ['byId', userRecommendationsWithDoctorCategory.map(userRecommendation => userRecommendation.recommendationId)] },
                 { method: ['withUserReaction', req.user.userId, true] },
                 { method: ['orderByPriority', 'desc', lastResultIds] }
-            ]),
-            this.usersRecommendationsService.getRecommendationList([
+            ]);
+        }
+
+        if (userBloodRecommendations?.length) {
+            bloodRecommendations = await this.usersRecommendationsService.getRecommendationList([
                 { method: ['byId', userBloodRecommendations.map(userRecommendation => userRecommendation.recommendationId)] },
                 { method: ['withUserReaction', req.user.userId, true] },
                 { method: ['orderByPriority', 'desc', resultsWithBloodBiomarker.map(result => result.id)] }
-            ]),
-            this.usersRecommendationsService.getRecommendationList([
+            ]);
+        }
+
+        if (userSkinRecommendations?.length) {
+            skinRecommendations = await this.usersRecommendationsService.getRecommendationList([
                 { method: ['byId', userSkinRecommendations.map(userRecommendation => userRecommendation.recommendationId)] },
                 { method: ['withUserReaction', req.user.userId, true] },
                 { method: ['orderByPriority', 'desc', resultsWithSkinBiomarker.map(result => result.id)] }
-            ]),
-        ]);
+            ]);
+        }
 
         const topTenRecommendationIds = [];
 
-        if (doctorRecommendations.length) {
+        if (doctorRecommendations?.length) {
             const recommendation = doctorRecommendations.shift();
             topTenRecommendationIds.push(recommendation.id);
         }
 
-        if (bloodRecommendations.length) {
+        if (bloodRecommendations?.length) {
             const numberOfBlood = 9 - topTenRecommendationIds.length;
             const recommendations = bloodRecommendations.splice(0, numberOfBlood);
             topTenRecommendationIds.push(...recommendations.map(recommendation => recommendation.id));
         }
 
-        if (skinRecommendations.length) {
+        if (skinRecommendations?.length) {
             const numberOfSkin = 10 - topTenRecommendationIds.length;
             const recommendations = skinRecommendations.splice(0, numberOfSkin);
             topTenRecommendationIds.push(...recommendations.map(recommendation => recommendation.id));
-        } else if (bloodRecommendations.length) {
+        } else if (bloodRecommendations?.length) {
             const recommendation = bloodRecommendations.shift();
             topTenRecommendationIds.push(recommendation.id);
         }

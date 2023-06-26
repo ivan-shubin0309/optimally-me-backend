@@ -1,8 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { orderTypes } from '../../../common/src/resources/common/order-types';
 import { Transform } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsEnum, IsInt, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 import { userRecommendationsSortingFieldNames } from '../../../common/src/resources/recommendations/user-recommendations-field-names';
+import { BiomarkerTypes } from 'apps/common/src/resources/biomarkers/biomarker-types';
+import { EnumHelper } from 'apps/common/src/utils/helpers/enum.helper';
 
 export class GetUserRecommendationsDto {
     @ApiProperty({ type: () => Number, required: true, default: 100 })
@@ -29,4 +31,10 @@ export class GetUserRecommendationsDto {
     @IsString()
     @IsEnum(orderTypes)
     readonly orderType: string = 'desc';
+
+    @ApiProperty({ type: () => Number, required: false, description: EnumHelper.toDescription(BiomarkerTypes) })
+    @IsOptional()
+    @IsNumber()
+    @IsEnum([BiomarkerTypes.blood, BiomarkerTypes.skin])
+    readonly biomarkerType: BiomarkerTypes;
 }
