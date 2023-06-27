@@ -457,13 +457,18 @@ export class Hl7Service extends BaseService<Hl7Object> {
                     activationDate: hl7Object.activatedAt,
                     resultsDate: hl7Object.resultAt,
                     isResultsFailed: !!bodyForUpdate.failedTests,
-                    resultsFailedReasons: bodyForUpdate.failedTests
-                        .split(',\n')
-                        .map(errorMessage => {
-                            const [biomarkerName, errorText] = errorMessage.split(' due to ');
-                            return `${biomarkerName} due to ${errorsExplanations[errorText] ? errorsExplanations[errorText] : errorText}`;
-                        }),
-                    isCriticalResults: isCriticalResult,
+                    resultsFailedReasons: bodyForUpdate.failedTests 
+                        ? bodyForUpdate.failedTests
+                            .split(',\n')
+                            .map(errorMessage => {
+                                const [biomarkerName, errorText] = errorMessage.split(' due to ');
+                                return `${biomarkerName} due to ${errorsExplanations[errorText] ? errorsExplanations[errorText] : errorText}`;
+                            })
+                        : undefined,
+                    isCriticalResults: !!userResults.find(userResult =>
+                        userResult.recommendationRange === RecommendationTypes.criticalLow
+                        || userResult.recommendationRange === RecommendationTypes.criticalHigh
+                    ),
                     criticalResults: userResults
                         .filter(userResult =>
                             userResult.recommendationRange === RecommendationTypes.criticalLow
