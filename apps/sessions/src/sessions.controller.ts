@@ -147,7 +147,10 @@ export class SessionsController {
 
     await this.usersDevicesService.removeDeviceBySessionId(user.sessionId);
 
-    await this.userCodesService.destroy([{ method: ['byUserId', user.userId] }]);
+    await this.userCodesService.destroy([
+      { method: ['byUserId', user.userId] },
+      { method: ['bySessionToken', accessToken] }
+    ]);
 
     if (user.deviceId) {
       await this.usersVerifiedDevicesService.dropTokenFromDevice(user.userId, user.deviceId);
@@ -181,6 +184,11 @@ export class SessionsController {
     }
 
     const session = await this.sessionsService.refresh(body.refreshToken);
+
+    await this.userCodesService.destroy([
+      { method: ['byUserId', user.id] },
+      { method: ['byRefreshToken', body.refreshToken] }
+    ]);
 
     await this.userCodesService.generateCode(user.id, session.accessToken, session.refreshToken, session.expiresAt);
 

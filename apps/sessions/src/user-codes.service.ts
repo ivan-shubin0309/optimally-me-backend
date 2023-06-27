@@ -15,12 +15,6 @@ export class UserCodesService extends BaseService<UserCode> {
     async generateCode(userId: number, sessionToken: string, refreshToken: string, expiresAt: string|number): Promise<UserCode> {
         const code = CodeHelper.generateCode(USER_CODE_LENGTH);
         const body = { userId, code, sessionToken, refreshToken, expiresAt };
-        const userCode = await this.model
-            .scope([{ method: ['byUserId', userId] }])
-            .findOne();
-        if(userCode) {
-            return userCode.update(body);
-        }
         return this.model.create(body);
     }
 
