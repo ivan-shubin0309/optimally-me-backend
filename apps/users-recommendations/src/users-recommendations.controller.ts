@@ -91,6 +91,7 @@ export class UsersRecommendationsController {
     @Get('top-ten')
     async getTopTenRecommendationsList(@Request() req: Request & { user: SessionDataDto }): Promise<TopTenRecommendationsDto> {
         let userBloodRecommendations, userSkinRecommendations, doctorRecommendations, bloodRecommendations, skinRecommendations;
+        let recommendationsList = [];
 
         const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(req.user.userId, null, 1);
 
@@ -192,18 +193,20 @@ export class UsersRecommendationsController {
             topTenRecommendationIds.push(recommendation.id);
         }
 
-        const scopes: any[] = [
-            { method: ['byId', topTenRecommendationIds] },
-            { method: ['withUserReaction', req.user.userId, true] },
-            { method: ['withFiles'] },
-            { method: ['withUserReaction', req.user.userId, true] },
-            { method: ['withUserRecommendation', lastResultIds] },
-            { method: ['orderByLiteral', 'id', topTenRecommendationIds] },
-        ];
+        if (topTenRecommendationIds.length) {
+            const scopes: any[] = [
+                { method: ['byId', topTenRecommendationIds] },
+                { method: ['withUserReaction', req.user.userId, true] },
+                { method: ['withFiles'] },
+                { method: ['withUserReaction', req.user.userId, true] },
+                { method: ['withUserRecommendation', lastResultIds] },
+                { method: ['orderByLiteral', 'id', topTenRecommendationIds] },
+            ];
 
-        const recommendationsList = await this.usersRecommendationsService.getRecommendationList(scopes);
+            recommendationsList = await this.usersRecommendationsService.getRecommendationList(scopes);
 
-        await this.usersRecommendationsService.attachBiomarkersToRecommendations(lastResultIds, recommendationsList, req.user.userId);
+            await this.usersRecommendationsService.attachBiomarkersToRecommendations(lastResultIds, recommendationsList, req.user.userId);
+        }
 
         return new TopTenRecommendationsDto(recommendationsList);
     }
