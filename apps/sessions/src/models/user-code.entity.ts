@@ -7,6 +7,8 @@ import { User } from '../../../users/src/models';
     }),
     byCode: (code: string) => ({ where: { code } }),
     byUserId: (userId: number) => ({ where: { userId } }),
+    bySessionToken: (sessionToken) => ({ where: { sessionToken } }),
+    byRefreshToken: (refreshToken) => ({ where: { refreshToken } }),
 }))
 @Table({
     tableName: 'userCodes',
