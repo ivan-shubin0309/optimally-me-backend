@@ -161,7 +161,7 @@ export class WefitterController {
             });
         }
         if (deleteData) {
-            // TODO Delete data from our DB
+            await this.wefitterService.deleteAllUserData(user.id);
         }
 
         if (isWefitterConnectionSlug) {
