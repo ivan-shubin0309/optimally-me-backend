@@ -24,7 +24,7 @@ export class TypeformHelper {
     }
 
     static getUserEmail(body: any): string {
-        return body?.form_response?.hidden?.email;
+        return body?.form_response?.hidden?.email?.replace(' ', '+');
     }
 
     static getFormId(body: any): string {
