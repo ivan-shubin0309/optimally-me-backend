@@ -30,4 +30,10 @@ export class UsersWidgetDataSourcesService extends BaseService<UserWidgetDataSou
     async create(body: { metricType: WefitterMetricTypes, source: string, userId: number }, transaction?: Transaction): Promise<UserWidgetDataSource> {
         return this.model.create(body, { transaction });
     }
+
+    async deleteByUserId(userId: number, transaction?: Transaction): Promise<void> {
+        await this.model
+            .scope([{ method: ['byUserId', userId] }])
+            .destroy({ transaction });
+    }
 }

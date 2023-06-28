@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Transaction } from 'sequelize';
+import { Sequelize, Transaction } from 'sequelize';
 import { v4 as uuidv4 } from 'uuid';
 import { RedisService } from '@liaoliaots/nestjs-redis';
 import { TranslatorService } from 'nestjs-translator';
@@ -97,6 +97,7 @@ export class WefitterService {
         @Inject('WEFITTER_VO2_MAX') private wefitterVo2MaxModel: Repository<WefitterVo2Max>,
         @Inject('WEFITTER_HRV_SLEEP') private wefitterHrvSleepModel: Repository<WefitterHrvSleep>,
         private readonly usersWidgetDataSourcesService: UsersWidgetDataSourcesService,
+        @Inject('SEQUELIZE') private readonly dbConnection: Sequelize,
     ) {
         this.redisClient = redisService.getClient();
         this.baseUrl = this.configService.get('WEFITTER_API_URL');
@@ -632,5 +633,46 @@ export class WefitterService {
             .findAll({ transaction });
 
         return sourcesCount.map(source => source.get('source'));
+    }
+
+    async deleteAllUserData(userId: number): Promise<void> {
+        const modelNamesMap = {};
+        Object
+            .values(metricTypeToModelName)
+            .forEach(modelName => {
+                if (!modelNamesMap[modelName]) {
+                    modelNamesMap[modelName] = true;
+                }
+            });
+        Object
+            .values(measurementTypeToMetricType)
+            .forEach(modelName => {
+                if (!modelNamesMap[modelName]) {
+                    modelNamesMap[modelName] = true;
+                }
+            });
+
+        const modelNames = Object.keys(modelNamesMap);
+
+        await this.dbConnection.transaction(async transaction => {
+            const scope: any[] = [{ method: ['byUserId', userId] }];
+            const promises = [
+                this.usersWidgetDataSourcesService.deleteByUserId(userId, transaction),
+            ];
+
+            modelNames.forEach(modelName => {
+                if (this[modelName]) {
+                    return promises.push(
+                        this[modelName]
+                            .scope(scope)
+                            .destroy({ transaction })
+                    );
+                }
+
+                console.log(`WefitterService missing model - ${modelName}`);
+            });
+
+            await Promise.all(promises);
+        });
     }
 }
