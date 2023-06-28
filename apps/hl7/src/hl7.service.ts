@@ -182,7 +182,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
         }
     }
 
-    async loadHl7StatusFile(hl7Object: Hl7Object, fileName: string, statusFileAt: string): Promise<void> {
+    async loadHl7StatusFile(hl7Object: Hl7Object, fileName: string, statusFileAt: string, options: { isReprocess?: boolean } = {}): Promise<void> {
         const awsFile = await this.filesService.prepareFile({ contentType: HL7_FILE_TYPE, type: InternalFileTypes.hl7 }, hl7Object.userId, InternalFileTypes[InternalFileTypes.hl7]);
         const [createdFile] = await this.filesService.createFilesInDb(hl7Object.userId, [awsFile]);
 
@@ -204,22 +204,24 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
         await this.filesService.markFilesAsUsed([createdFile.id]);
 
-        const user = await this.usersService.getOne([
-            { method: ['byId', hl7Object.userId] },
-            'withAdditionalField'
-        ]);
+        if (!options.isReprocess) {
+            const user = await this.usersService.getOne([
+                { method: ['byId', hl7Object.userId] },
+                'withAdditionalField'
+            ]);
 
-        await this.klaviyoModelService.getKlaviyoProfile(user);
-        await this.klaviyoService.sampleReceivedEvent(
-            user.email,
-            {
-                sampleId: hl7Object.sampleCode,
-                testName: hl7Object.testProductName,
-                labProfileId: hl7Object.labId,
-                activationDate: hl7Object.activatedAt,
-                receivedDate: hl7Object.labReceivedAt
-            }
-        );
+            await this.klaviyoModelService.getKlaviyoProfile(user);
+            await this.klaviyoService.sampleReceivedEvent(
+                user.email,
+                {
+                    sampleId: hl7Object.sampleCode,
+                    testName: hl7Object.testProductName,
+                    labProfileId: hl7Object.labId,
+                    activationDate: hl7Object.activatedAt,
+                    receivedDate: hl7Object.labReceivedAt
+                }
+            );
+        }
     }
 
     async checkForResultFiles(): Promise<void> {
