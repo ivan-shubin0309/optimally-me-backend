@@ -262,7 +262,7 @@ export class Hl7Controller {
         const files = await this.hl7Service.findFileNameForHl7Object(hl7Object);
 
         if (files.statusFile) {
-            await this.hl7Service.loadHl7StatusFile(hl7Object, files.statusFile, DateTime.fromJSDate(hl7Object.statusFileAt).toISO());
+            await this.hl7Service.loadHl7StatusFile(hl7Object, files.statusFile, DateTime.fromJSDate(hl7Object.statusFileAt).toISO(), { isReprocess: true });
         }
         if (files.resultFile) {
             await this.hl7Service.loadHl7ResultFile(hl7Object, files.resultFile, DateTime.fromJSDate(hl7Object.resultFileAt).toISO());
