@@ -1,3 +1,5 @@
+import { wefitterSources } from './wefitter-sources';
+
 export const nonWefitterConnectionSlugs = {
     android: 'android',
     samsung: 'samsung',
@@ -9,3 +11,8 @@ export const nonWefitterFieldNames = {
     [nonWefitterConnectionSlugs.samsung]: 'isSamsungHealthConnected',
     [nonWefitterConnectionSlugs.apple]: 'isAppleHealthConnected',
 };
+
+export const connectionSlugs = [
+    ...wefitterSources.map(source => source.toLowerCase()),
+    ...Object.values(nonWefitterConnectionSlugs)
+];

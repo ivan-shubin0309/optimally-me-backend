@@ -161,7 +161,7 @@ export class WefitterController {
             });
         }
         if (deleteData) {
-            await this.wefitterService.deleteAllUserData(user.id);
+            await this.wefitterService.deleteAllUserData(user.id, query.connectionSlug.toUpperCase());
         }
 
         if (isWefitterConnectionSlug) {

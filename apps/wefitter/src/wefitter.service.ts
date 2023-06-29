@@ -635,7 +635,7 @@ export class WefitterService {
         return sourcesCount.map(source => source.get('source'));
     }
 
-    async deleteAllUserData(userId: number): Promise<void> {
+    async deleteAllUserData(userId: number, source: string): Promise<void> {
         const modelNamesMap = {};
         Object
             .values(metricTypeToModelName)
@@ -655,10 +655,11 @@ export class WefitterService {
         const modelNames = Object.keys(modelNamesMap);
 
         await this.dbConnection.transaction(async transaction => {
-            const scope: any[] = [{ method: ['byUserId', userId] }];
-            const promises = [
-                this.usersWidgetDataSourcesService.deleteByUserId(userId, transaction),
+            const scope: any[] = [
+                { method: ['byUserId', userId] },
+                { method: ['bySource', source] }
             ];
+            const promises = [];
 
             modelNames.forEach(modelName => {
                 if (this[modelName]) {
