@@ -210,8 +210,13 @@ export class SessionsController {
   @ApiResponse({ type: () => UserCodeDto })
   @ApiOperation({ summary: 'Get code for login with qrcode' })
   @Get('/codes')
-  async getLoginCode(@Request() req: Request & { user: SessionDataDto }): Promise<UserCodeDto> {
-    const userCode = await this.userCodesService.getOne([ { method: ['byUserId', req.user.userId] } ]);
+  async getLoginCode(@Request() req: Request & { user: SessionDataDto }, @Headers('Authorization') bearer): Promise<UserCodeDto> {
+    const accessToken = bearer?.split(' ')[1];
+
+    const userCode = await this.userCodesService.getOne([
+      { method: ['byUserId', req.user.userId] },
+      { method: ['bySessionToken', accessToken] }
+    ]);
 
     if(!userCode) {
       throw new NotFoundException({
