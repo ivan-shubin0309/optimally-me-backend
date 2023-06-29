@@ -388,7 +388,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
                         isCriticalResult = true;
                     }
 
-                    if (biomarker.unit.unit !== result.unit) {
+                    if (biomarker.unit.unit.toLowerCase() !== result.unit?.toLowerCase()) {
                         const errorMessage = `${UNIT_MISMATCH_ERROR} ${result.biomarkerShortName} OBX.6 ${result.unit}`;
                         bodyForUpdate.toFollow = `${errorMessage},\n${bodyForUpdate.toFollow}`;
                     }
