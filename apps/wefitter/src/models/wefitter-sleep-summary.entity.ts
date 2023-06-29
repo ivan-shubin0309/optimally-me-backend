@@ -4,18 +4,33 @@ import { fn, col, Op } from 'sequelize';
 import { metricTypeToFieldName, WefitterMetricTypes } from '../../../common/src/resources/wefitter/wefitter-metric-types';
 import { DateTime } from 'luxon';
 
+export const fieldsForParsingDuration = [
+    'duration',
+    'awake',
+    'light',
+    'deep',
+    'rem',
+    'totalTimeInSleep',
+    'timeAsleep',
+];
+
 @Scopes(() => ({
     byUserId: (userId) => ({ where: { userId } }),
     byTimestamp: (timestamp) => ({ where: { timestamp } }),
-    averages: (fieldName: string) => ({
-        attributes: [
-            [fn('AVG', col(fieldName)), 'averageValue'],
-            [fn('MIN', col(fieldName)), 'minValue'],
-            [fn('MAX', col(fieldName)), 'maxValue'],
-            'userId',
-        ],
-        group: ['userId']
-    }),
+    averages: (fieldName: string) => {
+        const field = fieldsForParsingDuration.includes(fieldName)
+            ? fn('DurationToSeconds', col(fieldName))
+            : col(fieldName);
+        return {
+            attributes: [
+                [fn('AVG', field), 'averageValue'],
+                [fn('MIN', field), 'minValue'],
+                [fn('MAX', field), 'maxValue'],
+                'userId',
+            ],
+            group: ['userId']
+        };
+    },
     pagination: (query) => ({ limit: query.limit, offset: query.offset }),
     byFieldName: (fieldName) => ({
         where: {
