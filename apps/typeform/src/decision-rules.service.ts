@@ -61,6 +61,7 @@ export class DecisionRulesService {
     }
 
     async updateUserRecommendations(userId: number, typeformQuizData: any, transaction: Transaction): Promise<void> {
+        let isError = false;
         const typeformQuizDataWithoutHidden = Object.assign({}, typeformQuizData);
         typeformQuizDataWithoutHidden.hidden = { gender: typeformQuizDataWithoutHidden?.hidden?.gender };
 
@@ -129,17 +130,23 @@ export class DecisionRulesService {
             const response = await this.solveRule(payload)
                 .catch(err => {
                     console.log(`Error on biomarker id - ${biomarkersList[i].id}`);
+                    isError = true;
                     //console.log(`Error: ${JSON.stringify(err)}`);
-                    throw new UnprocessableEntityException({
+                    /*throw new UnprocessableEntityException({
                         message: err.message,
                         errorCode: 'DECISION_RULES_ERROR',
                         statusCode: HttpStatus.UNPROCESSABLE_ENTITY
-                    });
+                    });*/
                 });
 
             console.log(`Rule solved for biomarker id - ${biomarkersList[i].id}`);
 
             results.push(response);
+        }
+
+        if (isError) {
+            console.log('Error during rule solving');
+            return;
         }
 
         console.log('Rules solved!');
