@@ -62,7 +62,7 @@ export class DecisionRulesService {
 
     async updateUserRecommendations(userId: number, typeformQuizData: any, transaction: Transaction): Promise<void> {
         const typeformQuizDataWithoutHidden = Object.assign({}, typeformQuizData);
-        typeformQuizDataWithoutHidden.hidden = {};
+        typeformQuizDataWithoutHidden.hidden = { gender: typeformQuizDataWithoutHidden?.hidden?.gender };
 
         const lastResultIds = await this.usersBiomarkersService.getLastResultIdsByDate(userId, { beforeDate: DateTime.utc().toISO() }, 1, transaction);
         const biomarkerScopes: ScopeOptions[] = [
