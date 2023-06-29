@@ -20,6 +20,9 @@ module.exports = {
                 WHEN duration LIKE 'PT%H%.%S' THEN TIME_TO_SEC(STR_TO_DATE(duration, 'PT%sHH%.%fS'))
             END);
         `);
+        await queryInterface.sequelize.query(`
+                
+        `);
     },
 
     async down(queryInterface, Sequelize) {
