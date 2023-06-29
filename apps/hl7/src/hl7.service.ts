@@ -344,6 +344,10 @@ export class Hl7Service extends BaseService<Hl7Object> {
 
         status = bodyForUpdate.status;
 
+        if (status !== Hl7ObjectStatuses.verified) {
+            return;
+        }
+
         await hl7Object.update({
             resultFileId: resultFile.id,
             failedTests: bodyForUpdate.failedTests,
