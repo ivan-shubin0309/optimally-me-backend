@@ -81,28 +81,33 @@ export class Hl7Service extends BaseService<Hl7Object> {
                         )
                         .findAll({ transaction });
 
-                    const objectsToCreate = userSamples.map(userSample => ({
-                        userId: userSample.userId,
-                        lab: hl7LabNames[userSample.sample.labName],
-                        sampleCode: userSample.sample.sampleId,
-                        status: Hl7ObjectStatuses.new,
-                        email: userSample.user.email,
-                        firstName: userSample.user.firstName,
-                        lastName: userSample.user.lastName,
-                        dateOfBirth: userSample.user.additionalField.dateOfBirth,
-                        sex: userSample.user.additionalField.sex,
-                        activatedAt: userSample.createdAt,
-                        isQuizCompleted: userSample.user.additionalField.isSelfAssesmentQuizCompleted,
-                        userOtherFeature: userSample.userOtherFeature,
-                        labId: userSample.sample.labProfileId,
-                        testProductName: userSample.sample.productName,
-                        orderId: userSample.sample.orderId,
-                    }));
+                    const objectsToCreate = userSamples.reduce((acc, userSample) => {
+                        if (!userSample.sample.labName) {
+                            return acc;
+                        }
+                        return acc.concat({
+                            userId: userSample.userId,
+                            lab: hl7LabNames[userSample.sample.labName],
+                            sampleCode: userSample.sample.sampleId,
+                            status: Hl7ObjectStatuses.new,
+                            email: userSample.user.email,
+                            firstName: userSample.user.firstName,
+                            lastName: userSample.user.lastName,
+                            dateOfBirth: userSample.user.additionalField.dateOfBirth,
+                            sex: userSample.user.additionalField.sex,
+                            activatedAt: userSample.createdAt,
+                            isQuizCompleted: userSample.user.additionalField.isSelfAssesmentQuizCompleted,
+                            userOtherFeature: userSample.userOtherFeature,
+                            labId: userSample.sample.labProfileId,
+                            testProductName: userSample.sample.productName,
+                            orderId: userSample.sample.orderId,
+                        });
+                    }, []);
 
                     await this.model.bulkCreate(objectsToCreate, { transaction } as any);
 
                     await this.userSampleModel
-                        .scope({ method: ['byId', userSamples.map(userSample => userSample.id)] })
+                        .scope({ method: ['byId', userSamples.filter(userSample => !!userSample.sample.labName).map(userSample => userSample.id)] })
                         .update({ isHl7ObjectGenerated: true }, { transaction } as any);
                 }
             });
@@ -118,7 +123,7 @@ export class Hl7Service extends BaseService<Hl7Object> {
             ]);
 
             await Promise.all(
-                hl7ObjectsToUpload.map(async objectToUpload => {
+                hl7ObjectsToUpload.filter(objectToUpload => !!objectToUpload.lab).map(async objectToUpload => {
                     const dataString = this.hl7FilesService.createHl7FileFromHl7Object(objectToUpload);
 
                     const awsFile = await this.filesService.prepareFile({ contentType: HL7_FILE_TYPE, type: InternalFileTypes.hl7 }, objectToUpload.userId, InternalFileTypes[InternalFileTypes.hl7]);
