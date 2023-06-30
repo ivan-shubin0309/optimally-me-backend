@@ -419,12 +419,21 @@ export class WefitterService {
         }
 
         const promises = dataObjectsArray.map(async (dataObject) => {
+            const scopesForDataObject = [
+                { method: ['averages', dataObject.fieldName] },
+            ];
+
+            const dataSource = await this.usersWidgetDataSourcesService.getOne([
+                { method: ['byUserId', userId] },
+                { method: ['byMetricType', dataObject.metricEnum] }
+            ]);
+
+            if (dataSource) {
+                scopesForDataObject.push({ method: ['bySource', dataSource.source] });
+            }
+
             const result = await dataObject.model
-                .scope(
-                    scopes.concat([
-                        { method: ['averages', dataObject.fieldName] }
-                    ])
-                )
+                .scope(scopes.concat(scopesForDataObject))
                 .findOne({});
 
             if (!result) {
